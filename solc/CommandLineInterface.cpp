@@ -1,25 +1,3 @@
-/*
-	This file is part of solidity.
-
-	solidity is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
-
-	solidity is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License
-	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
-*/
-/**
- * @author Lefteris <lefteris@ethdev.com>
- * @author Gav Wood <g@ethdev.com>
- * @date 2014
- * Solidity command line interface.
- */
 #include "CommandLineInterface.h"
 
 #include "solidity/BuildInfo.h"
@@ -529,19 +507,20 @@ void CommandLineInterface::createJson(string const& _fileName, string const& _js
 	createFile(boost::filesystem::basename(_fileName) + string(".json"), _json);
 }
 
+// 
 bool CommandLineInterface::parseArguments(int _argc, char** _argv)
 {
 	// Declare the supported options.
 	po::options_description desc(R"(solc, the Solidity commandline compiler.
 
-This program comes with ABSOLUTELY NO WARRANTY. This is free software, and you
+This program comes with ABSOLUTELY NO WARRANTY（这个程序没有绝对的担保）. This is free software, and you
 are welcome to redistribute it under certain conditions. See 'solc --license'
 for details.
 
 Usage: solc [options] [input_file...]
 Compiles the given Solidity input files (or the standard input if none given or
-"-" is used as a file name) and outputs the components specified in the options
-at standard output or in files in the output directory, if specified.
+"-" is used as a file name)（编译Solidity input files，或者标准输入如果没有给定input files或者"-"被作为input files使用） and outputs the components specified in the options
+at standard output or in files in the output directory（将选项中指定的组件输出到标准输出或者输出目录中的文件中）, if specified.
 Imports are automatically read from the filesystem, but it is also possible to
 remap paths using the context:prefix=path syntax.
 Example:
@@ -551,6 +530,7 @@ Allowed options)",
 		po::options_description::m_default_line_length,
 		po::options_description::m_default_line_length - 23
 	);
+	// 定义一个input option description
 	desc.add_options()
 		(g_argHelp.c_str(), "Show help message and exit.")
 		(g_argVersion.c_str(), "Show version and exit.")
@@ -621,19 +601,20 @@ Allowed options)",
 			"Allow a given path for imports. A list of paths can be supplied by separating them with a comma."
 		)
 		(g_argIgnoreMissingFiles.c_str(), "Ignore missing files.");
+	// 定义一个outputComponents，里面包含可以输出的组件
 	po::options_description outputComponents("Output Components");
 	outputComponents.add_options()
-		(g_argAst.c_str(), "AST of all source files.")
-		(g_argAstJson.c_str(), "AST of all source files in JSON format.")
-		(g_argAstCompactJson.c_str(), "AST of all source files in a compact JSON format.")
-		(g_argAsm.c_str(), "EVM assembly of the contracts.")
-		(g_argAsmJson.c_str(), "EVM assembly of the contracts in JSON format.")
-		(g_argOpcodes.c_str(), "Opcodes of the contracts.")
-		(g_argBinary.c_str(), "Binary of the contracts in hex.")
-		(g_argBinaryRuntime.c_str(), "Binary of the runtime part of the contracts in hex.")
-		(g_argCloneBinary.c_str(), "Binary of the clone contracts in hex.")
-		(g_argAbi.c_str(), "ABI specification of the contracts.")
-		(g_argSignatureHashes.c_str(), "Function signature hashes of the contracts.")
+		(g_argAst.c_str(), "AST of all source files.") // 抽象语法树
+		(g_argAstJson.c_str(), "AST of all source files in JSON format.") // JSON格式的抽象语法树
+		(g_argAstCompactJson.c_str(), "AST of all source files in a compact JSON format.") // 紧凑JSON格式的抽象语法树
+		(g_argAsm.c_str(), "EVM assembly of the contracts.") // contracts的汇编代码
+		(g_argAsmJson.c_str(), "EVM assembly of the contracts in JSON format.") // JSON格式的contracts的汇编代码
+		(g_argOpcodes.c_str(), "Opcodes of the contracts.") // contracts的opcodes
+		(g_argBinary.c_str(), "Binary of the contracts in hex.") // contracts的二进制文件（16进制表示）
+		(g_argBinaryRuntime.c_str(), "Binary of the runtime part of the contracts in hex.") // contracts的运行时部分的二进制文件（16进制表示）
+		(g_argCloneBinary.c_str(), "Binary of the clone contracts in hex.") // 克隆的contracts的二进制文件（16进制表示）
+		(g_argAbi.c_str(), "ABI specification of the contracts.") // contracts的ABI格式
+		(g_argSignatureHashes.c_str(), "Function signature hashes of the contracts.") // contracts的external函数签名
 		(g_argNatspecUser.c_str(), "Natspec user documentation of all contracts.")
 		(g_argNatspecDev.c_str(), "Natspec developer documentation of all contracts.")
 		(g_argMetadata.c_str(), "Combined Metadata JSON whose Swarm hash is stored on-chain.")
@@ -661,12 +642,14 @@ Allowed options)",
 		return false;
 	}
 
+	// help请求
 	if (m_args.count(g_argHelp) || (isatty(fileno(stdin)) && _argc == 1))
 	{
 		cout << desc;
 		return false;
 	}
 
+	// solidity compiler version请求
 	if (m_args.count(g_argVersion))
 	{
 		version();

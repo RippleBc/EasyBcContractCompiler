@@ -50,17 +50,21 @@ static void setDefaultOrCLocale()
 #endif
 }
 
+// 主函数入口
 int main(int argc, char** argv)
 {
 	setDefaultOrCLocale();
 	dev::solidity::CommandLineInterface cli;
+	// 解析命令行参数
 	if (!cli.parseArguments(argc, argv))
 		return 1;
+	// 解析文件，创建源代码对象
 	if (!cli.processInput())
 		return 1;
 	bool success = false;
 	try
 	{
+		// 根据提供的编译参数，对input进行处理
 		success = cli.actOnInput();
 	}
 	catch (boost::exception const& _exception)
