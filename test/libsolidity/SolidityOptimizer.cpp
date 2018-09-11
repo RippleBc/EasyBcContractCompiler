@@ -101,7 +101,7 @@ public:
 		return state;
 	}
 
-	AssemblyItems getCSE(AssemblyItems const& _input, eth::KnownState const& _state = eth::KnownState())
+	AssemblyItems CSE(AssemblyItems const& _input, eth::KnownState const& _state = eth::KnownState())
 	{
 		AssemblyItems input = addDummyLocations(_input);
 
@@ -111,7 +111,7 @@ public:
 
 		for (AssemblyItem const& item: output)
 		{
-			BOOST_CHECK(item == Instruction::POP || !item.getLocation().isEmpty());
+			BOOST_CHECK(item == Instruction::POP || !item.location().isEmpty());
 		}
 		return output;
 	}
@@ -122,11 +122,11 @@ public:
 		KnownState const& _state = eth::KnownState()
 	)
 	{
-		AssemblyItems output = getCSE(_input, _state);
+		AssemblyItems output = CSE(_input, _state);
 		BOOST_CHECK_EQUAL_COLLECTIONS(_expectation.begin(), _expectation.end(), output.begin(), output.end());
 	}
 
-	AssemblyItems getCFG(AssemblyItems const& _input)
+	AssemblyItems CFG(AssemblyItems const& _input)
 	{
 		AssemblyItems output = _input;
 		// Running it four times should be enough for these tests.
@@ -144,7 +144,7 @@ public:
 
 	void checkCFG(AssemblyItems const& _input, AssemblyItems const& _expectation)
 	{
-		AssemblyItems output = getCFG(_input);
+		AssemblyItems output = CFG(_input);
 		BOOST_CHECK_EQUAL_COLLECTIONS(_expectation.begin(), _expectation.end(), output.begin(), output.end());
 	}
 
@@ -357,6 +357,16 @@ BOOST_AUTO_TEST_CASE(store_tags_as_unions)
 	});
 // TEST DISABLED UNTIL 93693404 IS IMPLEMENTED
 //	BOOST_CHECK_EQUAL(2, numSHA3s);
+}
+
+BOOST_AUTO_TEST_CASE(successor_not_found_bug)
+{
+	// This bug was caused because MSVC chose to use the u256->bool conversion
+	// instead of u256->unsigned
+	char const* sourceCode = R"(
+		contract greeter { function greeter() {} }
+	)";
+	compileBothVersions(sourceCode);
 }
 
 BOOST_AUTO_TEST_CASE(cse_intermediate_swap)
@@ -890,7 +900,7 @@ BOOST_AUTO_TEST_CASE(cse_sha3_twice_same_content_noninterfering_store_in_between
 		Instruction::SHA3 // sha3(m[12..(12+32)])
 	};
 	// if this changes too often, only count the number of SHA3 and MSTORE instructions
-	AssemblyItems output = getCSE(input);
+	AssemblyItems output = CSE(input);
 	BOOST_CHECK_EQUAL(4, count(output.begin(), output.end(), AssemblyItem(Instruction::MSTORE)));
 	BOOST_CHECK_EQUAL(1, count(output.begin(), output.end(), AssemblyItem(Instruction::SHA3)));
 }
@@ -914,7 +924,7 @@ BOOST_AUTO_TEST_CASE(cse_equality_on_initially_known_stack)
 	AssemblyItems input{
 		Instruction::EQ
 	};
-	AssemblyItems output = getCSE(input, state);
+	AssemblyItems output = CSE(input, state);
 	// check that it directly pushes 1 (true)
 	BOOST_CHECK(find(output.begin(), output.end(), AssemblyItem(u256(1))) != output.end());
 }
@@ -938,7 +948,7 @@ BOOST_AUTO_TEST_CASE(cse_access_previous_sequence)
 		u256(0),
 		Instruction::SLOAD,
 	};
-	BOOST_CHECK_THROW(getCSE(input, state), StackTooDeepException);
+	BOOST_CHECK_THROW(CSE(input, state), StackTooDeepException);
 	// @todo for now, this throws an exception, but it should recover to the following
 	// (or an even better version) at some point:
 	// 0, SLOAD, 1, ADD, SSTORE, 0 SLOAD
@@ -1113,7 +1123,11 @@ BOOST_AUTO_TEST_CASE(computing_constants)
 	bytes complicatedConstant = toBigEndian(u256("0x817416927846239487123469187231298734162934871263941234127518276"));
 	unsigned occurrences = 0;
 	for (auto iter = optimizedBytecode.cbegin(); iter < optimizedBytecode.cend(); ++occurrences)
-		iter = search(iter, optimizedBytecode.cend(), complicatedConstant.cbegin(), complicatedConstant.cend()) + 1;
+	{
+		iter = search(iter, optimizedBytecode.cend(), complicatedConstant.cbegin(), complicatedConstant.cend());
+		if (iter < optimizedBytecode.cend())
+			++iter;
+	}
 	BOOST_CHECK_EQUAL(2, occurrences);
 
 	bytes constantWithZeros = toBigEndian(u256("0x77abc0000000000000000000000000000000000000000000000000000000001"));

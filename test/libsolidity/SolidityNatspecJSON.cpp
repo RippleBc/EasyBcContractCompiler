@@ -23,8 +23,8 @@
 #include "../TestHelper.h"
 #include <string>
 #include <json/json.h>
-#include <libsolidity/CompilerStack.h>
-#include <libsolidity/Exceptions.h>
+#include <libsolidity/interface/CompilerStack.h>
+#include <libsolidity/interface/Exceptions.h>
 #include <libdevcore/Exceptions.h>
 
 namespace dev
@@ -49,9 +49,9 @@ public:
 		ETH_TEST_REQUIRE_NO_THROW(m_compilerStack.parse(_code), "Parsing failed");
 
 		if (_userDocumentation)
-			generatedDocumentationString = m_compilerStack.getMetadata("", DocumentationType::NatspecUser);
+			generatedDocumentationString = m_compilerStack.metadata("", DocumentationType::NatspecUser);
 		else
-			generatedDocumentationString = m_compilerStack.getMetadata("", DocumentationType::NatspecDev);
+			generatedDocumentationString = m_compilerStack.metadata("", DocumentationType::NatspecDev);
 		Json::Value generatedDocumentation;
 		m_reader.parse(generatedDocumentationString, generatedDocumentation);
 		Json::Value expectedDocumentation;
@@ -61,6 +61,12 @@ public:
 			"Expected " << _expectedDocumentationString <<
 			"\n but got:\n" << generatedDocumentationString
 		);
+	}
+
+	void expectNatspecError(std::string const& _code)
+	{
+		BOOST_CHECK(!m_compilerStack.parse(_code));
+		BOOST_REQUIRE(Error::containsErrorOfType(m_compilerStack.errors(), Error::Type::DocstringParsingError));
 	}
 
 private:
@@ -525,6 +531,47 @@ BOOST_AUTO_TEST_CASE(natspec_multiline_notice_without_tag)
 	)ABCDEF";
 
 	checkNatspec(sourceCode, natspec, true);
+}
+
+BOOST_AUTO_TEST_CASE(empty_comment)
+{
+	char const* sourceCode = R"(
+		//
+		contract test
+		{}
+	)";
+	char const* natspec = R"ABCDEF(
+	{
+	   "methods" : {}
+	}
+	)ABCDEF";
+
+	checkNatspec(sourceCode, natspec, true);
+}
+
+BOOST_AUTO_TEST_CASE(dev_title_at_function_error)
+{
+	char const* sourceCode = " /// @author Lefteris\n"
+	" /// @title Just a test contract\n"
+	"contract test {\n"
+	"  /// @dev Mul function\n"
+	"  /// @title I really should not be here\n"
+	"  function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }\n"
+	"}\n";
+
+	expectNatspecError(sourceCode);
+}
+
+BOOST_AUTO_TEST_CASE(dev_documenting_nonexistant_param)
+{
+	char const* sourceCode = "contract test {\n"
+	"  /// @dev Multiplies a number by 7 and adds second parameter\n"
+	"  /// @param a Documentation for the first parameter\n"
+	"  /// @param not_existing Documentation for the second parameter\n"
+	"  function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }\n"
+	"}\n";
+
+	expectNatspecError(sourceCode);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

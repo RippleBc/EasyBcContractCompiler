@@ -26,11 +26,12 @@
 #include <libdevcore/Log.h>
 #include <libevmasm/SourceLocation.h>
 #include <libevmasm/Assembly.h>
-#include <libsolidity/Scanner.h>
-#include <libsolidity/Parser.h>
-#include <libsolidity/NameAndTypeResolver.h>
-#include <libsolidity/Compiler.h>
-#include <libsolidity/AST.h>
+#include <libsolidity/parsing/Scanner.h>
+#include <libsolidity/parsing/Parser.h>
+#include <libsolidity/analysis/NameAndTypeResolver.h>
+#include <libsolidity/codegen/Compiler.h>
+#include <libsolidity/ast/AST.h>
+#include <libsolidity/analysis/TypeChecker.h>
 
 using namespace std;
 using namespace dev::eth;
@@ -47,28 +48,37 @@ namespace
 
 eth::AssemblyItems compileContract(const string& _sourceCode)
 {
-	Parser parser;
+	ErrorList errors;
+	Parser parser(errors);
 	ASTPointer<SourceUnit> sourceUnit;
 	BOOST_REQUIRE_NO_THROW(sourceUnit = parser.parse(make_shared<Scanner>(CharStream(_sourceCode))));
-	NameAndTypeResolver resolver({});
+	BOOST_CHECK(!!sourceUnit);
+
+	NameAndTypeResolver resolver({}, errors);
+	solAssert(Error::containsOnlyWarnings(errors), "");
 	resolver.registerDeclarations(*sourceUnit);
-	for (ASTPointer<ASTNode> const& node: sourceUnit->getNodes())
+	for (ASTPointer<ASTNode> const& node: sourceUnit->nodes())
 		if (ContractDefinition* contract = dynamic_cast<ContractDefinition*>(node.get()))
 		{
 			BOOST_REQUIRE_NO_THROW(resolver.resolveNamesAndTypes(*contract));
+			if (!Error::containsOnlyWarnings(errors))
+				return AssemblyItems();
 		}
-	for (ASTPointer<ASTNode> const& node: sourceUnit->getNodes())
+	for (ASTPointer<ASTNode> const& node: sourceUnit->nodes())
 		if (ContractDefinition* contract = dynamic_cast<ContractDefinition*>(node.get()))
 		{
-			BOOST_REQUIRE_NO_THROW(resolver.checkTypeRequirements(*contract));
+			TypeChecker checker(errors);
+			BOOST_REQUIRE_NO_THROW(checker.checkTypeRequirements(*contract));
+			if (!Error::containsOnlyWarnings(errors))
+				return AssemblyItems();
 		}
-	for (ASTPointer<ASTNode> const& node: sourceUnit->getNodes())
+	for (ASTPointer<ASTNode> const& node: sourceUnit->nodes())
 		if (ContractDefinition* contract = dynamic_cast<ContractDefinition*>(node.get()))
 		{
 			Compiler compiler;
-			compiler.compileContract(*contract, map<ContractDefinition const*, bytes const*>{});
+			compiler.compileContract(*contract, map<ContractDefinition const*, Assembly const*>{});
 
-			return compiler.getRuntimeAssemblyItems();
+			return compiler.runtimeAssemblyItems();
 		}
 	BOOST_FAIL("No contract found in source.");
 	return AssemblyItems();
@@ -80,10 +90,10 @@ void checkAssemblyLocations(AssemblyItems const& _items, vector<SourceLocation> 
 	for (size_t i = 0; i < min(_items.size(), _locations.size()); ++i)
 	{
 		BOOST_CHECK_MESSAGE(
-			_items[i].getLocation() == _locations[i],
+			_items[i].location() == _locations[i],
 			"Location mismatch for assembly item " + to_string(i) + ". Found: " +
-					to_string(_items[i].getLocation().start) + "-" +
-					to_string(_items[i].getLocation().end) + ", expected: " +
+					to_string(_items[i].location().start) + "-" +
+					to_string(_items[i].location().end) + ", expected: " +
 					to_string(_locations[i].start) + "-" +
 					to_string(_locations[i].end));
 	}
@@ -106,7 +116,7 @@ BOOST_AUTO_TEST_CASE(location_test)
 	AssemblyItems items = compileContract(sourceCode);
 	vector<SourceLocation> locations =
 		vector<SourceLocation>(17, SourceLocation(2, 75, n)) +
-		vector<SourceLocation>(26, SourceLocation(20, 72, n)) +
+		vector<SourceLocation>(28, SourceLocation(20, 72, n)) +
 		vector<SourceLocation>{SourceLocation(42, 51, n), SourceLocation(65, 67, n)} +
 		vector<SourceLocation>(4, SourceLocation(58, 67, n)) +
 		vector<SourceLocation>(3, SourceLocation(20, 72, n));

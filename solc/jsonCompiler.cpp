@@ -28,14 +28,15 @@
 #include <libdevcore/CommonIO.h>
 #include <libevmcore/Instruction.h>
 #include <libevmcore/Params.h>
-#include <libsolidity/Scanner.h>
-#include <libsolidity/Parser.h>
-#include <libsolidity/ASTPrinter.h>
-#include <libsolidity/NameAndTypeResolver.h>
-#include <libsolidity/Exceptions.h>
-#include <libsolidity/CompilerStack.h>
-#include <libsolidity/SourceReferenceFormatter.h>
-#include <libsolidity/ASTJsonConverter.h>
+#include <libsolidity/parsing/Scanner.h>
+#include <libsolidity/parsing/Parser.h>
+#include <libsolidity/ast/ASTPrinter.h>
+#include <libsolidity/analysis/NameAndTypeResolver.h>
+#include <libsolidity/interface/Exceptions.h>
+#include <libsolidity/interface/CompilerStack.h>
+#include <libsolidity/interface/SourceReferenceFormatter.h>
+#include <libsolidity/ast/ASTJsonConverter.h>
+#include <libsolidity/interface/Version.h>
 
 using namespace std;
 using namespace dev;
@@ -45,16 +46,13 @@ string formatError(Exception const& _exception, string const& _name, CompilerSta
 {
 	ostringstream errorOutput;
 	SourceReferenceFormatter::printExceptionInformation(errorOutput, _exception, _name, _compiler);
-
-	Json::Value output(Json::objectValue);
-	output["error"] = errorOutput.str();
-	return Json::FastWriter().write(output);
+	return errorOutput.str();
 }
 
 Json::Value functionHashes(ContractDefinition const& _contract)
 {
 	Json::Value functionHashes(Json::objectValue);
-	for (auto const& it: _contract.getInterfaceFunctions())
+	for (auto const& it: _contract.interfaceFunctions())
 		functionHashes[it.second->externalSignature()] = toHex(it.first.ref());
 	return functionHashes;
 }
@@ -71,42 +69,42 @@ Json::Value estimateGas(CompilerStack const& _compiler, string const& _contract)
 {
 	Json::Value gasEstimates(Json::objectValue);
 	using Gas = GasEstimator::GasConsumption;
-	if (!_compiler.getAssemblyItems(_contract) && !_compiler.getRuntimeAssemblyItems(_contract))
+	if (!_compiler.assemblyItems(_contract) && !_compiler.runtimeAssemblyItems(_contract))
 		return gasEstimates;
-	if (eth::AssemblyItems const* items = _compiler.getAssemblyItems(_contract))
+	if (eth::AssemblyItems const* items = _compiler.assemblyItems(_contract))
 	{
 		Gas gas = GasEstimator::functionalEstimation(*items);
-		u256 bytecodeSize(_compiler.getRuntimeBytecode(_contract).size());
+		u256 bytecodeSize(_compiler.runtimeObject(_contract).bytecode.size());
 		Json::Value creationGas(Json::arrayValue);
 		creationGas[0] = gasToJson(gas);
 		creationGas[1] = gasToJson(bytecodeSize * eth::c_createDataGas);
 		gasEstimates["creation"] = creationGas;
 	}
-	if (eth::AssemblyItems const* items = _compiler.getRuntimeAssemblyItems(_contract))
+	if (eth::AssemblyItems const* items = _compiler.runtimeAssemblyItems(_contract))
 	{
-		ContractDefinition const& contract = _compiler.getContractDefinition(_contract);
+		ContractDefinition const& contract = _compiler.contractDefinition(_contract);
 		Json::Value externalFunctions(Json::objectValue);
-		for (auto it: contract.getInterfaceFunctions())
+		for (auto it: contract.interfaceFunctions())
 		{
 			string sig = it.second->externalSignature();
 			externalFunctions[sig] = gasToJson(GasEstimator::functionalEstimation(*items, sig));
 		}
-		if (contract.getFallbackFunction())
+		if (contract.fallbackFunction())
 			externalFunctions[""] = gasToJson(GasEstimator::functionalEstimation(*items, "INVALID"));
 		gasEstimates["external"] = externalFunctions;
 		Json::Value internalFunctions(Json::objectValue);
-		for (auto const& it: contract.getDefinedFunctions())
+		for (auto const& it: contract.definedFunctions())
 		{
 			if (it->isPartOfExternalInterface() || it->isConstructor())
 				continue;
-			size_t entry = _compiler.getFunctionEntryPoint(_contract, *it);
+			size_t entry = _compiler.functionEntryPoint(_contract, *it);
 			GasEstimator::GasConsumption gas = GasEstimator::GasConsumption::infinite();
 			if (entry > 0)
 				gas = GasEstimator::functionalEstimation(*items, entry, *it);
 			FunctionType type(*it);
-			string sig = it->getName() + "(";
-			auto end = type.getParameterTypes().end();
-			for (auto it = type.getParameterTypes().begin(); it != end; ++it)
+			string sig = it->name() + "(";
+			auto end = type.parameterTypes().end();
+			for (auto it = type.parameterTypes().begin(); it != end; ++it)
 				sig += (*it)->toString() + (it + 1 == end ? "" : ",");
 			sig += ")";
 			internalFunctions[sig] = gasToJson(gas);
@@ -116,81 +114,126 @@ Json::Value estimateGas(CompilerStack const& _compiler, string const& _contract)
 	return gasEstimates;
 }
 
-string compile(string _input, bool _optimize)
+string compile(StringMap const& _sources, bool _optimize)
 {
-	StringMap sources;
-	sources[""] = _input;
-
 	Json::Value output(Json::objectValue);
+	Json::Value errors(Json::arrayValue);
 	CompilerStack compiler;
+	bool success = false;
 	try
 	{
-		compiler.compile(_input, _optimize);
+		compiler.addSources(_sources);
+		bool succ = compiler.compile(_optimize);
+		for (auto const& error: compiler.errors())
+		{
+			auto err = dynamic_pointer_cast<Error const>(error);
+			errors.append(formatError(
+				*error,
+				(err->type() == Error::Type::Warning) ? "Warning" : "Error",
+				compiler
+			));
+		}
+		success = succ; // keep success false on exception
 	}
-	catch (ParserError const& exception)
+	catch (Error const& error)
 	{
-		return formatError(exception, "Parser error", compiler);
-	}
-	catch (DeclarationError const& exception)
-	{
-		return formatError(exception, "Declaration error", compiler);
-	}
-	catch (TypeError const& exception)
-	{
-		return formatError(exception, "Type error", compiler);
+		errors.append(formatError(error, error.typeName(), compiler));
 	}
 	catch (CompilerError const& exception)
 	{
-		return formatError(exception, "Compiler error", compiler);
+		errors.append(formatError(exception, "Compiler error", compiler));
 	}
 	catch (InternalCompilerError const& exception)
 	{
-		return formatError(exception, "Internal compiler error", compiler);
-	}
-	catch (DocstringParsingError const& exception)
-	{
-		return formatError(exception, "Documentation parsing error", compiler);
+		errors.append(formatError(exception, "Internal compiler error", compiler));
 	}
 	catch (Exception const& exception)
 	{
-		output["error"] = "Exception during compilation: " + boost::diagnostic_information(exception);
-		return Json::FastWriter().write(output);
+		errors.append("Exception during compilation: " + boost::diagnostic_information(exception));
 	}
 	catch (...)
 	{
-		output["error"] = "Unknown exception during compilation.";
-		return Json::FastWriter().write(output);
+		errors.append("Unknown exception during compilation.");
 	}
 
-	output["contracts"] = Json::Value(Json::objectValue);
-	for (string const& contractName: compiler.getContractNames())
+	if (errors.size() > 0)
+		output["errors"] = errors;
+
+	if (success)
 	{
-		Json::Value contractData(Json::objectValue);
-		contractData["solidity_interface"] = compiler.getSolidityInterface(contractName);
-		contractData["interface"] = compiler.getInterface(contractName);
-		contractData["bytecode"] = toHex(compiler.getBytecode(contractName));
-		contractData["opcodes"] = eth::disassemble(compiler.getBytecode(contractName));
-		contractData["functionHashes"] = functionHashes(compiler.getContractDefinition(contractName));
-		contractData["gasEstimates"] = estimateGas(compiler, contractName);
-		ostringstream unused;
-		contractData["assembly"] = compiler.streamAssembly(unused, contractName, sources, true);
-		output["contracts"][contractName] = contractData;
-	}
+		output["contracts"] = Json::Value(Json::objectValue);
+		for (string const& contractName: compiler.contractNames())
+		{
+			Json::Value contractData(Json::objectValue);
+			contractData["solidity_interface"] = compiler.solidityInterface(contractName);
+			contractData["interface"] = compiler.interface(contractName);
+			contractData["bytecode"] = compiler.object(contractName).toHex();
+			contractData["runtimeBytecode"] = compiler.runtimeObject(contractName).toHex();
+			contractData["opcodes"] = eth::disassemble(compiler.object(contractName).bytecode);
+			contractData["functionHashes"] = functionHashes(compiler.contractDefinition(contractName));
+			contractData["gasEstimates"] = estimateGas(compiler, contractName);
+			ostringstream unused;
+			contractData["assembly"] = compiler.streamAssembly(unused, contractName, _sources, true);
+			output["contracts"][contractName] = contractData;
+		}
 
-	output["sources"] = Json::Value(Json::objectValue);
-	output["sources"][""] = Json::Value(Json::objectValue);
-	output["sources"][""]["AST"] = ASTJsonConverter(compiler.getAST("")).json();
+		output["sources"] = Json::Value(Json::objectValue);
+		for (auto const& source: _sources)
+		{
+			output["sources"][source.first] = Json::Value(Json::objectValue);
+			output["sources"][source.first]["AST"] = ASTJsonConverter(compiler.ast(source.first)).json();
+		}
+	}
 
 	return Json::FastWriter().write(output);
 }
 
-static string outputBuffer;
+string compileMulti(string const& _input, bool _optimize)
+{
+	Json::Reader reader;
+	Json::Value input;
+	if (!reader.parse(_input, input, false))
+	{
+		Json::Value errors(Json::arrayValue);
+		errors.append("Error parsing input JSON: " + reader.getFormattedErrorMessages());
+		Json::Value output(Json::objectValue);
+		output["errors"] = errors;
+		return Json::FastWriter().write(output);
+	}
+	else
+	{
+		StringMap sources;
+		Json::Value jsonSources = input["sources"];
+		if (jsonSources.isObject())
+			for (auto const& sourceName: jsonSources.getMemberNames())
+				sources[sourceName] = jsonSources[sourceName].asString();
+		return compile(sources, _optimize);
+	}
+}
+
+string compileSingle(string const& _input, bool _optimize)
+{
+	StringMap sources;
+	sources[""] = _input;
+	return compile(sources, _optimize);
+}
+
+static string s_outputBuffer;
 
 extern "C"
 {
+extern char const* version()
+{
+	return VersionString.c_str();
+}
 extern char const* compileJSON(char const* _input, bool _optimize)
 {
-	outputBuffer = compile(_input, _optimize);
-	return outputBuffer.c_str();
+	s_outputBuffer = compileSingle(_input, _optimize);
+	return s_outputBuffer.c_str();
+}
+extern char const* compileJSONMulti(char const* _input, bool _optimize)
+{
+	s_outputBuffer = compileMulti(_input, _optimize);
+	return s_outputBuffer.c_str();
 }
 }

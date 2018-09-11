@@ -21,7 +21,7 @@
  */
 
 #include "../TestHelper.h"
-#include <libsolidity/CompilerStack.h>
+#include <libsolidity/interface/CompilerStack.h>
 #include <json/json.h>
 #include <libdevcore/Exceptions.h>
 
@@ -40,14 +40,15 @@ public:
 	void checkInterface(std::string const& _code, std::string const& _expectedInterfaceString)
 	{
 		ETH_TEST_REQUIRE_NO_THROW(m_compilerStack.parse(_code), "Parsing contract failed");
-		std::string generatedInterfaceString = m_compilerStack.getMetadata("", DocumentationType::ABIInterface);
+		std::string generatedInterfaceString = m_compilerStack.metadata("", DocumentationType::ABIInterface);
 		Json::Value generatedInterface;
 		m_reader.parse(generatedInterfaceString, generatedInterface);
 		Json::Value expectedInterface;
 		m_reader.parse(_expectedInterfaceString, expectedInterface);
-		BOOST_CHECK_MESSAGE(expectedInterface == generatedInterface,
-							"Expected:\n" << expectedInterface.toStyledString() <<
-							"\n but got:\n" << generatedInterface.toStyledString());
+		BOOST_CHECK_MESSAGE(
+			expectedInterface == generatedInterface,
+			"Expected:\n" << expectedInterface.toStyledString() << "\n but got:\n" << generatedInterface.toStyledString()
+		);
 	}
 
 private:
@@ -588,6 +589,36 @@ BOOST_AUTO_TEST_CASE(strings_and_arrays)
 				{ "name": "c", "type": "uint256[]" }
 			],
 			"outputs": [],
+			"type" : "function"
+		}
+	]
+	)";
+	checkInterface(sourceCode, interface);
+}
+
+BOOST_AUTO_TEST_CASE(library_function)
+{
+	char const* sourceCode = R"(
+		library test {
+			struct StructType { uint a; }
+			function f(StructType storage b, uint[] storage c, test d) returns (uint[] e, StructType storage f){}
+		}
+	)";
+
+	char const* interface = R"(
+	[
+		{
+			"constant" : false,
+			"name": "f",
+			"inputs": [
+				{ "name": "b", "type": "test.StructType storage" },
+				{ "name": "c", "type": "uint256[] storage" },
+				{ "name": "d", "type": "test" }
+			],
+			"outputs": [
+				{ "name": "e", "type": "uint256[]" },
+				{ "name": "f", "type": "test.StructType storage" }
+			],
 			"type" : "function"
 		}
 	]
