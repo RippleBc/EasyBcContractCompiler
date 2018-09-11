@@ -1,3 +1,19 @@
+/*
+	This file is part of solidity.
+
+	solidity is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	solidity is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
+*/
 #pragma once
 
 
@@ -11,7 +27,6 @@ namespace dev
  * Detector for cycles in directed graphs. It returns the first
  * vertex on the path towards a cycle or a nullptr if there is
  * no reachable cycle starting from a given vertex.
- * 探测有向图中的回环。返回指向回环的首个点，如果从给定的顶点出发，没有回环，则返回nullptr
  */
 template <typename V>
 class CycleDetector
@@ -20,9 +35,9 @@ public:
 	/// Initializes the cycle detector
 	/// @param _visit function that is given the current vertex
 	///               and is supposed to call @a run on all
-	///               adjacent（邻近的） vertices.
+	///               adjacent vertices.
 	explicit CycleDetector(std::function<void(V const&, CycleDetector&)> _visit):
-		m_visit(std::move(_visit))	
+		m_visit(std::move(_visit))
 	{  }
 
 	/// Recursively perform cycle detection starting
@@ -33,10 +48,8 @@ public:
 	{
 		if (m_firstCycleVertex)
 			return m_firstCycleVertex;
-		// 统计_vertex在已经处理顶点中的出现次数，如果_vertxt已经出现过，表示出现回环
 		if (m_processed.count(&_vertex))
 			return nullptr;
-		// 
 		else if (m_processing.count(&_vertex))
 			return m_firstCycleVertex = &_vertex;
 		m_processing.insert(&_vertex);
