@@ -1,59 +1,50 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 2.8.12)
 
-set(ETH_CMAKE_DIR   "${CMAKE_CURRENT_LIST_DIR}/cmake"   CACHE PATH "The the path to the cmake directory")
+cmake_policy(SET CMP0015 NEW)
+# let cmake autolink dependencies on windows
+cmake_policy(SET CMP0020 NEW)
+# this policy was introduced in cmake 3.0
+# remove if, once 3.0 will be used on unix
+if (${CMAKE_MAJOR_VERSION} GREATER 2)
+	cmake_policy(SET CMP0043 OLD)
+endif()
+
+# TODO use version from Version.h
+set(PROJECT_VERSION "0.9.42")
+if (${CMAKE_VERSION} VERSION_GREATER 3.0)
+	cmake_policy(SET CMP0042 OLD) 	# fix MACOSX_RPATH
+	cmake_policy(SET CMP0048 NEW) 	# allow VERSION argument in project()
+	project(solidity VERSION ${PROJECT_VERSION})
+else()
+	project(solidity)
+endif()
+
+# Figure out environment.
+set(CPPETHEREUM_BUILD "${CMAKE_CURRENT_SOURCE_DIR}/../cpp-ethereum/${BUILD_DIR_NAME}" CACHE STRING "The absolute build directory of cpp-ethereum.")
+set(ETH_CMAKE_DIR   "${CMAKE_CURRENT_LIST_DIR}/../cpp-ethereum-cmake"   CACHE PATH "The the path to the cmake directory")
+set(ETH_DIR         "${CMAKE_CURRENT_LIST_DIR}/../cpp-ethereum"         CACHE PATH "The path to the cpp-ethereum directory")
+set(BUILD_DIR_NAME  "build"                                            CACHE STRING "The name of the build directory in cpp-ethereum")
+set(ETH_BUILD_DIR   "${ETH_DIR}/${BUILD_DIR_NAME}")
+
 list(APPEND CMAKE_MODULE_PATH ${ETH_CMAKE_DIR})
 
-# Set cmake_policies
-include(EthPolicy)
-eth_policy()
-
-# project name and version should be set after cmake_policy CMP0048
-set(PROJECT_VERSION "0.4.24")
-project(solidity VERSION ${PROJECT_VERSION})
-
-option(SOLC_LINK_STATIC "Link solc executable statically on supported platforms" OFF)
-option(LLLC_LINK_STATIC "Link lllc executable statically on supported platforms" OFF)
-option(INSTALL_LLLC "Include lllc executable in installation" OFF)
-
-# Setup cccache.
-include(EthCcache)
-
-# Let's find our dependencies
 include(EthDependencies)
-include(jsoncpp)
-include_directories(SYSTEM ${JSONCPP_INCLUDE_DIR})
-
-find_package(Threads)
-
-# Figure out what compiler and system are we using
+include(EthExecutableHelper)
 include(EthCompilerSettings)
 
-# Include utils
-include(EthUtils)
+include_directories(BEFORE ${JSONCPP_INCLUDE_DIRS})
+include_directories(BEFORE ..)
+include_directories(${Boost_INCLUDE_DIRS})
+include_directories(libsolidity)
+# Include a directory with BuildInfo.h
+include_directories(${ETH_BUILD_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../cpp-ethereum)
+include_directories(${CPPETHEREUM_BUILD})
 
-# Create license.h from LICENSE.txt and template
-# Converting to char array is required due to MSVC's string size limit.
-file(READ ${CMAKE_SOURCE_DIR}/LICENSE.txt LICENSE_TEXT HEX)
-string(REGEX MATCHALL ".." LICENSE_TEXT "${LICENSE_TEXT}")
-string(REGEX REPLACE ";" ",\n\t0x" LICENSE_TEXT "${LICENSE_TEXT}")
-set(LICENSE_TEXT "0x${LICENSE_TEXT}")
+file(GLOB_RECURSE SRC_LIST "libsolidity/*.cpp")
+file(GLOB_RECURSE HEADERS "libsolidity/*.h")
 
-configure_file("${CMAKE_SOURCE_DIR}/cmake/templates/license.h.in" include/license.h)
+set(EXECUTABLE solidity)
+add_library(${EXECUTABLE} ${SRC_LIST} ${HEADERS})
 
-include(EthOptions)
-configure_project(TESTS)
-
-add_subdirectory(libdevcore)
-add_subdirectory(libevmasm)
-add_subdirectory(libsolidity)
-add_subdirectory(libsolc)
-
-if (NOT EMSCRIPTEN)
-	add_subdirectory(solc)
-	add_subdirectory(liblll)
-	add_subdirectory(lllc)
-endif()
-
-if (TESTS AND NOT EMSCRIPTEN)
-	add_subdirectory(test)
-endif()
+# TODO installation and packaging rules

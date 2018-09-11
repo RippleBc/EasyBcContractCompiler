@@ -1,18 +1,18 @@
 /*
-	This file is part of solidity.
+	This file is part of cpp-ethereum.
 
-	solidity is free software: you can redistribute it and/or modify
+	cpp-ethereum is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
 
-	solidity is distributed in the hope that it will be useful,
+	cpp-ethereum is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License
-	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
+	along with cpp-ethereum.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
  * @author Lefteris Karapetsas <lefteris@ethdev.com>
@@ -20,11 +20,11 @@
  * Unit tests for the solidity compiler JSON Interface output.
  */
 
-#include <test/Options.h>
+#include "../TestHelper.h"
 #include <string>
-#include <libdevcore/JSON.h>
-#include <libsolidity/interface/CompilerStack.h>
-#include <libsolidity/interface/Exceptions.h>
+#include <json/json.h>
+#include <libsolidity/CompilerStack.h>
+#include <libsolidity/Exceptions.h>
 #include <libdevcore/Exceptions.h>
 
 namespace dev
@@ -37,7 +37,7 @@ namespace test
 class DocumentationChecker
 {
 public:
-	DocumentationChecker(): m_compilerStack() {}
+	DocumentationChecker(): m_compilerStack(false) {}
 
 	void checkNatspec(
 		std::string const& _code,
@@ -45,48 +45,37 @@ public:
 		bool _userDocumentation
 	)
 	{
-		m_compilerStack.reset(false);
-		m_compilerStack.addSource("", "pragma solidity >=0.0;\n" + _code);
-		m_compilerStack.setEVMVersion(dev::test::Options::get().evmVersion());
-		BOOST_REQUIRE_MESSAGE(m_compilerStack.parseAndAnalyze(), "Parsing contract failed");
+		std::string generatedDocumentationString;
+		ETH_TEST_REQUIRE_NO_THROW(m_compilerStack.parse(_code), "Parsing failed");
 
-		Json::Value generatedDocumentation;
 		if (_userDocumentation)
-			generatedDocumentation = m_compilerStack.natspecUser(m_compilerStack.lastContractName());
+			generatedDocumentationString = m_compilerStack.getMetadata("", DocumentationType::NatspecUser);
 		else
-			generatedDocumentation = m_compilerStack.natspecDev(m_compilerStack.lastContractName());
+			generatedDocumentationString = m_compilerStack.getMetadata("", DocumentationType::NatspecDev);
+		Json::Value generatedDocumentation;
+		m_reader.parse(generatedDocumentationString, generatedDocumentation);
 		Json::Value expectedDocumentation;
-		jsonParseStrict(_expectedDocumentationString, expectedDocumentation);
+		m_reader.parse(_expectedDocumentationString, expectedDocumentation);
 		BOOST_CHECK_MESSAGE(
 			expectedDocumentation == generatedDocumentation,
-			"Expected:\n" << expectedDocumentation.toStyledString() <<
-			"\n but got:\n" << generatedDocumentation.toStyledString()
+			"Expected " << _expectedDocumentationString <<
+			"\n but got:\n" << generatedDocumentationString
 		);
-	}
-
-	void expectNatspecError(std::string const& _code)
-	{
-		m_compilerStack.reset(false);
-		m_compilerStack.addSource("", "pragma solidity >=0.0;\n" + _code);
-		m_compilerStack.setEVMVersion(dev::test::Options::get().evmVersion());
-		BOOST_CHECK(!m_compilerStack.parseAndAnalyze());
-		BOOST_REQUIRE(Error::containsErrorOfType(m_compilerStack.errors(), Error::Type::DocstringParsingError));
 	}
 
 private:
 	CompilerStack m_compilerStack;
+	Json::Reader m_reader;
 };
 
 BOOST_FIXTURE_TEST_SUITE(SolidityNatspecJSON, DocumentationChecker)
 
 BOOST_AUTO_TEST_CASE(user_basic_test)
 {
-	char const* sourceCode = R"(
-		contract test {
-			/// @notice Multiplies `a` by 7
-			function mul(uint a) returns(uint d) { return a * 7; }
-		}
-	)";
+	char const* sourceCode = "contract test {\n"
+	"  /// @notice Multiplies `a` by 7\n"
+	"  function mul(uint a) returns(uint d) { return a * 7; }\n"
+	"}\n";
 
 	char const* natspec = "{"
 	"\"methods\":{"
@@ -98,13 +87,11 @@ BOOST_AUTO_TEST_CASE(user_basic_test)
 
 BOOST_AUTO_TEST_CASE(dev_and_user_basic_test)
 {
-	char const* sourceCode = R"(
-		contract test {
-			/// @notice Multiplies `a` by 7
-			/// @dev Multiplies a number by 7
-			function mul(uint a) returns(uint d) { return a * 7; }
-		}
-	)";
+	char const* sourceCode = "contract test {\n"
+	"  /// @notice Multiplies `a` by 7\n"
+	"  /// @dev Multiplies a number by 7\n"
+	"  function mul(uint a) returns(uint d) { return a * 7; }\n"
+	"}\n";
 
 	char const* devNatspec = "{"
 	"\"methods\":{"
@@ -125,15 +112,14 @@ BOOST_AUTO_TEST_CASE(dev_and_user_basic_test)
 
 BOOST_AUTO_TEST_CASE(user_multiline_comment)
 {
-	char const* sourceCode = R"(
-		contract test {
-			/// @notice Multiplies `a` by 7
-			/// and then adds `b`
-			function mul_and_add(uint a, uint256 b) returns(uint256 d) {
-				return (a * 7) + b;
-			}
-		}
-	)";
+	char const* sourceCode = "contract test {\n"
+	"  /// @notice Multiplies `a` by 7\n"
+	"  /// and then adds `b`\n"
+	"  function mul_and_add(uint a, uint256 b) returns(uint256 d)\n"
+	"  {\n"
+	"      return (a * 7) + b;\n"
+	"  }\n"
+	"}\n";
 
 	char const* natspec = "{"
 	"\"methods\":{"
@@ -145,24 +131,24 @@ BOOST_AUTO_TEST_CASE(user_multiline_comment)
 
 BOOST_AUTO_TEST_CASE(user_multiple_functions)
 {
-	char const* sourceCode = R"(
-		contract test {
-			/// @notice Multiplies `a` by 7 and then adds `b`
-			function mul_and_add(uint a, uint256 b) returns(uint256 d) {
-				return (a * 7) + b;
-			}
-
-			/// @notice Divides `input` by `div`
-			function divide(uint input, uint div) returns(uint d) {
-				return input / div;
-			}
-
-			/// @notice Subtracts 3 from `input`
-			function sub(int input) returns(int d) {
-				return input - 3;
-			}
-		}
-	)";
+	char const* sourceCode = "contract test {\n"
+	"  /// @notice Multiplies `a` by 7 and then adds `b`\n"
+	"  function mul_and_add(uint a, uint256 b) returns(uint256 d)\n"
+	"  {\n"
+	"      return (a * 7) + b;\n"
+	"  }\n"
+	"\n"
+	"  /// @notice Divides `input` by `div`\n"
+	"  function divide(uint input, uint div) returns(uint d)\n"
+	"  {\n"
+	"      return input / div;\n"
+	"  }\n"
+	"  /// @notice Subtracts 3 from `input`\n"
+	"  function sub(int input) returns(int d)\n"
+	"  {\n"
+	"      return input - 3;\n"
+	"  }\n"
+	"}\n";
 
 	char const* natspec = "{"
 	"\"methods\":{"
@@ -176,9 +162,8 @@ BOOST_AUTO_TEST_CASE(user_multiple_functions)
 
 BOOST_AUTO_TEST_CASE(user_empty_contract)
 {
-	char const* sourceCode = R"(
-		contract test { }
-	)";
+	char const* sourceCode = "contract test {\n"
+	"}\n";
 
 	char const* natspec = "{\"methods\":{} }";
 
@@ -187,16 +172,13 @@ BOOST_AUTO_TEST_CASE(user_empty_contract)
 
 BOOST_AUTO_TEST_CASE(dev_and_user_no_doc)
 {
-	char const* sourceCode = R"(
-		contract test {
-			function mul(uint a) returns(uint d) {
-				return a * 7;
-			}
-			function sub(int input) returns(int d) {
-				return input - 3;
-			}
-		}
-	)";
+	char const* sourceCode = "contract test {\n"
+	"  function mul(uint a) returns(uint d) { return a * 7; }\n"
+	"  function sub(int input) returns(int d)\n"
+	"  {\n"
+	"      return input - 3;\n"
+	"  }\n"
+	"}\n";
 
 	char const* devNatspec = "{\"methods\":{}}";
 	char const* userNatspec = "{\"methods\":{}}";
@@ -207,20 +189,18 @@ BOOST_AUTO_TEST_CASE(dev_and_user_no_doc)
 
 BOOST_AUTO_TEST_CASE(dev_desc_after_nl)
 {
-	char const* sourceCode = R"(
-		contract test {
-			/// @dev
-			/// Multiplies a number by 7 and adds second parameter
-			/// @param a Documentation for the first parameter
-			/// @param second Documentation for the second parameter
-			function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }
-		}
-	)";
+	char const* sourceCode = "contract test {\n"
+	"  /// @dev\n"
+	"  /// Multiplies a number by 7 and adds second parameter\n"
+	"  /// @param a Documentation for the first parameter\n"
+	"  /// @param second Documentation for the second parameter\n"
+	"  function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }\n"
+	"}\n";
 
 	char const* natspec = "{"
 	"\"methods\":{"
 	"    \"mul(uint256,uint256)\":{ \n"
-	"        \"details\": \"Multiplies a number by 7 and adds second parameter\",\n"
+	"        \"details\": \" Multiplies a number by 7 and adds second parameter\",\n"
 	"        \"params\": {\n"
 	"            \"a\": \"Documentation for the first parameter\",\n"
 	"            \"second\": \"Documentation for the second parameter\"\n"
@@ -233,35 +213,10 @@ BOOST_AUTO_TEST_CASE(dev_desc_after_nl)
 
 BOOST_AUTO_TEST_CASE(dev_multiple_params)
 {
-	char const* sourceCode = R"(
-		contract test {
-			/// @dev Multiplies a number by 7 and adds second parameter
-			/// @param a Documentation for the first parameter
-			/// @param second Documentation for the second parameter
-			function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }
-		}
-	)";
-
-	char const* natspec = "{"
-	"\"methods\":{"
-	"    \"mul(uint256,uint256)\":{ \n"
-	"        \"details\": \"Multiplies a number by 7 and adds second parameter\",\n"
-	"        \"params\": {\n"
-	"            \"a\": \"Documentation for the first parameter\",\n"
-	"            \"second\": \"Documentation for the second parameter\"\n"
-	"        }\n"
-	"    }\n"
-	"}}";
-
-	checkNatspec(sourceCode, natspec, false);
-}
-
-BOOST_AUTO_TEST_CASE(dev_multiple_params_mixed_whitespace)
-{
 	char const* sourceCode = "contract test {\n"
-	"  /// @dev	 Multiplies a number by 7 and adds second parameter\n"
-	"  /// @param 	 a Documentation for the first parameter\n"
-	"  /// @param	 second			 Documentation for the second parameter\n"
+	"  /// @dev Multiplies a number by 7 and adds second parameter\n"
+	"  /// @param a Documentation for the first parameter\n"
+	"  /// @param second Documentation for the second parameter\n"
 	"  function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }\n"
 	"}\n";
 
@@ -281,15 +236,13 @@ BOOST_AUTO_TEST_CASE(dev_multiple_params_mixed_whitespace)
 
 BOOST_AUTO_TEST_CASE(dev_mutiline_param_description)
 {
-	char const* sourceCode = R"(
-		contract test {
-			/// @dev Multiplies a number by 7 and adds second parameter
-			/// @param a Documentation for the first parameter starts here.
-			/// Since it's a really complicated parameter we need 2 lines
-			/// @param second Documentation for the second parameter
-			function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }
-		}
-	)";
+	char const* sourceCode = "contract test {\n"
+	"  /// @dev Multiplies a number by 7 and adds second parameter\n"
+	"  /// @param a Documentation for the first parameter starts here.\n"
+	"  /// Since it's a really complicated parameter we need 2 lines\n"
+	"  /// @param second Documentation for the second parameter\n"
+	"  function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }\n"
+	"}\n";
 
 	char const* natspec = "{"
 	"\"methods\":{"
@@ -307,27 +260,26 @@ BOOST_AUTO_TEST_CASE(dev_mutiline_param_description)
 
 BOOST_AUTO_TEST_CASE(dev_multiple_functions)
 {
-	char const* sourceCode = R"(
-		contract test {
-			/// @dev Multiplies a number by 7 and adds second parameter
-			/// @param a Documentation for the first parameter
-			/// @param second Documentation for the second parameter
-			function mul(uint a, uint second) returns(uint d) {
-				return a * 7 + second;
-			}
-			/// @dev Divides 2 numbers
-			/// @param input Documentation for the input parameter
-			/// @param div Documentation for the div parameter
-			function divide(uint input, uint div) returns(uint d) {
-				return input / div;
-			}
-			/// @dev Subtracts 3 from `input`
-			/// @param input Documentation for the input parameter
-			function sub(int input) returns(int d) {
-				return input - 3;
-			}
-		}
-	)";
+	char const* sourceCode = "contract test {\n"
+	"  /// @dev Multiplies a number by 7 and adds second parameter\n"
+	"  /// @param a Documentation for the first parameter\n"
+	"  /// @param second Documentation for the second parameter\n"
+	"  function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }\n"
+	"  \n"
+	"  /// @dev Divides 2 numbers\n"
+	"  /// @param input Documentation for the input parameter\n"
+	"  /// @param div Documentation for the div parameter\n"
+	"  function divide(uint input, uint div) returns(uint d)\n"
+	"  {\n"
+	"      return input / div;\n"
+	"  }\n"
+	"  /// @dev Subtracts 3 from `input`\n"
+	"  /// @param input Documentation for the input parameter\n"
+	"  function sub(int input) returns(int d)\n"
+	"  {\n"
+	"      return input - 3;\n"
+	"  }\n"
+	"}\n";
 
 	char const* natspec = "{"
 	"\"methods\":{"
@@ -358,16 +310,14 @@ BOOST_AUTO_TEST_CASE(dev_multiple_functions)
 
 BOOST_AUTO_TEST_CASE(dev_return)
 {
-	char const* sourceCode = R"(
-		contract test {
-			/// @dev Multiplies a number by 7 and adds second parameter
-			/// @param a Documentation for the first parameter starts here.
-			/// Since it's a really complicated parameter we need 2 lines
-			/// @param second Documentation for the second parameter
-			/// @return The result of the multiplication
-			function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }
-		}
-	)";
+	char const* sourceCode = "contract test {\n"
+	"  /// @dev Multiplies a number by 7 and adds second parameter\n"
+	"  /// @param a Documentation for the first parameter starts here.\n"
+	"  /// Since it's a really complicated parameter we need 2 lines\n"
+	"  /// @param second Documentation for the second parameter\n"
+	"  /// @return The result of the multiplication\n"
+	"  function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }\n"
+	"}\n";
 
 	char const* natspec = "{"
 	"\"methods\":{"
@@ -385,19 +335,15 @@ BOOST_AUTO_TEST_CASE(dev_return)
 }
 BOOST_AUTO_TEST_CASE(dev_return_desc_after_nl)
 {
-	char const* sourceCode = R"(
-		contract test {
-			/// @dev Multiplies a number by 7 and adds second parameter
-			/// @param a Documentation for the first parameter starts here.
-			/// Since it's a really complicated parameter we need 2 lines
-			/// @param second Documentation for the second parameter
-			/// @return
-			/// The result of the multiplication
-			function mul(uint a, uint second) returns(uint d) {
-				return a * 7 + second;
-			}
-		}
-	)";
+	char const* sourceCode = "contract test {\n"
+	"  /// @dev Multiplies a number by 7 and adds second parameter\n"
+	"  /// @param a Documentation for the first parameter starts here.\n"
+	"  /// Since it's a really complicated parameter we need 2 lines\n"
+	"  /// @param second Documentation for the second parameter\n"
+	"  /// @return\n"
+	"  /// The result of the multiplication\n"
+	"  function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }\n"
+	"}\n";
 
 	char const* natspec = "{"
 	"\"methods\":{"
@@ -407,7 +353,7 @@ BOOST_AUTO_TEST_CASE(dev_return_desc_after_nl)
 	"            \"a\": \"Documentation for the first parameter starts here. Since it's a really complicated parameter we need 2 lines\",\n"
 	"            \"second\": \"Documentation for the second parameter\"\n"
 	"        },\n"
-	"        \"return\": \"The result of the multiplication\"\n"
+	"        \"return\": \" The result of the multiplication\"\n"
 	"    }\n"
 	"}}";
 
@@ -417,19 +363,15 @@ BOOST_AUTO_TEST_CASE(dev_return_desc_after_nl)
 
 BOOST_AUTO_TEST_CASE(dev_multiline_return)
 {
-	char const* sourceCode = R"(
-		contract test {
-			/// @dev Multiplies a number by 7 and adds second parameter
-			/// @param a Documentation for the first parameter starts here.
-			/// Since it's a really complicated parameter we need 2 lines
-			/// @param second Documentation for the second parameter
-			/// @return The result of the multiplication
-			/// and cookies with nutella
-			function mul(uint a, uint second) returns(uint d) {
-				return a * 7 + second;
-			}
-		}
-	)";
+	char const* sourceCode = "contract test {\n"
+	"  /// @dev Multiplies a number by 7 and adds second parameter\n"
+	"  /// @param a Documentation for the first parameter starts here.\n"
+	"  /// Since it's a really complicated parameter we need 2 lines\n"
+	"  /// @param second Documentation for the second parameter\n"
+	"  /// @return The result of the multiplication\n"
+	"  /// and cookies with nutella\n"
+	"  function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }\n"
+	"}\n";
 
 	char const* natspec = "{"
 	"\"methods\":{"
@@ -448,21 +390,17 @@ BOOST_AUTO_TEST_CASE(dev_multiline_return)
 
 BOOST_AUTO_TEST_CASE(dev_multiline_comment)
 {
-	char const* sourceCode = R"(
-		contract test {
-			/**
-			 * @dev Multiplies a number by 7 and adds second parameter
-			 * @param a Documentation for the first parameter starts here.
-			 * Since it's a really complicated parameter we need 2 lines
-			 * @param second Documentation for the second parameter
-			 * @return The result of the multiplication
-			 * and cookies with nutella
-			 */
-			function mul(uint a, uint second) returns(uint d) {
-				return a * 7 + second;
-			}
-		}
-	)";
+	char const* sourceCode = "contract test {\n"
+	"  /**\n"
+	"   * @dev Multiplies a number by 7 and adds second parameter\n"
+	"   * @param a Documentation for the first parameter starts here.\n"
+	"   * Since it's a really complicated parameter we need 2 lines\n"
+	"   * @param second Documentation for the second parameter\n"
+	"   * @return The result of the multiplication\n"
+	"   * and cookies with nutella\n"
+	"   */"
+	"  function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }\n"
+	"}\n";
 
 	char const* natspec = "{"
 	"\"methods\":{"
@@ -481,12 +419,10 @@ BOOST_AUTO_TEST_CASE(dev_multiline_comment)
 
 BOOST_AUTO_TEST_CASE(dev_contract_no_doc)
 {
-	char const* sourceCode = R"(
-		contract test {
-			/// @dev Mul function
-			function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }
-		}
-	)";
+	char const* sourceCode = "contract test {\n"
+	"  /// @dev Mul function\n"
+	"  function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }\n"
+	"}\n";
 
 	char const* natspec = "{"
 	"    \"methods\":{"
@@ -501,14 +437,12 @@ BOOST_AUTO_TEST_CASE(dev_contract_no_doc)
 
 BOOST_AUTO_TEST_CASE(dev_contract_doc)
 {
-	char const* sourceCode = R"(
-		/// @author Lefteris
-		/// @title Just a test contract
-		contract test {
-			/// @dev Mul function
-			function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }
-		}
-	)";
+	char const* sourceCode = " /// @author Lefteris\n"
+	" /// @title Just a test contract\n"
+	"contract test {\n"
+	"  /// @dev Mul function\n"
+	"  function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }\n"
+	"}\n";
 
 	char const* natspec = "{"
 	"    \"author\": \"Lefteris\","
@@ -525,15 +459,13 @@ BOOST_AUTO_TEST_CASE(dev_contract_doc)
 
 BOOST_AUTO_TEST_CASE(dev_author_at_function)
 {
-	char const* sourceCode = R"(
-		/// @author Lefteris
-		/// @title Just a test contract
-		contract test {
-			/// @dev Mul function
-			/// @author John Doe
-			function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }
-		}
-	)";
+	char const* sourceCode = " /// @author Lefteris\n"
+	" /// @title Just a test contract\n"
+	"contract test {\n"
+	"  /// @dev Mul function\n"
+	"  /// @author John Doe\n"
+	"  function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }\n"
+	"}\n";
 
 	char const* natspec = "{"
 	"    \"author\": \"Lefteris\","
@@ -593,93 +525,6 @@ BOOST_AUTO_TEST_CASE(natspec_multiline_notice_without_tag)
 	)ABCDEF";
 
 	checkNatspec(sourceCode, natspec, true);
-}
-
-BOOST_AUTO_TEST_CASE(empty_comment)
-{
-	char const* sourceCode = R"(
-		//
-		contract test
-		{}
-	)";
-	char const* natspec = R"ABCDEF(
-	{
-	   "methods" : {}
-	}
-	)ABCDEF";
-
-	checkNatspec(sourceCode, natspec, true);
-}
-
-BOOST_AUTO_TEST_CASE(dev_title_at_function_error)
-{
-	char const* sourceCode = R"(
-		/// @author Lefteris
-		/// @title Just a test contract
-		contract test {
-			/// @dev Mul function
-			/// @title I really should not be here
-			function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }
-		}
-	)";
-
-	expectNatspecError(sourceCode);
-}
-
-BOOST_AUTO_TEST_CASE(dev_documenting_nonexistent_param)
-{
-	char const* sourceCode = R"(
-		contract test {
-			/// @dev Multiplies a number by 7 and adds second parameter
-			/// @param a Documentation for the first parameter
-			/// @param not_existing Documentation for the second parameter
-			function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }
-		}
-	)";
-
-	expectNatspecError(sourceCode);
-}
-
-BOOST_AUTO_TEST_CASE(dev_documenting_no_paramname)
-{
-	char const* sourceCode = R"(
-		contract test {
-			/// @dev Multiplies a number by 7 and adds second parameter
-			/// @param a Documentation for the first parameter
-			/// @param 
-			function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }
-		}
-	)";
-
-	expectNatspecError(sourceCode);
-}
-
-BOOST_AUTO_TEST_CASE(dev_documenting_no_paramname_end)
-{
-	char const* sourceCode = R"(
-		contract test {
-			/// @dev Multiplies a number by 7 and adds second parameter
-			/// @param a Documentation for the first parameter
-			/// @param se
-			function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }
-		}
-	)";
-
-	expectNatspecError(sourceCode);
-}
-
-BOOST_AUTO_TEST_CASE(dev_documenting_no_param_description)
-{
-	char const* sourceCode = R"(
-		contract test {
-			/// @dev Multiplies a number by 7 and adds second parameter
-			/// @param a Documentation for the first parameter
-			/// @param second 
-			function mul(uint a, uint second) returns(uint d) { return a * 7 + second; }
-		}
-	)";
-
-	expectNatspecError(sourceCode);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

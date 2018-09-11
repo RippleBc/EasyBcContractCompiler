@@ -1,6 +1,3 @@
-commit_hash.txt
-prerelease.txt
-
 # Compiled Object files
 *.slo
 *.lo
@@ -32,14 +29,3 @@ prerelease.txt
 
 # Build directory
 build/
-docs/_build
-docs/utils/__pycache__
-docs/utils/*.pyc
-
-# vim stuff
-*.swp
-
-# IDE files
-.idea
-browse.VC.db
-CMakeLists.txt.user

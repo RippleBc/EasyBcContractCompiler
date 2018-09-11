@@ -1,18 +1,18 @@
 /*
-	This file is part of solidity.
+	This file is part of cpp-ethereum.
 
-	solidity is free software: you can redistribute it and/or modify
+	cpp-ethereum is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
 
-	solidity is distributed in the hope that it will be useful,
+	cpp-ethereum is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
 
 	You should have received a copy of the GNU General Public License
-	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
+	along with cpp-ethereum.  If not, see <http://www.gnu.org/licenses/>.
 */
 /** @file boostTest.cpp
  * @author Marko Simovic <markobarko@gmail.com>
@@ -21,65 +21,72 @@
  * Original code taken from boost sources.
  */
 
+#define BOOST_TEST_MODULE EthereumTests
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
-
-#if defined(_MSC_VER)
-#pragma warning(push)
-#pragma warning(disable:4535) // calling _set_se_translator requires /EHa
-#endif
+//#define BOOST_DISABLE_WIN32 //disables SEH warning
+#define BOOST_TEST_NO_MAIN
 #include <boost/test/included/unit_test.hpp>
-#if defined(_MSC_VER)
-#pragma warning(pop)
-#endif
-
 #pragma GCC diagnostic pop
 
-#include <test/Options.h>
-#include <test/libsolidity/SyntaxTest.h>
-
+#include <test/TestHelper.h>
 using namespace boost::unit_test;
 
-namespace
+//Custom Boost Initialization
+test_suite* init_func( int argc, char* argv[] )
 {
-void removeTestSuite(std::string const& _name)
-{
-	master_test_suite_t& master = framework::master_test_suite();
-	auto id = master.get(_name);
-	assert(id != INV_TEST_UNIT_ID);
-	master.remove(id);
-}
+	if (argc == 0)
+		argv[1]=(char*)"a";
+
+	dev::test::Options::get();
+
+	return 0;
 }
 
-test_suite* init_unit_test_suite( int /*argc*/, char* /*argv*/[] )
+//Custom Boost Unit Test Main
+int main( int argc, char* argv[] )
 {
-	master_test_suite_t& master = framework::master_test_suite();
-	master.p_name.value = "SolidityTests";
-	dev::test::Options::get().validate();
-	solAssert(dev::solidity::test::SyntaxTest::registerTests(
-		master,
-		dev::test::Options::get().testPath / "libsolidity",
-		"syntaxTests"
-	) > 0, "no syntax tests found");
-	if (dev::test::Options::get().disableIPC)
+	try
 	{
-		for (auto suite: {
-			"ABIDecoderTest",
-			"ABIEncoderTest",
-			"SolidityAuctionRegistrar",
-			"SolidityFixedFeeRegistrar",
-			"SolidityWallet",
-			"LLLERC20",
-			"LLLENS",
-			"LLLEndToEndTest",
-			"GasMeterTests",
-			"SolidityEndToEndTest",
-			"SolidityOptimizer"
-		})
-			removeTestSuite(suite);
+		framework::init( init_func, argc, argv );
+
+		if( !runtime_config::test_to_run().is_empty() )
+		{
+			test_case_filter filter( runtime_config::test_to_run() );
+
+			traverse_test_tree( framework::master_test_suite().p_id, filter );
+		}
+
+		framework::run();
+
+		results_reporter::make_report();
+
+		return runtime_config::no_result_code()
+					? boost::exit_success
+					: results_collector.results( framework::master_test_suite().p_id ).result_code();
 	}
-	if (dev::test::Options::get().disableSMT)
-		removeTestSuite("SMTChecker");
+	catch (framework::nothing_to_test const&)
+	{
+		return boost::exit_success;
+	}
+	catch (framework::internal_error const& ex)
+	{
+		results_reporter::get_stream() << "Boost.Test framework internal error: " << ex.what() << std::endl;
+
+		return boost::exit_exception_failure;
+	}
+	catch (framework::setup_error const& ex)
+	{
+		results_reporter::get_stream() << "Test setup error: " << ex.what() << std::endl;
+
+		return boost::exit_exception_failure;
+	}
+	catch (...)
+	{
+		results_reporter::get_stream() << "Boost.Test framework internal error: unknown reason" << std::endl;
+
+		return boost::exit_exception_failure;
+	}
 
 	return 0;
 }

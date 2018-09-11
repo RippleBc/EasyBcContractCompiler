@@ -1,23 +1,29 @@
-set(
-	sources
-	CommandLineInterface.cpp CommandLineInterface.h
-	main.cpp
-)
+cmake_policy(SET CMP0015 NEW)
+set(CMAKE_AUTOMOC OFF)
 
-add_executable(solc ${sources})
-target_link_libraries(solc PRIVATE solidity ${Boost_PROGRAM_OPTIONS_LIBRARIES})
+aux_source_directory(. SRC_LIST)
+list(REMOVE_ITEM SRC_LIST "./jsonCompiler.cpp")
 
-include(GNUInstallDirs)
-install(TARGETS solc DESTINATION "${CMAKE_INSTALL_BINDIR}")
+include_directories(BEFORE ${JSONCPP_INCLUDE_DIRS})
+include_directories(BEFORE ..)
+include_directories(${Boost_INCLUDE_DIRS})
 
-if(SOLC_LINK_STATIC AND UNIX AND NOT APPLE)
-	# Produce solc as statically linked binary (includes C/C++ standard libraries)
-	# This is not supported on macOS, see
-	# https://developer.apple.com/library/content/qa/qa1118/_index.html.
-	set_target_properties(
-		solc PROPERTIES
-		LINK_FLAGS -static
-		LINK_SEARCH_START_STATIC ON
-		LINK_SEARCH_END_STATIC ON
-	)
+set(EXECUTABLE solc)
+
+file(GLOB HEADERS "*.h")
+add_executable(${EXECUTABLE} ${SRC_LIST} ${HEADERS})
+
+add_dependencies(${EXECUTABLE} BuildInfo.h)
+
+target_link_libraries(${EXECUTABLE} ${Boost_FILESYSTEM_LIBRARIES})
+target_link_libraries(${EXECUTABLE} ${Boost_PROGRAM_OPTIONS_LIBRARIES})
+target_link_libraries(${EXECUTABLE} solidity)
+
+if (APPLE)
+	install(TARGETS ${EXECUTABLE} DESTINATION bin)
+else()
+	eth_install_executable(${EXECUTABLE})
 endif()
+
+add_library(soljson jsonCompiler.cpp ${HEADERS})
+target_link_libraries(soljson solidity)
