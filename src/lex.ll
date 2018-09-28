@@ -67,6 +67,27 @@ blank [ \t]
 <<EOF>> return yy::parser::make_END (loc);
 %%
 
+%%
+"{" {
+	int c;
+
+	while(c = input()) {
+		if(c =='}')
+		{
+			break;
+		}
+		else if(c == '\n')
+		{
+			lineNo++;
+		}
+
+		if(c == EOF)
+		{
+			parseError("Unexpected EOF.", "");
+		}
+	}
+}
+%%
 
 void
 driver::scan_begin ()

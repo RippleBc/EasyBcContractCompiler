@@ -87,8 +87,32 @@ function-head:
 kFUNCTION yNAME parameters oCOLON simpile-type-decl
 {
 	header = new-tree(HEADER, ptab->type, NULL, NULL);
-	now-function = 
+	now-function = new-tree(FUNCTION, ptab->type, header, NULL);
 }
+
+symple-type-decl:
+SYS_TYPE:
+{
+	pt = fintTypeByName($1);
+	if(!pt)
+	{
+		parseError("Undeclared type name", $1);
+	}
+
+	$$ = pt;
+}
+| yNAME
+{
+	pt = fintTypeByName($1);
+	if(!pt)
+	{
+		parseError("Undeclared type name", $1);
+		return 0;
+	}
+
+	$$ = pt;
+}
+
 %%
 
 void
