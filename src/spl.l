@@ -228,7 +228,7 @@ oct		[0-7]
 	return oDIV; 
 }
 
-":= { 
+":=" { 
 	DUMP_SOURCE 
 	
 	if (dump_token)
@@ -389,28 +389,12 @@ oct		[0-7]
 %%
 
 KEYENTRY Keytable[] = {
-/*
-arr = array[1..50] of integer;
-*/
-{"array",	kARRAY, 	KEYWORD, 0, 0 },
-/*
-case a of
-	2: i := 3;
-	5: i := 4;
-	6:
-		case b of
-			3: i := 6;
-			4: i := 7;
-		end;
-end;
-*/
-{"case",	kCASE, 		KEYWORD, 0, 0 },
-
 {"abs",		SYS_FUNCT,	fABS, TYPE_INTEGER, TYPE_INTEGER },
 {"and",		kAND,		KEYWORD, 0, 0 },
+{"array",	kARRAY, 	KEYWORD, 0, 0 },
 {"begin",	kBEGIN, 	KEYWORD, 0, 0 },
 {"boolean", SYS_TYPE,	tBOOLEAN, 0, 0 },
-{"of",		kOF,		KEYWORD, 0, 0 },
+{"case",	kCASE, 		KEYWORD, 0, 0 },
 {"char",	SYS_TYPE,	tCHAR,	0, 0 },
 {"chr",		SYS_FUNCT, 	fCHR, TYPE_CHAR, TYPE_CHAR },
 {"const",	kCONST,		KEYWORD, 0, 0 },
@@ -431,7 +415,7 @@ end;
 {"mod",		kMOD,		KEYWORD, 0, 0 },
 {"not", 	kNOT,		KEYWORD, 0, 0 },
 {"odd",		SYS_FUNCT,	fODD, TYPE_INTEGER, TYPE_BOOLEAN },
-
+{"of",		kOF,		KEYWORD, 0, 0 },
 {"or",		kOR,		KEYWORD, 0, 0 },
 {"ord",		SYS_FUNCT,	fORD, TYPE_INTEGER, TYPE_INTEGER },
 {"packed",	kPACKED,	KEYWORD, 0, 0 },
@@ -443,7 +427,6 @@ end;
 {"real",	SYS_TYPE,	KEYWORD, 0, 0 },
 {"record", 	kRECORD,	KEYWORD, 0, 0 },
 {"repeat",	kREPEAT,	KEYWORD, 0, 0 },
-{"until",	kUNTIL,		KEYWORD, 0, 0 },
 {"set", 	kSET, 		KEYWORD, 0, 0 },
 {"sqr",		SYS_FUNCT,	fSQR,	TYPE_INTEGER, TYPE_INTEGER },
 {"sqrt",	SYS_FUNCT,	fSQRT,	TYPE_INTEGER, TYPE_INTEGER },
@@ -452,6 +435,7 @@ end;
 {"to",		kTO,		KEYWORD, 0, 0 },
 {"true",	SYS_CON,	cTRUE,	0, 0 },
 {"type",	kTYPE,		KEYWORD, 0, 0 },
+{"until",	kUNTIL,		KEYWORD, 0, 0 },
 {"var",		kVAR,		KEYWORD, 0, 0 },
 {"while",	kWHILE,		KEYWORD, 0, 0 },
 {"with",	kWITH, 		KEYWORD, 0, 0 },

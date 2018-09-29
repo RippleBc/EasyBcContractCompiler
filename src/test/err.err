@@ -1,0 +1,19 @@
+
+Error at line 1:
+program hello (
+               ^ : syntax error, unexpected oLP, expecting oSEMI 
+
+Error at line 4:
+	int abc
+	       ^ : syntax error, unexpected yNAME, expecting oCOMMA or oCOLON or oRP 
+
+Error at line 7:
+	if abc ;
+	        ^ : Undeclard identificr abc
+Error at line 7:
+	if abc ;
+	        ^ : syntax error, unexpected oSEMI, expecting oGE 
+
+Error at line 11:
+	else
+	    ^ : syntax error, unexpected kELSE 
