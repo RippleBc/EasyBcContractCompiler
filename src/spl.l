@@ -8,17 +8,26 @@
 #include _YTAB_H_
 
 int Keytable_size = 0;
-extern int line_no;					/* line no. */
-extern int line_pos;				/* position of line. */
-extern char line_buf[];				/* buffer of current line. */
 
-extern YYSTYPE	yylval;
+/* number of line. */
+extern int line_no;
+/* position of line. */
+extern int line_pos;
+/* buffer of current line. */
+extern char line_buf[];
+
+extern YYSTYPE yylval;
+/* 是否把匹配到的文本输出 */
 extern int dump_source;
+/* 是否把匹配的TOKEN输出 */
 extern int dump_token;
 
+/* 判断是标识符还是关键字 */
 static int id_or_keyword(char *lex);
 
-#define DUMP_SOURCE		if(dump_source) ECHO; \
+/* 拷贝匹配到的内容到line_buf（结束标记'\0'），
+ 重新计算line_pos时需要删除结束标记'\0' */
+#define DUMP_SOURCE if(dump_source) ECHO; \
 						if (line_pos + strlen(yytext) < MAX_LINE_LENGTH) \
 							memmove(line_buf + line_pos, yytext, strlen(yytext) + 1); \
 						line_pos += strlen(yytext);
@@ -32,241 +41,376 @@ hex		[0-9a-fA-F]
 oct		[0-7]
 
 %%
-"{"		{
-			int c;
-			
-			/* DUMP_SOURCE */
-
-			while ((c = input()))
-			{
-				if (c == '}')
-				{
-					break;
-				}
-				else if (c == '\n')
-				{
-					line_no ++;
-				}
-			}
-
-			if (c == EOF)
-				parse_error("Unexpected EOF.","");
+"{" {
+	int c;
+	
+	/* 检查块结果 */
+	while ((c = input()))
+	{
+		if (c == '}')
+		{
+			break;
 		}
+		else if (c == '\n')
+		{
+			line_no ++;
+		}
+	}
 
-[1-9]+{dec}*		{
-						DUMP_SOURCE
-						yylval.num = stoi(yytext, 10);
-						if (dump_token)
-						{
-							printf("token: cINTEGER, yylval.num = %d.\n", yylval.num);
-						}
-						return cINTEGER;
-					}
-					
-0{oct}*				{
-						DUMP_SOURCE
-						yylval.num = stoi(yytext, 8);
-						if (dump_token)
-						{
-							printf("token: cINTEGER, yylval.num = %d.\n", yylval.num);
-						}
-						return cINTEGER;
-					}
-					
-0(x|X){hex}+		{
-						DUMP_SOURCE
-						yylval.num = stoi(yytext, 16);
-						if (dump_token)
-						{
-							printf("token: cINTEGER, yylval.num = %d.\n", yylval.num);
-						}
-						return cINTEGER;
-					}
+	if (c == EOF)
+		parse_error("Unexpected EOF.","");
+}
 
-{dec}+(\.{dec}+)?([E|e][+\-]?{dec}+)?	{
-						DUMP_SOURCE
-						strncpy(yylval.p_char, yytext, NAME_LEN);
-						if (dump_token)
-						{
-							printf("token: cREAL, yylval.p_char = %s.\n", yylval.p_char);
-						}
-						return cREAL;
-					}
+[1-9]+{dec}* {
+	DUMP_SOURCE
+
+	/* 将字符串转化成十进制数字 */
+	yylval.num = stoi(yytext, 10);
+
+	if (dump_token)
+	{
+		printf("token: cINTEGER, yylval.num = %d.\n", yylval.num);
+	}
+	return cINTEGER;
+}
 					
-'([^']|\")'			{
-						DUMP_SOURCE
-						strncpy(yylval.p_char, yytext, NAME_LEN);
-						if (dump_token)
-						{
-							printf("token: cCHAR, yylval.p_char = %s.\n", yylval.p_char);
-						}
-						return cCHAR;
-					}
+0{oct}* {
+	DUMP_SOURCE
+
+	/* 将字符串转化成十进制数字 */
+	yylval.num = stoi(yytext, 8);
+
+	if (dump_token)
+	{
+		printf("token: cINTEGER, yylval.num = %d.\n", yylval.num);
+	}
+	return cINTEGER;
+}
 					
-\'(\\.|[^\'])(\\.|[^\'])+\'		{
-						DUMP_SOURCE
-						strncpy(yylval.p_char, yytext, NAME_LEN);
-						if (dump_token)
-						{
-							printf("token: cSTRING, yylval.p_char = %s.\n", yylval.p_char);
-						}
-						return cSTRING;
-					}
+0(x|X){hex}+ {
+	DUMP_SOURCE
+
+	/* 将字符串转化成十进制数字 */
+	yylval.num = stoi(yytext, 16);
+
+	if (dump_token)
+	{
+		printf("token: cINTEGER, yylval.num = %d.\n", yylval.num);
+	}
+	return cINTEGER;
+}
+
+{dec}+(\.{dec}+)?([E|e][+\-]?{dec}+)? {
+	/* 1.1E+1 or 1.1E-1*/
+	DUMP_SOURCE
+
+	/* 函数原型char *strncpy(char *dest, char *src, int size_t n);
+	 复制字符串src中的内容到字符串dest中，复制多少由size_t n的值决定。
+	 如果src的前n个字符不含NULL字符，则结果不会以NULL字符结束。
+	 如果n < src的长度，只是将src的前n个字符复制到dest的前n个字符，不自动添加'\0'，也就是结果dest不包括'\0'，需要再手动添加一个'\0'。
+	 如果src的长度小于n个字节，则以NULL填充dest直到复制完n个字节。
+	 src和dest所指内存区域不可以重叠且dest必须有足够的空间来容纳src的字符长度+'\0'。 */
+	strncpy(yylval.p_char, yytext, NAME_LEN);
+
+	if (dump_token)
+	{
+		printf("token: cREAL, yylval.p_char = %s.\n", yylval.p_char);
+	}
+	return cREAL;
+}
 					
-"("					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oLP.\n");
-						}
-						return oLP; }
-")"					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oRP.\n");
-						}
-						return oRP; }
-"["					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oLB.\n");
-						}
-						return oLB; }
-"]"					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oRB.\n");
-						}
-						return oRB; }
-"+"					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oPLUS.\n");
-						}
-						return oPLUS; }
-"-"					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oMINUS.\n");
-						}
-						return oMINUS; }
-"*"					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oMUL.\n");
-						}
-						return oMUL; }
-"/"					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oDIV.\n");
-						}
-						return oDIV; }
-":="				{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oASSIGN.\n");
-						}
-						return oASSIGN; }
-"="					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oEQUAL.\n");
-						}
-						return oEQUAL; }
-"<"					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oLT.\n");
-						}
-						return oLT; }
-">"					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oGT.\n");
-						}
-						return oGT; }
-"<="				{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oLE.\n");
-						}
-						return oLE; }
-">="				{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oGE.\n");
-						}
-						return oGE; }
-"<>"				{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oUNEQU.\n");
-						}
-						return oUNEQU; }
-","					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oCOMMA.\n");
-						}
-						return oCOMMA; }
-";"					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oSEMI.\n");
-						}
-						return oSEMI; }
-":"					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oCOLON.\n");
-						}
-						return oCOLON; }
-"'"					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oQUOTE.\n");
-						}
-						return oQUOTE; }
-".."				{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oDOTDOT.\n");
-						}
-						return oDOTDOT; }
-"."					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oDOT.\n");
-						}
-						return oDOT; }
-"^"					{ DUMP_SOURCE 
-						if (dump_token)
-						{
-							printf("token: oARROW.\n");
-						}
-						return oARROW; }
-{letter}{alnum}*	{
-						DUMP_SOURCE
-						strncpy(yylval.p_char, yytext, NAME_LEN);
-						return id_or_keyword(yytext);
-					}
-"\n"				{
-						line_no++;
-						line_pos = 0;
-						line_buf[line_pos] = 0;
-					}
-.					{
-						DUMP_SOURCE
-					}
+'([^']|\\')' {
+	/* Note that inside of a character class, all regular expression operators lose their special meaning 
+	 except escape '\' and the character class operators, '-', '[', ']', and, at the beginning of the class '^'.
+	 int this case, 起始和结束字符串必须是'，中间可以出现除了字符'之外的所有字符。 */
+
+	DUMP_SOURCE
+
+	strncpy(yylval.p_char, yytext, NAME_LEN);
+
+	if (dump_token)
+	{
+		printf("token: cCHAR, yylval.p_char = %s.\n", yylval.p_char);
+	}
+	return cCHAR;
+}
+					
+'([^']|\\')+' {
+	DUMP_SOURCE
+
+	strncpy(yylval.p_char, yytext, NAME_LEN);
+
+	if (dump_token)
+	{
+		printf("token: cSTRING, yylval.p_char = %s.\n", yylval.p_char);
+	}
+	return cSTRING;
+}
+					
+"(" { 
+	DUMP_SOURCE 
+
+	if (dump_token)
+	{
+		printf("token: oLP.\n");
+	}
+	return oLP; 
+}
+
+")" { 
+	DUMP_SOURCE 
+
+	if (dump_token)
+	{
+		printf("token: oRP.\n");
+	}
+	return oRP; 
+}
+
+
+"[" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oLB.\n");
+	}
+	return oLB; 
+}
+
+"]" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oRB.\n");
+	}
+	return oRB; 
+}
+
+"+" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oPLUS.\n");
+	}
+	return oPLUS; 
+}
+
+"-" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oMINUS.\n");
+	}
+	return oMINUS; 
+}
+
+"*" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oMUL.\n");
+	}
+	return oMUL; 
+}
+
+"/" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oDIV.\n");
+	}
+	return oDIV; 
+}
+
+":= { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oASSIGN.\n");
+	}
+	return oASSIGN; 
+}
+
+"=" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oEQUAL.\n");
+	}
+	return oEQUAL; 
+}
+
+"<" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oLT.\n");
+	}
+	return oLT; 
+}
+
+">" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oGT.\n");
+	}
+	return oGT; 
+}
+
+"<=" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oLE.\n");
+	}
+	return oLE; 
+}
+
+">=" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oGE.\n");
+	}
+	return oGE; 
+}
+
+"<>" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oUNEQU.\n");
+	}
+	return oUNEQU; 
+}
+
+"," { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oCOMMA.\n");
+	}
+	return oCOMMA; 
+}
+
+";" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oSEMI.\n");
+	}
+	return oSEMI; 
+}
+
+":" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oCOLON.\n");
+	}
+	return oCOLON; 
+}
+
+".." { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oDOTDOT.\n");
+	}
+	return oDOTDOT; 
+}
+
+"." { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oDOT.\n");
+	}
+	return oDOT; 
+}
+
+"'" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oQUOTE.\n");
+	}
+	return oQUOTE; 
+}
+
+"^" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oARROW.\n");
+	}
+	return oARROW; 
+}
+
+{letter}{alnum}* {
+	DUMP_SOURCE
+
+	strncpy(yylval.p_char, yytext, NAME_LEN);
+
+	return id_or_keyword(yytext);
+}
+
+"\n" {
+	line_no++;
+	line_pos = 0;
+	line_buf[line_pos] = 0;
+}
+
+. {
+	/* 匹配除了换行符之外的所有字符 */
+	DUMP_SOURCE
+}
 %%
 
 KEYENTRY Keytable[] = {
+/*
+arr = array[1..50] of integer;
+*/
+{"array",	kARRAY, 	KEYWORD, 0, 0 },
+/*
+case a of
+	2: i := 3;
+	5: i := 4;
+	6:
+		case b of
+			3: i := 6;
+			4: i := 7;
+		end;
+end;
+*/
+{"case",	kCASE, 		KEYWORD, 0, 0 },
+
 {"abs",		SYS_FUNCT,	fABS, TYPE_INTEGER, TYPE_INTEGER },
 {"and",		kAND,		KEYWORD, 0, 0 },
-{"array",	kARRAY, 	KEYWORD, 0, 0 },
 {"begin",	kBEGIN, 	KEYWORD, 0, 0 },
 {"boolean", SYS_TYPE,	tBOOLEAN, 0, 0 },
-{"case",	kCASE, 		KEYWORD, 0, 0 },
+{"of",		kOF,		KEYWORD, 0, 0 },
 {"char",	SYS_TYPE,	tCHAR,	0, 0 },
 {"chr",		SYS_FUNCT, 	fCHR, TYPE_CHAR, TYPE_CHAR },
 {"const",	kCONST,		KEYWORD, 0, 0 },
@@ -287,7 +431,7 @@ KEYENTRY Keytable[] = {
 {"mod",		kMOD,		KEYWORD, 0, 0 },
 {"not", 	kNOT,		KEYWORD, 0, 0 },
 {"odd",		SYS_FUNCT,	fODD, TYPE_INTEGER, TYPE_BOOLEAN },
-{"of",		kOF,		KEYWORD, 0, 0 },
+
 {"or",		kOR,		KEYWORD, 0, 0 },
 {"ord",		SYS_FUNCT,	fORD, TYPE_INTEGER, TYPE_INTEGER },
 {"packed",	kPACKED,	KEYWORD, 0, 0 },
@@ -299,6 +443,7 @@ KEYENTRY Keytable[] = {
 {"real",	SYS_TYPE,	KEYWORD, 0, 0 },
 {"record", 	kRECORD,	KEYWORD, 0, 0 },
 {"repeat",	kREPEAT,	KEYWORD, 0, 0 },
+{"until",	kUNTIL,		KEYWORD, 0, 0 },
 {"set", 	kSET, 		KEYWORD, 0, 0 },
 {"sqr",		SYS_FUNCT,	fSQR,	TYPE_INTEGER, TYPE_INTEGER },
 {"sqrt",	SYS_FUNCT,	fSQRT,	TYPE_INTEGER, TYPE_INTEGER },
@@ -307,7 +452,6 @@ KEYENTRY Keytable[] = {
 {"to",		kTO,		KEYWORD, 0, 0 },
 {"true",	SYS_CON,	cTRUE,	0, 0 },
 {"type",	kTYPE,		KEYWORD, 0, 0 },
-{"until",	kUNTIL,		KEYWORD, 0, 0 },
 {"var",		kVAR,		KEYWORD, 0, 0 },
 {"while",	kWHILE,		KEYWORD, 0, 0 },
 {"with",	kWITH, 		KEYWORD, 0, 0 },

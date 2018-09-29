@@ -1,9 +1,7 @@
 #ifndef		_SYMTAB_H
 #define 	_SYMTAB_H
 
-//#include "common.h"
-//#include "type.h"
-
+/* 保存常量的值 */
 union _value_ {
     char c;
     char *s;
@@ -18,57 +16,88 @@ union _value_ {
 };
 
 typedef union _value_ value;
-typedef union _value_ * Value;
+typedef union _value_ *Value;
 
 typedef struct _symbol_ symbol;
-typedef struct _symbol_ * Symbol;
+typedef struct _symbol_ *Symbol;
 
 typedef struct _type_ type;
-typedef struct _type_ * Type;
+typedef struct _type_ *Type;
 
+/* 实例标识类型符的表项 */
 struct _symbol_
 {
-    char name[NAME_LEN];
+    /* 标识符名称 */
+    char name[NAME_LEN]; 
+    /* 标识符在汇编代码中的名称 */
     char rname[LABEL_LEN];
-    int defn;			/* defined in. */
-    /* int type; */
-    Type type;			/* data type. */
+    /* 标识符的属性（CONST、VAR、ELEMENT、FUNCT等等） */
+    int defn;
+    /* 标识符类型（基本类型） */
+    Type type;
+    /* 变量在堆栈中的偏移量 */
     int offset;
+    /* 常量的值 */
     value v;
+    /* 下一个symbol */
     struct _symbol_ *next;
+    /* 二叉树组织 */
     struct _symbol_ *lchild, *rchild;
+    /* 指向符号表的表头结构 */
     struct _symbol_head_ *tab;
-    struct _type_	*type_link;
+    /* 同一个类型的下一个symbol（用户自定义类型，数组，记录，枚举） */
+    struct _type_ *type_link;
 };
 
+/* 标识类型符的表项 */
 struct _type_
 {
+    /* 类型的名字 */
     char name[NAME_LEN];
+    /* 类型的序号 */
     int type_id;
+    /* 类型结构中元素的个数 */
     int num_ele;
+    /* 类型的字节数 */
     int size;
+    /* 对齐字节数 */
     int align;
+    /* 结构类型中的第一个元素 */
     symbol *first;
+    /* 结构类型中的最后一个元素 */
     symbol *last;
+    /* 组织类型标识符的链表 */
     struct _type_ *next;
 };
 
-
+/* 符号表的表头 */
 struct _symbol_head_
 {
+    /* 符号表的名称 */
     char name[NAME_LEN];
+    /* 过程或函数在汇编中的名称 */
     char rname[LABEL_LEN];
+    /* 过程或函数的序号 */
     int id;
+    /* 嵌套深度 */
     int level;
+    /* 属性值（PROG、FUNCT、PROC之一） */
     int defn;
-    /* int type; */
+    /* 过程或函数的返回值（过程返回TYPE-VOID） */
     Type type;
+    /* 局部变量的总字节数，用于构造子程序调用帧的局部变量 */
     int local_size;
+    /* 参数的总字节数，用于构造子程序调用帧的参数 */
     int args_size;
+    /* 参数链表 */
     symbol *args;
+    /* 局部符号表（变量和参数），二叉树的根 */
     symbol *localtab;
+    /* 局部变量链表 */
     symbol *locals;
+    /* 过程或函数返回值的类型链接 */
     type *type_link;
+    /* 链接上一层符号表，即父辈函数过程的定义 */
     struct _symbol_head_ *parent;
 };
 
@@ -82,8 +111,11 @@ typedef struct _symbol_head_ * Symtab;
 int Cur_level;
 int Routing_id;
 
+/* 全局符号表 */
 symtab *Global_symtab;
+/* 系统符号表 */
 symtab *System_symtab[MAX_SYS_ROUTINE];
+
 symtab *new_symtab(symtab *);
 symtab *make_system_table();
 symtab *new_sys_symbol(KEYENTRY);
