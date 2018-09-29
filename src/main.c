@@ -42,13 +42,11 @@ int dump_token = 0;
 
 void print_result(char *);
 
-extern Interface x86_dos_interface;
 extern Interface x86_linux_interface;
 extern union header *arena[LASTARENA];
 
 Binding bindings[] =
 {
-    {"x86dos", &x86_dos_interface},
     {"x86linux", &x86_linux_interface}
 };
 
@@ -185,7 +183,7 @@ int main(int argc, char **argv)
 
                 if (IR == NULL)
                 {
-                    printf("Can't find target %s, only x86dos and x86linux is supported.\n",
+                    printf("Can't find target %s, only x86linux is supported.\n",
                            *arg);
                     return 1;
                 }
@@ -237,10 +235,6 @@ int main(int argc, char **argv)
 
     global_env.u.program.argc = dargc;
     global_env.u.program.argv = dargv;
-
-#ifndef GENERATE_AST
-	IR = find_target("x86dos");
-#endif
 
     yyparse();
     fclose(ifp);

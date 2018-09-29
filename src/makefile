@@ -28,7 +28,6 @@ COMPILER_SOURCE= common.h \
 				symtab.h \
 				type.c \
 				x86.c \
-				x86dos.c \
 				x86.h \
 				x86rtl.asm \
 				rule.c \
@@ -45,7 +44,6 @@ COMPILER_SOURCE= common.h \
 
 COMPILER_OBJS=error.o \
 			  lex.yy.o \
-			  x86dos.o \
 			  main.o \
 			  symtab.o \
 			  type.o \
