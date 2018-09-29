@@ -1,84 +1,120 @@
-/* 显示错误信息，当编译器发现错误时，就调用该函数在指定设备（显示设备或者磁盘文件）上显示错误信息。
- 该函数包含两个参数info和name分别表示错误信息以及错误名 */
-void parseError(char *info, char *name)
+#define   _ERROR_C
+#include  <stdio.h>
+#include  <stdlib.h>
+#include  <string.h>
+#include  <ctype.h>
+#include "common.h"
+#define  MAX_ERR  (8)
+
+int error_count = 0;
+int warn_count = 0;
+
+int line_no;
+int line_pos;
+char line_buf[MAX_LINE_LENGTH];
+
+void clear ();
+FILE *errfp;
+char *pasname;
+static char ebuf[MAX_ERR][64];
+
+void print_result(char *fname)
 {
-	fprintf(errfp, "\nError at line %d: \n", lineNo);
-	fprintf(errfp, "%s\n", lineBuf);
-	printfPos(errfp);
+    printf("\n%s : %d lines,%d errors.\n",
+           fname, line_no, error_count);
 
-	fprintf(strerr, "\nError at line %d: \n", lineNo);
-	fprintf(strerr, "%s\n", lineBuf);
-	printPos(strerr);
-
-	if(*name)
-	{
-		fprintf(errfp, ": %s  %s", info, name);
-		fprintf(strerr, ": %s  %s", info, name);
-		snprintf(ebuf[errorCount++], sizeof(ebuf[errorCount++]) - 1, "\nError(%d): %s '%s'", lineNo, info, name);
-	}
-	else 
-	{
-		fprintf(errfp, ": %s \n", info);
-		fprintf(strerr, ": %s \n", info);
-		snprintf(ebuf[errorCount++], sizeof(ebuf[errorCount++]) - 1, "\nError(%d): %s \n", lineNo, info);
-	}
-
-	if(errorCount >= MAX_ERR)
-	{
-		clear();
-		printResult(pasname);
-		exit(1);
-	}
+    if (!error_count)
+        printf("OK!\n\n");
 }
 
-/* 显示编译器内部错误，比如在进行语法分析时内部堆栈溢出 */
-void internalError(char *info)
+int err_occur( )
 {
-	sprintf(ebuf[errorCount++], "Internal Error %s\n", info);
-	fprintf(errfp, "Internal Error (%d): %s \n", lineNo, info);
-
-	if(errorCount >= MAX_ERR)
-	{
-		clear();
-		printResult(pasname);
-		exit(0);
-	}
+    return error_count;
 }
 
-/* 显示词法分析错误，yyerror则由语法分析器调用，
- 这两个函数内部都调用了函数parseError */
-void lexError(char *info)
+void internal_error(char *info)
 {
-	fprintf(errfp, "\nError at line %d: \n", lineNo);
-	fprintf(errfp, "%s \n", lineBuf);
-	printPos(errfp);
 
-	fprintf(stderr, "\nError at line %d: \n", lineNo);
-	fprintf(stderr, "%s \n", lineBuf);
-	printPos(stderr);
+    sprintf(ebuf[error_count++], "Internal Error %s\n", info);
+    fprintf(errfp, "Internal Error (%d): %s\n", line_no, info);
 
-	sprintf(ebuf[errorCount++], sizeof(ebuf[errorCount++]) - 1, ": %s", info);
+    if (error_count >= MAX_ERR)
+    {
+        clear();
+        print_result(pasname);
+        exit(0);
+    }
+}
 
-	fprintf(errfp, "\nError （%d): %s", lineNo, info);
-	fprintf(stderr, "\nError (%d): %s", lineNo, info);
+static void print_pos(FILE *fp)
+{
+    int i;
+
+    for (i = 0; i < line_pos; i++)
+    {
+        if (line_buf[i] == '\t')
+            fprintf(fp, "\t");
+        else
+            fprintf(fp, " ");
+    }
+
+    fprintf(fp, "^");
+}
+
+void parse_error(char *info, char *name)
+{
+
+    fprintf(errfp, "\nError at line %d:\n", line_no);
+    fprintf(errfp, "%s\n", line_buf);
+    print_pos(errfp);
+
+    fprintf(stderr, "\nError at line %d:\n", line_no);
+    fprintf(stderr, "%s\n", line_buf);
+    print_pos(stderr);
+
+    if (*name)
+    {
+        fprintf(errfp, " : %s %s", info, name);
+        fprintf(stderr, " : %s %s", info, name);
+
+        snprintf(ebuf[error_count++], sizeof(ebuf[error_count++]) - 1, "\nError (%d) : %s '%s'",
+                 line_no, info, name);
+    }
+    else
+    {
+        fprintf(errfp, " : %s \n", info);
+        fprintf(stderr, " : %s \n", info);
+
+        snprintf(ebuf[error_count++],  sizeof(ebuf[error_count++]) - 1 ,"Error (%d) : %s\n",
+                 line_no, info);
+    }
+
+    if (error_count >= MAX_ERR)
+    {
+        clear();
+        print_result(pasname);
+        exit(1);
+    }
+}
+
+void lex_error(char *info)
+{
+
+    fprintf(errfp, "\nError at line %d:\n", line_no);
+    fprintf(errfp, "%s\n", line_buf);
+    print_pos(errfp);
+
+    fprintf(stderr, "\nError at line %d:\n", line_no);
+    fprintf(stderr, "%s\n", line_buf);
+    print_pos(stderr);
+
+    snprintf(ebuf[error_count++], sizeof(ebuf[error_count++]) - 1, ": %s", info);
+    fprintf(errfp, "\nError (%d) : %s", line_no, info);
+    fprintf(stderr, "\nError (%d) : %s", line_no, info);
 }
 
 void yyerror(char *info)
 {
-	parseError(info, "");
+    parse_error(info,"");
 }
 
-void printResult(char *fname)
-{
-	printf("\n%s: %d lines, %d errors.\n", fname, lineNo, errorCount);
-
-	if(!errorCount)
-	{
-		print("OK! \n\n");
-	}
-}
-
-int errOccur()
-{
-	return errorCount;
-}

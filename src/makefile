@@ -1,31 +1,94 @@
-OBJS = main.o  \
-			 driver.o  \
-       parser.tab.o    \
-       lex.yy.o \
+# Makefile for lpc compiler.
+#
+FLEX=flex
+FLEXFLAGS=
+BISONFLAGS=-d
+BISON=bison
+COMPILER_DIST=splc
+CC=gcc
+CFLAGS=-g -Wall
+LDFLAGS=-g -Wall
+CVS=cvs
 
-main: $(OBJS)
-	g++ -o main $(OBJS)
+COMPILER_HEADER=common.h \
+				config.h \
+				symtab.h \
+				x86.h \
+				tree.h \
+				dag.h \
+				config.h
 
-main.o: driver.hh main.cc
-	g++ -c main.cc
+COMPILER_SOURCE= common.h \
+				error.c \
+				h.l \
+				h.y \
+				config.h \
+				main.c \
+				symtab.c \
+				symtab.h \
+				type.c \
+				x86.c \
+				x86dos.c \
+				x86.h \
+				x86rtl.asm \
+				rule.c \
+				lex.yy.c \
+				alloc.c \
+				tree.c \
+				tree.h \
+				list.c \
+				dag.h \
+				dag.c \
+				ops.c \
+				x86linux.c \
+				opti.c
 
-driver.o: parser.tab.hh driver.hh driver.cc
-	g++ -c driver.cc
+COMPILER_OBJS=error.o \
+			  lex.yy.o \
+			  x86dos.o \
+			  main.o \
+			  symtab.o \
+			  type.o \
+			  rule.o \
+			  tree.o \
+			  alloc.o \
+			  list.o \
+			  dag.o \
+			  ops.o \
+			  x86.o \
+			  x86linux.o \
+			  opti.o
 
-parser.tab.o: driver.hh stack.hh position.hh location.hh parser.tab.hh parser.tab.cc
-	g++ -c parser.tab.cc
+COMPILER_AUTOFILES=y.tab.c \
+				   lex.yy.c \
+				   rule.c \
+				   h.tab.h \
+				   rule.h
 
-lex.yy.o: driver.hh parser.tab.hh lex.yy.c
-	g++ -c lex.yy.c
+.SUFFIXES:.c
 
-parser: parser.yy
-	bison parser.yy
+all: $(COMPILER_DIST)
 
-lexer: lex.ll
-	flex lex.ll
+dag.o: dag.c common.h
+	$(CC) $(CFLAGS) -c $<
+
+alloc.o: alloc.c common.h
+	$(CC) $(CFLAGS) -c $<
+
+%.o:%.c $(COMPILER_HEADER)
+	$(CC) $(CFLAGS) -c $<
+
+lex.yy.c:spl.l rule.c
+	$(FLEX) $(FLEXFLAGS) spl.l
+
+rule.c:spl.y
+	$(BISON) $(BISONFLAGS) -o rule.c $<
+
+$(COMPILER_DIST):$(COMPILER_OBJS) $(COMPILER_HEADER)
+	gcc -o $(COMPILER_DIST) $(LDFLAGS) $(COMPILER_OBJS)
 
 clean:
-	-rm -f main $(OBJS)
+	rm -f *.o
+	rm -f $(COMPILER_DIST)
+	rm -f $(COMPILER_AUTOFILES)
 
-test:
-	./main -p -s 'test.txt'
