@@ -32,7 +32,7 @@
 #define SIZE_BOOLEAN		SIZE_INTEGER /* boolean类型变量占用4字节 */
 #define SIZE_POINTER		(4) /* pointer类型变量占用4字节 */
 
-/* 对应_symbol_结构体中的defn属性 */
+/* 对应_symbol_结构体中的defn属性，表示symbol的类型 */
 #define DEF_UNKNOWN			(0)
 #define DEF_CONST			(1)
 #define DEF_VAR				(2)
@@ -52,6 +52,7 @@ typedef int					boolean;
 #define false 				0
 #define true 				1
 #define new_index(m)		++m##_index
+#define size(x)             SIZE_##x
 
 /* 记录汇编期间的信息 */
 extern	FILE 	*codfp;
@@ -96,7 +97,7 @@ void *allocate(unsigned long n, unsigned a);
 #define roundup(x,n) (((x)+((n)-1))&(~((n)-1)))
 
 
-/* types and storage class spcifiers */
+/* 对应_symbol_结构体中的type属性，表示symbol的类型 */
 enum {
     TYPE_UNKNOWN = 0,
     TYPE_INTEGER = 1,
@@ -133,6 +134,7 @@ enum {
 /* symbol and type definition. */
 #include "symtab.h"
 
+/* 链表操作，插入，删除，查找 */
 typedef struct list *List;
 struct list
 {

@@ -31,7 +31,7 @@ struct _symbol_
     char name[NAME_LEN]; 
     /* 标识符在汇编代码中的名称 */
     char rname[LABEL_LEN];
-    /* 标识符的属性（CONST、VAR、ELEMENT、FUNCT等等） */
+    /* 标识符的属性 */
     int defn;
     /* 标识符类型（基本类型） */
     Type type;
