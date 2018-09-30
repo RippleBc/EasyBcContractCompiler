@@ -107,7 +107,7 @@ symbol *new_symbol(char *name, int defn, int type_id)
 
 }
 
-/*  */
+/* 克隆name、rname、defn、type以及v（表示具体数值，与type组合使用）字段 */
 symbol *clone_symbol(symbol *origin)
 {
     symbol *p;
@@ -118,6 +118,7 @@ symbol *clone_symbol(symbol *origin)
     NEW0(p, PERM);
     if(!p)
         internal_error("insuffident memory.");
+
     strncpy(p->name, origin->name, NAME_LEN);
     strncpy(p->rname, origin->rname, LABEL_LEN);
     p->defn = origin->defn;
@@ -125,6 +126,8 @@ symbol *clone_symbol(symbol *origin)
     p->offset = 0;
     p->next = NULL;
     p->tab = NULL;
+
+    /* symbol类型为字符串 */
     if (p->type->type_id == TYPE_STRING)
         p->v.s = strdup(origin->v.s);
     else
@@ -137,18 +140,23 @@ symbol *clone_symbol_list(symbol *head)
     symbol *new_list;
     symbol *p;
     symbol *q;
+
     if(!head)
         return NULL;
     q = head;
+
+    /* 拷贝链表头 */
     new_list = p = clone_symbol(q);
-    q = p->next;
+
+    /* 遍历拷贝链表 */
+    q = q->next;
     while(q)
     {
         p->next = clone_symbol(q);
         p = p->next;
         q = q->next;
     }
-    p->next = NULL;
+
     return new_list;
 }
 
