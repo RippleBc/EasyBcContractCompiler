@@ -10,7 +10,11 @@
 #include  _YTAB_H_
 #define  SYMTAB_QUEUE_SIZE 128 /* 符号表队列长度 */
 #define  SYMTAB_STACK_SIZE 64 /* 符号表栈深度 */
+int const_index;
 
+int var_index;
+int arg_index;
+int cur_level;
 int routine_id;
 int align(int);
 int symtab_tos = SYMTAB_STACK_SIZE - 1;
