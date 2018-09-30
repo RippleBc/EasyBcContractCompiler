@@ -11,7 +11,7 @@ int warn_count = 0;
 
 int line_no;
 int line_pos;
-char line_buf[MAX_LINE_LENGTH];
+char line_buf[MAX_LINE_LENGTH]; /* 记录词法分析器解析到的当前行的内容 */
 
 void clear ();
 FILE *errfp;

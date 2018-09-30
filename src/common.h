@@ -13,33 +13,26 @@
 
 #define FILE_NAME_LEN	(64)
 
-#if 0
-#if defined (_MSDOS_)
-	#define _YTAB_H_		"ytab.h"
-#else
-	#define _YTAB_H_		"y.tab.h"
-#endif
-#else
-	#define		_YTAB_H_		"rule.h"
-#endif
+#define		_YTAB_H_		"rule.h"
 
 #ifdef WIN32
 #define YY_NO_UNISTD_H
 #endif
 
-#define MAX_LINE_LENGTH		(20480)
-
+#define MAX_LINE_LENGTH		(20480) /* 词法分析错误追踪时，可以追踪的行的最长字符个数 */
 #define STACK_SEG_SIZE		(2048)
-#define TABLE_LEN			(128)
+
 #define LABEL_LEN			(32)
 #define LAST_ENTRY			(65536 * 1024)
-#define NAME_LEN			(32)
-#define SIZE_CHAR			(1)
-#define SIZE_INTEGER		(4)
-#define SIZE_REAL			(4)
-#define SIZE_BOOLEAN		SIZE_INTEGER
-#define SIZE_POINTER		(4)
-#define S_STACK				SIZE_INTEGER
+
+#define NAME_LEN			(32) /* 变量名称可占用的最大字节数 */
+#define SIZE_CHAR			(1) /* char类型变量占用1字节 */
+#define SIZE_INTEGER		(4) /* integer类型变量占用4字节 */
+#define SIZE_REAL			(4) /* real类型变量占用4字节 */
+#define SIZE_BOOLEAN		SIZE_INTEGER /* boolean类型变量占用4字节 */
+#define SIZE_POINTER		(4) /* pointer类型变量占用4字节 */
+
+/* 对应_symbol_结构体中的defn属性 */
 #define DEF_UNKNOWN			(0)
 #define DEF_CONST			(1)
 #define DEF_VAR				(2)
@@ -59,10 +52,11 @@ typedef int					boolean;
 #define false 				0
 #define true 				1
 #define new_index(m)		++m##_index
-#define size(x)				SIZE_##x
 
+/* 记录汇编期间的信息 */
 extern	FILE 	*codfp;
 extern	FILE	*datfp;
+/* 记录编译期间的错误信息 */
 extern  FILE 	*errfp;
 
 typedef struct
