@@ -388,6 +388,28 @@ oct		[0-7]
 }
 %%
 
+/*
+	type 用于自定义类型
+	var 用于声明变量
+	const 用于申明常量
+
+	function 用于申明函数
+	procedure 用于申明过程
+
+	div 取整
+	mod 取余
+
+	repeat util 用于循环语句
+	for to/downto do 用于循环语句
+	while do 用于循环语句
+	case of 条件跳转
+	if then else if then else 条件跳转
+	label goto 跳转
+	begin 用于程序块或者流程控制语句，一般与end联合使用（for，function，while）
+	end 主程序的end后面加'.'，函数，过程，和其他的加'；'（record定义、case of语句末尾），如果end后面有else，就什么都不加
+*/
+
+/* 匹配字符，对应的Token，Token类型，参数，返回值 */
 KEYENTRY Keytable[] = {
 {"abs",		SYS_FUNCT,	fABS, TYPE_INTEGER, TYPE_INTEGER },
 {"and",		kAND,		KEYWORD, 0, 0 },
@@ -424,7 +446,7 @@ KEYENTRY Keytable[] = {
 {"program", 	kPROGRAM, KEYWORD, 0, 0 },
 {"read",	pREAD,	pREAD, 0, 0 },
 {"readln", 	pREAD,	pREADLN, 0, 0 },
-{"real",	SYS_TYPE,	KEYWORD, 0, 0 },
+{"real",	SYS_TYPE,	tREAL, 0, 0 },
 {"record", 	kRECORD,	KEYWORD, 0, 0 },
 {"repeat",	kREPEAT,	KEYWORD, 0, 0 },
 {"set", 	kSET, 		KEYWORD, 0, 0 },
@@ -454,7 +476,6 @@ struct {
 	{"kBEGIN",		kBEGIN },
 	{"SYS_TYPE", 	SYS_TYPE },
 	{"kCASE",		kCASE },
-	{"SYS_TYPE",	SYS_TYPE },
 	{"kCONST",		kCONST },
 	{"kDIV", 		kDIV },
 	{"kDO",			kDO },
@@ -514,9 +535,11 @@ static int id_or_keyword(char *lex)
 		exit(0);
 	}
 	
+	/* 转化为小写（pascal语言的token是忽略大小写的） */
 	for (p = lex; *p; p++)
 		*p = tolower(*p);
 
+	/* 二分法查找 */
 	while (mid != left && mid != right)
 	{
 		if (!strcmp(Keytable[mid].name, lex))
@@ -529,6 +552,7 @@ static int id_or_keyword(char *lex)
 			if (Keytable[mid].key == SYS_FUNCT
 				|| Keytable[mid].key == SYS_PROC)
 			{
+				/* 系统函数或者系统调用 */
 				yylval.p_lex = &Keytable[mid];
 
 				if (dump_token)
@@ -538,7 +562,9 @@ static int id_or_keyword(char *lex)
 			}
 			else if (Keytable[mid].key == SYS_CON)
 			{
+				/* true、false或者maxint */
 				yylval.num = Keytable[mid].attr;
+
 				if (dump_token)
 				{
 					printf(",yylval.p_num = Keytable[%d].atrr = %d", 
@@ -547,7 +573,9 @@ static int id_or_keyword(char *lex)
 			}
 			else if (Keytable[mid].key == SYS_TYPE)
 			{
+				/* real、integer、char、boolean */
 				strncpy(yylval.p_char, yytext, NAME_LEN);
+
 				if (dump_token)
 				{
 					printf(",yylval.p_char = %s", yylval.p_char);

@@ -8,8 +8,8 @@
 #include "error.h"
 #include "ops.h"
 
-#define KEYWORD		-1
-#define _PC_VER_	"0.1.5"
+#define KEYWORD		-1 /* 表示关键字 */
+#define _PC_VER_    "0.1.5" /* 编译器版本 */
 
 #define FILE_NAME_LEN	(64)
 
@@ -67,10 +67,15 @@ extern  FILE 	*errfp;
 
 typedef struct
 {
+    /* 保存单词名称 */
     char name[NAME_LEN];
+    /* 保存单词的种类标识，是分析器传递给语法分析器的终结符名称 */
     int key;
+    /* 为SYS_FUNCT、SYS_PROC、SYS_TYPE、SYS_COND、kPACKE、pREAD、KEYWORD*/
     int attr;
+    /* 表示函数返回值类型 */
     int ret_type;
+    /* 表示函数参数类型 */
     int arg_type;
 }
 KEYENTRY;

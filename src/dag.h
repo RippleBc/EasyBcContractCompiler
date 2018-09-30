@@ -1,5 +1,5 @@
-#ifndef _DAG_H_283609239664239235_
-#define _DAG_H_283609239664239235_
+#ifndef _DAG_H_
+#define _DAG_H_
 
 /* This file is included in common.h */
 /* node is defined in tree.h. */

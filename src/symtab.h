@@ -1,5 +1,5 @@
-#ifndef		_SYMTAB_H
-#define 	_SYMTAB_H
+#ifndef _SYMTAB_H
+#define _SYMTAB_H
 
 /* 保存常量的值 */
 union _value_ {
@@ -106,7 +106,7 @@ typedef struct _symbol_head_ * Symtab;
 
 #define make_global_symtab() new_symtab(NULL)
 
-#define MAX_SYS_ROUTINE		(24)
+#define MAX_SYS_ROUTINE (24)
 
 int Cur_level;
 int Routing_id;
