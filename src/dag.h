@@ -4,23 +4,10 @@
 /* This file is included in common.h */
 /* node is defined in tree.h. */
 
-#if 0
-typedef struct _node *Node;
-
-/* node for dag. */
-struct _node
-{
-    short op;
-    short count;
-    Symbol syms[3];
-    Node kids[2];
-    Node link;
-    Xnode x;
-};
-#endif
-
+/*  */
 enum { CODE=1, BSS, DATA, LIT };
 
+/*  */
 typedef struct table *Table;
 struct table
 {
@@ -35,8 +22,8 @@ struct table
     Symbol all;
 };
 
+/* */
 typedef struct code *Code;
-
 struct code
 {
     enum { Blockbeg, Blockend, Local, Address, Defpoint,

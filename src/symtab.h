@@ -87,7 +87,7 @@ struct _symbol_head_
     Type type;
     /* 局部变量的总字节数，用于构造子程序调用帧的局部变量 */
     int local_size;
-    /* 参数的总字节数，用于构造子程序调用帧的参数 */
+    /* 局部参数的总字节数，用于构造子程序调用帧的参数 */
     int args_size;
     /* 参数链表 */
     symbol *args;
@@ -108,8 +108,8 @@ typedef struct _symbol_head_ * Symtab;
 
 #define MAX_SYS_ROUTINE (24)
 
-int Cur_level;
-int Routing_id;
+int Cur_level; /* 当前符号表的嵌套深度 */
+int Routing_id; /*  */
 
 /* 全局符号表 */
 symtab *Global_symtab;

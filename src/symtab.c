@@ -8,23 +8,24 @@
 #include  "symtab.h"
 
 #include  _YTAB_H_
-#define  SYMTAB_QUEUE_SIZE 128
-#define  SYMTAB_STACK_SIZE 64
-int const_index;
+#define  SYMTAB_QUEUE_SIZE 128 /* 符号表队列长度 */
+#define  SYMTAB_STACK_SIZE 64 /* 符号表栈深度 */
 
-int var_index;
-int arg_index;
-int cur_level;
 int routine_id;
-int last_symtab=0;
 int align(int);
 int symtab_tos = SYMTAB_STACK_SIZE - 1;
-symtab *symtab_queue[SYMTAB_QUEUE_SIZE];
-symtab *Global_symtab;
-symtab *System_symtab[MAX_SYS_ROUTINE];
-symtab *symtab_stack[SYMTAB_STACK_SIZE];
+
+int last_symtab = 0;
+symtab *symtab_queue[SYMTAB_QUEUE_SIZE]; /* 存放已经处理完毕的symtab */
+
+symtab *symtab_stack[SYMTAB_STACK_SIZE]; /* 存放还未处理的symtab，处理完毕之后，放入symtab_queue中 */
+
+symtab *Global_symtab; /* 全局符号表 */
+symtab *System_symtab[MAX_SYS_ROUTINE]; /* 系统符号表 */
+
 extern int Keytable_size;
 
+/* 用于对齐，符号的字节大小必须是偶数 */
 int align(int bytes)
 {
     while (bytes % 2)
@@ -32,30 +33,33 @@ int align(int bytes)
     return bytes;
 }
 
+/* 将处理完毕的symtab放入symtab_queue中 */
 void enter_symtab_queue(symtab *tab)
 {
     if (last_symtab < SYMTAB_QUEUE_SIZE)
         symtab_queue[last_symtab ++] = tab;
 }
 
+/* 创建一个未初始化的symtab对象 */
 symtab *new_symtab(symtab *parent)
 {
     symtab *p;
 
-    /* p = (symtab *)malloc(sizeof(symtab)); */
+    /* p = (symtab *)malloc(sizeof(symtab));，然后把p所指向的内存空间的内容置为'0' */
     NEW0(p, PERM);
 
     if(!p)
         internal_error("insufficient memory.");
+
     p->parent = parent;
-    p->args_size = 0;
-    p->args = NULL;
-    p->localtab = NULL;
-    p->locals = NULL;
-    p->type_link = NULL;
+    p->args_size = 0; /* 参数的总字节数 */
+    p->args = NULL; /* 参数链表 */
+    p->localtab = NULL; /* 局部符号表（参数和变量），二叉树 */
+    p->locals = NULL; /* 局部变量链表 */
+    p->type_link = NULL; /* 过程或者函数返回值的类型链接 */
     if(parent)
     {
-        p->level = parent->level+1;
+        p->level = parent->level + 1;
     }
     else
     {
@@ -64,15 +68,16 @@ symtab *new_symtab(symtab *parent)
         Cur_level = 0;
         p->level = 0;
     }
-    p->defn = DEF_UNKNOWN;
-    p->type = find_type_by_id(TYPE_VOID);
-    p->id = routine_id++;
-    p->local_size = 0;
+    p->defn = DEF_UNKNOWN; /* 是PROC、FUNCT或者PROG */
+    p->type = find_type_by_id(TYPE_VOID); /* 过程或者函数返回值的类型（普通类型） */
+    p->id = routine_id++; /* 过程或者函数的序号 */
+    p->local_size = 0; /* 局部变量的总字节数 */
     enter_symtab_queue(p);
     return p;
 }
 
-symbol *new_symbol(char *name, int defn, int typeid)
+/* 创建一个symbol对象 */
+symbol *new_symbol(char *name, int defn, int type_id)
 {
     symbol *p;
     static int imp_index = 0;
@@ -84,31 +89,37 @@ symbol *new_symbol(char *name, int defn, int typeid)
         internal_error("insuffceent memory.");
 
     if(!strcmp(name,"$$$"))
+        /* name == "$$$" */
         sprintf(p->name,"z%d",++imp_index);
     else
         strncpy(p->name, name, NAME_LEN);
-    p->rname[0]= '\0';
-    p->defn = defn;
-    p->type = find_type_by_id(typeid);
-    p->offset = 0;
-    p->next = NULL;
-    p->lchild = p->rchild = NULL;
-    p->tab = NULL;
-    p->type_link = NULL;
+
+    p->rname[0]= '\0'; /* 汇编阶段赋值 */
+    p->defn = defn; /* 属性 */
+    p->type = find_type_by_id(type_id); /* symbol的类型 */
+    p->offset = 0; /* 在堆栈中的偏移量 */
+    p->next = NULL; /* 用于局部变量链表以及参数链表 */
+    p->lchild = p->rchild = NULL; /* 用于符号表（变量或者参数），二叉树 */
+    p->tab = NULL; /* 指向符号表的表头 */
+    p->type_link = NULL; /* 过程或者函数返回值的类型链接 */
+
     return p;
 
 }
+
+/*  */
 symbol *clone_symbol(symbol *origin)
 {
     symbol *p;
     if(!origin)
         return NULL;
+
     /* p = (symbol *)malloc(sizeof(symbol)); */
     NEW0(p, PERM);
     if(!p)
         internal_error("insuffident memory.");
-    strncpy(p->name,origin->name,NAME_LEN);
-    strncpy(p->name,origin->rname,LABEL_LEN);
+    strncpy(p->name, origin->name, NAME_LEN);
+    strncpy(p->rname, origin->rname, LABEL_LEN);
     p->defn = origin->defn;
     p->type = origin->type;
     p->offset = 0;
