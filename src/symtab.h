@@ -33,7 +33,7 @@ struct _symbol_
     char rname[LABEL_LEN];
     /* 标识符的属性 */
     int defn;
-    /* 标识符类型（基本类型） */
+    /* 标识符类型 */
     Type type;
     /* 变量在堆栈中的偏移量 */
     int offset;
@@ -45,7 +45,7 @@ struct _symbol_
     struct _symbol_ *lchild, *rchild;
     /* 指向符号表的表头结构 */
     struct _symbol_head_ *tab;
-    /* 同一个类型的下一个symbol（用户自定义类型，数组，记录，枚举） */
+    /* 类型链表 */
     struct _type_ *type_link;
 };
 
@@ -89,7 +89,7 @@ struct _symbol_head_
     int local_size;
     /* 局部参数的总字节数，用于构造子程序调用帧的参数 */
     int args_size;
-    /* 参数链表 */
+    /* 局部参数链表 */
     symbol *args;
     /* 局部符号表（变量和参数），二叉树的根 */
     symbol *localtab;
@@ -106,7 +106,7 @@ typedef struct _symbol_head_ * Symtab;
 
 #define make_global_symtab() new_symtab(NULL)
 
-#define MAX_SYS_ROUTINE (24)
+#define MAX_SYS_ROUTINE (24) /* 系统程序的最多个数 */
 
 int Cur_level; /* 当前符号表的嵌套深度 */
 int Routing_id; /*  */

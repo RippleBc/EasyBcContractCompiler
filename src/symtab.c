@@ -165,10 +165,12 @@ symbol *clone_symbol_list(symbol *head)
     return new_list;
 }
 
+/* 参数链表反转（采用跟随法，无需重新分配内存） */
 symbol *reverse_parameters(symtab *ptab)
 {
     symbol *p,*q;
     symbol *new_list = NULL;
+
     for(p = ptab->args;p;)
     {
         q = p;
@@ -176,6 +178,7 @@ symbol *reverse_parameters(symtab *ptab)
         q->next = new_list;
         new_list = q;
     }
+
     ptab->args = new_list;
     return ptab->args;
 }
@@ -188,10 +191,12 @@ void add_symbol_to_table(symtab*tab, symbol *sym)
     case DEF_PROC:
     case DEF_VAR:
     case DEF_CONST:
+        /* 函数标识、过程标识、普通变量标识、常量标识 */
         add_local_to_table(tab, sym);
         break;
     case DEF_VARPARA:
     case DEF_VALPARA:
+        /* 值参（一个常量）、变参（一个变量） */
         add_args_to_table(tab,sym);
         break;
     case DEF_PROG:
@@ -200,7 +205,7 @@ void add_symbol_to_table(symtab*tab, symbol *sym)
     }
 }
 
-void add_var_to_localtab(symtab *tab,symbol *sym)
+void add_var_to_localtab(symtab *tab, symbol *sym)
 {
     symbol *p;
     int i;
@@ -213,6 +218,8 @@ void add_var_to_localtab(symtab *tab,symbol *sym)
         tab->localtab = sym;
         return;
     }
+
+    /* 将局部symbol插入局部符号表 */
     p = tab->localtab;
     while(1)
     {
@@ -239,29 +246,33 @@ void add_var_to_localtab(symtab *tab,symbol *sym)
         }
         else
         {
-            parse_error("Duplicate identifier.",
-                        sym->name);
+            parse_error("Duplicate identifier.", sym->name);
             break;
         }
     }
 }
 
-void add_local_to_table(symtab *tab,symbol *sym)
+/* 添加局部变量到symtab中 */
+void add_local_to_table(symtab *tab, symbol *sym)
 {
-    if(!tab|| !sym)
+    if(!tab || !sym)
         return;
+
     if(sym->defn == DEF_CONST)
-        sprintf(sym->rname, "c%c_%03d",
-                sym->name[0],new_index(const));
+        /* 计算rname，rname的形式为 c+name+'_'+const_index（cN_000、cN_001）。
+         %03d表示右边对齐，左边不足3位的用0进行填充。 */
+        sprintf(sym->rname, "c%c_%03d", sym->name[0], new_index(const));
     else
-        sprintf(sym->rname, "v%c_%03d",
-                sym->name[0],new_index(var));
+        sprintf(sym->rname, "v%c_%03d", sym->name[0], new_index(var));
+
     if(tab->level)
     {
         if(tab->defn == DEF_FUNCT
                 && sym->defn != DEF_FUNCT)
         {
+            /* symtab为函数，记录局部变量在symtab中偏移量 */
             sym->offset = tab->local_size + 3 * IR->intmetric.size;
+            /* 计算symtab中局部变量所占用的空间 */
             tab->local_size += align(get_symbol_size(sym));
         }
         else if (tab->defn == DEF_PROC
@@ -272,36 +283,48 @@ void add_local_to_table(symtab *tab,symbol *sym)
         }
     }
 
+    /* 添加sym到局部变量链表中，从头部插入 */
     sym->next = tab->locals;
-    tab->locals=sym;
+    tab->locals = sym;
     sym->tab = tab;
-    add_var_to_localtab(tab,sym);
+
+    /* 将局部变量插入局部符号表中 */
+    add_var_to_localtab(tab, sym);
 }
 
 void add_args_to_table(symtab *tab, symbol *sym)
 {
     symbol *p;
     int var_size;
-    if(!tab|| !sym)
+    if(!tab || !sym)
         return;
+
+    /* 添加sym到局部参数链表中，从头部插入 */
     sym->next = tab->args;
     tab->args = sym;
     sym->tab = tab;
+
+    /* 计算局部变量在symtab中的偏移量 */
     sym->offset = 3 * IR->intmetric.size;
-    sprintf(sym->rname,"a%c_%03d",
-            sym->name[0],new_index(arg));
+    /* 计算rname，形式为aN_000、aN_001 */
+    sprintf(sym->rname, "a%c_%03d", sym->name[0], new_index(arg));
+    /* 计算symtab中参数所占用的空间 */
     var_size = align(get_symbol_size(sym));
     tab->args_size += var_size;
+
+    /* 重新计算其他参数在symtab中的偏移量 */
     for(p = tab->args->next; p; p = p->next)
         p->offset += var_size;
-    add_var_to_localtab(tab,sym);
+
+    /* 将局部参数插入局部符号表中 */
+    add_var_to_localtab(tab, sym);
 }
 
 extern KEYENTRY Keytable[];
 
 void make_system_symtab()
 {
-    int i,n;
+    int i;
     symtab *ptab;
     type *pt;
 
@@ -309,21 +332,18 @@ void make_system_symtab()
         System_symtab[i] = NULL;
 
 
-    /* System_symtab[0]=
-    		(symtab*)malloc(sizeof(symtab));
-    */
+    /* ptab = (symtab*)malloc(sizeof(symtab)); */
     NEW0(ptab, PERM);
-    System_symtab[0] = ptab;
-
-    if(!System_symtab)
+    if(!ptab)
         internal_error("Insuflicent memory. ");
 
-    ptab = System_symtab[0];
+    System_symtab[0] = ptab;
+
     sprintf(ptab->name,"system_table");
     sprintf(ptab->rname, "null");
 
-    ptab->type_link=
-        new_system_type(TYPE_INTEGER);
+    /* 初始化类型符号表 */
+    ptab->type_link = new_system_type(TYPE_INTEGER);
     pt = ptab->type_link;
     pt->next = new_system_type(TYPE_CHAR);
     pt = pt->next;
@@ -338,22 +358,18 @@ void make_system_symtab()
     pt->next = new_system_type(TYPE_UNKNOWN);
     pt = pt->next;
 
-    push_symtab_stack(ptab);
-
-    ptab->id=-1;
-    ptab->level=-1;
-    ptab->defn = DEF_UNKNOWN;
-    ptab->type = TYPE_UNKNOWN;
+    ptab->id = -1;
+    ptab->level = -1;
+    ptab->defn = DEF_UNKNOWN; /* 属性值 */
+    ptab->type = TYPE_UNKNOWN; /* 函数或者过程的返回类型 */ 
     ptab->local_size = 0;
     ptab->args_size = 0;
     ptab->args = NULL;
     ptab->parent = NULL;
-    ptab->locals = new_symbol("",DEF_UNKNOWN,
-                              TYPE_UNKNOWN);
+    ptab->locals = new_symbol("", DEF_UNKNOWN, TYPE_UNKNOWN);
 
-    n = 1;
-
-    /* for(i = 0 ; i < MAX_SYS_ROUTINE; i++){ */
+    /* 初始化系统函数以及系统过程调用 */
+    int n = 1;
     for(i = 0 ; i < Keytable_size; i++)
     {
         if(Keytable[i].key == SYS_FUNCT ||
@@ -366,8 +382,6 @@ void make_system_symtab()
         else if (Keytable[i].key == LAST_ENTRY)
             break;
     }
-
-    pop_symtab_stack();
 
     ptab->local_size = n;
 }
@@ -385,7 +399,7 @@ symtab* new_sys_symbol(KEYENTRY entry)
 
     strcpy(ptab->name, entry.name);
 
-    sprintf(ptab->rname, "_f_%s",entry.name);
+    sprintf(ptab->rname, "_f_%s", entry.name);
 
     ptab->id = -entry.attr;
     ptab->level = -1;
@@ -435,34 +449,29 @@ int is_symbol(symbol*p,char*name)
     return 1;
 }
 
-int get_symbol_size(symbol*sym)
+int get_symbol_size(symbol *sym)
 {
     switch(sym->type->type_id)
     {
     case TYPE_INTEGER:
         return  IR->intmetric.size;
-    case TYPE_CHAR   :
+    case TYPE_CHAR:
         return  IR->charmetric.size;
     case TYPE_BOOLEAN:
         return  IR->intmetric.size;
-    case TYPE_REAL   :
+    case TYPE_REAL:
         return  IR->floatmetric.size;
-
-    case TYPE_STRING :
-        return size (CHAR)
-               *(strlen(sym->v.s) + 1);
-    case TYPE_ARRAY  :
-        return  get_type_size(
-                    sym->type_link);
-
-    case TYPE_RECORD  :
-        return get_type_size(
-                   sym->type_link);
+    case TYPE_STRING:
+        return size(char) * (strlen(sym->v.s) + 1);
+    case TYPE_ARRAY:
+        /* 用户自定义类型，需要从_type_链表中寻找 */
+        return  get_type_size(sym->type_link);
+    case TYPE_RECORD:
+        /* 用户自定义类型，需要从_type_链表中寻找 */
+        return get_type_size(sym->type_link);
     case TYPE_UNKNOWN:
         internal_error("Unknown type.");
         break;
-    case  TYPE_VOID   :
-        return 0;
     default:
         break;
     }
@@ -477,7 +486,7 @@ symtab *pop_symtab_stack()
 }
 void push_symtab_stack (symtab *tab)
 {
-    if(symtab_tos== -1)
+    if(symtab_tos == -1)
         internal_error("Symtab stack overflow.");
     else
         symtab_stack[symtab_tos--] = tab;

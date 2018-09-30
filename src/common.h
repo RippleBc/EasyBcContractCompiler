@@ -97,7 +97,7 @@ void *allocate(unsigned long n, unsigned a);
 #define roundup(x,n) (((x)+((n)-1))&(~((n)-1)))
 
 
-/* 对应_symbol_结构体中的type属性，表示symbol的类型 */
+/* 对应_type_结构体中的type_id属性，表示TYPE的类型 */
 enum {
     TYPE_UNKNOWN = 0,
     TYPE_INTEGER = 1,
