@@ -51,7 +51,7 @@ typedef int					boolean;
 
 #define false 				0
 #define true 				1
-#define new_index(m)		++m##_index
+#define new_index(m)        ++m##_index
 #define size(x)             SIZE_##x
 
 /* 记录汇编期间的信息 */
