@@ -462,7 +462,7 @@ int get_symbol_size(symbol *sym)
     case TYPE_REAL:
         return  IR->floatmetric.size;
     case TYPE_STRING:
-        return size(char) * (strlen(sym->v.s) + 1);
+        return size(CHAR) * (strlen(sym->v.s) + 1);
     case TYPE_ARRAY:
         /* 用户自定义类型，需要从_type_链表中寻找 */
         return  get_type_size(sym->type_link);
