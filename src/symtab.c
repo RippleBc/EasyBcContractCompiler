@@ -391,7 +391,7 @@ void make_system_symtab()
 }
 
 /* 创建系统符号表 */
-symtab* new_sys_symbol(KEYENTRY     )
+symtab* new_sys_symbol(KEYENTRY entry)
 {
     symtab *ptab;
     symbol *p;
