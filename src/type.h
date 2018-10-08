@@ -8,7 +8,6 @@ type *new_array_type(char *name,type *pindex,;
                      type *pelement);
 type *new_record_type(char *name, symbol *fields);
 void add_type_to_table(symtab *ptab,type *pt);
-type *find_local_type_by_name(char *name);
 type *find_type_by_name(char *name);
 type *find_type_by_id(int id);
 type *clone_type(type *src);

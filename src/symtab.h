@@ -127,7 +127,7 @@ symbol *find_symbol(symtab *, char *);
 symbol *find_element(symtab *, char *);
 symbol *find_field(symbol *, char *);
 symbol *find_local_symbol(symtab *, char *);
-symbol *new_symbol(char *, int , int );
+symbol *new_symbol(char *, int , int);
 symbol *clone_symbol(symbol *);
 symbol *clone_symbol_list(symbol *);
 
@@ -155,7 +155,6 @@ int stoi(char *s,int radix);
 void set_subrange_bound(type *pt,int lower,int upper);
 void add_enum_elements(type *pt, symbol *symlist);
 type *new_array_type(char *name,type *pindex, type *pelement);
-type *find_local_type_by_name(char *name);
 
 int align(int);
 void make_system_symtab();

@@ -9,6 +9,7 @@
 
 static int type_index = 0;
 
+/* 字符串转化为10进制数字 */
 int stoi(char *s,int radix)
 {
     char *p = s;
@@ -62,10 +63,12 @@ type *new_system_type(int base_type)
     if (!pt)
         internal_error("Insufficient memory.");
 
+    /* 初始化类型符号表表项 */
     pt->type_id = base_type;
     pt->next = NULL;
     pt->first = pt->last = NULL;
 
+    /* 初始化类型符号的名称 */
     switch(base_type)
     {
     case TYPE_INTEGER:
@@ -92,14 +95,15 @@ type *new_system_type(int base_type)
     return pt;
 }
 
-type *new_subrange_type(char *name,int element_type)
+type *new_subrange_type(char *name, int element_type)
 {
+    /* 为下标生成一个匿名子界类型的type结构 */
     type *pt;
     if (element_type != TYPE_INTEGER
             &&element_type != TYPE_CHAR)
         return NULL;
 
-    /* pt = (type  *)malloc(sizeof(type)); */
+    /* pt = (type*)malloc(sizeof(type)); */
     NEW0(pt, PERM);
 
     if (!pt)
@@ -108,12 +112,14 @@ type *new_subrange_type(char *name,int element_type)
     if (name[0]=='$')
         sprintf(pt->name, "$$$%d", ++type_index);
     else
-        strncpy(pt->name,name,NAME_LEN);
+        strncpy(pt->name, name, NAME_LEN);
     pt->next = NULL;
 
+    /* 初始化下界symbol结构 */
     pt->first = new_symbol("$$$", DEF_ELEMENT,
                            element_type);
 
+    /* 初始化上界symbol结构 */
     pt->last = new_symbol("$$$", DEF_ELEMENT,
                           element_type);
 
@@ -125,7 +131,7 @@ type *new_subrange_type(char *name,int element_type)
     return pt;
 }
 
-void set_subrange_bound(type *pt,int lower,int upper)
+void set_subrange_bound(type *pt, int lower, int upper)
 {
     if (!pt || !pt->first || !pt->last)
         return;
@@ -135,8 +141,12 @@ void set_subrange_bound(type *pt,int lower,int upper)
         parse_error("Lower bound larger than upper bound",pt->name);
         return;
     }
+
+    /* 初始化上下界 */
     pt->first->v.i = lower;
     pt->last->v.i = upper;
+
+    /* type_id要么是char要么是int */
     if (pt->first->type->type_id == TYPE_CHAR)
     {
         sprintf(pt->first->rname, "%c", lower);
@@ -147,6 +157,8 @@ void set_subrange_bound(type *pt,int lower,int upper)
         sprintf(pt->first->rname, "0%xh", lower);
         sprintf(pt->last->rname,"0%xh", upper);
     }
+
+    /* 初始化subrange的元素个数 */
     pt->num_ele = upper - lower + 1;
 }
 
@@ -164,10 +176,11 @@ type *new_enum_type(char *name)
         return NULL;
     }
 
+    /* 初始化类型符号的名称 */
     if (name[0] == '$')
         sprintf(pt->name, "$$$%d", ++type_index);
     else
-        strncpy(pt->name, name,NAME_LEN);
+        strncpy(pt->name, name, NAME_LEN);
 
     pt->next = NULL;
     pt->type_id = TYPE_ENUM;
@@ -184,12 +197,13 @@ void add_enum_elements(type *pt, symbol *symlist)
         return;
     pt->first = symlist;
 
-    for(p = pt->first;p->next;p = p->next)
+    /* ENUM项初始化 */
+    for(p = pt->first; p->next; p = p->next)
     {
         p->defn = DEF_ELEMENT;
-        p->type = find_type_by_id(TYPE_INTEGER);
-        p->v.i = ++n;
-        sprintf(p->rname, "0%xh",p->v.i);
+        p->type = find_type_by_id(TYPE_INTEGER); /* 类型 */
+        p->v.i = ++n; /* 值，默认从0开始赋值 */
+        sprintf(p->rname, "0%xh", p->v.i); /* 汇编名称 */
     }
 
     p->defn = DEF_ELEMENT;
@@ -200,8 +214,7 @@ void add_enum_elements(type *pt, symbol *symlist)
     pt->num_ele = n;
 }
 
-type *new_array_type(char *name, type *pindex,
-                     type *pelement)
+type *new_array_type(char *name, type *pindex, type *pelement)
 {
     type *pt;
 
@@ -224,14 +237,16 @@ type *new_array_type(char *name, type *pindex,
         return NULL;
     }
 
+    /* 初始化array类型符号的名称 */
     strncpy(pt->name, name, NAME_LEN);
     pt->type_id = TYPE_ARRAY;
+    /* 初始化元素个数 */
     pt->num_ele = pindex->last->v.i -
                   pindex->first->v.i + 1;
-
+    /* 初始化 */
     pt->first = pindex->first;
-    pt->last = new_symbol("$$$", DEF_ELEMENT,
-                          pelement->type_id);
+    /* 初始化数组的元素类型 */
+    pt->last = new_symbol("$$$", DEF_ELEMENT, pelement->type_id);
     sprintf(pt->last->rname, "ary_ele");
     if (!pt->last)
     {
@@ -265,6 +280,7 @@ type *new_record_type(char *name, symbol *fields)
     for(p = fields; p ; p = p->next)
     {
         p->defn = DEF_FIELD;
+        /* 计算符号在内存中的偏移量 */
         p->offset = pt->size;
         pt->size += align(get_symbol_size(p));
         pt->num_ele++;
@@ -272,13 +288,15 @@ type *new_record_type(char *name, symbol *fields)
     return pt;
 }
 
-void add_type_to_table(symtab *ptab,type *pt)
+void add_type_to_table(symtab *ptab, type *pt)
 {
     type *qt;
     symbol *p;
 
     if (!ptab || !pt)
         return;
+
+    /* 检查是否有重复的自定义类型 */
     for(qt = ptab->type_link; qt; qt = qt->next)
         if (!strcmp(qt->name, pt->name))
         {
@@ -291,41 +309,10 @@ void add_type_to_table(symtab *ptab,type *pt)
     if (pt->type_id == TYPE_ENUM
             || pt->type_id == TYPE_RECORD)
         for(p = pt->first; p; p = p->next)
+            /* ENUM类型或者RECORD类型自定义类型，将里面的自定义类型项添加到局部变量表中（二叉树） */
             add_var_to_localtab(ptab, p);
 }
 
-
-type *find_local_type_by_name(char *name)
-{
-    type *pt;
-    symtab *ptab;
-
-    ptab = top_symtab_stack();
-    if (!ptab)
-        return NULL;
-
-    for(pt = ptab->type_link; pt; pt = pt->next)
-        if (!strcmp(name, pt->name))
-            return pt;
-
-    for(pt = System_symtab[0]->type_link;pt;
-            pt = pt->next)
-        if (!strcmp(name,pt->name))
-            return pt;
-    ptab = ptab->parent;
-    while(ptab)
-    {
-        for(pt = ptab->type_link;pt;pt = pt->next)
-            if (!strcmp(name, pt->name))
-                return pt;
-    }
-    return NULL;
-}
-
-/*
- * find type by type name. 
- * 
- */
 type *find_type_by_name(char *name)
 {
     type *pt;
@@ -355,10 +342,6 @@ type *find_type_by_name(char *name)
     return NULL;
 }
 
-/*
- * find type by type id. 
- * 
- */
 type *find_type_by_id(int id)
 {
     type *pt;
