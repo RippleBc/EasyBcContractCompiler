@@ -358,6 +358,8 @@ void make_system_symtab()
     pt->next = new_system_type(TYPE_UNKNOWN);
     pt = pt->next;
 
+    push_symtab_stack(ptab);
+
     ptab->id = -1;
     ptab->level = -1;
     ptab->defn = DEF_UNKNOWN; /* 属性值 */
@@ -383,6 +385,8 @@ void make_system_symtab()
             break;
     }
 
+    pop_symtab_stack();
+    
     ptab->local_size = n;
 }
 
