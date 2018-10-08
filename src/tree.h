@@ -10,12 +10,11 @@
 #include "common.h"
 #include "symtab.h"
 
-
 enum { CONSTANTS=1, LABELS, GLOBAL, PARAM, LOCAL };
 
 struct _node;
 
-/* AST节点 */
+/* DAG节点 */
 struct _node
 {
     short op; /* 操作码 */
@@ -44,6 +43,7 @@ struct _node
 
 typedef struct _node * Node;
 
+/* AST节点 */
 struct _tree;
 typedef struct _tree
 {
