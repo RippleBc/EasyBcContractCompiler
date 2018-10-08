@@ -32,3 +32,6 @@ build/
 
 # vim stuff
 *.swp
+
+# flex bison generated file
+rule.h rule.c lex.yy.c

@@ -2,10 +2,9 @@
 
 #include _YTAB_H_
 
-#define iscall(op) (generic(op) == CALL \
-				|| IR->mulops_calls \
-				&& (generic(op)==DIV||generic(op)==MOD||generic(op)==MUL) \
-				&& ( optype(op)==U  || optype(op)==I))
+#define iscall(op) (generic(op) == CALL || IR->mulops_calls \
+				&& (generic(op)==DIV || generic(op)==MOD || generic(op)==MUL) \
+				&& (optype(op)==U || optype(op)==I))
 /* static Node forest; */
 
 static int where = DAG;

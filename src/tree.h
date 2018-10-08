@@ -15,9 +15,10 @@ enum { CONSTANTS=1, LABELS, GLOBAL, PARAM, LOCAL };
 
 struct _node;
 
+/* AST节点 */
 struct _node
 {
-    short op;
+    short op; /* 操作码 */
 #ifdef DEBUG
 
     char *op_name;
@@ -25,7 +26,7 @@ struct _node
 
     short count;
     Symbol syms[3];
-    Symtab symtab;
+    Symtab symtab; /* 符号表 */
     union {
         int		sys_id;
         struct
@@ -34,11 +35,11 @@ struct _node
             int true_or_false;
         }
         cond;
-    }u;
+    }u; /* 跳转相关 */
     Type type;
+    /* 三元操作符 */
     struct _node* kids[2];
     struct _node* link;
-    /* Xnode x; */
 };
 
 typedef struct _node * Node;

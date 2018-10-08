@@ -1,9 +1,6 @@
 #ifndef _DAG_H_
 #define _DAG_H_
 
-/* This file is included in common.h */
-/* node is defined in tree.h. */
-
 /*  */
 enum { CODE=1, BSS, DATA, LIT };
 
@@ -11,7 +8,7 @@ enum { CODE=1, BSS, DATA, LIT };
 typedef struct table *Table;
 struct table
 {
-    int level;
+    int level; /* 层级 */
     Table previous;
     struct entry
     {
@@ -36,7 +33,6 @@ struct code
             int level;
             Symbol *locals;
             Table identifiers, types;
-            /* Env x; */
         }
         block;
         Code begin;

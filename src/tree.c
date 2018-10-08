@@ -138,7 +138,7 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
 
     if (argtree == NULL)
     {
-        if (arg != NULL)
+        if (arg != NULL) 
             t = new_tree(ARG, arg->type, expr, NULL);
         else
             t = new_tree(ARG, expr->result_type, expr, NULL);
@@ -154,7 +154,6 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
 
     return argtree;
 }
-
 
 /* get value of a field of record. */
 Tree field_tree(Symbol record, Symbol field)
