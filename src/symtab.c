@@ -38,7 +38,7 @@ int align(int bytes)
     return bytes;
 }
 
-/* 将处理完毕的symtab放入symtab_queue中 */
+/* 记录下symtab的创建顺序 */
 void enter_symtab_queue(symtab *tab)
 {
     if (last_symtab < SYMTAB_QUEUE_SIZE)
@@ -342,7 +342,7 @@ void make_system_symtab()
     sprintf(ptab->name,"system_table");
     sprintf(ptab->rname, "null");
 
-    /* 初始化类型符号表 */
+    /* 初始化基础类型符号表 */
     ptab->type_link = new_system_type(TYPE_INTEGER);
     pt = ptab->type_link;
     pt->next = new_system_type(TYPE_CHAR);
@@ -386,7 +386,8 @@ void make_system_symtab()
     ptab->local_size = n;
 }
 
-symtab* new_sys_symbol(KEYENTRY entry)
+/* 创建系统符号表 */
+symtab* new_sys_symbol(KEYENTRY     )
 {
     symtab *ptab;
     symbol *p;
@@ -397,11 +398,14 @@ symtab* new_sys_symbol(KEYENTRY entry)
     if(!ptab)
         internal_error("Insufticent  memoy.");
 
+    /* 初始化符号名称 */
     strcpy(ptab->name, entry.name);
 
+    /* 初始化符号对应的汇编代码 */
     sprintf(ptab->rname, "_f_%s", entry.name);
 
-    ptab->id = -entry.attr;
+    /* 初始化系统符号表的头部 */
+    ptab->id = - entry.attr; /* 注意，系统符号的ID为attr的负值 */
     ptab->level = -1;
     ptab->defn = DEF_FUNCT;
     ptab->type = find_type_by_id(entry.ret_type);
@@ -418,33 +422,36 @@ symtab* new_sys_symbol(KEYENTRY entry)
     if(!p)
         internal_error("Insufticent memory.");
 
+    /* 初始化系统符号表的表项 */
     strcpy(p->name, ptab->name);
     strcpy(p->rname, ptab->rname);
     p->defn = DEF_FUNCT;
     p->type = find_type_by_id(entry.ret_type);
     p->offset = 0;
     p->next = NULL;
-    p->tab = ptab;
+    p->tab = ptab; /* 链接系统符号表表项和系统符号表表头 */
     p->type_link = NULL;
-    ptab->locals = p;
+    ptab->locals = p; /* 系统符号表表头局部变量指向初始化的系统符号表表项 */
     if(entry.arg_type)
     {
+        /* 拥有一个函数参数类型，初始化一个参数符号表 */
         /* p = (symbol*)malloc(sizeof(symbol)); */
         NEW0(p, PERM);
 
         if(!p)
             internal_error("Insufficent memory.");
-        strcpy(p->name, "arg");
-        p->defn =DEF_VALPARA;
+
+        strcpy(p->name, "arg");                           
+        p->defn = DEF_VALPARA;
         p->type = find_type_by_id(entry.arg_type);
-        add_args_to_table(ptab,p);
+        add_args_to_table(ptab, p);
     }
     return ptab;
 }
 
-int is_symbol(symbol*p,char*name)
+int is_symbol(symbol *p, char *name)
 {
-    if(strcmp(p->name,name))
+    if(strcmp(p->name, name))
         return  0;
     return 1;
 }
@@ -497,19 +504,21 @@ symtab *top_symtab_stack()
     return symtab_stack[symtab_tos + 1];
 }
 
+/* 按照创建的先后顺序寻找符号表 */
 symtab *find_routine(char *name)
 {
     int i;
     symtab *ptab;
-    for(i=0;i<last_symtab;i++)
+    for(i = 0; i < last_symtab; i++)
     {
         ptab = symtab_queue[i];
-        if(!strcmp(ptab->name,name))
+        if(!strcmp(ptab->name, name))
             return ptab;
     }
     return NULL;
 }
 
+/* 寻找系统符号表 */
 symtab *find_sys_routine(int routine_id)
 {
     int i;
@@ -519,23 +528,27 @@ symtab *find_sys_routine(int routine_id)
     return NULL;
 }
 
-symbol *find_element(symtab *tab,char *name)
+/* 从类型符号表中寻找用户自定义类型对应的符号（用于array、enum、record等） */
+symbol *find_element(symtab *tab, char *name)
 {
     symbol *p;
     symtab *ptab = tab;
     type *pt;
     while(ptab)
     {
+        /* 遍历用户自定义类型 */
         for(pt = ptab->type_link; pt; pt = pt->next)
+            /* 遍历自定义类型中的类型项（比如enum） */
             for(p = pt->first; p; p = p->next)
-                if(is_symbol(p,name))
+                if(is_symbol(p, name))
                     return p;
         ptab = ptab->parent;
     }
     return NULL;
 }
 
-symbol *find_field(symbol *p,char *name)
+/* 从类型符号表中寻找RECORD中对应的field */
+symbol *find_field(symbol *p, char *name)
 {
     type *pt;
     symbol *q;
@@ -543,6 +556,7 @@ symbol *find_field(symbol *p,char *name)
     if(!p || p->type->type_id != TYPE_RECORD)
         return NULL;
     pt = p->type_link;
+    /* 遍历符号类型 */
     for(q = pt->first; q; q = q->next)
         if(is_symbol(q, name))
             return q;
@@ -550,7 +564,7 @@ symbol *find_field(symbol *p,char *name)
     return NULL;
 }
 
-symbol *find_symbol(symtab *tab,char *name)
+symbol *find_symbol(symtab *tab, char *name)
 {
     symbol *p;
     symtab *ptab = tab;
@@ -563,18 +577,21 @@ symbol *find_symbol(symtab *tab,char *name)
         return p;
     }
     while(ptab)
-    {
-        p = find_local_symbol(ptab,name);
+    {   
+        /* 寻找指定的实例符号 */
+        p = find_local_symbol(ptab, name);
         if(p)
             return p;
-        for(pt = ptab->type_link; pt; pt=pt->next)
+        /* 实例符号不存在，寻找指定的类型符号 */
+        for(pt = ptab->type_link; pt; pt = pt->next)
             for(p = pt->first; p; p = p->next)
-                if(is_symbol(p,name))
+                if(is_symbol(p, name))
                     return p;
         ptab = ptab->parent;
     }
     return NULL;
 }
+
 symbol *find_local_symbol(symtab *tab, char *name)
 {
     symbol *p;
@@ -585,6 +602,7 @@ symbol *find_local_symbol(symtab *tab, char *name)
     if(!ptab->localtab)
         return NULL;
     p = ptab->localtab;
+    /* 从实例符号表中寻找指定的实例符号 */
     while(p)
     {
         i = strcmp(name, p->name);
