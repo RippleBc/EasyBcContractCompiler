@@ -29,7 +29,6 @@ COMPILER_SOURCE= common.h \
 				type.c \
 				x86.c \
 				x86.h \
-				x86rtl.asm \
 				rule.c \
 				lex.yy.c \
 				alloc.c \

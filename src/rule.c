@@ -81,12 +81,14 @@
 
 #include "x86.h"
 
-extern char *yytext;
-symtab *ptab;
+extern char *yytext; /* flex用于记录匹配到的字符串 */
+symtab *ptab; /* 符号表表头 */
 symbol *p, *q;
 tree   *t;
 type *pt, *qt;
 int temp;
+
+/* 对token的操作 */
 symbol* pop_term_stack();
 symbol* top_term_stack();
 void push_term_stack(symbol * p);
@@ -94,7 +96,7 @@ void push_term_stack(symbol * p);
 Env global_env;
 Env main_env;
 
-Symtab	rtn = NULL;
+Symtab	rtn = NULL; /* 表示system routine */
 Symbol	arg = NULL;
 
 #ifdef GENERATE_AST
@@ -119,15 +121,14 @@ struct list ast_forest;
 struct list para_list;				/* for parameter list. */
 List  case_list = NULL;
 struct list dag_forest;				/* for dags. */
-Tree   	args;
-Tree   	now_function;
-Tree	t;
+Tree args;
+Tree now_function;
+Tree t;
 Symbol	new_label = NULL;
-/* Symbol	case_label = NULL;	*/
 Symbol	test_label = NULL;
 Symbol  exit_label = NULL;
 char 	mini_buf[NAME_LEN];			/* buffer for generated name. */
-int		if_label_count;				/* count for label of if test. */
+int		if_label_count;				/* count for label of if. */
 int		repeat_label_count;			/* count for label of repeat. */
 int		case_label_count;			/* count for label of case. */
 int		switch_label_count;			/* count for label of switch. */
@@ -167,7 +168,7 @@ void trap_in_debug();
 #endif
 
 
-#line 171 "rule.c" /* yacc.c:339  */
+#line 172 "rule.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -299,17 +300,17 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 106 "spl.y" /* yacc.c:355  */
+#line 107 "spl.y" /* yacc.c:355  */
 
 	char 		p_char[NAME_LEN];
 	int 		num;
 	int 		ascii;
-	Symbol 		p_symbol;
-	Type		p_type;
-	KEYENTRY	*p_lex;
+	Symbol 		p_symbol; /* 符号 */
+	Type		p_type; /* 类型 */
+	KEYENTRY	*p_lex; /* 关键字 */
 	Tree 		p_tree;
 
-#line 313 "rule.c" /* yacc.c:355  */
+#line 314 "rule.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -326,7 +327,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 330 "rule.c" /* yacc.c:358  */
+#line 331 "rule.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -632,24 +633,24 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   227,   227,   260,   268,   282,   287,   286,   327,   334,
-     339,   340,   344,   348,   357,   362,   363,   367,   374,   384,
-     392,   400,   408,   416,   451,   452,   456,   457,   461,   480,
-     481,   482,   486,   495,   504,   510,   517,   535,   542,   552,
-     559,   581,   609,   639,   677,   678,   682,   683,   687,   711,
-     712,   713,   714,   715,   719,   746,   745,   789,   813,   812,
-     846,   851,   855,   856,   860,   885,   910,   914,   921,   925,
-     926,   927,   931,   932,   936,   937,   938,   939,   940,   941,
-     942,   943,   944,   945,   949,  1022,  1037,  1021,  1065,  1064,
-    1105,  1121,  1120,  1139,  1149,  1148,  1172,  1194,  1193,  1214,
-    1220,  1233,  1213,  1274,  1278,  1273,  1285,  1286,  1291,  1290,
-    1320,  1333,  1319,  1374,  1409,  1373,  1473,  1477,  1485,  1503,
-    1510,  1484,  1550,  1551,  1556,  1579,  1555,  1593,  1627,  1592,
-    1642,  1646,  1664,  1691,  1690,  1707,  1706,  1723,  1722,  1740,
-    1739,  1756,  1755,  1772,  1771,  1787,  1798,  1797,  1813,  1812,
-    1828,  1827,  1842,  1851,  1850,  1866,  1865,  1881,  1880,  1897,
-    1896,  1913,  1912,  1927,  1933,  1976,  1975,  1994,  2005,  2004,
-    2021,  2049,  2058,  2067,  2077,  2076,  2107,  2134,  2152
+       0,   228,   228,   261,   269,   283,   288,   287,   328,   335,
+     340,   341,   345,   349,   358,   363,   364,   368,   375,   385,
+     393,   401,   409,   417,   452,   453,   457,   458,   462,   481,
+     482,   483,   487,   496,   505,   511,   518,   536,   543,   553,
+     560,   582,   610,   640,   678,   679,   683,   684,   688,   712,
+     713,   714,   715,   716,   720,   747,   746,   790,   814,   813,
+     847,   852,   856,   857,   861,   886,   911,   915,   922,   926,
+     927,   928,   932,   933,   937,   938,   939,   940,   941,   942,
+     943,   944,   945,   946,   950,  1023,  1038,  1022,  1066,  1065,
+    1106,  1122,  1121,  1140,  1150,  1149,  1173,  1195,  1194,  1215,
+    1221,  1234,  1214,  1275,  1279,  1274,  1286,  1287,  1292,  1291,
+    1321,  1334,  1320,  1375,  1410,  1374,  1474,  1478,  1486,  1504,
+    1511,  1485,  1551,  1552,  1557,  1580,  1556,  1594,  1628,  1593,
+    1643,  1647,  1665,  1692,  1691,  1708,  1707,  1724,  1723,  1741,
+    1740,  1757,  1756,  1773,  1772,  1788,  1799,  1798,  1814,  1813,
+    1829,  1828,  1843,  1852,  1851,  1867,  1866,  1882,  1881,  1898,
+    1897,  1914,  1913,  1928,  1934,  1977,  1976,  1995,  2006,  2005,
+    2022,  2050,  2059,  2068,  2078,  2077,  2108,  2135,  2153
 };
 #endif
 
@@ -1670,7 +1671,7 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 228 "spl.y" /* yacc.c:1646  */
+#line 229 "spl.y" /* yacc.c:1646  */
     {
 	//dump_symtab(Global_symtab);
 	pop_symtab_stack();
@@ -1699,22 +1700,22 @@ yyreduce:
 #endif
 	return 0;
 }
-#line 1703 "rule.c" /* yacc.c:1646  */
+#line 1704 "rule.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 260 "spl.y" /* yacc.c:1646  */
+#line 261 "spl.y" /* yacc.c:1646  */
     {
 	parser_init();
 	make_global_symtab();
 	make_system_symtab();
 	push_symtab_stack(Global_symtab);
 }
-#line 1714 "rule.c" /* yacc.c:1646  */
+#line 1715 "rule.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 269 "spl.y" /* yacc.c:1646  */
+#line 270 "spl.y" /* yacc.c:1646  */
     {
 	strcpy(Global_symtab->name, (yyvsp[-1].p_char));
 	snprintf(Global_symtab->rname, sizeof(Global_symtab->rname), "main");
@@ -1728,11 +1729,11 @@ yyreduce:
 #endif
 
 }
-#line 1732 "rule.c" /* yacc.c:1646  */
+#line 1733 "rule.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 287 "spl.y" /* yacc.c:1646  */
+#line 288 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	main_env.u.main.tab = Global_symtab;
@@ -1767,71 +1768,71 @@ yyreduce:
 #endif
 
 }
-#line 1771 "rule.c" /* yacc.c:1646  */
+#line 1772 "rule.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 322 "spl.y" /* yacc.c:1646  */
+#line 323 "spl.y" /* yacc.c:1646  */
     {
 }
-#line 1778 "rule.c" /* yacc.c:1646  */
+#line 1779 "rule.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 328 "spl.y" /* yacc.c:1646  */
+#line 329 "spl.y" /* yacc.c:1646  */
     {
 	p = new_symbol((yyvsp[0].p_char), DEF_UNKNOWN, TYPE_UNKNOWN);
 	for(q = (yyvsp[-2].p_symbol); q->next; q = q->next);
 	q->next = p; p ->next = NULL;
 	(yyval.p_symbol) = (yyvsp[-2].p_symbol);
 }
-#line 1789 "rule.c" /* yacc.c:1646  */
+#line 1790 "rule.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 335 "spl.y" /* yacc.c:1646  */
+#line 336 "spl.y" /* yacc.c:1646  */
     {
 	p = new_symbol((yyvsp[0].p_char), DEF_UNKNOWN, TYPE_UNKNOWN);
 	(yyval.p_symbol) = p;
 }
-#line 1798 "rule.c" /* yacc.c:1646  */
+#line 1799 "rule.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 349 "spl.y" /* yacc.c:1646  */
+#line 350 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
 	emit_routine_prologue(top_symtab_stack());
 #endif
 }
-#line 1809 "rule.c" /* yacc.c:1646  */
+#line 1810 "rule.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 368 "spl.y" /* yacc.c:1646  */
+#line 369 "spl.y" /* yacc.c:1646  */
     {
 	/* change name of symbol const_value to yNAME */
 	strncpy((yyvsp[-1].p_symbol)->name, (yyvsp[-3].p_char), NAME_LEN);
 	add_symbol_to_table(
 		top_symtab_stack(), (yyvsp[-1].p_symbol));
 }
-#line 1820 "rule.c" /* yacc.c:1646  */
+#line 1821 "rule.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 375 "spl.y" /* yacc.c:1646  */
+#line 376 "spl.y" /* yacc.c:1646  */
     {
 	/* change name of symbol const_value to yNAME */
 	strncpy((yyvsp[-1].p_symbol)->name, (yyvsp[-3].p_char), NAME_LEN);
 	add_symbol_to_table(
 		top_symtab_stack(),(yyvsp[-1].p_symbol));
 }
-#line 1831 "rule.c" /* yacc.c:1646  */
+#line 1832 "rule.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 385 "spl.y" /* yacc.c:1646  */
+#line 386 "spl.y" /* yacc.c:1646  */
     {
 	/* integer const, temperary named $$$, will change later. */
 	p = new_symbol("$$$", DEF_CONST,
@@ -1839,11 +1840,11 @@ yyreduce:
 	p->v.i = (yyvsp[0].num);
 	(yyval.p_symbol) = p;
 }
-#line 1843 "rule.c" /* yacc.c:1646  */
+#line 1844 "rule.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 393 "spl.y" /* yacc.c:1646  */
+#line 394 "spl.y" /* yacc.c:1646  */
     {
 	p = new_symbol("$$$",DEF_CONST,
 		TYPE_REAL);
@@ -1851,11 +1852,11 @@ yyreduce:
 	p->v.f = atof((yyvsp[0].p_char));
 	(yyval.p_symbol) = p;
 }
-#line 1855 "rule.c" /* yacc.c:1646  */
+#line 1856 "rule.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 401 "spl.y" /* yacc.c:1646  */
+#line 402 "spl.y" /* yacc.c:1646  */
     {
 	p = new_symbol("$$$", DEF_CONST,
 		TYPE_CHAR);
@@ -1863,11 +1864,11 @@ yyreduce:
 	p->v.c= (yyvsp[0].p_char)[1];
 	(yyval.p_symbol) = p;
 }
-#line 1867 "rule.c" /* yacc.c:1646  */
+#line 1868 "rule.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 409 "spl.y" /* yacc.c:1646  */
+#line 410 "spl.y" /* yacc.c:1646  */
     {
 	p = new_symbol("$$$",DEF_CONST,
 		TYPE_STRING);
@@ -1875,11 +1876,11 @@ yyreduce:
 	p->v.s = strdup((yyvsp[0].p_char));
 	(yyval.p_symbol) = p;
 }
-#line 1879 "rule.c" /* yacc.c:1646  */
+#line 1880 "rule.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 417 "spl.y" /* yacc.c:1646  */
+#line 418 "spl.y" /* yacc.c:1646  */
     {
 	p = new_symbol("$$$", DEF_CONST,
 		TYPE_UNKNOWN);
@@ -1911,11 +1912,11 @@ yyreduce:
 
 	(yyval.p_symbol) = p;
 }
-#line 1915 "rule.c" /* yacc.c:1646  */
+#line 1916 "rule.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 462 "spl.y" /* yacc.c:1646  */
+#line 463 "spl.y" /* yacc.c:1646  */
     {
 	if((yyvsp[-1].p_type)->name[0] == '$')
 	{
@@ -1931,49 +1932,49 @@ yyreduce:
 			top_symtab_stack(), (yyval.p_type));
 	}
 }
-#line 1935 "rule.c" /* yacc.c:1646  */
+#line 1936 "rule.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 487 "spl.y" /* yacc.c:1646  */
+#line 488 "spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_type) = new_array_type("$$$", (yyvsp[-3].p_type), (yyvsp[0].p_type));
 	add_type_to_table(
 		top_symtab_stack(),(yyval.p_type));
 }
-#line 1945 "rule.c" /* yacc.c:1646  */
+#line 1946 "rule.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 496 "spl.y" /* yacc.c:1646  */
+#line 497 "spl.y" /* yacc.c:1646  */
     { 
 	pt = new_record_type("$$$", (yyvsp[-1].p_symbol));
  	add_type_to_table(top_symtab_stack(), pt);
 	(yyval.p_type) = pt;
 }
-#line 1955 "rule.c" /* yacc.c:1646  */
+#line 1956 "rule.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 505 "spl.y" /* yacc.c:1646  */
+#line 506 "spl.y" /* yacc.c:1646  */
     {
     for(p = (yyvsp[-1].p_symbol); p->next; p = p->next);
 	p->next = (yyvsp[0].p_symbol);
 	(yyval.p_symbol) = (yyvsp[-1].p_symbol);  
 }
-#line 1965 "rule.c" /* yacc.c:1646  */
+#line 1966 "rule.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 511 "spl.y" /* yacc.c:1646  */
+#line 512 "spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_symbol) = (yyvsp[0].p_symbol);
 }
-#line 1973 "rule.c" /* yacc.c:1646  */
+#line 1974 "rule.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 518 "spl.y" /* yacc.c:1646  */
+#line 519 "spl.y" /* yacc.c:1646  */
     {    
 	for(p = (yyvsp[-3].p_symbol); p; p = p->next) {
 		if((yyvsp[-1].p_type)->type_id == TYPE_SUBRANGE)
@@ -1988,22 +1989,22 @@ yyreduce:
 	}
 	(yyval.p_symbol) = (yyvsp[-3].p_symbol);
 }
-#line 1992 "rule.c" /* yacc.c:1646  */
+#line 1993 "rule.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 536 "spl.y" /* yacc.c:1646  */
+#line 537 "spl.y" /* yacc.c:1646  */
     {
 	pt = find_type_by_name((yyvsp[0].p_char));
 	if(!pt)
 		parse_error("Undeclared type name",(yyvsp[0].p_char));
 	(yyval.p_type) = pt;
 }
-#line 2003 "rule.c" /* yacc.c:1646  */
+#line 2004 "rule.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 543 "spl.y" /* yacc.c:1646  */
+#line 544 "spl.y" /* yacc.c:1646  */
     {
 	pt = find_type_by_name((yyvsp[0].p_char));
 	if (!pt)
@@ -2013,22 +2014,22 @@ yyreduce:
 	}
 	(yyval.p_type) = pt;
 }
-#line 2017 "rule.c" /* yacc.c:1646  */
+#line 2018 "rule.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 553 "spl.y" /* yacc.c:1646  */
+#line 554 "spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_type) = new_enum_type("$$$");
 	add_enum_elements((yyval.p_type), (yyvsp[-1].p_symbol));
 	add_type_to_table(
 		top_symtab_stack(),(yyval.p_type));
 }
-#line 2028 "rule.c" /* yacc.c:1646  */
+#line 2029 "rule.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 560 "spl.y" /* yacc.c:1646  */
+#line 561 "spl.y" /* yacc.c:1646  */
     {
 	if((yyvsp[-2].p_symbol)->type->type_id != (yyvsp[0].p_symbol)->type->type_id){
 		parse_error("type mismatch","");
@@ -2050,11 +2051,11 @@ yyreduce:
 	else
 		parse_error("invalid element type of subrange","");
 }
-#line 2054 "rule.c" /* yacc.c:1646  */
+#line 2055 "rule.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 582 "spl.y" /* yacc.c:1646  */
+#line 583 "spl.y" /* yacc.c:1646  */
     {
 	if((yyvsp[-2].p_symbol)->type->type_id != (yyvsp[0].p_symbol)->type->type_id){
 		parse_error("type mismatch","");
@@ -2082,11 +2083,11 @@ yyreduce:
 	else
    		parse_error("invalid element type of subrange","");
 }
-#line 2086 "rule.c" /* yacc.c:1646  */
+#line 2087 "rule.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 610 "spl.y" /* yacc.c:1646  */
+#line 611 "spl.y" /* yacc.c:1646  */
     {
 	if((yyvsp[-3].p_symbol)->type->type_id != (yyvsp[0].p_symbol)->type->type_id) {
 		parse_error("type mismatch.","");
@@ -2116,11 +2117,11 @@ yyreduce:
 	else
 		parse_error("invalid element type of subrange","");
 }
-#line 2120 "rule.c" /* yacc.c:1646  */
+#line 2121 "rule.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 640 "spl.y" /* yacc.c:1646  */
+#line 641 "spl.y" /* yacc.c:1646  */
     {
 	p = find_element(top_symtab_stack(), (yyvsp[-2].p_char));
 
@@ -2155,11 +2156,11 @@ yyreduce:
 	else
 		(yyval.p_type) = NULL;
 }
-#line 2159 "rule.c" /* yacc.c:1646  */
+#line 2160 "rule.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 688 "spl.y" /* yacc.c:1646  */
+#line 689 "spl.y" /* yacc.c:1646  */
     {    
 	ptab = top_symtab_stack();
 	
@@ -2180,11 +2181,11 @@ yyreduce:
 	}
 	(yyvsp[-3].p_symbol) = NULL;
 }
-#line 2184 "rule.c" /* yacc.c:1646  */
+#line 2185 "rule.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 720 "spl.y" /* yacc.c:1646  */
+#line 721 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	if (!err_occur())
@@ -2207,11 +2208,11 @@ yyreduce:
 
 	pop_symtab_stack();
 }
-#line 2211 "rule.c" /* yacc.c:1646  */
+#line 2212 "rule.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 746 "spl.y" /* yacc.c:1646  */
+#line 747 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	list_clear(&ast_forest);
@@ -2221,11 +2222,11 @@ yyreduce:
 	ptab = new_symtab(top_symtab_stack());
 	push_symtab_stack(ptab);
 }
-#line 2225 "rule.c" /* yacc.c:1646  */
+#line 2226 "rule.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 757 "spl.y" /* yacc.c:1646  */
+#line 758 "spl.y" /* yacc.c:1646  */
     {
 	ptab = top_symtab_stack();
 	strncpy(ptab->name, (yyvsp[-3].p_char), NAME_LEN);
@@ -2255,11 +2256,11 @@ yyreduce:
 	}
 #endif	
 }
-#line 2259 "rule.c" /* yacc.c:1646  */
+#line 2260 "rule.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 790 "spl.y" /* yacc.c:1646  */
+#line 791 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	{
@@ -2279,11 +2280,11 @@ yyreduce:
 
 	pop_symtab_stack();
 }
-#line 2283 "rule.c" /* yacc.c:1646  */
+#line 2284 "rule.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 813 "spl.y" /* yacc.c:1646  */
+#line 814 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	list_clear(&ast_forest);
@@ -2293,11 +2294,11 @@ yyreduce:
 	ptab = new_symtab(top_symtab_stack());
 	push_symtab_stack(ptab);
 }
-#line 2297 "rule.c" /* yacc.c:1646  */
+#line 2298 "rule.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 823 "spl.y" /* yacc.c:1646  */
+#line 824 "spl.y" /* yacc.c:1646  */
     {
 	ptab = top_symtab_stack();
 	strncpy(ptab->name, (yyvsp[-1].p_char), NAME_LEN);
@@ -2318,20 +2319,20 @@ yyreduce:
 	}
 #endif	
 }
-#line 2322 "rule.c" /* yacc.c:1646  */
+#line 2323 "rule.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 847 "spl.y" /* yacc.c:1646  */
+#line 848 "spl.y" /* yacc.c:1646  */
     {
 	ptab = top_symtab_stack();
 	ptab->local_size = 0;
 }
-#line 2331 "rule.c" /* yacc.c:1646  */
+#line 2332 "rule.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 861 "spl.y" /* yacc.c:1646  */
+#line 862 "spl.y" /* yacc.c:1646  */
     {
 	ptab = top_symtab_stack();
 	for(p = (yyvsp[-2].p_symbol); p ;){
@@ -2356,11 +2357,11 @@ yyreduce:
 
 	(yyvsp[-2].p_symbol) = NULL;
 }
-#line 2360 "rule.c" /* yacc.c:1646  */
+#line 2361 "rule.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 886 "spl.y" /* yacc.c:1646  */
+#line 887 "spl.y" /* yacc.c:1646  */
     {
 	ptab = top_symtab_stack();
 	for(p = (yyvsp[-2].p_symbol); p;){
@@ -2382,19 +2383,19 @@ yyreduce:
 	}
 	(yyvsp[-2].p_symbol) = NULL;
 }
-#line 2386 "rule.c" /* yacc.c:1646  */
+#line 2387 "rule.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 915 "spl.y" /* yacc.c:1646  */
+#line 916 "spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_symbol) = (yyvsp[0].p_symbol);
 }
-#line 2394 "rule.c" /* yacc.c:1646  */
+#line 2395 "rule.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 950 "spl.y" /* yacc.c:1646  */
+#line 951 "spl.y" /* yacc.c:1646  */
     {
 	p = find_symbol(top_symtab_stack(), (yyvsp[-2].p_char));
 	if (p == NULL)
@@ -2466,11 +2467,11 @@ yyreduce:
 	}
 #endif
 }
-#line 2470 "rule.c" /* yacc.c:1646  */
+#line 2471 "rule.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 1022 "spl.y" /* yacc.c:1646  */
+#line 1023 "spl.y" /* yacc.c:1646  */
     {
 	p = find_symbol(top_symtab_stack(), (yyvsp[-1].p_char));
 	if(!p || p->type->type_id != TYPE_ARRAY){
@@ -2485,11 +2486,11 @@ yyreduce:
 	emit_push_op(TYPE_INTEGER);
 #endif
 }
-#line 2489 "rule.c" /* yacc.c:1646  */
+#line 2490 "rule.c" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 1037 "spl.y" /* yacc.c:1646  */
+#line 1038 "spl.y" /* yacc.c:1646  */
     {
 	p = top_term_stack();
 #ifdef GENERATE_AST
@@ -2506,11 +2507,11 @@ yyreduce:
 	do_array_factor(p);
 #endif
 }
-#line 2510 "rule.c" /* yacc.c:1646  */
+#line 2511 "rule.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 1054 "spl.y" /* yacc.c:1646  */
+#line 1055 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	t = pop_ast_stack();
@@ -2521,11 +2522,11 @@ yyreduce:
 	do_assign(p, (yyvsp[0].p_tree));
 #endif
 }
-#line 2525 "rule.c" /* yacc.c:1646  */
+#line 2526 "rule.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 1065 "spl.y" /* yacc.c:1646  */
+#line 1066 "spl.y" /* yacc.c:1646  */
     {
 	p = find_symbol(top_symtab_stack(),(yyvsp[-2].p_char));
 	if(!p || p->type->type_id != TYPE_RECORD){
@@ -2551,11 +2552,11 @@ yyreduce:
 	push_term_stack(q);
 #endif
 }
-#line 2555 "rule.c" /* yacc.c:1646  */
+#line 2556 "rule.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 1091 "spl.y" /* yacc.c:1646  */
+#line 1092 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	t = pop_ast_stack();
@@ -2567,11 +2568,11 @@ yyreduce:
 	do_assign(q, (yyvsp[0].p_tree));
 #endif
 }
-#line 2571 "rule.c" /* yacc.c:1646  */
+#line 2572 "rule.c" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 1106 "spl.y" /* yacc.c:1646  */
+#line 1107 "spl.y" /* yacc.c:1646  */
     {
 	ptab = find_routine((yyvsp[0].p_char));
 	if(!ptab || ptab->defn != DEF_PROC){
@@ -2586,11 +2587,11 @@ yyreduce:
 	do_procedure_call(ptab);
 #endif
 }
-#line 2590 "rule.c" /* yacc.c:1646  */
+#line 2591 "rule.c" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 1121 "spl.y" /* yacc.c:1646  */
+#line 1122 "spl.y" /* yacc.c:1646  */
     {
 	ptab = find_routine((yyvsp[0].p_char));
 	if(!ptab || ptab->defn != DEF_PROC){
@@ -2599,11 +2600,11 @@ yyreduce:
 	}
 	push_call_stack(ptab);
 }
-#line 2603 "rule.c" /* yacc.c:1646  */
+#line 2604 "rule.c" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 1130 "spl.y" /* yacc.c:1646  */
+#line 1131 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = call_tree(top_call_stack(), args);
@@ -2613,11 +2614,11 @@ yyreduce:
 #endif
 	pop_call_stack();
 }
-#line 2617 "rule.c" /* yacc.c:1646  */
+#line 2618 "rule.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 1140 "spl.y" /* yacc.c:1646  */
+#line 1141 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = sys_tree((yyvsp[0].p_lex)->attr, NULL);
@@ -2626,11 +2627,11 @@ yyreduce:
 	do_sys_routine((yyvsp[0].p_lex)->attr, 0);
 #endif
 }
-#line 2630 "rule.c" /* yacc.c:1646  */
+#line 2631 "rule.c" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 1149 "spl.y" /* yacc.c:1646  */
+#line 1150 "spl.y" /* yacc.c:1646  */
     {
 	rtn = find_sys_routine((yyvsp[0].p_lex)->attr);
 
@@ -2643,11 +2644,11 @@ yyreduce:
 
 	push_call_stack(rtn);
 }
-#line 2647 "rule.c" /* yacc.c:1646  */
+#line 2648 "rule.c" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 1162 "spl.y" /* yacc.c:1646  */
+#line 1163 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = sys_tree((yyvsp[-4].p_lex)->attr, (yyvsp[-1].p_tree));
@@ -2658,11 +2659,11 @@ yyreduce:
 	
 	pop_call_stack();
 }
-#line 2662 "rule.c" /* yacc.c:1646  */
+#line 2663 "rule.c" /* yacc.c:1646  */
     break;
 
   case 96:
-#line 1173 "spl.y" /* yacc.c:1646  */
+#line 1174 "spl.y" /* yacc.c:1646  */
     {
 	if(!(yyvsp[-1].p_tree)){
 		parse_error("too few parameters in call to", "read");
@@ -2680,11 +2681,11 @@ yyreduce:
 	do_sys_routine(pREAD, (yyvsp[-1].p_tree)->type->type_id);
 #endif
 }
-#line 2684 "rule.c" /* yacc.c:1646  */
+#line 2685 "rule.c" /* yacc.c:1646  */
     break;
 
   case 97:
-#line 1194 "spl.y" /* yacc.c:1646  */
+#line 1195 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	/* block begin. */
@@ -2692,11 +2693,11 @@ yyreduce:
 	list_append(&ast_forest, t);
 #endif
 }
-#line 2696 "rule.c" /* yacc.c:1646  */
+#line 2697 "rule.c" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 1203 "spl.y" /* yacc.c:1646  */
+#line 1204 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	/* block end. */
@@ -2704,21 +2705,21 @@ yyreduce:
 	list_append(&ast_forest, t);
 #endif
 }
-#line 2708 "rule.c" /* yacc.c:1646  */
+#line 2709 "rule.c" /* yacc.c:1646  */
     break;
 
   case 99:
-#line 1214 "spl.y" /* yacc.c:1646  */
+#line 1215 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	push_lbl_stack(if_label_count++);
 #endif
 }
-#line 2718 "rule.c" /* yacc.c:1646  */
+#line 2719 "rule.c" /* yacc.c:1646  */
     break;
 
   case 100:
-#line 1220 "spl.y" /* yacc.c:1646  */
+#line 1221 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_false_%d", top_lbl_stack());
@@ -2731,11 +2732,11 @@ yyreduce:
 	do_if_test();
 #endif
 }
-#line 2735 "rule.c" /* yacc.c:1646  */
+#line 2736 "rule.c" /* yacc.c:1646  */
     break;
 
   case 101:
-#line 1233 "spl.y" /* yacc.c:1646  */
+#line 1234 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_false_%d", top_lbl_stack());
@@ -2760,11 +2761,11 @@ yyreduce:
 	do_if_clause();
 #endif
 }
-#line 2764 "rule.c" /* yacc.c:1646  */
+#line 2765 "rule.c" /* yacc.c:1646  */
     break;
 
   case 102:
-#line 1258 "spl.y" /* yacc.c:1646  */
+#line 1259 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	/* append exit label. */
@@ -2780,27 +2781,27 @@ yyreduce:
 	do_if_exit();
 #endif
 }
-#line 2784 "rule.c" /* yacc.c:1646  */
+#line 2785 "rule.c" /* yacc.c:1646  */
     break;
 
   case 103:
-#line 1274 "spl.y" /* yacc.c:1646  */
+#line 1275 "spl.y" /* yacc.c:1646  */
     {
 	printf("expression expected.\n");
 }
-#line 2792 "rule.c" /* yacc.c:1646  */
+#line 2793 "rule.c" /* yacc.c:1646  */
     break;
 
   case 104:
-#line 1278 "spl.y" /* yacc.c:1646  */
+#line 1279 "spl.y" /* yacc.c:1646  */
     {
 	printf("then matched.\n");
 }
-#line 2800 "rule.c" /* yacc.c:1646  */
+#line 2801 "rule.c" /* yacc.c:1646  */
     break;
 
   case 108:
-#line 1291 "spl.y" /* yacc.c:1646  */
+#line 1292 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	push_lbl_stack(repeat_label_count++);
@@ -2813,11 +2814,11 @@ yyreduce:
 	do_repeat_start();
 #endif
 }
-#line 2817 "rule.c" /* yacc.c:1646  */
+#line 2818 "rule.c" /* yacc.c:1646  */
     break;
 
   case 109:
-#line 1304 "spl.y" /* yacc.c:1646  */
+#line 1305 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "repeat_%d", top_lbl_stack());
@@ -2830,11 +2831,11 @@ yyreduce:
 	do_repeat_exit();
 #endif
 }
-#line 2834 "rule.c" /* yacc.c:1646  */
+#line 2835 "rule.c" /* yacc.c:1646  */
     break;
 
   case 110:
-#line 1320 "spl.y" /* yacc.c:1646  */
+#line 1321 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	push_lbl_stack(while_label_count++);
@@ -2847,11 +2848,11 @@ yyreduce:
 	do_while_start();
 #endif
 }
-#line 2851 "rule.c" /* yacc.c:1646  */
+#line 2852 "rule.c" /* yacc.c:1646  */
     break;
 
   case 111:
-#line 1333 "spl.y" /* yacc.c:1646  */
+#line 1334 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_exit_%d", top_lbl_stack());
@@ -2863,11 +2864,11 @@ yyreduce:
 	do_while_expr();
 #endif
 }
-#line 2867 "rule.c" /* yacc.c:1646  */
+#line 2868 "rule.c" /* yacc.c:1646  */
     break;
 
   case 112:
-#line 1345 "spl.y" /* yacc.c:1646  */
+#line 1346 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 
@@ -2893,11 +2894,11 @@ yyreduce:
 	do_while_exit();
 #endif
 }
-#line 2897 "rule.c" /* yacc.c:1646  */
+#line 2898 "rule.c" /* yacc.c:1646  */
     break;
 
   case 113:
-#line 1374 "spl.y" /* yacc.c:1646  */
+#line 1375 "spl.y" /* yacc.c:1646  */
     {
 	p = find_symbol(top_symtab_stack(),(yyvsp[-2].p_char));
 	if(!p || p->defn != DEF_VAR)
@@ -2932,11 +2933,11 @@ yyreduce:
 	do_for_start(p);
 #endif
 }
-#line 2936 "rule.c" /* yacc.c:1646  */
+#line 2937 "rule.c" /* yacc.c:1646  */
     break;
 
   case 114:
-#line 1409 "spl.y" /* yacc.c:1646  */
+#line 1410 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 
@@ -2963,11 +2964,11 @@ yyreduce:
 	do_for_test((yyvsp[-2].num));
 #endif
 }
-#line 2967 "rule.c" /* yacc.c:1646  */
+#line 2968 "rule.c" /* yacc.c:1646  */
     break;
 
   case 115:
-#line 1436 "spl.y" /* yacc.c:1646  */
+#line 1437 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	t = pop_ast_stack();
@@ -3002,27 +3003,27 @@ yyreduce:
 	do_for_exit();
 #endif
 }
-#line 3006 "rule.c" /* yacc.c:1646  */
+#line 3007 "rule.c" /* yacc.c:1646  */
     break;
 
   case 116:
-#line 1474 "spl.y" /* yacc.c:1646  */
+#line 1475 "spl.y" /* yacc.c:1646  */
     {
 	(yyval.num) = kTO;
 }
-#line 3014 "rule.c" /* yacc.c:1646  */
+#line 3015 "rule.c" /* yacc.c:1646  */
     break;
 
   case 117:
-#line 1478 "spl.y" /* yacc.c:1646  */
+#line 1479 "spl.y" /* yacc.c:1646  */
     {
 	(yyval.num) = kDOWNTO;
 }
-#line 3022 "rule.c" /* yacc.c:1646  */
+#line 3023 "rule.c" /* yacc.c:1646  */
     break;
 
   case 118:
-#line 1485 "spl.y" /* yacc.c:1646  */
+#line 1486 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	push_lbl_stack(switch_label_count++);
@@ -3040,22 +3041,22 @@ yyreduce:
 	/* list_clear(&case_list); */
 #endif
 }
-#line 3044 "rule.c" /* yacc.c:1646  */
+#line 3045 "rule.c" /* yacc.c:1646  */
     break;
 
   case 119:
-#line 1503 "spl.y" /* yacc.c:1646  */
+#line 1504 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
 	do_case_start();
 #endif
 }
-#line 3055 "rule.c" /* yacc.c:1646  */
+#line 3056 "rule.c" /* yacc.c:1646  */
     break;
 
   case 120:
-#line 1510 "spl.y" /* yacc.c:1646  */
+#line 1511 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_test_%d", top_lbl_stack());
@@ -3092,11 +3093,11 @@ yyreduce:
 	do_case_test();
 #endif
 }
-#line 3096 "rule.c" /* yacc.c:1646  */
+#line 3097 "rule.c" /* yacc.c:1646  */
     break;
 
   case 124:
-#line 1556 "spl.y" /* yacc.c:1646  */
+#line 1557 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	
@@ -3119,11 +3120,11 @@ yyreduce:
 	add_case_const((yyvsp[0].p_symbol));
 #endif
 }
-#line 3123 "rule.c" /* yacc.c:1646  */
+#line 3124 "rule.c" /* yacc.c:1646  */
     break;
 
   case 125:
-#line 1579 "spl.y" /* yacc.c:1646  */
+#line 1580 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_exit_%d", top_lbl_stack());
@@ -3136,11 +3137,11 @@ yyreduce:
 	do_case_jump();
 #endif
 }
-#line 3140 "rule.c" /* yacc.c:1646  */
+#line 3141 "rule.c" /* yacc.c:1646  */
     break;
 
   case 127:
-#line 1593 "spl.y" /* yacc.c:1646  */
+#line 1594 "spl.y" /* yacc.c:1646  */
     {
 	p = find_symbol(
 		top_symtab_stack(),(yyvsp[0].p_char));
@@ -3174,11 +3175,11 @@ yyreduce:
 	add_case_const(p);
 #endif
 }
-#line 3178 "rule.c" /* yacc.c:1646  */
+#line 3179 "rule.c" /* yacc.c:1646  */
     break;
 
   case 128:
-#line 1627 "spl.y" /* yacc.c:1646  */
+#line 1628 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_exit_%d", top_lbl_stack());
@@ -3190,11 +3191,11 @@ yyreduce:
 	do_case_jump();
 #endif
 }
-#line 3194 "rule.c" /* yacc.c:1646  */
+#line 3195 "rule.c" /* yacc.c:1646  */
     break;
 
   case 131:
-#line 1647 "spl.y" /* yacc.c:1646  */
+#line 1648 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 
@@ -3212,11 +3213,11 @@ yyreduce:
 
 #endif
 }
-#line 3216 "rule.c" /* yacc.c:1646  */
+#line 3217 "rule.c" /* yacc.c:1646  */
     break;
 
   case 132:
-#line 1665 "spl.y" /* yacc.c:1646  */
+#line 1666 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 
@@ -3239,22 +3240,22 @@ yyreduce:
 
 #endif
 }
-#line 3243 "rule.c" /* yacc.c:1646  */
+#line 3244 "rule.c" /* yacc.c:1646  */
     break;
 
   case 133:
-#line 1691 "spl.y" /* yacc.c:1646  */
+#line 1692 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
     emit_push_op((yyvsp[0].p_tree));
 #endif
 }
-#line 3254 "rule.c" /* yacc.c:1646  */
+#line 3255 "rule.c" /* yacc.c:1646  */
     break;
 
   case 134:
-#line 1698 "spl.y" /* yacc.c:1646  */
+#line 1699 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = compare_expr_tree(GE, (yyvsp[-3].p_tree), (yyvsp[0].p_tree));
@@ -3263,22 +3264,22 @@ yyreduce:
 	(yyval.p_tree) = TYPE_BOOLEAN;
 #endif
 }
-#line 3267 "rule.c" /* yacc.c:1646  */
+#line 3268 "rule.c" /* yacc.c:1646  */
     break;
 
   case 135:
-#line 1707 "spl.y" /* yacc.c:1646  */
+#line 1708 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
    	emit_push_op((yyvsp[0].p_tree));
 #endif
 }
-#line 3278 "rule.c" /* yacc.c:1646  */
+#line 3279 "rule.c" /* yacc.c:1646  */
     break;
 
   case 136:
-#line 1714 "spl.y" /* yacc.c:1646  */
+#line 1715 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = compare_expr_tree(GT, (yyvsp[-3].p_tree), (yyvsp[0].p_tree));
@@ -3287,22 +3288,22 @@ yyreduce:
 	(yyval.p_tree) = TYPE_BOOLEAN;
 #endif
 }
-#line 3291 "rule.c" /* yacc.c:1646  */
+#line 3292 "rule.c" /* yacc.c:1646  */
     break;
 
   case 137:
-#line 1723 "spl.y" /* yacc.c:1646  */
+#line 1724 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
    emit_push_op((yyvsp[0].p_tree));
 #endif
 }
-#line 3302 "rule.c" /* yacc.c:1646  */
+#line 3303 "rule.c" /* yacc.c:1646  */
     break;
 
   case 138:
-#line 1730 "spl.y" /* yacc.c:1646  */
+#line 1731 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = compare_expr_tree(LE, (yyvsp[-3].p_tree), (yyvsp[0].p_tree));
@@ -3312,22 +3313,22 @@ yyreduce:
 	(yyval.p_tree) = TYPE_BOOLEAN;
 #endif
 }
-#line 3316 "rule.c" /* yacc.c:1646  */
+#line 3317 "rule.c" /* yacc.c:1646  */
     break;
 
   case 139:
-#line 1740 "spl.y" /* yacc.c:1646  */
+#line 1741 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
 	emit_push_op((yyvsp[0].p_tree));
 #endif
 }
-#line 3327 "rule.c" /* yacc.c:1646  */
+#line 3328 "rule.c" /* yacc.c:1646  */
     break;
 
   case 140:
-#line 1747 "spl.y" /* yacc.c:1646  */
+#line 1748 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = compare_expr_tree(LT, (yyvsp[-3].p_tree), (yyvsp[0].p_tree));
@@ -3336,22 +3337,22 @@ yyreduce:
 	(yyval.p_tree) = TYPE_BOOLEAN;
 #endif
 }
-#line 3340 "rule.c" /* yacc.c:1646  */
+#line 3341 "rule.c" /* yacc.c:1646  */
     break;
 
   case 141:
-#line 1756 "spl.y" /* yacc.c:1646  */
+#line 1757 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
 	emit_push_op((yyvsp[0].p_tree));
 #endif
 }
-#line 3351 "rule.c" /* yacc.c:1646  */
+#line 3352 "rule.c" /* yacc.c:1646  */
     break;
 
   case 142:
-#line 1763 "spl.y" /* yacc.c:1646  */
+#line 1764 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = compare_expr_tree(EQ, (yyvsp[-3].p_tree), (yyvsp[0].p_tree));
@@ -3360,22 +3361,22 @@ yyreduce:
 	(yyval.p_tree) = TYPE_BOOLEAN;
 #endif
 }
-#line 3364 "rule.c" /* yacc.c:1646  */
+#line 3365 "rule.c" /* yacc.c:1646  */
     break;
 
   case 143:
-#line 1772 "spl.y" /* yacc.c:1646  */
+#line 1773 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
 	emit_push_op((yyvsp[0].p_tree));
 #endif
 }
-#line 3375 "rule.c" /* yacc.c:1646  */
+#line 3376 "rule.c" /* yacc.c:1646  */
     break;
 
   case 144:
-#line 1779 "spl.y" /* yacc.c:1646  */
+#line 1780 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = compare_expr_tree(NE, (yyvsp[-3].p_tree), (yyvsp[0].p_tree));
@@ -3384,11 +3385,11 @@ yyreduce:
 	(yyval.p_tree) = TYPE_BOOLEAN;
 #endif
 }
-#line 3388 "rule.c" /* yacc.c:1646  */
+#line 3389 "rule.c" /* yacc.c:1646  */
     break;
 
   case 145:
-#line 1788 "spl.y" /* yacc.c:1646  */
+#line 1789 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = (yyvsp[0].p_tree);
@@ -3396,22 +3397,22 @@ yyreduce:
 	(yyval.p_tree) = (yyvsp[0].p_tree)->type->type_id;
 #endif
 }
-#line 3400 "rule.c" /* yacc.c:1646  */
+#line 3401 "rule.c" /* yacc.c:1646  */
     break;
 
   case 146:
-#line 1798 "spl.y" /* yacc.c:1646  */
+#line 1799 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
 	emit_push_op((yyvsp[0].p_tree)->type->type_id);
 #endif
 }
-#line 3411 "rule.c" /* yacc.c:1646  */
+#line 3412 "rule.c" /* yacc.c:1646  */
     break;
 
   case 147:
-#line 1805 "spl.y" /* yacc.c:1646  */
+#line 1806 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = binary_expr_tree(ADD, (yyvsp[-3].p_tree), (yyvsp[0].p_tree));
@@ -3419,22 +3420,22 @@ yyreduce:
 	do_expr((yyvsp[0].p_tree),oPLUS);
 #endif
 }
-#line 3423 "rule.c" /* yacc.c:1646  */
+#line 3424 "rule.c" /* yacc.c:1646  */
     break;
 
   case 148:
-#line 1813 "spl.y" /* yacc.c:1646  */
+#line 1814 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
 	emit_push_op((yyvsp[0].p_tree)->type->type_id);
 #endif
 }
-#line 3434 "rule.c" /* yacc.c:1646  */
+#line 3435 "rule.c" /* yacc.c:1646  */
     break;
 
   case 149:
-#line 1820 "spl.y" /* yacc.c:1646  */
+#line 1821 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = binary_expr_tree(SUB, (yyvsp[-3].p_tree), (yyvsp[0].p_tree));
@@ -3442,22 +3443,22 @@ yyreduce:
 	do_expr((yyvsp[0].p_tree) ,oMINUS);
 #endif
 }
-#line 3446 "rule.c" /* yacc.c:1646  */
+#line 3447 "rule.c" /* yacc.c:1646  */
     break;
 
   case 150:
-#line 1828 "spl.y" /* yacc.c:1646  */
+#line 1829 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
 	emit_push_op((yyvsp[0].p_tree)->type->type_id);
 #endif
 }
-#line 3457 "rule.c" /* yacc.c:1646  */
+#line 3458 "rule.c" /* yacc.c:1646  */
     break;
 
   case 151:
-#line 1835 "spl.y" /* yacc.c:1646  */
+#line 1836 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = binary_expr_tree(OR, (yyvsp[-3].p_tree), (yyvsp[0].p_tree));
@@ -3465,32 +3466,32 @@ yyreduce:
 	do_expression((yyvsp[0].p_tree),kOR);
 #endif
 }
-#line 3469 "rule.c" /* yacc.c:1646  */
+#line 3470 "rule.c" /* yacc.c:1646  */
     break;
 
   case 152:
-#line 1843 "spl.y" /* yacc.c:1646  */
+#line 1844 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = (yyvsp[0].p_tree);
 #endif
 }
-#line 3479 "rule.c" /* yacc.c:1646  */
+#line 3480 "rule.c" /* yacc.c:1646  */
     break;
 
   case 153:
-#line 1851 "spl.y" /* yacc.c:1646  */
+#line 1852 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
         emit_push_op((yyvsp[0].p_tree)->type->type_id);
 #endif
 }
-#line 3490 "rule.c" /* yacc.c:1646  */
+#line 3491 "rule.c" /* yacc.c:1646  */
     break;
 
   case 154:
-#line 1858 "spl.y" /* yacc.c:1646  */
+#line 1859 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = binary_expr_tree(MUL, (yyvsp[-3].p_tree), (yyvsp[0].p_tree));
@@ -3498,22 +3499,22 @@ yyreduce:
 	do_term((yyvsp[0].p_tree),oMUL);
 #endif
 }
-#line 3502 "rule.c" /* yacc.c:1646  */
+#line 3503 "rule.c" /* yacc.c:1646  */
     break;
 
   case 155:
-#line 1866 "spl.y" /* yacc.c:1646  */
+#line 1867 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
 	emit_push_op((yyvsp[0].p_tree)->type->type_id);
 #endif
 }
-#line 3513 "rule.c" /* yacc.c:1646  */
+#line 3514 "rule.c" /* yacc.c:1646  */
     break;
 
   case 156:
-#line 1873 "spl.y" /* yacc.c:1646  */
+#line 1874 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = binary_expr_tree(DIV, (yyvsp[-3].p_tree), (yyvsp[0].p_tree));
@@ -3521,11 +3522,11 @@ yyreduce:
 	do_term((yyvsp[0].p_tree),kDIV);
 #endif
 }
-#line 3525 "rule.c" /* yacc.c:1646  */
+#line 3526 "rule.c" /* yacc.c:1646  */
     break;
 
   case 157:
-#line 1881 "spl.y" /* yacc.c:1646  */
+#line 1882 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
@@ -3533,11 +3534,11 @@ yyreduce:
 #endif
 
 }
-#line 3537 "rule.c" /* yacc.c:1646  */
+#line 3538 "rule.c" /* yacc.c:1646  */
     break;
 
   case 158:
-#line 1889 "spl.y" /* yacc.c:1646  */
+#line 1890 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = binary_expr_tree(DIV, (yyvsp[-3].p_tree), (yyvsp[0].p_tree));
@@ -3545,11 +3546,11 @@ yyreduce:
 	do_term((yyvsp[0].p_tree), kDIV);
 #endif
 }
-#line 3549 "rule.c" /* yacc.c:1646  */
+#line 3550 "rule.c" /* yacc.c:1646  */
     break;
 
   case 159:
-#line 1897 "spl.y" /* yacc.c:1646  */
+#line 1898 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
@@ -3557,11 +3558,11 @@ yyreduce:
 #endif
 
 }
-#line 3561 "rule.c" /* yacc.c:1646  */
+#line 3562 "rule.c" /* yacc.c:1646  */
     break;
 
   case 160:
-#line 1905 "spl.y" /* yacc.c:1646  */
+#line 1906 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = binary_expr_tree(MOD, (yyvsp[-3].p_tree), (yyvsp[0].p_tree));
@@ -3569,22 +3570,22 @@ yyreduce:
 	do_term((yyvsp[0].p_tree), kMOD);
 #endif
 }
-#line 3573 "rule.c" /* yacc.c:1646  */
+#line 3574 "rule.c" /* yacc.c:1646  */
     break;
 
   case 161:
-#line 1913 "spl.y" /* yacc.c:1646  */
+#line 1914 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 #else
 	emit_push_op((yyvsp[0].p_tree)->type->type_id);
 #endif
 }
-#line 3584 "rule.c" /* yacc.c:1646  */
+#line 3585 "rule.c" /* yacc.c:1646  */
     break;
 
   case 162:
-#line 1920 "spl.y" /* yacc.c:1646  */
+#line 1921 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = binary_expr_tree(AND, (yyvsp[-3].p_tree), (yyvsp[0].p_tree));
@@ -3592,19 +3593,19 @@ yyreduce:
 	do_term((yyvsp[0].p_tree),kAND);
 #endif
 }
-#line 3596 "rule.c" /* yacc.c:1646  */
+#line 3597 "rule.c" /* yacc.c:1646  */
     break;
 
   case 163:
-#line 1928 "spl.y" /* yacc.c:1646  */
+#line 1929 "spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_tree) = (yyvsp[0].p_tree);
 }
-#line 3604 "rule.c" /* yacc.c:1646  */
+#line 3605 "rule.c" /* yacc.c:1646  */
     break;
 
   case 164:
-#line 1934 "spl.y" /* yacc.c:1646  */
+#line 1935 "spl.y" /* yacc.c:1646  */
     { 
 	p = NULL;
 
@@ -3646,11 +3647,11 @@ yyreduce:
 	}
 #endif
 }
-#line 3650 "rule.c" /* yacc.c:1646  */
+#line 3651 "rule.c" /* yacc.c:1646  */
     break;
 
   case 165:
-#line 1976 "spl.y" /* yacc.c:1646  */
+#line 1977 "spl.y" /* yacc.c:1646  */
     {
 	if((ptab = find_routine((yyvsp[0].p_char))))
   		push_call_stack(ptab);
@@ -3660,11 +3661,11 @@ yyreduce:
 		return  0;
 	}
 }
-#line 3664 "rule.c" /* yacc.c:1646  */
+#line 3665 "rule.c" /* yacc.c:1646  */
     break;
 
   case 166:
-#line 1986 "spl.y" /* yacc.c:1646  */
+#line 1987 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = call_tree(ptab, args);
@@ -3673,11 +3674,11 @@ yyreduce:
 #endif
 	pop_call_stack();
 }
-#line 3677 "rule.c" /* yacc.c:1646  */
+#line 3678 "rule.c" /* yacc.c:1646  */
     break;
 
   case 167:
-#line 1995 "spl.y" /* yacc.c:1646  */
+#line 1996 "spl.y" /* yacc.c:1646  */
     {
 	ptab = find_sys_routine((yyvsp[0].p_lex)->attr);
 #ifdef GENERATE_AST
@@ -3687,20 +3688,20 @@ yyreduce:
 	(yyval.p_tree) = ptab->locals;
 #endif
 }
-#line 3691 "rule.c" /* yacc.c:1646  */
+#line 3692 "rule.c" /* yacc.c:1646  */
     break;
 
   case 168:
-#line 2005 "spl.y" /* yacc.c:1646  */
+#line 2006 "spl.y" /* yacc.c:1646  */
     {
 	ptab = find_sys_routine((yyvsp[0].p_lex)->attr);
 	push_call_stack(ptab);
 }
-#line 3700 "rule.c" /* yacc.c:1646  */
+#line 3701 "rule.c" /* yacc.c:1646  */
     break;
 
   case 169:
-#line 2010 "spl.y" /* yacc.c:1646  */
+#line 2011 "spl.y" /* yacc.c:1646  */
     {
 	ptab = top_call_stack();
 #ifdef GENERATE_AST
@@ -3712,11 +3713,11 @@ yyreduce:
 	(yyval.p_tree) = ptab->locals;
 #endif
 }
-#line 3716 "rule.c" /* yacc.c:1646  */
+#line 3717 "rule.c" /* yacc.c:1646  */
     break;
 
   case 170:
-#line 2022 "spl.y" /* yacc.c:1646  */
+#line 2023 "spl.y" /* yacc.c:1646  */
     {
 	switch((yyvsp[0].p_symbol)->type->type_id){
 		case TYPE_REAL:
@@ -3744,11 +3745,11 @@ yyreduce:
 	do_factor((yyvsp[0].p_symbol));
 #endif
 }
-#line 3748 "rule.c" /* yacc.c:1646  */
+#line 3749 "rule.c" /* yacc.c:1646  */
     break;
 
   case 171:
-#line 2050 "spl.y" /* yacc.c:1646  */
+#line 2051 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = (yyvsp[-1].p_tree);
@@ -3757,11 +3758,11 @@ yyreduce:
 	(yyval.p_tree)->type = find_type_by_id((yyvsp[-1].p_tree));
 #endif
 }
-#line 3761 "rule.c" /* yacc.c:1646  */
+#line 3762 "rule.c" /* yacc.c:1646  */
     break;
 
   case 172:
-#line 2059 "spl.y" /* yacc.c:1646  */
+#line 2060 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = not_tree((yyvsp[0].p_tree));
@@ -3770,11 +3771,11 @@ yyreduce:
 	(yyval.p_tree) = (yyvsp[0].p_tree);
 #endif
 }
-#line 3774 "rule.c" /* yacc.c:1646  */
+#line 3775 "rule.c" /* yacc.c:1646  */
     break;
 
   case 173:
-#line 2068 "spl.y" /* yacc.c:1646  */
+#line 2069 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	(yyval.p_tree) = neg_tree((yyvsp[0].p_tree));
@@ -3783,11 +3784,11 @@ yyreduce:
 	(yyval.p_tree) = (yyvsp[0].p_tree);
 #endif
 }
-#line 3787 "rule.c" /* yacc.c:1646  */
+#line 3788 "rule.c" /* yacc.c:1646  */
     break;
 
   case 174:
-#line 2077 "spl.y" /* yacc.c:1646  */
+#line 2078 "spl.y" /* yacc.c:1646  */
     {
 	p = find_symbol(
 		top_symtab_stack(), (yyvsp[-1].p_char));
@@ -3805,11 +3806,11 @@ yyreduce:
   	emit_push_op(TYPE_INTEGER);
 #endif
 }
-#line 3809 "rule.c" /* yacc.c:1646  */
+#line 3810 "rule.c" /* yacc.c:1646  */
     break;
 
   case 175:
-#line 2095 "spl.y" /* yacc.c:1646  */
+#line 2096 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 	p = pop_term_stack(p);
@@ -3822,11 +3823,11 @@ yyreduce:
 	(yyval.p_tree) = p->type_link->last;
 #endif
 }
-#line 3826 "rule.c" /* yacc.c:1646  */
+#line 3827 "rule.c" /* yacc.c:1646  */
     break;
 
   case 176:
-#line 2108 "spl.y" /* yacc.c:1646  */
+#line 2109 "spl.y" /* yacc.c:1646  */
     {
 	p = find_symbol(top_symtab_stack(), (yyvsp[-2].p_char));
 	if(!p || p->type->type_id != TYPE_RECORD) {
@@ -3850,11 +3851,11 @@ yyreduce:
 	(yyval.p_tree) = q;
 #endif
 }
-#line 3854 "rule.c" /* yacc.c:1646  */
+#line 3855 "rule.c" /* yacc.c:1646  */
     break;
 
   case 177:
-#line 2135 "spl.y" /* yacc.c:1646  */
+#line 2136 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 
@@ -3872,11 +3873,11 @@ yyreduce:
 	do_args((yyvsp[0].p_tree));
 #endif
 }
-#line 3876 "rule.c" /* yacc.c:1646  */
+#line 3877 "rule.c" /* yacc.c:1646  */
     break;
 
   case 178:
-#line 2153 "spl.y" /* yacc.c:1646  */
+#line 2154 "spl.y" /* yacc.c:1646  */
     {
 #ifdef GENERATE_AST
 
@@ -3902,11 +3903,11 @@ yyreduce:
 	do_first_arg((yyvsp[0].p_tree));
 #endif
 }
-#line 3906 "rule.c" /* yacc.c:1646  */
+#line 3907 "rule.c" /* yacc.c:1646  */
     break;
 
 
-#line 3910 "rule.c" /* yacc.c:1646  */
+#line 3911 "rule.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -4134,7 +4135,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 2180 "spl.y" /* yacc.c:1906  */
+#line 2181 "spl.y" /* yacc.c:1906  */
 
 
 #define MAX_TERM  64

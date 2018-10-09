@@ -142,14 +142,14 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 106 "spl.y" /* yacc.c:1909  */
+#line 107 "spl.y" /* yacc.c:1909  */
 
 	char 		p_char[NAME_LEN];
 	int 		num;
 	int 		ascii;
-	Symbol 		p_symbol;
-	Type		p_type;
-	KEYENTRY	*p_lex;
+	Symbol 		p_symbol; /* 符号 */
+	Type		p_type; /* 类型 */
+	KEYENTRY	*p_lex; /* 关键字 */
 	Tree 		p_tree;
 
 #line 156 "rule.h" /* yacc.c:1909  */
