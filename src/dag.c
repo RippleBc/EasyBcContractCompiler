@@ -2,18 +2,13 @@
 
 #include _YTAB_H_
 
-#define iscall(op) (generic(op) == CALL || IR->mulops_calls \
-				&& (generic(op) == DIV || generic(op) == MOD || generic(op) == MUL) \
-				&& (optype(op) == U || optype(op) == I))
-
-static int where = DAG;
+static int where = DAG; /* 定义DAG所在内存区域 */
 
 static struct dag
 {
     struct _node node;
     struct dag *hlink;
-}
-*buckets[16];
+}*buckets[16];
 
 
 int nodecount;
