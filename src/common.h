@@ -185,7 +185,7 @@ extern Env main_env; /* 主程序 */
 /* 类型度量 */
 typedef struct metrics
 {
-    unsigned char size, align; /* 大小，对其方式，  */
+    unsigned char size, align; /* 大小，对其方式 */
 }
 Metrics;
 
