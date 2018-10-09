@@ -285,8 +285,7 @@ STATIC void emit_sqrt(int arg_type)
 STATIC void emit_program_prologue(symtab *ptab)
 {
     fprintf(codfp, " \n;alloc stack space\n");
-    fprintf(codfp, " \t\tdb\t0%xh dup(?)\n"
-            ,STACK_SEG_SIZE);
+    fprintf(codfp, " \t\tdb\t0%xh dup(?)\n", STACK_SEG_SIZE);
     fprintf(codfp,"\n_DATA\t\tends");
     fprintf(codfp,"\n\n;---program %s ---",ptab->name);
     fprintf(codfp,"\n\n_TEXT\t\tsegment\tpublic\n\n");

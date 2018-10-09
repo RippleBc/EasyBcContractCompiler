@@ -14,31 +14,30 @@ enum { CONSTANTS=1, LABELS, GLOBAL, PARAM, LOCAL };
 
 struct _node;
 
-/* DAG节点 */
+/* DAG节点定义 */
 struct _node
 {
     short op; /* 操作码 */
 #ifdef DEBUG
 
-    char *op_name;
+    char *op_name; /* 操作吗名称 */
 #endif
 
-    short count;
-    Symbol syms[3];
-    Symtab symtab; /* 符号表 */
+    short count; /* 被引用的次数 */
+    Symbol syms[3]; /* 相关联的symbol */
+    Symtab symtab; /* 相关联的symtab */
     union {
-        int		sys_id;
+        int		sys_id; /* 系统调用ID */
         struct
         {
-            Symbol label;
-            int true_or_false;
+            Symbol label; /* 标签符号 */
+            int true_or_false; /* 当跳转到指定标签符号时条件语句是真还是假 */
         }
         cond;
-    }u; /* 跳转相关 */
-    Type type;
-    /* 三元操作符 */
-    struct _node* kids[2];
-    struct _node* link;
+    }u;
+    Type type; /* 节点类型 */
+    struct _node* kids[2]; /* 左节点和右节点 */
+    struct _node* link; /* 连接下一片节点森林 */
 };
 
 typedef struct _node * Node;
@@ -47,10 +46,10 @@ typedef struct _node * Node;
 struct _tree;
 typedef struct _tree
 {
-    int op;
+    int op; /* 操作码 */
     Type result_type;
-    struct _tree *kids[2];
-    Node dag_node;
+    struct _tree *kids[2]; /* 代表左子树和右子树 */
+    Node dag_node; /* DAG节点 */
     union {
 
         /* for general nodes. */

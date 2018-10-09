@@ -16,12 +16,14 @@
 
 #include "x86.h"
 
-extern char *yytext;
-symtab *ptab;
+extern char *yytext; /* flex用于记录匹配到的字符串 */
+symtab *ptab; /* 符号表表头 */
 symbol *p, *q;
 tree   *t;
 type *pt, *qt;
 int temp;
+
+/* 对token的操作 */
 symbol* pop_term_stack();
 symbol* top_term_stack();
 void push_term_stack(symbol * p);
@@ -29,7 +31,7 @@ void push_term_stack(symbol * p);
 Env global_env;
 Env main_env;
 
-Symtab	rtn = NULL;
+Symtab	rtn = NULL; /* 表示system routine */
 Symbol	arg = NULL;
 
 #ifdef GENERATE_AST
@@ -54,15 +56,14 @@ struct list ast_forest;
 struct list para_list;				/* for parameter list. */
 List  case_list = NULL;
 struct list dag_forest;				/* for dags. */
-Tree   	args;
-Tree   	now_function;
-Tree	t;
+Tree args;
+Tree now_function;
+Tree t;
 Symbol	new_label = NULL;
-/* Symbol	case_label = NULL;	*/
 Symbol	test_label = NULL;
 Symbol  exit_label = NULL;
 char 	mini_buf[NAME_LEN];			/* buffer for generated name. */
-int		if_label_count;				/* count for label of if test. */
+int		if_label_count;				/* count for label of if. */
 int		repeat_label_count;			/* count for label of repeat. */
 int		case_label_count;			/* count for label of case. */
 int		switch_label_count;			/* count for label of switch. */
@@ -107,9 +108,9 @@ void trap_in_debug();
 	char 		p_char[NAME_LEN];
 	int 		num;
 	int 		ascii;
-	Symbol 		p_symbol;
-	Type		p_type;
-	KEYENTRY	*p_lex;
+	Symbol 		p_symbol; /* 符号 */
+	Type		p_type; /* 类型 */
+	KEYENTRY	*p_lex; /* 关键字 */
 	Tree 		p_tree;
 }
 

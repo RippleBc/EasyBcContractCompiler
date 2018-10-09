@@ -45,7 +45,7 @@ struct _symbol_
     struct _symbol_ *lchild, *rchild;
     /* 指向符号表的表头结构 */
     struct _symbol_head_ *tab;
-    /* 类型链表 */
+    /* 同一种类型的下一个symbol */
     struct _type_ *type_link;
 };
 
@@ -95,14 +95,14 @@ struct _symbol_head_
     symbol *localtab;
     /* 局部变量链表 */
     symbol *locals;
-    /* 过程或函数返回值的类型链接 */
+    /* 类型链接 */
     type *type_link;
     /* 链接上一层符号表，即父辈函数过程的定义 */
     struct _symbol_head_ *parent;
 };
 
 typedef struct _symbol_head_ symtab;
-typedef struct _symbol_head_ * Symtab;
+typedef struct _symbol_head_ *Symtab;
 
 #define make_global_symtab() new_symtab(NULL)
 
