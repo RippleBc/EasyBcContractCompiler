@@ -151,25 +151,27 @@ void list_clear(List list);
 typedef struct
 {
     union {
+        /* 程序入口 */
         struct
         {
-            int argc;
-            char **argv;
-            Symtab tab;
+            int argc; /* 参数个数 */
+            char **argv; /* 具体参数 */
+            Symtab tab; /* 对应的符号表 */
         }
         program;
 
+        /* 子程序 */
         struct
         {
-            Symtab tab;
+            Symtab tab; /* 对应的符号表 */
         }
         main;
     }u;
 }
 Env;
 
-extern Env global_env;
-extern Env main_env;
+extern Env global_env; /* 全局 */
+extern Env main_env; /* 主程序 */
 
 /* trees */
 #include "tree.h"
@@ -233,7 +235,6 @@ typedef struct interface
         int (*function_process)(List dags);
         void (*def_export)(Symbol);
         void (*def_import)(Symbol);
-        /* Xinterface x; */
     }
 Interface;
 

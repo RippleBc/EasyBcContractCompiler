@@ -22,7 +22,6 @@ Tree new_tree(int op, Type type, Tree left, Tree right)
 Tree header_tree(symtab *ptab)
 {
     Tree t;
-
     t = new_tree(HEADER, ptab->type, NULL, NULL);
     t->u.generic.symtab = ptab;
     return t;
@@ -49,6 +48,7 @@ Tree conversion_tree(Symbol source, Type target)
         break;
     }
 
+    /* 表示普通节点，初始化对应的符号 */
     t->u.generic.sym = source;
     return t;
 }
@@ -62,6 +62,8 @@ Tree id_factor_tree(Tree source, Symbol sym)
         t = new_tree(LOAD, source->result_type, source, NULL);
     else
         t = new_tree(LOAD, sym->type, NULL, NULL);
+
+    /* 表示普通节点，初始化对应的符号 */
     t->u.generic.sym = sym;
     return t;
 }
