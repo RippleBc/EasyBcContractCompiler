@@ -227,14 +227,21 @@ void trap_in_debug();
 program
 :first_act_at_prog program_head sub_program oDOT
 {
-	//dump_symtab(Global_symtab);
+	/* 弹出无效的symtab */
 	pop_symtab_stack();
 #ifdef GENERATE_AST
 	if (!err_occur())
 	{
+		/* 清空dag_forest */
 		list_clear(&dag_forest);
+
+		/* 该树节点的操作类型为TAIL，表示该树节点实现的是程序结束的操作。 */
 		t = new_tree(TAIL, NULL, NULL, NULL);
+
+		/* 初始化当前命名空间下的符号表 */
 		t->u.generic.symtab = top_symtab_stack();
+		
+		/* 将AST节点挂到ast_forest后面 */
 		list_append(&ast_forest, t);
 
 		/* generate dag forest. */
