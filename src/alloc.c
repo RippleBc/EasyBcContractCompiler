@@ -23,7 +23,6 @@ union header *arena[LASTARENA];
 void *allocate(unsigned long n, unsigned a)
 {
     union header *new = malloc(sizeof *new + n);
-    printf("********************************************%d %d********************************************", n, sizeof *new + n)
     assert(a < NELEMS(arena));
     if (new == NULL)
     {
