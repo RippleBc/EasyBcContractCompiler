@@ -12,6 +12,7 @@ Tree new_tree(int op, Type type, Tree left, Tree right)
 
     NEW0(p, where);
     p->op = op;
+    /* AST节点的类型 */
     p->result_type = type;
     p->kids[0] = left;
     p->kids[1] = right;
@@ -48,7 +49,7 @@ Tree conversion_tree(Symbol source, Type target)
         break;
     }
 
-    /* 表示普通节点，初始化对应的符号 */
+    /* 节点对应的symbol */
     t->u.generic.sym = source;
     return t;
 }
@@ -59,11 +60,14 @@ Tree id_factor_tree(Tree source, Symbol sym)
     Tree t;
 
     if (source)
+        /* LOAD指令表示获取symbol对应的值，
+         如果source存在，节点类型即为source对应的类型，
+         symbol对应的值为source的值 */
         t = new_tree(LOAD, source->result_type, source, NULL);
     else
         t = new_tree(LOAD, sym->type, NULL, NULL);
 
-    /* 表示普通节点，初始化对应的符号 */
+    /* 节点对应的symbol */
     t->u.generic.sym = sym;
     return t;
 }
@@ -77,6 +81,7 @@ Tree address_tree(Tree source, Symbol sym)
         t = new_tree(ADDRG, source->result_type, source, NULL);
     else
         t = new_tree(ADDRG, sym->type, NULL, NULL);
+    
     t->u.generic.sym = sym;
     return t;
 }

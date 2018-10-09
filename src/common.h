@@ -134,7 +134,6 @@ enum {
 /* symbol and type definition. */
 #include "symtab.h"
 
-/* 链表操作，插入，删除，查找 */
 typedef struct list *List;
 struct list
 {

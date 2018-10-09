@@ -10,8 +10,6 @@
 #include "common.h"
 #include "symtab.h"
 
-enum { CONSTANTS=1, LABELS, GLOBAL, PARAM, LOCAL };
-
 struct _node;
 
 /* DAG节点定义 */
@@ -47,42 +45,45 @@ struct _tree;
 typedef struct _tree
 {
     int op; /* 操作码 */
-    Type result_type;
+    Type result_type; /* 节类型 */
     struct _tree *kids[2]; /* 代表左子树和右子树 */
-    Node dag_node; /* DAG节点 */
+    Node dag_node; /* 对应的DAG节点 */
     union {
 
         /* for general nodes. */
         struct
         {
-            Value val;
-            Symbol sym;
-            Symtab symtab;
+            Value val; /* 值 */
+            Symbol sym; /* 相关联的symbol（变量或者参数） */
+            Symtab symtab; /* 相关联的符号表 */
         }
         generic;
 
         /* for arg nodes. */
         struct
         {
-            Symbol sym;
-            Symtab symtab;
+            Symbol sym; /* 相关联的symbol（参数） */
+            Symtab symtab; /* 相关联的符号表 */
         }
         arg;
 
         /* for field operation node. */
         struct
         {
-            Symbol record;
-            Symbol field;
+            Symbol record; /* 相关联的symbol（record） */
+            Symbol field; /* 相关联的symbol（record中的字段） */
         }
         field;
 
         /* for function/routine call */
         struct
         {
-            Symtab symtab;				/* routine/function symtab */
+            /* routine/function symtab，函数和过程拥有一个symtab对象，
+             其中定义了函数中的局部变量（参数以及变量）、自定义类型、返回值类型等信息。
+             因此只需要提供函数或者过程的symtab即可对其进行调用。 */
+            Symtab symtab;
         }
-        call;
+        call; /* 调用函数 */
 
         /* for function/routine header. */
         struct
@@ -90,7 +91,7 @@ typedef struct _tree
             List para;					/* parameter list. */
             Symtab symtab;				/* symtab of the function/routine */
         }
-        header;
+        header; /* 函数头，需要提供参数列表以及对应的symtab */
 
         /* for system function/routine. */
         struct

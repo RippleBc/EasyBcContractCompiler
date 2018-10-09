@@ -2,9 +2,6 @@
 #define _DAG_H_
 
 /*  */
-enum { CODE=1, BSS, DATA, LIT };
-
-/*  */
 typedef struct table *Table;
 struct table
 {
