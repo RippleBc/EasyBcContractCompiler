@@ -182,9 +182,10 @@ extern Env main_env; /* 主程序 */
 /* target interface */
 #include "config.h"
 
+/* 类型度量 */
 typedef struct metrics
 {
-    unsigned char size, align, outofline;
+    unsigned char size, align; /* 大小，对其方式，  */
 }
 Metrics;
 
@@ -205,17 +206,6 @@ typedef struct interface
         Metrics doublemetric;
         Metrics pointermetric;
         Metrics structmetric;
-
-#if 0
-        /* flag interface. */
-		unsigned endian: 1;					/* little or big endian flag,  set to 1 when little endian, or 0 */
-		unsigned risc_instructon_set:1;		/* risc or cisc, set 1 for RISC. */
-		unsigned struct_prarmeter: 1;		/* if target supports structure as parameter, set it to 1. */
-		unsigned struct_return_value: 1;	/* if target supports structure as return value, set it to 1. */
-		unsigned std_call: 1;				/* stdcall flag, 1 from left to right. */
-		unsigned dag_mode: 2;				/* 0 for not generate dag */
-		unsigned reserved: 1;				/* reserved. set to 0 */
-#endif
 
         /* function interface. */
         int (*program_begin)(Env *);

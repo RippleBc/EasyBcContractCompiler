@@ -1857,13 +1857,13 @@ static void defimport(Symbol sym)
 
 Interface x86_linux_interface = {
 		/* type interface */
-		{1, 1, 0},		/* charmetric */
-		{2, 2, 0},		/* shortmetric */
-		{4, 4, 0},		/* intmetric */
-		{4, 4, 0},		/* floatmetric */
-		{8, 8, 0},		/* doublemetric */
-		{4, 4, 0},		/* pointermetric */
-		{4, 4, 0},		/* structmetric */
+		{1, 1},		/* charmetric */
+		{2, 2},		/* shortmetric */
+		{4, 4},		/* intmetric */
+		{4, 4},		/* floatmetric */
+		{8, 8},		/* doublemetric */
+		{4, 4},		/* pointermetric */
+		{4, 4},		/* structmetric */
 
 		/* function interface. */
 		programbegin,
