@@ -339,18 +339,29 @@ routine_body
 name_list
 :name_list oCOMMA yNAME 
 {
+	/* 匹配 oCOMMA yNAME */
 	p = new_symbol($3, DEF_UNKNOWN, TYPE_UNKNOWN);
-	for(q = $1; q->next; q = q->next);
-	q->next = p; p ->next = NULL;
+
+	/* 移动到链表末尾 */
+	q = $1;
+	while(q->next) {
+		q = q->next;
+	}
+
+	/* 与新创建的symbol进行链接 */
+	q->next = p;
+
+	/* 永远指向头部 */
 	$$ = $1;
 }
 |yNAME
 {
+	/* 匹配 yNAME */
 	p = new_symbol($1, DEF_UNKNOWN, TYPE_UNKNOWN);
 	$$ = p;
 }
-|yNAME error oSEMI
-|yNAME error oCOMMA
+|yNAME error oSEMI {}
+|yNAME error oCOMMA {}
 ;
 
 sub_routine
