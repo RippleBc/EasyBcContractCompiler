@@ -474,8 +474,8 @@ type_part
 ;
 
 type_decl_list
-:type_decl_list type_definition
-|type_definition
+:type_decl_list type_definition {}
+|type_definition {}
 ;
 
 type_definition
@@ -483,14 +483,17 @@ type_definition
 {
 	if($3->name[0] == '$')
 	{
-		/* a new type. */
+		/* 全新的类型 */
 		$$ = $3;
+		/* 类型命名 */
 		strncpy($$->name, $1, NAME_LEN);
 	}
 	else{
-		/* an existed type. */
+		/* 支持类型重定义。 */
 		$$ = clone_type($3);
+		/* 类型命名 */
 		strncpy($$->name, $1, NAME_LEN);
+		/* 将类型添加到符号表中 */
 		add_type_to_table(
 			top_symtab_stack(), $$);
 	}
@@ -498,9 +501,9 @@ type_definition
 ;
 
 type_decl
-:simple_type_decl
-|array_type_decl
-|record_type_decl
+:simple_type_decl {}
+|array_type_decl {}
+|record_type_decl {}
 ;
 
 array_type_decl
@@ -555,30 +558,40 @@ field_decl
 simple_type_decl
 :SYS_TYPE
 {
+	/* 系统类型（char，integer，boolean，real） */
 	pt = find_type_by_name($1);
+
 	if(!pt)
 		parse_error("Undeclared type name",$1);
+
 	$$ = pt;
 }
 |yNAME
 {
+  /* 用户自定义类型 */
 	pt = find_type_by_name($1);
+
 	if (!pt)
 	{
 		parse_error("Undeclared type name", $1);
 		return 0;
 	}
+
 	$$ = pt;
 }
 |oLP name_list oRP
 {
+	/* 初始化一个枚举类型 */
 	$$ = new_enum_type("$$$");
-	add_enum_elements($$, $2);
+	/* 初始化枚举类型的符号链表 */
+	add_enum_elements($$, $2);s
+	/* 将枚举类型放入 */
 	add_type_to_table(
 		top_symtab_stack(),$$);
 }
 |const_value oDOTDOT const_value
 {
+  /* 类似于1..7或者1..8，subrange类型 */
 	if($1->type->type_id != $3->type->type_id){
 		parse_error("type mismatch","");
 		return 0;

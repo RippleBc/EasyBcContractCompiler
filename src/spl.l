@@ -599,6 +599,8 @@ static int id_or_keyword(char *lex)
 	{
 		printf("token: yNAME, yylval.p_char = %s.\n", yylval.p_char);
 	}
+
+	/* 变量名称 */
 	return yNAME;
 }
 

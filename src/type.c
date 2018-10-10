@@ -194,23 +194,26 @@ void add_enum_elements(type *pt, symbol *symlist)
 
     if (!p || !symlist)
         return;
+
+    /* 初始化枚举类型的符号链表 */ 
     pt->first = symlist;
 
-    /* ENUM项初始化 */
+    /* 枚举类型的符号链表赋值 */
     for(p = pt->first; p->next; p = p->next)
     {
-        p->defn = DEF_ELEMENT;
-        p->type = find_type_by_id(TYPE_INTEGER); /* 类型 */
-        p->v.i = ++n; /* 值，默认从0开始赋值 */
-        sprintf(p->rname, "0%xh", p->v.i); /* 汇编名称 */
+        p->defn = DEF_ELEMENT; /* 符号大类 */
+        p->type = find_type_by_id(TYPE_INTEGER); /* 符号类型 */
+        p->v.i = ++n; /* 符号值 */
+        sprintf(p->rname, "0%xh", p->v.i); /* 符号汇编名称 */
     }
 
     p->defn = DEF_ELEMENT;
     p->type = find_type_by_id(TYPE_INTEGER);
     p->v.i = ++n;
-    sprintf(p->rname, "0%xh",p->v.i);
-    pt->last = p;
-    pt->num_ele = n;
+    sprintf(p->rname, "0%xh", p->v.i);
+
+    pt->last = p; /* 符号链表末尾 */
+    pt->num_ele = n; /* 符号链表中符号数量 */
 }
 
 type *new_array_type(char *name, type *pindex, type *pelement)
@@ -299,16 +302,18 @@ void add_type_to_table(symtab *ptab, type *pt)
     for(qt = ptab->type_link; qt; qt = qt->next)
         if (!strcmp(qt->name, pt->name))
         {
-            parse_error("Duplicate type name",pt->name);
+            parse_error("Duplicate type name", pt->name);
             return;
         }
 
+    /* 将新定义的类型插入类型链表头部 */
     pt->next = ptab->type_link;
     ptab->type_link = pt;
+
+    /* ENUM类型或者RECORD类型，将里面的自定义类型项添加到局部变量二叉树表中 */
     if (pt->type_id == TYPE_ENUM
             || pt->type_id == TYPE_RECORD)
         for(p = pt->first; p; p = p->next)
-            /* ENUM类型或者RECORD类型自定义类型，将里面的自定义类型项添加到局部变量表中（二叉树） */
             add_var_to_localtab(ptab, p);
 }
 
