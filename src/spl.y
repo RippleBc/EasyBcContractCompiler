@@ -358,7 +358,7 @@ sub_routine
 ;
 
 routine_head
-:label_part const_part type_part var_part routine_part
+:const_part type_part var_part routine_part
 {
 #ifdef GENERATE_AST
 #else
@@ -367,30 +367,20 @@ routine_head
 }
 ;
 
-label_part
-:
-;
-
 const_part
 :kCONST const_expr_list
 |
 ;
 
 const_expr_list
-:const_expr_list yNAME oEQUAL const_value oSEMI
+:%empty {}
+|const_expr_list yNAME oEQUAL const_value oSEMI
 {
 	/* change name of symbol const_value to yNAME */
 	strncpy($4->name, $2, NAME_LEN);
 	add_symbol_to_table(
 		top_symtab_stack(), $4);
-}
-|yNAME oEQUAL const_value oSEMI
-{
-	/* change name of symbol const_value to yNAME */
-	strncpy($3->name, $1, NAME_LEN);
-	add_symbol_to_table(
-		top_symtab_stack(),$3);
-}
+}|
 ;
 
 const_value
