@@ -38,14 +38,12 @@ int align(int bytes)
     return bytes;
 }
 
-/* 记录下symtab的创建顺序 */
 void enter_symtab_queue(symtab *tab)
 {
     if (last_symtab < SYMTAB_QUEUE_SIZE)
         symtab_queue[last_symtab ++] = tab;
 }
 
-/* 创建一个未初始化的symtab对象 */
 symtab *new_symtab(symtab *parent)
 {
     symtab *p;
@@ -56,25 +54,25 @@ symtab *new_symtab(symtab *parent)
     if(!p)
         internal_error("insufficient memory.");
 
-    p->parent = parent;
+    p->parent = parent; /* 链接父符号表 */
     p->args_size = 0; /* 参数的总字节数 */
     p->args = NULL; /* 参数链表 */
-    p->localtab = NULL; /* 局部符号表（参数和变量），二叉树 */
+    p->localtab = NULL; /* 局部符号二叉树表（参数和变量） */
     p->locals = NULL; /* 局部变量链表 */
-    p->type_link = NULL; /* 过程或者函数返回值的类型链接 */
+    p->type_link = NULL; /* 用户自定义类型链表 */
+
     if(parent)
     {
         p->level = parent->level + 1;
     }
     else
     {
-        routine_id = 0;
-        Global_symtab = p;
-        Cur_level = 0;
-        p->level = 0;
+        routine_id = 0; /* 初始化routine id */
+        Global_symtab = p; /* 初始化全局符号表 */
+        p->level = 0; /* 初始化层级 */
     }
-    p->defn = DEF_UNKNOWN; /* 是PROC、FUNCT或者PROG */
-    p->type = find_type_by_id(TYPE_VOID); /* 过程或者函数返回值的类型（普通类型） */
+    p->defn = DEF_UNKNOWN; /* 符号所属大类 */
+    p->type = find_type_by_id(TYPE_VOID); /* 过程或者函数返回值的类型（普通类型），默认为void */
     p->id = routine_id++; /* 过程或者函数的序号 */
     p->local_size = 0; /* 局部变量的总字节数 */
     enter_symtab_queue(p);
@@ -94,25 +92,24 @@ symbol *new_symbol(char *name, int defn, int type_id)
         internal_error("insuffceent memory.");
 
     if(!strcmp(name,"$$$"))
-        /* name == "$$$" */
-        sprintf(p->name,"z%d",++imp_index);
+        /* name == "$$$"，使用系统默认的命名规则*/
+        sprintf(p->name, "z%d", ++imp_index);
     else
         strncpy(p->name, name, NAME_LEN);
 
-    p->rname[0]= '\0'; /* 汇编阶段赋值 */
-    p->defn = defn; /* 属性 */
-    p->type = find_type_by_id(type_id); /* symbol的类型 */
+    p->rname[0]= '\0'; /* 添加结束标记 */
+    p->defn = defn; /* 定义符号所属大类 */
+    p->type = find_type_by_id(type_id); /* 定义符号类型 */
     p->offset = 0; /* 在堆栈中的偏移量 */
     p->next = NULL; /* 用于局部变量链表以及参数链表 */
-    p->lchild = p->rchild = NULL; /* 用于符号表（变量或者参数），二叉树 */
+    p->lchild = p->rchild = NULL; /* 用于二叉树符号表（变量或者参数） */
     p->tab = NULL; /* 指向符号表的表头 */
-    p->type_link = NULL; /* 过程或者函数返回值的类型链接 */
+    p->type_link = NULL; /* 同一种类型的下一个symbol */
 
     return p;
 
 }
 
-/* 克隆name、rname、defn、type以及v（表示具体数值，与type组合使用）字段 */
 symbol *clone_symbol(symbol *origin)
 {
     symbol *p;
@@ -196,7 +193,7 @@ void add_symbol_to_table(symtab*tab, symbol *sym)
         break;
     case DEF_VARPARA:
     case DEF_VALPARA:
-        /* 值参（一个常量）、变参（一个变量） */
+        /* 变参（一个变量）、值参（一个常量） */
         add_args_to_table(tab,sym);
         break;
     case DEF_PROG:
@@ -322,6 +319,7 @@ void add_args_to_table(symtab *tab, symbol *sym)
 
 extern KEYENTRY Keytable[];
 
+/* 初始化系统符号表 */
 void make_system_symtab()
 {
     int i;
@@ -339,10 +337,11 @@ void make_system_symtab()
 
     System_symtab[0] = ptab;
 
+    /* 系统符号表命名 */
     sprintf(ptab->name,"system_table");
     sprintf(ptab->rname, "null");
 
-    /* 初始化基础类型符号表 */
+    /* 系统符号表类型链表定义（内置基础类型） */
     ptab->type_link = new_system_type(TYPE_INTEGER);
     pt = ptab->type_link;
     pt->next = new_system_type(TYPE_CHAR);
@@ -358,19 +357,20 @@ void make_system_symtab()
     pt->next = new_system_type(TYPE_UNKNOWN);
     pt = pt->next;
 
+    /* 系统符号表压栈 */
     push_symtab_stack(ptab);
 
     ptab->id = -1;
     ptab->level = -1;
     ptab->defn = DEF_UNKNOWN; /* 属性值 */
-    ptab->type = TYPE_UNKNOWN; /* 函数或者过程的返回类型 */ 
+    ptab->type = TYPE_UNKNOWN; /* 符号表类型 */ 
     ptab->local_size = 0;
     ptab->args_size = 0;
     ptab->args = NULL;
     ptab->parent = NULL;
-    ptab->locals = new_symbol("", DEF_UNKNOWN, TYPE_UNKNOWN);
+    ptab->locals = new_symbol("", DEF_UNKNOWN, TYPE_UNKNOWN); /* 局部变量链表 */
 
-    /* 初始化系统函数以及系统过程调用 */
+    /* 系统符号表 */
     int n = 1;
     for(i = 0 ; i < Keytable_size; i++)
     {
@@ -390,7 +390,7 @@ void make_system_symtab()
     ptab->local_size = n;
 }
 
-/* 创建系统符号表 */
+/* 创建系统符号 */
 symtab* new_sys_symbol(KEYENTRY entry)
 {
     symtab *ptab;
@@ -408,17 +408,17 @@ symtab* new_sys_symbol(KEYENTRY entry)
     /* 初始化符号对应的汇编代码 */
     sprintf(ptab->rname, "_f_%s", entry.name);
 
-    /* 初始化系统符号表的头部 */
+    /* 初始化系统符号表 */
     ptab->id = - entry.attr; /* 注意，系统符号的ID为attr的负值 */
     ptab->level = -1;
-    ptab->defn = DEF_FUNCT;
-    ptab->type = find_type_by_id(entry.ret_type);
+    ptab->defn = DEF_FUNCT; /* 系统函数的大类统一为DEF_FUNCT */
+    ptab->type = find_type_by_id(entry.ret_type); /* 符号表的具体类型，这里指的是函数的返回值类型 */
     ptab->local_size = 0;
     ptab->args_size = 0;
     ptab->args = NULL;
     ptab->localtab = NULL;
     ptab->locals = NULL;
-    ptab->parent = System_symtab[0];
+    ptab->parent = System_symtab[0]; /* 父节点为定义了内置基础类型的符号表 */
 
     /* p = (symbol*)malloc(sizeof(symbol)); */
     NEW0(p, PERM);
@@ -426,28 +426,33 @@ symtab* new_sys_symbol(KEYENTRY entry)
     if(!p)
         internal_error("Insufticent memory.");
 
-    /* 初始化系统符号表的表项 */
+    /* 初始化系统符号 */
     strcpy(p->name, ptab->name);
     strcpy(p->rname, ptab->rname);
     p->defn = DEF_FUNCT;
     p->type = find_type_by_id(entry.ret_type);
     p->offset = 0;
     p->next = NULL;
-    p->tab = ptab; /* 链接系统符号表表项和系统符号表表头 */
+    p->tab = ptab;
     p->type_link = NULL;
-    ptab->locals = p; /* 系统符号表表头局部变量指向初始化的系统符号表表项 */
+
+    /* 将局部变量符号加入系统符号表 */
+    add_local_to_table(ptab, p);
+
     if(entry.arg_type)
     {
-        /* 拥有一个函数参数类型，初始化一个参数符号表 */
         /* p = (symbol*)malloc(sizeof(symbol)); */
         NEW0(p, PERM);
 
         if(!p)
             internal_error("Insufficent memory.");
 
+        /* 初始化参数符号 */
         strcpy(p->name, "arg");                           
         p->defn = DEF_VALPARA;
         p->type = find_type_by_id(entry.arg_type);
+        
+        /* 将参数符号放入系统符号表 */
         add_args_to_table(ptab, p);
     }
     return ptab;

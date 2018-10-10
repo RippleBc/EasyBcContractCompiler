@@ -266,9 +266,13 @@ program
 first_act_at_prog
 :   
 {
+	/* 初始化解析器 */
 	parser_init();
+	/* 创建全局符号表 */
 	make_global_symtab();
+	/* 创建系统符号表 */
 	make_system_symtab();
+	/* 将全局符号表压入符号表栈中 */
 	push_symtab_stack(Global_symtab);
 };
 
@@ -2220,6 +2224,7 @@ symbol* top_term_stack()
 		return term_stk[term_stk_tos + 1];
 }
 
+/* 初始化语法解析器 */
 int parser_init()
 {
 #ifdef GENERATE_AST

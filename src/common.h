@@ -38,8 +38,8 @@
 #define DEF_VAR				(2)
 #define DEF_TYPE			(3)
 #define DEF_FIELD			(4)
-#define DEF_VALPARA			(5)
-#define DEF_VARPARA			(6)
+#define DEF_VALPARA			(5) /* value */
+#define DEF_VARPARA			(6) /* variable */
 #define DEF_PROC			(7)
 #define DEF_FUNCT			(8)
 #define DEF_PROG			(9)
@@ -62,15 +62,15 @@ extern  FILE 	*errfp;
 
 typedef struct
 {
-    /* 保存单词名称 */
+    /* 名称 */
     char name[NAME_LEN];
-    /* 保存单词的种类标识，是分析器传递给语法分析器的终结符名称 */
+    /* 关键字 */
     int key;
-    /* 为SYS_FUNCT、SYS_PROC、SYS_TYPE、SYS_COND、kPACKE、pREAD、KEYWORD*/
+    /* 属性 */
     int attr;
-    /* 表示函数返回值类型 */
+    /* 返回值类型 */
     int ret_type;
-    /* 表示函数参数类型 */
+    /* 参数类型 */
     int arg_type;
 }
 KEYENTRY;

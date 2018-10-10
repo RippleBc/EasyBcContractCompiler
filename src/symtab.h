@@ -108,7 +108,6 @@ typedef struct _symbol_head_ *Symtab;
 
 #define MAX_SYS_ROUTINE (24) /* 系统程序的最多个数 */
 
-int Cur_level; /* 当前符号表的嵌套深度 */
 int Routing_id; /*  */
 
 /* 全局符号表 */
