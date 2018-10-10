@@ -594,32 +594,40 @@ simple_type_decl
 {
 	/* 初始化一个枚举类型 */
 	$$ = new_enum_type("$$$");
+
 	/* 初始化枚举类型的符号链表 */
 	add_enum_elements($$, $2);
-	/* 将枚举类型放入 */
+
+	/* 将枚举类型放入符号表 */
 	add_type_to_table(
 		top_symtab_stack(),$$);
 }
 |const_value oDOTDOT const_value
 {
-  /* 类似于1..7或者1..8，subrange类型 */
+  /* 检查oDOTDOT前后的类型是否一致 */
 	if($1->type->type_id != $3->type->type_id){
 		parse_error("type mismatch","");
 		return 0;
 	}
+	/* 初始化一个子范围类型 */
 	$$ = new_subrange_type("$$$", $1->type->type_id);
+
+	/* 将子范围类型放入符号表 */
 	add_type_to_table(
 		top_symtab_stack(), $$);
 
+	/* 初始化子范围类型的上下界限，
+	 上下界的类型必须可以强制转换为int类型（integer、boolean、char），
+	 char类型可以转化为相应的ASCII码。 */
 	if($1->type->type_id == TYPE_INTEGER)
 		set_subrange_bound($$,
-			(int)$1->v.i,(int)$3->v.i);
+			(int)$1->v.i, (int)$3->v.i);
 	else if ($1->type->type_id == TYPE_BOOLEAN)
 		set_subrange_bound($$,
-			(int)$1->v.b,(int)$3->v.b);
+			(int)$1->v.b, (int)$3->v.b);
 	else if ($1->type->type_id == TYPE_CHAR)
 		set_subrange_bound($$,
-			(int)$1->v.c,(int)$3->v.c);
+			(int)$1->v.c, (int)$3->v.c);
 	else
 		parse_error("invalid element type of subrange","");
 }
@@ -627,19 +635,19 @@ simple_type_decl
 {
 	if($2->type->type_id != $4->type->type_id){
 		parse_error("type mismatch","");
-		/* return 0; */
+		return 0;
 	}
 
 	$$ = new_subrange_type("$$$",
 		$2->type->type_id);
 		
 	add_type_to_table(
-		top_symtab_stack(),$$);
+		top_symtab_stack(), $$);
 
 	if($2->type->type_id == TYPE_INTEGER){
 		$2->v.i= -$2->v.i;
 		set_subrange_bound($$,
-			(int)$2->v.i,(int)$4->v.i);
+			(int)$2->v.i, (int)$4->v.i);
 	}
 	else if ($2->type->type_id == TYPE_BOOLEAN){
 		$2->v.b ^= 1;

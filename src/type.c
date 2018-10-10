@@ -96,7 +96,6 @@ type *new_system_type(int base_type)
 
 type *new_subrange_type(char *name, int element_type)
 {
-    /* 为下标生成一个匿名子界类型的type结构 */
     type *pt;
     if (element_type != TYPE_INTEGER
             &&element_type != TYPE_CHAR)
