@@ -180,7 +180,7 @@ symbol *reverse_parameters(symtab *ptab)
     return ptab->args;
 }
 
-void add_symbol_to_table(symtab*tab, symbol *sym)
+void add_symbol_to_table(symtab *tab, symbol *sym)
 {
     switch(sym->defn)
     {

@@ -368,27 +368,35 @@ routine_head
 ;
 
 const_part
-:kCONST const_expr_list
-|
+:%empty {}
+|kCONST const_expr_list {}
 ;
 
 const_expr_list
-:%empty {}
-|const_expr_list yNAME oEQUAL const_value oSEMI
+:const_expr_list yNAME oEQUAL const_value oSEMI
 {
-	/* change name of symbol const_value to yNAME */
+	/* 给const_value命名 */
 	strncpy($4->name, $2, NAME_LEN);
-	add_symbol_to_table(
-		top_symtab_stack(), $4);
-}|
+	/* 将const类型symbol放入符号表中 */
+	add_symbol_to_table(top_symtab_stack(), $4);
+}
+|yNAME oEQUAL const_value oSEMI
+{
+	/* 给const_value命名 */
+	strncpy($3->name, $1, NAME_LEN);
+	/* 将const类型symbol放入符号表中 */
+	add_symbol_to_table(top_symtab_stack(), $3);
+}
 ;
 
 const_value
 :cINTEGER
 {
-	/* integer const, temperary named $$$, will change later. */
+	/* 先采用默认命名，随后会被正确命名 */
 	p = new_symbol("$$$", DEF_CONST,
 		TYPE_INTEGER);
+
+	/* 给symbol赋值 */
 	p->v.i = $1;
 	$$ = p;
 }
@@ -397,6 +405,7 @@ const_value
 	p = new_symbol("$$$",DEF_CONST,
 		TYPE_REAL);
 
+	/* 给symbol赋值，将字符串转化为浮点数 */
 	p->v.f = atof($1);
 	$$ = p;
 }
@@ -405,14 +414,16 @@ const_value
 	p = new_symbol("$$$", DEF_CONST,
 		TYPE_CHAR);
 
+	/* 给symbol赋值 */
 	p->v.c= $1[1];
 	$$ = p;
 }
 |cSTRING
 {
-	p = new_symbol("$$$",DEF_CONST,
+	p = new_symbol("$$$", DEF_CONST,
 		TYPE_STRING);
 
+	/* 给symbol赋值，字符串 */
 	p->v.s = strdup($1);
 	$$ = p;
 }
@@ -425,23 +436,30 @@ const_value
 	{
 	case cMAXINT:
 		strcpy(p->rname, "maxint");
+		/* 定义symbol值 */
 		p->v.i = (1 << (IR->intmetric.size * 8)) - 1;
+		/* 定义symbol类型 */
 		p->type = find_type_by_id(TYPE_INTEGER);
 		break;
 
-	case cFALSE  :
+	case cFALSE:
 		strcpy(p->rname, "0");
+		/* 定义symbol值 */
 		p->v.b = 0;
+		/* 定义symbol类型 */
 		p->type = find_type_by_id(TYPE_BOOLEAN);
 		break;
 		  
 	case cTRUE:
 		strcpy(p->rname, "1");
+		/* 定义symbol值 */
 		p->v.b = 1;
+		/* 定义symbol类型 */
 		p->type = find_type_by_id(TYPE_BOOLEAN);
 		break; 
 
 	default:
+		/* 不是上述七大类型，默认为空 */
 		p->type = find_type_by_id(TYPE_VOID);
 		break;
 	}
@@ -451,8 +469,8 @@ const_value
 ;
 
 type_part
-:kTYPE type_decl_list
-|
+:%empty {}
+|kTYPE type_decl_list {}
 ;
 
 type_decl_list
