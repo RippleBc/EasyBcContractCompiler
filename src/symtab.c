@@ -357,7 +357,7 @@ void make_system_symtab()
     pt->next = new_system_type(TYPE_UNKNOWN);
     pt = pt->next;
 
-    /* 系统符号表压栈 */
+    /* 系统符号表（记录内置基础类型）压栈 */
     push_symtab_stack(ptab);
 
     ptab->id = -1;
@@ -370,7 +370,7 @@ void make_system_symtab()
     ptab->parent = NULL;
     ptab->locals = new_symbol("", DEF_UNKNOWN, TYPE_UNKNOWN); /* 局部变量链表 */
 
-    /* 系统符号表 */
+    /* 系统符号表（记录内置系统函数） */
     int n = 1;
     for(i = 0 ; i < Keytable_size; i++)
     {
@@ -385,6 +385,7 @@ void make_system_symtab()
             break;
     }
 
+    /* 系统符号表（记录内置基础类型）出栈 */
     pop_symtab_stack();
     
     ptab->local_size = n;
@@ -448,7 +449,7 @@ symtab* new_sys_symbol(KEYENTRY entry)
             internal_error("Insufficent memory.");
 
         /* 初始化参数符号 */
-        strcpy(p->name, "arg");                           
+        strcpy(p->name, "arg");
         p->defn = DEF_VALPARA;
         p->type = find_type_by_id(entry.arg_type);
         
