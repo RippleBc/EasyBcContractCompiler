@@ -584,7 +584,7 @@ simple_type_decl
 	/* 初始化一个枚举类型 */
 	$$ = new_enum_type("$$$");
 	/* 初始化枚举类型的符号链表 */
-	add_enum_elements($$, $2);s
+	add_enum_elements($$, $2);
 	/* 将枚举类型放入 */
 	add_type_to_table(
 		top_symtab_stack(),$$);
