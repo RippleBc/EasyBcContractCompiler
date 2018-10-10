@@ -203,8 +203,6 @@ void trap_in_debug();
 %term  oRP
 %term  oLB
 %term  oRB
-%term  oLC
-%term  oRC
 %term  <p_char>yNAME
 
 %type  <p_symbol>const_value
@@ -279,8 +277,11 @@ first_act_at_prog
 program_head
 :kPROGRAM yNAME oSEMI 
 {
+	/* 初始化全局符号表的名称 */
 	strcpy(Global_symtab->name, $2);
+	/* 初始化全局符号表的汇编名称 */
 	snprintf(Global_symtab->rname, sizeof(Global_symtab->rname), "main");
+	/* 初始化大类 */
 	Global_symtab->defn = DEF_PROG;
 #ifdef GENERATE_AST
 	global_env.u.program.tab = Global_symtab;

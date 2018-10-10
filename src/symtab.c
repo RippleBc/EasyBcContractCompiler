@@ -388,6 +388,7 @@ void make_system_symtab()
     /* 系统符号表（记录内置基础类型）出栈 */
     pop_symtab_stack();
     
+    /* 记录内置系统函数的个数 */
     ptab->local_size = n;
 }
 
