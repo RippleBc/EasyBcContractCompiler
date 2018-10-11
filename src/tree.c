@@ -199,6 +199,8 @@ Tree call_tree(Symtab routine, Tree argstree)
 {
     Tree t;
 
+    /* 函数或者过程调用，CALL表示指令，routine->type表示函数或者过程的返回类型，
+    argstree表示参数，可以为空（过程调用无需参数，或者没有参数的函数） */
     t = new_tree(CALL, routine->type, argstree, NULL);
     t->u.call.symtab = routine;
     return t;

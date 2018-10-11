@@ -515,7 +515,7 @@ symtab *top_symtab_stack()
     return symtab_stack[symtab_tos + 1];
 }
 
-/* 按照创建的先后顺序寻找符号表 */
+/* 寻找自定义函数或者过程 */
 symtab *find_routine(char *name)
 {
     int i;

@@ -57,7 +57,7 @@ struct list para_list;				/* for parameter list. */
 List  case_list = NULL;
 struct list dag_forest;				/* for dags. */
 Tree args;
-Tree now_function;
+Tree now_function; /* 当前函数的AST树 */
 Tree t;
 Symbol	new_label = NULL;
 Symbol	test_label = NULL;
@@ -82,24 +82,6 @@ void trap_in_debug();
 
 #ifdef DEBUG
 #define DEBUG_POINT	trap_in_debug();
-#endif
-
-#if 0
-
-#ifndef GENERATE_AST
-
-%type  <num>proc_stmt assign_stmt
-%type  <num>expression expression_list
-%type  <p_symbol>factor term expr
-
-#else
-
-%type  <p_tree>proc_stmt assign_stmt
-%type  <p_tree>factor term expr
-%type  <p_tree>expression expression_list
-
-#endif
-
 #endif
 
 %}
@@ -368,6 +350,7 @@ sub_routine
 routine_head
 :const_part type_part var_part routine_part
 {
+/* 依次定义常量、自定义类型以及变量和routine（函数以及过程） */
 #ifdef GENERATE_AST
 #else
 	emit_routine_prologue(top_symtab_stack());
@@ -803,7 +786,7 @@ function_decl
 #ifdef GENERATE_AST
 	if (!err_occur())
 	{
-		
+		/* 清除dag森林 */
 		list_clear(&dag_forest);
 		t = new_tree(TAIL, NULL, NULL, NULL);
 		t->u.generic.symtab = top_symtab_stack();
@@ -845,7 +828,7 @@ yNAME parameters oCOLON simple_type_decl
 	/* 初始化符号表大类 */
 	ptab->defn = DEF_FUNCT;
 	
-	/* 初始化符号表类型 */
+	/* 初始化函数符号表类型（定义函数的返回值） */
 	if($6->type_id == TYPE_SUBRANGE)
 		ptab->type = $6->first->type;
 	else if($6->type_id == TYPE_ENUM)
@@ -855,17 +838,24 @@ yNAME parameters oCOLON simple_type_decl
 	p = new_symbol($3, DEF_FUNCT, ptab->type->type_id);
 	p->type_link = $6;
 
-	/*  */
+	/* 将函数对应的符号表添加到符号链表中 */
 	add_symbol_to_table(ptab, p);
+	/* 将函数对应的符号表中的参数符号链表反转 */
 	reverse_parameters(ptab);
 #ifdef GENERATE_AST
 	{
+		/* 生成一颗AST树 */
 		Tree header;
-		
+		/* 定义指令以及返回值 */
 		header = new_tree(HEADER, ptab->type, NULL, NULL);
+		/* 定义参数链表 */
 		header->u.header.para = &para_list;
+		/* 定义对应的符号表 */
 		header->u.header.symtab = ptab;
+		/* 将AST树放入AST森林中 */
 		list_append(&ast_forest, header);
+
+		/* 生成一颗以header书为根的子树，存放函数体信息 */
 		now_function = new_tree(FUNCTION, ptab->type, header, NULL);
 	}
 #endif	
@@ -948,7 +938,9 @@ para_type_list
 {
 	/* 获取当前符号表 */
 	ptab = top_symtab_stack();
-	for(p = $1; p ;){
+
+	for(p = $1; p;)
+	{
 		/* 初始化val_para_list符号链表中的符号的大类以及小类 */
 		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
 			p->type = $3->first->type;
@@ -973,7 +965,10 @@ para_type_list
 |var_para_list oCOLON simple_type_decl
 {
 	ptab = top_symtab_stack();
-	for(p = $1; p;){
+
+	for(p = $1; p;)
+	{
+		/* 初始化val_para_list符号链表中的符号的大类以及小类 */
 		if($3->type_id == TYPE_SUBRANGE)
 			p->type = $3->first->type;
 		else if($3->type_id == TYPE_ENUM)
@@ -982,8 +977,10 @@ para_type_list
 			p->type = find_type_by_id($3->type_id);
 		p->type_link = $3;
 		p->defn = DEF_VARPARA;
+
 		q = p; p = p->next;
 		q->next=NULL;
+		/* 将符号放入符号表中 */
 		add_symbol_to_table(ptab,q);
 #ifdef GENERATE_AST
 		/* append to para_list. */
@@ -1006,31 +1003,32 @@ var_para_list
 ;
 
 routine_body
-:compound_stmt
+:compound_stmt {/* 混合类型的语句（算数，赋值，判断，循环，跳转等） */}
 ;
 
 stmt_list
-:stmt_list stmt oSEMI
-|stmt_list error oSEMI
-|
+:%empty {/* 可以是空函数 */}
+|stmt_list stmt oSEMI {}
+|stmt_list error oSEMI {/* 错误处理 */}
+
 ;
 
 stmt
-:cINTEGER oCOLON non_label_stmt
-| non_label_stmt
+:cINTEGER oCOLON non_label_stmt {/* 用于case语句 */}
+| non_label_stmt {}
 ;
 
 non_label_stmt
-:assign_stmt
-| proc_stmt
-| compound_stmt
-| if_stmt
-| repeat_stmt
-| while_stmt
-| for_stmt
-| case_stmt
-| goto_stmt
-|
+:%empty {}
+| assign_stmt { }
+| proc_stmt { /* 过程或者函数调用 */ }
+| compound_stmt {/* compound_stmt可以嵌套 */}
+| if_stmt { }
+| repeat_stmt { }
+| while_stmt { }
+| for_stmt { }
+| case_stmt { }
+| goto_stmt { }
 ;
 
 assign_stmt
@@ -1281,7 +1279,7 @@ compound_stmt
 :kBEGIN
 {
 #ifdef GENERATE_AST
-	/* block begin. */
+	/* 标记block开始 */
 	t = new_tree(BLOCKBEG, NULL, NULL, NULL);
 	list_append(&ast_forest, t);
 #endif
@@ -1290,7 +1288,7 @@ stmt_list
 kEND
 {
 #ifdef GENERATE_AST
-	/* block end. */
+	/* 标记block结束 */
 	t = new_tree(BLOCKEND, NULL, NULL, NULL);
 	list_append(&ast_forest, t);
 #endif
@@ -1779,6 +1777,7 @@ expression
 {
 #ifdef GENERATE_AST
 #else
+		/* 遇到express时，进行汇编指令生成 */
     emit_push_op($1);
 #endif
 }
@@ -1935,14 +1934,15 @@ kOR term
 }
 ;
 
-term    :term
+term
+:term
 {
 #ifdef GENERATE_AST
 #else
         emit_push_op($1->type->type_id);
 #endif
 }
-oMUL  factor
+oMUL factor
 {
 #ifdef GENERATE_AST
 	$$ = binary_expr_tree(MUL, $1, $4);
@@ -1950,7 +1950,7 @@ oMUL  factor
 	do_term($4,oMUL);
 #endif
 }
-|  term
+|term
 {
 #ifdef GENERATE_AST
 #else
@@ -1971,7 +1971,6 @@ oDIV factor
 #else
 	emit_push_op($1->type->type_id);
 #endif
-
 }
 kDIV factor
 {
@@ -2018,13 +2017,16 @@ kAND factor
 }
 ;
 
-factor: yNAME
-{ 
+factor
+:yNAME
+{
+	/* 因子，表达式的基本组成部分之一（因子和操作符） */
 	p = NULL;
 
-	if((p = find_symbol(
-		top_symtab_stack(),$1)))
+	if((p = find_symbol(top_symtab_stack(), $1)))
 	{
+		/* 普通符号 */
+		/* 不能直接对array以及record类型的符号进行运算操作 */
 		if(p->type->type_id == TYPE_ARRAY
 			||p->type->type_id == TYPE_RECORD)
 		{
@@ -2032,20 +2034,22 @@ factor: yNAME
 			return 0;
 		}
 	}
-	else if ((ptab = find_routine($1)) == NULL)
+	else if ((ptab = find_routine($1)) == NULL) /* 寻找自定义函数或者过程 */
 	{
-		parse_error("Undeclard identificr",$1);
+		parse_error("Undeclard identificr", $1);
+		/* 既不是普通符号也不是自定义函数或者过程，
+		 创建一个临时符号（目的是为了让解析程序可以继续往下执行） */
 		p = install_temporary_symbol($1, DEF_VAR, TYPE_INTEGER);
-		/* return  0; */
 	}
 #ifdef GENERATE_AST
 	if (p)
 	{
+		/* 普通符号 */
 		$$ = id_factor_tree(NULL, p);
 	}
 	else
 	{
-		/* call functions with no arguments. */
+		/* 自定义函数或者过程调用 */
 		$$ = call_tree(ptab, NULL);
 	}
 #else
