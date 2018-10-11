@@ -571,7 +571,7 @@ field_decl
 		  /* 可以是任意类型 */
 			p->type = find_type_by_id($3->type_id);
 
-		/* 表示位于类型符号表中的符号的类型 */
+		/* 主要用于检查enum或者subrange类型变量的赋值操作是否合法 */
 		p->type_link = $3;
 		/* 符号大类定义 */
 		p->defn = DEF_FIELD;
@@ -752,33 +752,40 @@ simple_type_decl
 ;
 
 var_part
-:kVAR var_decl_list
-|
+:%empty {}
+|kVAR var_decl_list {}
 ;
 
 var_decl_list
-:var_decl_list var_decl
-|var_decl
+:var_decl_list var_decl {}
+|var_decl {}
 ;
 
 var_decl
 :name_list oCOLON type_decl oSEMI
-{    
+{
+	/* 获取对应的符号表 */
 	ptab = top_symtab_stack();
 	
+	/* 遍历符号表 */
 	for(p = $1; p ;){
-		if($3->type_id == TYPE_SUBRANGE)
+		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
+			/* 其中TYPE_ENUM类型符号只能是integer，TYPE_SUBRANGE类型符号可以是char或者integer，
+			 对TYPE_SUBRANGE以及TYPE_ENUM类型符号定义的变量进行操作时，实际上只能对其中一个元素进行操作。
+			 那enum(enum1, enum2)类型的变量来说，要么是enum1要么是enum2，不能即是enum1又是enum2. */
 			p->type = find_type_by_id($3->first->type->type_id);
-		else if($3->type_id == TYPE_ENUM)
-			p->type = find_type_by_id(TYPE_INTEGER);
 		else
 			p->type = find_type_by_id($3->type_id);
 
+		/* 主要用于检查enum或者subrange类型变量的赋值操作是否合法 */
 		p->type_link = $3;
+		/* 定义符号大类 */
 		p->defn = DEF_VAR;
 
-		q = p; p = p->next;
+		q = p; 
+		p = p->next;
 		q->next = NULL;
+		/* 将变量添加到符号表中 */
 		add_symbol_to_table(ptab, q);
 	}
 	$1 = NULL;

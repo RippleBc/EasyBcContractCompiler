@@ -149,11 +149,13 @@ void set_subrange_bound(type *pt, int lower, int upper)
     /* 初始化表示上下界符号的汇编名称 */
     if (pt->first->type->type_id == TYPE_CHAR)
     {
+        /* 接受char类型 */
         sprintf(pt->first->rname, "%c", lower);
         sprintf(pt->last->rname,"%c", upper);
     }
     else
     {
+        /* 接受integer类型 */
         sprintf(pt->first->rname, "0%xh", lower);
         sprintf(pt->last->rname,"0%xh", upper);
     }
