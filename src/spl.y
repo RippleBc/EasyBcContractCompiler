@@ -930,7 +930,7 @@ yNAME parameters
 ;
 
 parameters
-:$empty {/* 参数部分可以为空 */}
+:%empty {/* 参数部分可以为空 */}
 |oLP para_decl_list oRP
 {
 	ptab = top_symtab_stack();
