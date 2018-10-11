@@ -525,7 +525,7 @@ array_type_decl
 	/* 添加到符号表中 */
 	add_type_to_table(
 		top_symtab_stack(),$$);
-} 
+}
 ;
 
 record_type_decl
@@ -559,22 +559,21 @@ field_decl_list
 
 field_decl
 :name_list oCOLON type_decl oSEMI
-{    
+{
 	/* type_decl可以是已经定义的自定义类型（已经位于符号表中）或者现场定义的自定义类型，
 		 也就是说可以直接使用record上面定义的自定义类型 */
 	for(p = $1; p; p = p->next) {
 
-		/**/
-		if($3->type_id == TYPE_SUBRANGE)
+		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
+			/* 子范围类型 */
 			p->type = $3->first->type;
-
-		/**/
-		else if($3->type_id == TYPE_ENUM)
-			p->type = find_type_by_id(TYPE_INTEGER);
 		else
+		  /* 可以是任意类型 */
 			p->type = find_type_by_id($3->type_id);
 
+		/* 表示位于类型符号表中的符号的类型 */
 		p->type_link = $3;
+		/* 符号大类定义 */
 		p->defn = DEF_FIELD;
 	}
 	$$ = $1;
