@@ -84,6 +84,7 @@ void trap_in_debug();
 #define DEBUG_POINT	trap_in_debug();
 #endif
 
+#if 0
 #ifndef GENERATE_AST
 
 %type  <num>proc_stmt assign_stmt
@@ -97,7 +98,7 @@ void trap_in_debug();
 %type  <p_tree>expression expression_list
 
 #endif
-
+#endif
 %}
 
 %union {
