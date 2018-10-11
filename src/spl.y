@@ -946,21 +946,23 @@ para_decl_list
 para_type_list
 :val_para_list oCOLON simple_type_decl
 {
+	/* 获取当前符号表 */
 	ptab = top_symtab_stack();
 	for(p = $1; p ;){
-		if($3->type_id
-			== TYPE_SUBRANGE)
+		printf('val_para_list')
+		/* 初始化val_para_list符号链表中的符号的大类以及小类 */
+		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
 			p->type = $3->first->type;
-		else if ($3->type_id == TYPE_ENUM)
-			p->type = find_type_by_id(TYPE_INTEGER);
 		else
 			p->type = find_type_by_id($3->type_id);
 		p->type_link = $3;
 		p->defn = DEF_VALPARA;
 
-		q = p; p = p->next;
+		q = p; 
+		p = p->next;
 		q->next = NULL;
-		add_symbol_to_table(ptab,q);
+		/* 将符号放入符号表中 */
+		add_symbol_to_table(ptab, q);
 #ifdef GENERATE_AST
 		/* append to paralist. */
 		list_append(&para_list, q);
