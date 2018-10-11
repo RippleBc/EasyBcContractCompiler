@@ -329,11 +329,8 @@ sub_program
 #else
 	emit_main_prologue(Global_symtab);
 #endif
-
 }
-routine_body
-{
-}
+routine_body {}
 ;
 
 name_list
@@ -494,15 +491,15 @@ type_definition
 {
 	if($3->name[0] == '$')
 	{
-		/* 全新的类型 */
+		/* 新创建的自定义类型符号 */
 		$$ = $3;
-		/* 类型命名 */
+		/* 自定义类型符号命名 */
 		strncpy($$->name, $1, NAME_LEN);
 	}
 	else{
-		/* 支持类型重定义。 */
+		/* 使用自定义类型符号创建自定义类型，直接clone已有的自定义类型符号 */
 		$$ = clone_type($3);
-		/* 类型命名 */
+		/* 自定义类型符号命名 */
 		strncpy($$->name, $1, NAME_LEN);
 		/* 将类型添加到符号表中 */
 		add_type_to_table(
@@ -793,11 +790,11 @@ var_decl
 ;
 
 routine_part
-:routine_part function_decl
-|routine_part procedure_decl
-|function_decl
-|procedure_decl
-|
+:%empty {}
+|routine_part function_decl {/* 自定义函数可以嵌套 */}
+|routine_part procedure_decl {/*  自定义过程可以嵌套 */}
+|function_decl {}
+|procedure_decl {}
 ;
 
 function_decl
@@ -833,27 +830,32 @@ function_head
 	list_clear(&ast_forest);
 	list_clear(&para_list);
 #endif
-
+	/* 创建符号表 */
 	ptab = new_symtab(top_symtab_stack());
 	push_symtab_stack(ptab);
 }
-yNAME parameters oCOLON
-simple_type_decl
+yNAME parameters oCOLON simple_type_decl
 {
+	/* 获取对应的符号表 */
 	ptab = top_symtab_stack();
+	/* 使用函数名对符号表进行命名 */
 	strncpy(ptab->name, $3, NAME_LEN);
-	sprintf(ptab->rname, "rtn%03d",ptab->id);
+	/* 使用符号表对函数表中汇编代码进行命名 */
+	sprintf(ptab->rname, "rtn%03d", ptab->id);
+	/* 初始化符号表大类 */
 	ptab->defn = DEF_FUNCT;
 	
+	/* 初始化符号表类型 */
 	if($6->type_id == TYPE_SUBRANGE)
 		ptab->type = $6->first->type;
 	else if($6->type_id == TYPE_ENUM)
 		ptab->type = find_type_by_id(TYPE_INTEGER);
 	else
 		ptab->type = find_type_by_id($6->type_id);
-
 	p = new_symbol($3, DEF_FUNCT, ptab->type->type_id);
 	p->type_link = $6;
+
+	/*  */
 	add_symbol_to_table(ptab, p);
 	reverse_parameters(ptab);
 #ifdef GENERATE_AST
@@ -928,21 +930,21 @@ yNAME parameters
 ;
 
 parameters
-:oLP para_decl_list oRP
+:$empty {/* 参数部分可以为空 */}
+|oLP para_decl_list oRP
 {
 	ptab = top_symtab_stack();
 	ptab->local_size = 0;
 }
-|
 ;
 
 para_decl_list
-:para_decl_list oSEMI para_type_list
-|para_type_list
+:para_decl_list oSEMI para_type_list {/* 不同类型的参数之间使用符号';'进行分割 */}
+|para_type_list {}
 ;
 
 para_type_list
-: val_para_list oCOLON simple_type_decl
+:val_para_list oCOLON simple_type_decl
 {
 	ptab = top_symtab_stack();
 	for(p = $1; p ;){
@@ -967,7 +969,7 @@ para_type_list
 
 	$1 = NULL;
 }
-| var_para_list oCOLON simple_type_decl
+|var_para_list oCOLON simple_type_decl
 {
 	ptab = top_symtab_stack();
 	for(p = $1; p;){
@@ -992,7 +994,7 @@ para_type_list
 ;
 
 val_para_list
-:name_list
+:name_list {/* 默认val_para_list的值等于name_list的值 */}
 ;
 
 var_para_list

@@ -75,7 +75,7 @@ symtab *new_symtab(symtab *parent)
     p->type = find_type_by_id(TYPE_VOID); /* 过程或者函数返回值的类型（普通类型），默认为void */
     p->id = routine_id++; /* 过程或者函数的序号 */
     p->local_size = 0; /* 局部变量的总字节数 */
-    enter_symtab_queue(p);
+    enter_symtab_queue(p); /* 将新创建的符号表放入队列 */
     return p;
 }
 
