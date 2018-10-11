@@ -949,7 +949,6 @@ para_type_list
 	/* 获取当前符号表 */
 	ptab = top_symtab_stack();
 	for(p = $1; p ;){
-		printf('val_para_list')
 		/* 初始化val_para_list符号链表中的符号的大类以及小类 */
 		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
 			p->type = $3->first->type;
