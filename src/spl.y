@@ -520,7 +520,9 @@ type_decl
 array_type_decl
 :kARRAY oLB simple_type_decl oRB kOF type_decl
 {
+	/* 创建一个自定义数组类型 */
 	$$ = new_array_type("$$$", $3, $6);
+	/* 添加到符号表中 */
 	add_type_to_table(
 		top_symtab_stack(),$$);
 } 
@@ -528,22 +530,29 @@ array_type_decl
 
 record_type_decl
 :kRECORD field_decl_list kEND
-{ 
-	pt = new_record_type("$$$", $2);
- 	add_type_to_table(top_symtab_stack(), pt);
-	$$ = pt;
+{
+	/* 创建一个自定义RECORD类型 */
+	$$ = new_record_type("$$$", $2);
+	/* 添加到符号表中 */
+ 	add_type_to_table(top_symtab_stack(), $$);
 }
 ;
 
 field_decl_list
 :field_decl_list field_decl
 {
-    for(p = $1; p->next; p = p->next);
+	/* 将指针移动到链表的末尾 */
+	for(p = $1; p->next; p = p->next);
+
+	/* 链接创建的record属性成员 */
 	p->next = $2;
+
+	/* 定义为链表的record属性符号链表的头部 */
 	$$ = $1;  
 }
 |field_decl
 {
+	/* record关键字之后，必须定义至少一个属性 */
 	$$ = $1;
 }
 ;
@@ -551,9 +560,15 @@ field_decl_list
 field_decl
 :name_list oCOLON type_decl oSEMI
 {    
+	/* type_decl可以是已经定义的自定义类型（已经位于符号表中）或者现场定义的自定义类型，
+		 也就是说可以直接使用record上面定义的自定义类型 */
 	for(p = $1; p; p = p->next) {
+
+		/**/
 		if($3->type_id == TYPE_SUBRANGE)
 			p->type = $3->first->type;
+
+		/**/
 		else if($3->type_id == TYPE_ENUM)
 			p->type = find_type_by_id(TYPE_INTEGER);
 		else
@@ -609,6 +624,7 @@ simple_type_decl
 		parse_error("type mismatch","");
 		return 0;
 	}
+	
 	/* 初始化一个子范围类型 */
 	$$ = new_subrange_type("$$$", $1->type->type_id);
 
@@ -633,23 +649,29 @@ simple_type_decl
 }
 |oMINUS const_value oDOTDOT const_value
 {
+	/* 检查oDOTDOT前后的类型是否一致 */
 	if($2->type->type_id != $4->type->type_id){
 		parse_error("type mismatch","");
 		return 0;
 	}
 
-	$$ = new_subrange_type("$$$",
-		$2->type->type_id);
+	/* 初始化一个子范围类型 */
+	$$ = new_subrange_type("$$$", $2->type->type_id);
 		
+	/* 将子范围类型放入符号表 */
 	add_type_to_table(
 		top_symtab_stack(), $$);
 
+	/* 初始化子范围类型的上下界限，
+	 上下界的类型必须可以强制转换为int类型（integer、boolean），
+	 char类型可以转化为相应的ASCII码。 */
 	if($2->type->type_id == TYPE_INTEGER){
 		$2->v.i= -$2->v.i;
 		set_subrange_bound($$,
 			(int)$2->v.i, (int)$4->v.i);
 	}
 	else if ($2->type->type_id == TYPE_BOOLEAN){
+		/* 将const_value按位异或，经过转化后，1变成0，0变成1。 */
 		$2->v.b ^= 1;
 		set_subrange_bound($$,
 			(int)$2->v.b,(int)$4->v.b);
@@ -691,34 +713,38 @@ simple_type_decl
 }
 |yNAME oDOTDOT yNAME
 {
+	
+	/* 通过自定义类型名称从符号表中寻找自定义类型 */
 	p = find_element(top_symtab_stack(), $1);
-
 	if(!p){
 		parse_error("Undeclared identifier", $1);
+		/* 一个临时的DEF_ELEMENT大类，TYPE_INTEGER小类的符号作为局部变量添加到符号表中 */
 		install_temporary_symbol($1, DEF_ELEMENT, TYPE_INTEGER);
-		/* return 0; */
 	}
-	
+	/* 检查用户自定义类型关联的符号是否是ELEMENT类型 */
 	if(p->defn != DEF_ELEMENT){
 		parse_error("not an element identifier", $1);
-		/* return 0; */
 	}
 	
+	/* 寻找用户自定义类型关联的符号 */
 	q = find_element(top_symtab_stack(), $3);
 	if(!q){
 		parse_error("Undeclared identifier", $3);
+		/* 一个临时的DEF_ELEMENT大类，TYPE_INTEGER小类的符号作为局部变量添加到符号表中 */
 		install_temporary_symbol($3, DEF_ELEMENT, TYPE_INTEGER);
-		/* return 0; */
 	}
+	/* 检查用户自定义类型关联的符号是否是ELEMENT类型 */
 	if(q->defn != DEF_ELEMENT){
 		parse_error("Not an element identifier", $3);
-		/* return 0; */
 	}
 	
 	if(p && q){
+		/* p和q都存在，创建一个TYPE_INTEGER类型的子范围类型， */
 		$$ = new_subrange_type("$$$", TYPE_INTEGER);
+		/* 子范围类型添加到符号表中 */
 		add_type_to_table(
-			top_symtab_stack(),$$);
+			top_symtab_stack(), $$);
+		/* 设置子范围类型的上下界 */
 		set_subrange_bound($$, p->v.i, q->v.i);
 	}
 	else

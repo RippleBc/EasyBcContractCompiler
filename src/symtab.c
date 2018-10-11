@@ -539,7 +539,7 @@ symtab *find_sys_routine(int routine_id)
     return NULL;
 }
 
-/* 从类型符号表中寻找用户自定义类型对应的符号（用于array、enum、record等） */
+/* 从类型符号表中寻找用户自定义类型对应的符号（用于enum、record等） */
 symbol *find_element(symtab *tab, char *name)
 {
     symbol *p;

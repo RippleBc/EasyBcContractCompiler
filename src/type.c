@@ -124,7 +124,9 @@ type *new_subrange_type(char *name, int element_type)
     if (!pt->first || !pt->last)
         internal_error("Insufficient memory.");
 
+    /* 下界符号链接上界符号 */
     pt->first->next = pt->last;
+    /* 初始化类型符号的类型 */
     pt->type_id = TYPE_SUBRANGE;
     return pt;
 }
@@ -144,7 +146,7 @@ void set_subrange_bound(type *pt, int lower, int upper)
     pt->first->v.i = lower;
     pt->last->v.i = upper;
 
-    /* type_id要么是char要么是int */
+    /* 初始化表示上下界符号的汇编名称 */
     if (pt->first->type->type_id == TYPE_CHAR)
     {
         sprintf(pt->first->rname, "%c", lower);
@@ -219,8 +221,12 @@ type *new_array_type(char *name, type *pindex, type *pelement)
 {
     type *pt;
 
+    /* 其中pindex必须是可以表示数组范围的类型，只能枚举类型或者子范围类型。
+     pelement类型可以是任意类型。 */
     if (!pindex || !pelement)
         return NULL;
+
+    /* 检查规定数组下界的first属性以及规定数组上界的last属性是否合法 */
     if (!pindex->first
             || !pindex->last
             || pindex->first == pindex->last)
@@ -244,11 +250,14 @@ type *new_array_type(char *name, type *pindex, type *pelement)
     /* 初始化元素个数 */
     pt->num_ele = pindex->last->v.i -
                   pindex->first->v.i + 1;
-    /* 初始化 */
+    /* 初始化数组的范围（指向enum或者subrange类型的第一个符号） */
     pt->first = pindex->first;
-    /* 初始化数组的元素类型 */
+    /* 初始化数组的类型（新建一个匿名符号，用来表示数组项） */
     pt->last = new_symbol("$$$", DEF_ELEMENT, pelement->type_id);
+    /* 初始化数组项的名称 */
     sprintf(pt->last->rname, "ary_ele");
+
+    /* 内存检查 */
     if (!pt->last)
     {
         internal_error("Insufficient memory");
@@ -271,7 +280,8 @@ type *new_record_type(char *name, symbol *fields)
         return NULL;
     }
 
-    strncpy(pt->name,name, NAME_LEN);
+    /* 初始化 */
+    strncpy(pt->name, name, NAME_LEN);
     pt->type_id = TYPE_RECORD;
     pt->next = NULL;
     pt->first = fields;
@@ -281,9 +291,11 @@ type *new_record_type(char *name, symbol *fields)
     for(p = fields; p ; p = p->next)
     {
         p->defn = DEF_FIELD;
-        /* 计算符号在内存中的偏移量 */
+        /* 计算符号在内存中的偏移量，位于record前面位置的属性偏移量小，往后依次增大 */
         p->offset = pt->size;
+        /* 计算record类型占用的空间 */
         pt->size += align(get_symbol_size(p));
+        /* 计算record类型的属性数量 */
         pt->num_ele++;
     }
     return pt;
