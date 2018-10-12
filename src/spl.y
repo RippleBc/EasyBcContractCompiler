@@ -1155,8 +1155,11 @@ expression oRB
 	
 	/* 数组AST树（定位） */
 	t = array_factor_tree(p, $4);
+
 	/* 赋值AST树 */
 	t = address_tree(t, p);
+
+	/* 当前AST节点压栈 */
 	push_ast_stack(t);
 #else
 	do_array_factor(p);
