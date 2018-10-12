@@ -1110,12 +1110,12 @@ assign_stmt
 #ifdef GENERATE_AST
 	/* 地址AST树 */
 	t = address_tree(NULL, p);
+
 	/* 赋值AST树 */
 	$$ = assign_tree(t, $3);
 	
-	/* append to forest. */
+	/* 放入AST森林 */
 	list_append(&ast_forest, $$);
-	
 #else
 	
 	if (p && p->defn != DEF_FUNCT)
@@ -1153,10 +1153,10 @@ expression oRB
 	p = top_term_stack();
 #ifdef GENERATE_AST
 	
-	/* 数组AST树（定位） */
+	/* 数组AST节点（定位数组项） */
 	t = array_factor_tree(p, $4);
 
-	/* 赋值AST树 */
+	/* 地址AST节点（定位变量） */
 	t = address_tree(t, p);
 
 	/* 当前AST节点压栈 */
@@ -1168,8 +1168,13 @@ expression oRB
 oASSIGN expression
 {
 #ifdef GENERATE_AST
+	/* 获取AST节点 */
 	t = pop_ast_stack();
+
+	/* 赋值AST节点 */
 	$$ = assign_tree(t, $8);
+
+	/* 放入AST森林 */
 	list_append(&ast_forest, $$);
 #else
 	p = pop_term_stack();
@@ -1178,15 +1183,15 @@ oASSIGN expression
 }
 |yNAME oDOT yNAME
 {
-	p = find_symbol(top_symtab_stack(),$1);
+	p = find_symbol(top_symtab_stack(), $1);
 	if(!p || p->type->type_id != TYPE_RECORD){
-		parse_error("Undeclared record vaiable",$1);
+		parse_error("Undeclared record vaiable", $1);
 		return 0;
 	}
 
-	q = find_field(p,$3);
+	q = find_field(p, $3);
 	if(!q || q->defn != DEF_FIELD){
-		parse_error("Undeclared field",$3);
+		parse_error("Undeclared field", $3);
 		return 0;
 	}
 
