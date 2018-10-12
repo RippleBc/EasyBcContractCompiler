@@ -54,17 +54,16 @@ Tree conversion_tree(Symbol source, Type target)
     return t;
 }
 
-/* get value of id tree. */
+/* 获取变量值 */
 Tree id_factor_tree(Tree source, Symbol sym)
 {
     Tree t;
 
     if (source)
-        /* LOAD指令表示获取symbol对应的值，
-         如果source存在，节点类型即为source对应的类型，
-         symbol对应的值为source的值 */
+        /* 通过AST树取值（数组） */
         t = new_tree(LOAD, source->result_type, source, NULL);
     else
+        /* 通过符号取值 */
         t = new_tree(LOAD, sym->type, NULL, NULL);
 
     /* 节点对应的symbol */
@@ -107,36 +106,23 @@ Tree not_tree(Tree source)
 
 /* Right tree.
  * holding arguments, comma operations.
+ * root表示参数AST树的左子树，newrightpart表示表达式AST树。
  */
 Tree right_tree(Tree *root, Tree newrightpart)
 {
-    Tree right;
-
-    if (*root == NULL)
-    {
-        *root = new_tree(RIGHT, newrightpart->result_type, newrightpart, NULL);
-        return *root;
-    }
-
-    /* right = (*root)->kids[1]; */
-    right = (*root);
-
-    while(right->kids[1] != NULL)
-        right = right->kids[1];
-
-    right->kids[1] = new_tree(RIGHT, newrightpart->result_type, newrightpart, NULL);
-
-    return right->kids[1];
+    
 }
 
 
 /* arguments tree.
  * set argtree to NULL when first called.
+ * argtree表示可以参数AST树、function表示函数对应的符号表、arg指向符号表中的参数链表的头部、expr表示实参
  */
 Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
 {
     Tree t, right;
 
+    /* 检查arg类型是否与expr类型相同 */
     if (arg != NULL && arg->type->type_id != expr->result_type->type_id)
     {
         /* do conversions, left for excises. */
@@ -145,19 +131,41 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
 
     if (argtree == NULL)
     {
+        /* 函数参数树没有进行初始化 */
         if (arg != NULL) 
+            /* 符号表中的参数符号类型 */
             t = new_tree(ARG, arg->type, expr, NULL);
         else
+            /* expr中表示的类型 */
             t = new_tree(ARG, expr->result_type, expr, NULL);
-        t->u.arg.sym = arg;
-        t->u.arg.symtab = function;
+        
+        t->u.arg.sym = arg; /* 参数符号 */
+        t->u.arg.symtab = function; /* 函数符号表 */
         return t;
     }
 
-    /* append to right tree. */
-    right = right_tree(&(argtree->kids[1]), expr);
-    right->u.arg.sym = arg;
-    right->u.arg.symtab = function;
+    /* 函数参数树已经初始化 */
+    if (argtree->kids[1] == NULL)
+    {
+        argtree->kids[1] = new_tree(RIGHT, expr->result_type, expr, NULL);
+        right = argtree->kids[1];
+    }
+    else
+    {
+        right = argtree->kids[1];
+
+        /* 移动到参数AST树最右端 */
+        while(right->kids[1] != NULL)
+            right = right->kids[1];
+
+        /* 初始化一个最右AST树 */
+        right->kids[1] = new_tree(RIGHT, expr->result_type, expr, NULL);
+
+        right = right->kids[1];
+    }
+
+    right->u.arg.sym = arg; /* 参数符号 */
+    right->u.arg.symtab = function; /* 函数符号表 */
 
     return argtree;
 }
@@ -166,7 +174,8 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
 Tree field_tree(Symbol record, Symbol field)
 {
     Tree t;
-
+    /* record表示记录类型的自定义变量符号，
+     field表示记录类型中的属性符号（record类型拥有多个属性，需要指定属性）。 */
     t = new_tree(FIELD, field->type, NULL, NULL);
     t->u.field.record = record;
     t->u.field.field = field;
@@ -178,13 +187,14 @@ Tree field_tree(Symbol record, Symbol field)
 Tree array_factor_tree(Symbol array, Tree expr)
 {
     Tree t;
-
+    /* expr用于表示array的下标 */
     t = new_tree(ARRAY, array->type->last->type, expr, NULL);
+    /* 对应的array符号 */
     t->u.generic.sym = array;
     return t;
 }
 
-/*  const value */
+/*  常量树 */
 Tree const_tree(Symbol constval)
 {
     Tree t;
@@ -194,19 +204,19 @@ Tree const_tree(Symbol constval)
     return t;
 }
 
-/*  function call */
+/*  自定义函数或过程调用 */
 Tree call_tree(Symtab routine, Tree argstree)
 {
     Tree t;
 
-    /* 函数或者过程调用，CALL表示指令，routine->type表示函数或者过程的返回类型，
+    /* CALL表示指令，routine->type表示函数或者过程的返回类型，
     argstree表示参数，可以为空（过程调用无需参数，或者没有参数的函数） */
     t = new_tree(CALL, routine->type, argstree, NULL);
     t->u.call.symtab = routine;
     return t;
 }
 
-/*  system call */
+/*  系统函数或过程调用 */
 Tree sys_tree(int sys_id, Tree argstree)
 {
     Tree t;
@@ -216,8 +226,10 @@ Tree sys_tree(int sys_id, Tree argstree)
     if (ptab)
         t = new_tree(SYS, ptab->type, argstree, NULL);
     else
+        /* 对应的系统函数或过程没有进行初始化，初始化一个空的AST树 */
         t = new_tree(SYS, find_type_by_id(TYPE_VOID), argstree, NULL);
 
+    /* 初始化系统函数或过程的id */
     t->u.sys.sys_id = sys_id;
     return t;
 }

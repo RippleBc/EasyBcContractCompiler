@@ -56,7 +56,7 @@ struct list ast_forest;
 struct list para_list;				/* for parameter list. */
 List  case_list = NULL;
 struct list dag_forest;				/* for dags. */
-Tree args;
+Tree args; /* 参数AST树 */
 Tree now_function; /* 当前函数的AST树 */
 Tree t;
 Symbol	new_label = NULL;
@@ -1896,7 +1896,8 @@ oUNEQU  expr
 }
 ;
 
-expr:expr
+expr
+:expr
 {
 #ifdef GENERATE_AST
 #else
@@ -1918,7 +1919,7 @@ oPLUS term
 	emit_push_op($1->type->type_id);
 #endif
 }
-oMINUS  term
+oMINUS term
 {
 #ifdef GENERATE_AST
 	$$ = binary_expr_tree(SUB, $1, $4);
@@ -1954,7 +1955,7 @@ term
 {
 #ifdef GENERATE_AST
 #else
-        emit_push_op($1->type->type_id);
+	emit_push_op($1->type->type_id);
 #endif
 }
 oMUL factor
@@ -1962,7 +1963,7 @@ oMUL factor
 #ifdef GENERATE_AST
 	$$ = binary_expr_tree(MUL, $1, $4);
 #else
-	do_term($4,oMUL);
+	do_term($4, oMUL);
 #endif
 }
 |term
@@ -2035,13 +2036,12 @@ kAND factor
 factor
 :yNAME
 {
-	/* 因子，表达式的基本组成部分之一（因子和操作符） */
+	/* 因素，表达式的基本组成部分之一（因素和操作符） */
 	p = NULL;
 
 	if((p = find_symbol(top_symtab_stack(), $1)))
 	{
-		/* 普通符号 */
-		/* 不能直接对array以及record类型的符号进行运算操作 */
+		/* 普通符号，不能直接对array以及record类型的符号进行运算操作（需要制定下标或者属性） */
 		if(p->type->type_id == TYPE_ARRAY
 			||p->type->type_id == TYPE_RECORD)
 		{
@@ -2064,7 +2064,7 @@ factor
 	}
 	else
 	{
-		/* 自定义函数或者过程调用 */
+		/* 自定义函数或者过程调用（无参数调用） */
 		$$ = call_tree(ptab, NULL);
 	}
 #else
@@ -2081,6 +2081,7 @@ factor
 }
 |yNAME
 {
+	/* 寻找自定义函数或者过程 */
 	if((ptab = find_routine($1)))
   		push_call_stack(ptab);
 	else
@@ -2092,6 +2093,7 @@ factor
 oLP args_list oRP
 {
 #ifdef GENERATE_AST
+	/* 自定义函数或者过程调用（有参调用） */
 	$$ = call_tree(ptab, args);
 #else
 	$$ = do_function_call(top_call_stack());
@@ -2102,6 +2104,7 @@ oLP args_list oRP
 {
 	ptab = find_sys_routine($1->attr);
 #ifdef GENERATE_AST
+	/* 系统函数或者过程调用（无参调用） */
 	$$ = sys_tree($1->attr, NULL);
 #else
 	do_sys_routine(ptab->id, ptab->type->type_id);
@@ -2115,8 +2118,10 @@ oLP args_list oRP
 }
 oLP args_list oRP
 {
+	/* 获取当前需要调用的函数或者过程对应的符号表 */
 	ptab = top_call_stack();
 #ifdef GENERATE_AST
+	/* 系统函数或者过程调用（有参调用） */
 	$$ = sys_tree($1->attr, args);
 #else
 	ptab = top_call_stack();
@@ -2127,12 +2132,15 @@ oLP args_list oRP
 }
 |const_value
 {
+	/* 常量 */
 	switch($1->type->type_id){
 		case TYPE_REAL:
 		case TYPE_STRING:
+			/* 通过全局符号表记录常量 */
 			add_symbol_to_table(Global_symtab, $1);
 			break;
 		case TYPE_BOOLEAN:
+			/* 通过汇编名称记录常量 */
 			sprintf($1->rname, "%d", (int)($1->v.b));
 			break;
 		case TYPE_INTEGER:
@@ -2182,14 +2190,17 @@ oLP args_list oRP
 }
 |yNAME  oLB
 {
+	/* 寻找对应的符号 */
 	p = find_symbol(
 		top_symtab_stack(), $1);
-		   
+	
+	/* 检查符号类型是否是数组 */
 	if(!p || p->type->type_id != TYPE_ARRAY){
-		parse_error("Undeclared array  name",$1);
+		parse_error("Undeclared array name",$1);
 		return  0;
 	}
 
+	/* 数组符号入栈（保存上下文） */
 	push_term_stack(p);
 
 #ifdef GENERATE_AST
@@ -2201,8 +2212,11 @@ oLP args_list oRP
 expression oRB
 {
 #ifdef GENERATE_AST
+	/* 数组符号出栈（获取上下文） */
 	p = pop_term_stack(p);
+	/* 数组AST树 */
 	t = array_factor_tree(p, $4);
+	/* 数组取值AST树 */
 	$$ = id_factor_tree(t, p);
 #else
 	p = pop_term_stack(p);
@@ -2213,19 +2227,29 @@ expression oRB
 }
 |yNAME oDOT yNAME
 {
+	/* 寻找对应的符号 */
 	p = find_symbol(top_symtab_stack(), $1);
+
+	/* 检查符号类型是否是记录 */
 	if(!p || p->type->type_id != TYPE_RECORD) {
 		parse_error("Undeclared record variable",$1);
 		return  0;
 	}
+
+	/* 寻找记录类型变量对应的symbol */
 	q = find_field(p, $3);
+
+	/* 检查符号类型 */
 	if(!q || q->defn != DEF_FIELD){
 		parse_error("Undeclared field ",$3);
 		return 0;
 	}
 	
 #ifdef GENERATE_AST
+
+	/* field的AST树 */
 	t = field_tree(p, q);
+	/* field取值AST树 */
 	$$ = id_factor_tree(t, q);
 #else
 	emit_load_address(p);
@@ -2241,10 +2265,10 @@ args_list
 :args_list  oCOMMA  expression 
 {
 #ifdef GENERATE_AST
-
+	/* 获取函数或者过程调用上下文 */
 	rtn = top_call_stack();
 
-	/* next argument. */
+	/* 获取具体arg */
 	if (arg)
 	{
 		arg = arg->next;
@@ -2262,9 +2286,10 @@ args_list
 
 	args = NULL;
 
-	/* first argument. set rtn to symtab of current function call. */
+	/* 获取上下文环境（函数或者过程对应的符号表） */
 	rtn = top_call_stack();
 
+	/* 获取符号表中的参数链表（arg指向参数链表的表头） */
 	if(rtn)
 		arg = rtn->args;
 	else
@@ -2275,6 +2300,7 @@ args_list
 
 	if(arg)
 	{
+		/* 初始化一棵参数AST树 */
 		args = arg_tree(args, rtn, arg, $1);
 	}
 

@@ -128,7 +128,6 @@ Tree id_factor_tree(Tree source, Symbol sym);
 Tree address_tree(Tree source, Symbol sym);
 Tree not_tree(Tree source);
 Tree neg_tree(Tree source);
-Tree right_tree(Tree *root, Tree newrightpart);
 Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr);
 Tree field_tree(Symbol record, Symbol field);
 Tree array_factor_tree(Symbol array, Tree expr);
