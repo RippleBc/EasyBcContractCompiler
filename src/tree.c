@@ -71,7 +71,6 @@ Tree id_factor_tree(Tree source, Symbol sym)
     return t;
 }
 
-/* get address tree */
 Tree address_tree(Tree source, Symbol sym)
 {
     Tree t;
@@ -81,11 +80,11 @@ Tree address_tree(Tree source, Symbol sym)
     else
         t = new_tree(ADDRG, sym->type, NULL, NULL);
     
+    /* 变量对应的符号 */
     t->u.generic.sym = sym;
     return t;
 }
 
-/* negative tree */
 Tree neg_tree(Tree source)
 {
     Tree t;
@@ -94,7 +93,6 @@ Tree neg_tree(Tree source)
     return t;
 }
 
-/* not operation tree. */
 Tree not_tree(Tree source)
 {
     Tree t;
@@ -136,9 +134,9 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
             /* 符号表中的参数符号类型 */
             t = new_tree(ARG, arg->type, expr, NULL);
         else
-            /* expr中表示的类型 */
+            /* expr中的类型 */
             t = new_tree(ARG, expr->result_type, expr, NULL);
-        
+
         t->u.arg.sym = arg; /* 参数符号 */
         t->u.arg.symtab = function; /* 函数符号表 */
         return t;
@@ -170,7 +168,7 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
     return argtree;
 }
 
-/* get value of a field of record. */
+/* 通常与id_factor_tree一起使用（通过field_tree获取属性，通过id_factor_tree获取属性值） */
 Tree field_tree(Symbol record, Symbol field)
 {
     Tree t;
@@ -183,7 +181,7 @@ Tree field_tree(Symbol record, Symbol field)
 
 }
 
-/* get value of an item of array. */
+/* 通常与id_factor_tree一起使用（通过array_factor_tree获取数组项，通过id_factor_tree获取数组项的值） */
 Tree array_factor_tree(Symbol array, Tree expr)
 {
     Tree t;
@@ -234,36 +232,31 @@ Tree sys_tree(int sys_id, Tree argstree)
     return t;
 }
 
-/* 
- * binary operation.
- */
 Tree binary_expr_tree(int op, Tree left, Tree right)
 {
     Tree t;
 
+    /* AST树的类型等于左AST树类型 */
     t = new_tree(op, left->result_type, left, right);
     t->result_type = left->result_type;
     return t;
 }
 
-/* 
- * comparision operation.
- */
 Tree compare_expr_tree(int op, Tree left, Tree right)
 {
     Tree t;
 
+    /* AST树类型为布尔型 */
     t = new_tree(op, find_type_by_id(TYPE_BOOLEAN), left, right);
     return t;
 }
 
-/* 
- * assignment tree.
- */
+
 Tree assign_tree(Tree id, Tree expr)
 {
     Tree t;
 
+    /* id表示一棵地址树，expr表示赋值内容 */
     t = new_tree(ASGN, id->result_type, id, expr);
     return t;
 }

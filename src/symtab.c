@@ -562,7 +562,7 @@ symbol *find_element(symtab *tab, char *name)
 symbol *find_field(symbol *p, char *name)
 {
     type *pt;
-    symbol *q;
+    symbol *q;   
 
     if(!p || p->type->type_id != TYPE_RECORD)
         return NULL;

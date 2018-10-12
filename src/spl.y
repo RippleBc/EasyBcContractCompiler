@@ -1049,12 +1049,15 @@ non_label_stmt
 assign_stmt
 :yNAME oASSIGN expression
 {
+	/* 寻找对应的符号 */
 	p = find_symbol(top_symtab_stack(), $1);
 	if (p == NULL)
 	{
 		parse_error("Undefined identifier", $1);
 		p = install_temporary_symbol($1, DEF_VAR, TYPE_INTEGER);
 	}
+
+	/* 检查赋值形式是否合法 */
 	if(p->type->type_id == TYPE_ARRAY
 		||p->type->type_id == TYPE_RECORD)
 	{
@@ -1064,6 +1067,7 @@ assign_stmt
 
 	if (p && p->defn != DEF_FUNCT)
 	{
+	/* 检查yNAME和expression的类型是否匹配 */
 	#ifdef GENERATE_AST
 		if(p->type->type_id != $3->result_type->type_id)
 	#else
@@ -1076,9 +1080,11 @@ assign_stmt
 	}
 	else
 	{
+		/* 函数或者过程 */
 		ptab = find_routine($1);
 		if(ptab)
 		{
+		/* 检查yNAME和expression的类型是否匹配 */
 		#ifdef GENERATE_AST
 			if(ptab->type->type_id != $3->result_type->type_id)
 		#else
@@ -1092,6 +1098,7 @@ assign_stmt
 		else{
 			parse_error("Undeclared identifier.",$1);
 		#ifdef GENERATE_AST
+			/* 定义一个临时symbol，使得同一个错误在程序接下来的执行过程中不会反复出现 */
 			install_temporary_symbol($1, DEF_VAR, $3->result_type->type_id);
 		#else
 			install_temporary_symbol($1, DEF_VAR, $3);
@@ -1101,7 +1108,9 @@ assign_stmt
 	}
 
 #ifdef GENERATE_AST
+	/* 地址AST树 */
 	t = address_tree(NULL, p);
+	/* 赋值AST树 */
 	$$ = assign_tree(t, $3);
 	
 	/* append to forest. */
@@ -1121,12 +1130,16 @@ assign_stmt
 }
 |yNAME oLB
 {
+	/* 符号表 */
 	p = find_symbol(top_symtab_stack(), $1);
+
+	/* 检查符号类型 */
 	if(!p || p->type->type_id != TYPE_ARRAY){
 		parse_error("Undeclared array name",$1);
 		return 0;
 	}
 	
+	/* 将当前符号压栈 */
 	push_term_stack(p);
 #ifdef GENERATE_AST
 #else
@@ -1136,15 +1149,13 @@ assign_stmt
 }
 expression oRB
 {
+	/* 获取符号 */
 	p = top_term_stack();
 #ifdef GENERATE_AST
-	p = find_symbol(top_symtab_stack(), $1);
-	if(!p || p->type->type_id != TYPE_ARRAY){
-		parse_error("Undeclared array name",$1);
-		return 0;
-	}
 	
+	/* 数组AST树（定位） */
 	t = array_factor_tree(p, $4);
+	/* 赋值AST树 */
 	t = address_tree(t, p);
 	push_ast_stack(t);
 #else
@@ -1792,13 +1803,13 @@ expression
 {
 #ifdef GENERATE_AST
 #else
-		/* 遇到express时，进行汇编指令生成 */
     emit_push_op($1);
 #endif
 }
 oGE expr
 {
 #ifdef GENERATE_AST
+	/* 比较运算AST树（>=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
 	$$ = compare_expr_tree(GE, $1, $4);
 #else
 	do_expression($4, oGE);
@@ -1815,6 +1826,7 @@ oGE expr
 oGT expr
 {
 #ifdef GENERATE_AST
+	/* 比较运算AST树（>），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
 	$$ = compare_expr_tree(GT, $1, $4);
 #else
 	do_expression($4, oGT);
@@ -1831,6 +1843,7 @@ oGT expr
 oLE expr
 {
 #ifdef GENERATE_AST
+	/* 比较运算AST树（<=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
 	$$ = compare_expr_tree(LE, $1, $4);
 #else
 
@@ -1848,6 +1861,7 @@ oLE expr
 oLT expr
 {
 #ifdef GENERATE_AST
+	/* 比较运算AST树（<），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
 	$$ = compare_expr_tree(LT, $1, $4);
 #else
 	do_expression($4,oLT);
@@ -1864,6 +1878,7 @@ oLT expr
 oEQUAL expr
 {
 #ifdef GENERATE_AST
+	/* 比较运算AST树（=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
 	$$ = compare_expr_tree(EQ, $1, $4);
 #else
 	do_expression($4,oEQUAL);
@@ -1880,9 +1895,10 @@ oEQUAL expr
 oUNEQU  expr
 {
 #ifdef GENERATE_AST
+	/* 比较运算AST树（<>，表示不想等），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
 	$$ = compare_expr_tree(NE, $1, $4);
 #else
-	do_expression($4,oUNEQU);
+	do_expression($4, oUNEQU);
 	$$ = TYPE_BOOLEAN;
 #endif
 }
@@ -1907,6 +1923,7 @@ expr
 oPLUS term
 {
 #ifdef GENERATE_AST
+	/* 二元运算AST树（+），由于优先级问题，放在expr表达式中（expr表达式中的运算优先级比term中的要低），仅支持左结合 */
 	$$ = binary_expr_tree(ADD, $1, $4);
 #else
 	do_expr($4,oPLUS);
@@ -1922,6 +1939,7 @@ oPLUS term
 oMINUS term
 {
 #ifdef GENERATE_AST
+	/* 二元运算AST树（-），由于优先级问题，放在expr表达式中（expr表达式中的运算优先级比term中的要低），仅支持左结合 */
 	$$ = binary_expr_tree(SUB, $1, $4);
 #else
 	do_expr($4 ,oMINUS);
@@ -1937,6 +1955,7 @@ oMINUS term
 kOR term
 {
 #ifdef GENERATE_AST
+	/* 二元运算AST树（or），由于优先级问题，放在expr表达式中（expr表达式中的运算优先级比term中的要低），仅支持左结合  */
 	$$ = binary_expr_tree(OR, $1, $4);
 #else
 	do_expression($4,kOR);
@@ -1961,6 +1980,7 @@ term
 oMUL factor
 {
 #ifdef GENERATE_AST
+	/* 二元运算AST树（*），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
 	$$ = binary_expr_tree(MUL, $1, $4);
 #else
 	do_term($4, oMUL);
@@ -1976,6 +1996,7 @@ oMUL factor
 oDIV factor
 {
 #ifdef GENERATE_AST
+	/* 二元运算AST树（/），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
 	$$ = binary_expr_tree(DIV, $1, $4);
 #else
 	do_term($4,kDIV);
@@ -1991,6 +2012,7 @@ oDIV factor
 kDIV factor
 {
 #ifdef GENERATE_AST
+	/* 二元运算AST树（div），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
 	$$ = binary_expr_tree(DIV, $1, $4);
 #else
 	do_term($4, kDIV);
@@ -2007,6 +2029,7 @@ kDIV factor
 kMOD factor
 {
 #ifdef GENERATE_AST
+	/* 二元运算AST树（mod），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
 	$$ = binary_expr_tree(MOD, $1, $4);
 #else
 	do_term($4, kMOD);
@@ -2022,6 +2045,7 @@ kMOD factor
 kAND factor
 {
 #ifdef GENERATE_AST
+	/* 二元运算AST树（and），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
 	$$ = binary_expr_tree(AND, $1, $4);
 #else
 	do_term($4,kAND);
@@ -2098,6 +2122,7 @@ oLP args_list oRP
 #else
 	$$ = do_function_call(top_call_stack());
 #endif
+	/* 函数调用结束，当前上下文退栈 */
 	pop_call_stack();
 }
 |SYS_FUNCT
@@ -2132,7 +2157,7 @@ oLP args_list oRP
 }
 |const_value
 {
-	/* 常量 */
+	/* 常量（term中const_value由于只在表达式中使用一次，不需要对name字段进行命名），比如表达式 1+2+3 中的 1 */
 	switch($1->type->type_id){
 		case TYPE_REAL:
 		case TYPE_STRING:
@@ -2156,6 +2181,7 @@ oLP args_list oRP
 			break;
 	}
 #ifdef GENERATE_AST
+	/* 常量AST树 */
 	$$ = const_tree($1);
 #else
 	do_factor($1);
@@ -2164,6 +2190,7 @@ oLP args_list oRP
 |oLP expression oRP
 {
 #ifdef GENERATE_AST
+ 	/* AST树（提高expression的优先级） */
 	$$ = $2;
 #else
 	$$ = find_symbol(NULL, "");
@@ -2173,6 +2200,7 @@ oLP args_list oRP
 |kNOT factor
 {
 #ifdef GENERATE_AST
+	/* 一元操作符（not） */
 	$$ = not_tree($2);
 #else
 	do_not_factor($2);
@@ -2182,13 +2210,14 @@ oLP args_list oRP
 |oMINUS factor
 {
 #ifdef GENERATE_AST
+	/* 一元操作符（-） */
 	$$ = neg_tree($2);
 #else
 	do_negate($2);
 	$$ = $2;
 #endif
 }
-|yNAME  oLB
+|yNAME oLB
 {
 	/* 寻找对应的符号 */
 	p = find_symbol(
@@ -2268,14 +2297,14 @@ args_list
 	/* 获取函数或者过程调用上下文 */
 	rtn = top_call_stack();
 
-	/* 获取具体arg */
+	/* 从符号表的参数链表中获取下一个参数 */
 	if (arg)
 	{
 		arg = arg->next;
 	}
 
-	/* append to right tree of args. */
-	args = arg_tree(args, rtn, arg, $3);
+	/* 将参数放入参数AST树中 */
+	args = arg_tree(args, rtn, arg, $3); 
 #else
 	do_args($3);
 #endif
@@ -2289,7 +2318,7 @@ args_list
 	/* 获取上下文环境（函数或者过程对应的符号表） */
 	rtn = top_call_stack();
 
-	/* 获取符号表中的参数链表（arg指向参数链表的表头） */
+	/* 从符号表的参数链表中获取第一个参数 */
 	if(rtn)
 		arg = rtn->args;
 	else
@@ -2300,7 +2329,7 @@ args_list
 
 	if(arg)
 	{
-		/* 初始化一棵参数AST树 */
+		/* 初始化参数AST树 */
 		args = arg_tree(args, rtn, arg, $1);
 	}
 
