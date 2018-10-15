@@ -41,11 +41,12 @@ Tree pop_ast_stack();
 Tree top_ast_stack();
 void push_ast_stack(Tree t);
 
-/* 记录 */
+/* 记录条件跳转语句的层级 */
 int pop_lbl_stack();
 int top_lbl_stack();
 void push_lbl_stack(int id);
 
+/*  */
 int pop_case_stack();
 int top_case_stack();
 void push_case_stack(int id);
@@ -90,14 +91,12 @@ void trap_in_debug();
 #ifndef GENERATE_AST
 
 %type  <num>proc_stmt assign_stmt
-%type  <num>expression expression_list
 %type  <p_symbol>factor term expr
 
 #else
 
 %type  <p_tree>proc_stmt assign_stmt
 %type  <p_tree>factor term expr
-%type  <p_tree>expression expression_list
 
 #endif
 #endif
@@ -215,7 +214,6 @@ void trap_in_debug();
 
 %type  <p_tree>proc_stmt assign_stmt
 %type  <p_tree>factor term expr
-%type  <p_tree>expression expression_list
 
 %start  program
 
@@ -1226,13 +1224,15 @@ oASSIGN expression
 proc_stmt
 :yNAME
 {
+	/* 符号表 */
 	ptab = find_routine($1);
 	if(!ptab || ptab->defn != DEF_PROC){
-		parse_error("Undeclared procedure",$1);
+		parse_error("Undeclared procedure", $1);
 		return 0;
 	}
 
 #ifdef GENERATE_AST
+	/* 初始化调用AST节点 */
 	$$ = call_tree(ptab, NULL);
 	list_append(&ast_forest, $$);
 #else
@@ -1241,21 +1241,26 @@ proc_stmt
 }
 |yNAME
 {
+	/* 符号表 */
 	ptab = find_routine($1);
 	if(!ptab || ptab->defn != DEF_PROC){
-			parse_error("Undeclared procedure",$1);
+			parse_error("Undeclared procedure", $1);
 			return 0;
 	}
+
+	/* 保存调用上下文 */
 	push_call_stack(ptab);
 }
 oLP args_list oRP
 {
 #ifdef GENERATE_AST
+	/* 初始化调用AST节点，其中args表示参数AST节点。 */
 	$$ = call_tree(top_call_stack(), args);
 	list_append(&ast_forest, $$);
 #else
 	do_procedure_call(top_call_stack());
 #endif
+  /* 清除调用上下文 */
 	pop_call_stack();
 }
 |SYS_PROC
@@ -1280,7 +1285,7 @@ oLP args_list oRP
 
 	push_call_stack(rtn);
 }
-oLP expression_list oRP 
+oLP args_list oRP 
 {
 #ifdef GENERATE_AST
 	$$ = sys_tree($1->attr, $4);
@@ -1335,7 +1340,7 @@ if_stmt
 :kIF 
 {
 #ifdef GENERATE_AST
-	/* 记录if标签层级 */
+	/* 记录标签层级 */
 	push_lbl_stack(if_label_count++);
 #endif
 }
@@ -1349,10 +1354,8 @@ expression kTHEN
 	/* 初始化符号 */
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 
-	/* 初始化条件跳转AST节点（expression为假时，进行跳转） */
+	/* 初始化条件跳转AST节点（expression为假时，进行跳转，为真时继续往下执行） */
 	t = cond_jump_tree($3, false, new_label);
-
-	/* 添加到AST森林 */
 	list_append(&ast_forest, t);
 #else
 	do_if_test();
@@ -1366,7 +1369,7 @@ stmt
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 
-	/* 初始化标签AST节点 */
+	/* 初始化IF标签AST节点 */
 	t = label_tree(new_label);
 
 	/* 记录AST节点 */
@@ -1377,14 +1380,12 @@ stmt
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 
-	/* 初始化跳转AST节点（跳转到结束语句） */
+	/* 初始化IF跳转AST节点（执行完毕后跳转到结束位置，kELSE那部分内容不需要执行） */
 	t = jump_tree(exit_label);
 	list_append(&ast_forest, t);
 	
 	/* 获取AST节点 */
 	t = pop_ast_stack();
-
-	/* 标签AST节点添加到AST森林 */
 	list_append(&ast_forest, t);
 #else
 	do_if_clause();
@@ -1398,7 +1399,7 @@ else_clause
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 
-	/* 初始化跳转AST节点 */
+	/* 初始化IF标签AST节点 */
 	t = label_tree(exit_label);
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
@@ -1419,14 +1420,15 @@ stmt else_clause
 ;
 
 else_clause
-:kELSE stmt
-|
+:%empty {}
+|kELSE stmt {}
 ;
 
 repeat_stmt
 :kREPEAT
 {
 #ifdef GENERATE_AST
+	/* 初始化REPEAT标签节点 */
 	push_lbl_stack(repeat_label_count++);
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "repeat_%d", repeat_label_count - 1);
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -1440,6 +1442,7 @@ repeat_stmt
 stmt_list kUNTIL expression
 {
 #ifdef GENERATE_AST
+	/* 初始化REPEAT条件跳转AST节点 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "repeat_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
@@ -1456,6 +1459,7 @@ while_stmt
 :kWHILE
 {
 #ifdef GENERATE_AST
+  /* 初始化WHILE标签AST节点 */
 	push_lbl_stack(while_label_count++);
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_test_%d", while_label_count - 1);
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -1469,6 +1473,7 @@ while_stmt
 expression kDO
 {
 #ifdef GENERATE_AST
+	/* 初始化WHILE条件跳转AST节点 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
@@ -1489,6 +1494,7 @@ stmt
 	t = label_tree(exit_label);
 	push_ast_stack(t);
 
+	/* 初始化跳转AST节点（跳转到WHILE标签） */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_test_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
@@ -1777,50 +1783,6 @@ oSEMI
 
 goto_stmt
 :kGOTO cINTEGER
-;
-
-expression_list
-:expression_list  oCOMMA  expression
-{
-#ifdef GENERATE_AST
-
-	rtn = top_call_stack();
-
-	/* next argument. */
-	if (arg)
-	{
-		arg = arg->next;
-	}
-
-	/* append to right tree of args. */
-	args = arg_tree(args, rtn, arg, $3);
-	$$ = args;
-
-#endif
-}
-|expression
-{
-#ifdef GENERATE_AST
-
-	args = NULL;
-
-	/* first argument. set rtn to symtab of current function call. */
-	rtn = top_call_stack();
-
-	if(rtn)
-		arg = rtn->args;
-	else
-	{
-		parse_error("error parse sys call list.", "");
-		return 0;
-	}
-
-	args = arg_tree(args, rtn, arg, $1);
-
-	$$ = args;
-
-#endif
-}
 ;
 
 expression
