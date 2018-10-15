@@ -23,7 +23,7 @@ tree   *t;
 type *pt, *qt;
 int temp;
 
-/* 对token的操作 */
+/* 记录term上下文 */
 symbol* pop_term_stack();
 symbol* top_term_stack();
 void push_term_stack(symbol * p);
@@ -36,10 +36,12 @@ Symbol	arg = NULL;
 
 #ifdef GENERATE_AST
 
+/* 记录AST上下文 */
 Tree pop_ast_stack();
 Tree top_ast_stack();
 void push_ast_stack(Tree t);
 
+/* 记录 */
 int pop_lbl_stack();
 int top_lbl_stack();
 void push_lbl_stack(int id);
@@ -1333,17 +1335,24 @@ if_stmt
 :kIF 
 {
 #ifdef GENERATE_AST
+	/* 记录if标签层级 */
 	push_lbl_stack(if_label_count++);
 #endif
 }
 expression kTHEN
 {
 #ifdef GENERATE_AST
+	/* 初始化名称 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_false_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
+
+	/* 初始化符号 */
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 
+	/* 初始化条件跳转AST节点（expression为假时，进行跳转） */
 	t = cond_jump_tree($3, false, new_label);
+
+	/* 添加到AST森林 */
 	list_append(&ast_forest, t);
 #else
 	do_if_test();
@@ -1352,23 +1361,30 @@ expression kTHEN
 stmt
 {
 #ifdef GENERATE_AST
+  /* 初始化符号 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_false_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 
+	/* 初始化标签AST节点 */
 	t = label_tree(new_label);
+
+	/* 记录AST节点 */
 	push_ast_stack(t);
 
+	/* 初始化符号 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 
-	/* append jump tree. */
+	/* 初始化跳转AST节点（跳转到结束语句） */
 	t = jump_tree(exit_label);
 	list_append(&ast_forest, t);
 	
-	/* append label tree. */
+	/* 获取AST节点 */
 	t = pop_ast_stack();
+
+	/* 标签AST节点添加到AST森林 */
 	list_append(&ast_forest, t);
 #else
 	do_if_clause();
@@ -1377,11 +1393,12 @@ stmt
 else_clause
 {
 #ifdef GENERATE_AST
-	/* append exit label. */
+	/* 初始化符号 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 
+	/* 初始化跳转AST节点 */
 	t = label_tree(exit_label);
 	list_append(&ast_forest, t);
 	pop_lbl_stack();

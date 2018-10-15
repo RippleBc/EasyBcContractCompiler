@@ -262,7 +262,7 @@ Tree assign_tree(Tree id, Tree expr)
 }
 
 /* 
- * label tree.
+ * 标签.
  */
 Tree label_tree(Symbol label)
 {
@@ -286,7 +286,7 @@ Tree jump_tree(Symbol label)
 }
 
 /* 
- * conditional condition.
+ * 条件跳转
  */
 Tree cond_jump_tree(Tree cond, int trueorfalse, Symbol label)
 {
