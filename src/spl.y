@@ -305,26 +305,6 @@ sub_program
 	list_clear(&para_list);
 	
 	push_symtab_stack(Global_symtab);
-	/*
-	ptab = top_symtab_stack();
-	strncpy(ptab->name, $3, NAME_LEN);
-	sprintf(ptab->rname, "rtn%03d",ptab->id);
-	ptab->defn = DEF_PROC;
-	p = new_symbol($3, DEF_PROC, TYPE_VOID);
-	add_symbol_to_table(ptab,p);
-	reverse_parameters(ptab);
-	{
-		Tree header;
-		
-		header = new_tree(HEADER, find_type_by_id(TYPE_VOID), NULL, NULL); 
-		header->u.header.para = &para_list;
-		list_append(&ast_forest, header);
-		now_function = new_tree(ROUTINE, find_type_by_id(TYPE_VOID), header, NULL);
-	}
-
-	ptab = new_symtab(top_symtab_stack());
-	push_symtab_stack(ptab);
-	*/
 
 #else
 	emit_main_prologue(Global_symtab);
