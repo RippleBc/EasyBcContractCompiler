@@ -545,88 +545,88 @@ _main:
 		pushl	%ebp
 		movl	%esp, %ebp
 		movl	$28, %eax
-		movl	%eax, va_002
+		movl	%eax, va_012
 		movl	$730, %eax
-		movl	%eax, vb_003
-		movl	va_002, %eax
+		movl	%eax, vb_013
+		movl	va_012, %eax
 		pushl	%eax
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		popl	%edx
 		addl	%edx, %eax
 		pushl	%eax
 		movl	$2, %eax
 		pushl	%eax
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		popl	%edx
 		addl	%edx, %eax
 		popl	%edx
 		imul	%edx
 		popl	%edx
 		addl	%edx, %eax
-		movl	%eax, vi_001
-		movl	vi_001, %eax
+		movl	%eax, vi_011
+		movl	vi_011, %eax
 		pushl	%eax
 		movl	$3, %eax
 		popl	%edx
 		subl	%eax, %edx
 		movl	%edx, %eax
-		movl	%eax, vi_001
+		movl	%eax, vi_011
 		movl	cz_002, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	vi_001, %eax
+		movl	vi_011, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		pushl	%eax
 		movl	$2, %eax
 		movl	%eax, %ecx
 		popl	%eax
 		subl	%edx,%edx
 		idiv	%ecx
-		movl	%eax, vi_001
+		movl	%eax, vi_011
 		movl	cz_003, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	vi_001, %eax
+		movl	vi_011, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
 		movl	$3, %eax
-		movl	%eax, va_002
-		movl	va_002, %eax
+		movl	%eax, va_012
+		movl	va_012, %eax
 		pushl	%eax
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		popl	%edx
 		addl	%edx, %eax
-		movl	%eax, vi_001
-		movl	vi_005, %eax
+		movl	%eax, vi_011
+		movl	vi_015, %eax
 		pushl	%eax
-		movl	vi_006, %eax
+		movl	vi_016, %eax
 		popl	%edx
 		addl	%edx, %eax
-		movl	%eax, vi_004
+		movl	%eax, vi_014
 		movl	$2, %eax
-		movl	%eax, vi_005
-		movl	vi_005, %eax
+		movl	%eax, vi_015
+		movl	vi_015, %eax
 		pushl	%eax
-		movl	vi_006, %eax
+		movl	vi_016, %eax
 		popl	%edx
 		addl	%edx, %eax
-		movl	%eax, vi_007
+		movl	%eax, vi_017
 		movl	$3, %eax
 		negl	%eax
-		movl	%eax, vi_001
-		movl	vi_001, %eax
+		movl	%eax, vi_011
+		movl	vi_011, %eax
 		pushl	%eax
 		movl	$0, %eax
 		popl	%edx
@@ -644,7 +644,7 @@ j_007:
 		addl	$8, %esp
 		jmp if_exit_2
 if_false_2:
-		movl	vi_001, %eax
+		movl	vi_011, %eax
 		pushl	%eax
 		movl	$0, %eax
 		popl	%edx
@@ -674,58 +674,58 @@ if_exit_2:
 		pushl	%ebp
 		call	rtn003
 		addl	$8, %esp
-		movl	%eax, vt_008
+		movl	%eax, vt_018
 		movl	cz_007, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	vt_008, %eax
+		movl	vt_018, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
 		movl	$3, %eax
-		movl	%eax, vi_001
+		movl	%eax, vi_011
 		movl	cz_008, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	vi_001, %eax
+		movl	vi_011, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	rtn001
 		addl	$12, %esp
-		movl	%eax, vi_001
+		movl	%eax, vi_011
 		movl	cz_009, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	vi_001, %eax
+		movl	vi_011, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
 		movl	$30, %eax
-		movl	%eax, va_002
+		movl	%eax, va_012
 		movl	$40, %eax
-		movl	%eax, vb_003
+		movl	%eax, vb_013
 repeat_0:
 		movl	cz_010, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
@@ -735,20 +735,20 @@ repeat_0:
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		movl	$1, %eax
 		popl	%edx
 		addl	%edx, %eax
-		movl	%eax, va_002
-		movl	va_002, %eax
+		movl	%eax, va_012
+		movl	va_012, %eax
 		pushl	%eax
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		popl	%edx
 		cmpl	%eax, %edx
 		movl	$1, %eax
@@ -758,9 +758,9 @@ j_009:
 		cmpl	$1, %eax
 		jl	repeat_0
 		movl	$30, %eax
-		movl	%eax, va_002
+		movl	%eax, va_012
 for_test_2:
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		movl	$40, %eax
 		popl	%edx
@@ -776,18 +776,18 @@ j_010:
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		movl	$1, %eax
 		popl	%edx
 		addl	%edx, %eax
-		movl	%eax, va_002
-		incl va_002
+		movl	%eax, va_012
+		incl va_012
 		jmp for_test_2
 for_exit_2:
 		movl	cz_013, %eax
@@ -795,15 +795,15 @@ for_exit_2:
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
 		movl	$40, %eax
-		movl	%eax, va_002
+		movl	%eax, va_012
 for_test_3:
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		movl	$30, %eax
 		popl	%edx
@@ -819,18 +819,18 @@ j_011:
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		movl	$1, %eax
 		popl	%edx
 		addl	%edx, %eax
-		movl	%eax, vb_003
-decl va_002
+		movl	%eax, vb_013
+decl va_012
 		jmp for_test_3
 for_exit_3:
 		movl	cz_015, %eax
@@ -839,7 +839,7 @@ for_exit_3:
 		call	_writeln_string
 		addl	$8, %esp
 repeat_1:
-		leal	va_002, %eax
+		leal	va_012, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_read_int
@@ -849,12 +849,12 @@ repeat_1:
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
-		leal	vb_003, %eax
+		leal	vb_013, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_read_int
@@ -864,12 +864,12 @@ repeat_1:
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		movl	$0, %eax
 		popl	%edx
@@ -879,7 +879,7 @@ repeat_1:
 		xorl	%eax, %eax
 j_012:
 		pushl	%eax
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		pushl	%eax
 		movl	$0, %eax
 		popl	%edx
@@ -891,9 +891,9 @@ j_013:
 		popl	%edx
 		andl	%edx, %eax
 		pushl	%eax
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		popl	%edx
 		cmpl	%eax, %edx
 		movl	$1, %eax
@@ -909,12 +909,12 @@ j_014:
 		pushl	%ebp
 		call	_writeln_string
 		addl	$8, %esp
-		movl	va_002, %eax
-		movl	%eax, vi_001
+		movl	va_012, %eax
+		movl	%eax, vi_011
 for_test_4:
-		movl	vi_001, %eax
+		movl	vi_011, %eax
 		pushl	%eax
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		popl	%edx
 		cmpl	%eax, %edx
 		movl	$1, %eax
@@ -923,14 +923,14 @@ for_test_4:
 j_015:
 		cmpl	$1, %eax
 		jl	for_exit_4
-		movl	vi_001, %eax
+		movl	vi_011, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	rtn003
 		addl	$8, %esp
 		cmpl	$1, %eax
 		jl	if_false_4
-		movl	vi_001, %eax
+		movl	vi_011, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
@@ -938,34 +938,34 @@ j_015:
 		jmp if_exit_4
 if_false_4:
 if_exit_4:
-		incl vi_001
+		incl vi_011
 		jmp for_test_4
 for_exit_4:
 		movl	$2, %eax
-		movl	%eax, va_002
+		movl	%eax, va_012
 		movl	$3, %eax
-		movl	%eax, vb_003
+		movl	%eax, vb_013
 		jmp switch_test_0
 case_0_0:
 		movl	$3, %eax
-		movl	%eax, vi_001
+		movl	%eax, vi_011
 		jmp switch_exit_0
 case_0_1:
 		movl	$4, %eax
-		movl	%eax, vi_001
+		movl	%eax, vi_011
 		jmp switch_exit_0
 case_0_2:
 		jmp switch_test_1
 case_1_0:
 		movl	$6, %eax
-		movl	%eax, vi_001
+		movl	%eax, vi_011
 		jmp switch_exit_1
 case_1_1:
 		movl	$7, %eax
-		movl	%eax, vi_001
+		movl	%eax, vi_011
 		jmp switch_exit_1
 switch_test_1:
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		pushl	%eax
 		movl	$3, %eax
 		popl	%edx
@@ -976,7 +976,7 @@ switch_test_1:
 j_016:
 		cmpl	$1, %eax
 		jge	case_1_0
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		pushl	%eax
 		movl	$4, %eax
 		popl	%edx
@@ -990,7 +990,7 @@ j_017:
 switch_exit_1:
 		jmp switch_exit_0
 switch_test_0:
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		movl	$2, %eax
 		popl	%edx
@@ -1001,7 +1001,7 @@ switch_test_0:
 j_018:
 		cmpl	$1, %eax
 		jge	case_0_0
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		movl	$5, %eax
 		popl	%edx
@@ -1012,7 +1012,7 @@ j_018:
 j_019:
 		cmpl	$1, %eax
 		jge	case_0_1
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		movl	$6, %eax
 		popl	%edx
@@ -1029,17 +1029,17 @@ switch_exit_0:
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	vi_001, %eax
+		movl	vi_011, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
 		movl	$0, %eax
-		movl	%eax, va_002
+		movl	%eax, va_012
 		movl	$10, %eax
-		movl	%eax, vb_003
+		movl	%eax, vb_013
 while_test_0:
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		movl	$10, %eax
 		popl	%edx
@@ -1050,28 +1050,28 @@ while_test_0:
 j_021:
 		cmpl	$1, %eax
 		jl	while_exit_0
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		pushl	%eax
 		movl	$1, %eax
 		popl	%edx
 		addl	%edx, %eax
-		movl	%eax, vb_003
+		movl	%eax, vb_013
 		movl	cz_020, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
-		movl	va_002, %eax
+		movl	va_012, %eax
 		pushl	%eax
 		movl	$1, %eax
 		popl	%edx
 		addl	%edx, %eax
-		movl	%eax, va_002
+		movl	%eax, va_012
 		jmp while_test_0
 while_exit_0:
 		movl	cz_021, %eax
@@ -1079,15 +1079,15 @@ while_exit_0:
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	vb_003, %eax
+		movl	vb_013, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
 		movl	$1, %eax
-		movl	%eax, vi_001
+		movl	%eax, vi_011
 for_test_5:
-		movl	vi_001, %eax
+		movl	vi_011, %eax
 		pushl	%eax
 		movl	$50, %eax
 		popl	%edx
@@ -1098,25 +1098,25 @@ for_test_5:
 j_022:
 		cmpl	$1, %eax
 		jl	for_exit_5
-		leal	va_009, %eax
+		leal	va_019, %eax
 		pushl	%eax
-		movl	vi_001, %eax
+		movl	vi_011, %eax
 		subl	$1, %eax
 		movl	$4, %ecx
 		imul	%ecx
 		popl	%edx
 		addl	%eax, %edx
 		pushl	%edx
-		movl	vi_001, %eax
+		movl	vi_011, %eax
 		negl	%eax
 		pushl	%eax
 		popl	%eax
 		popl	%ebx
 		movl	%eax, (%ebx)
-		incl vi_001
+		incl vi_011
 		jmp for_test_5
 for_exit_5:
-		leal	va_009, %eax
+		leal	va_019, %eax
 		pushl	%eax
 		movl	$40, %eax
 		subl	$1, %eax
@@ -1132,11 +1132,11 @@ for_exit_5:
 		call	_writeln_int
 		addl	$8, %esp
 		movl	$50, %eax
-		movl	%eax, vi_001
+		movl	%eax, vi_011
 for_test_6:
-		movl	vi_001, %eax
+		movl	vi_011, %eax
 		pushl	%eax
-		leal	va_009, %eax
+		leal	va_019, %eax
 		pushl	%eax
 		movl	$40, %eax
 		subl	$1, %eax
@@ -1155,9 +1155,9 @@ for_test_6:
 j_023:
 		cmpl	$1, %eax
 		jl	for_exit_6
-		leal	va_009, %eax
+		leal	va_019, %eax
 		pushl	%eax
-		movl	vi_001, %eax
+		movl	vi_011, %eax
 		subl	$1, %eax
 		movl	$4, %ecx
 		imul	%ecx
@@ -1175,10 +1175,10 @@ j_023:
 		pushl	%ebp
 		call	_write_char
 		addl	$8, %esp
-decl vi_001
+decl vi_011
 		jmp for_test_6
 for_exit_6:
-		leal	vd_010, %eax
+		leal	vd_020, %eax
 		pushl	%eax
 		popl	%eax
 		movl	$0, %edx
@@ -1187,7 +1187,7 @@ for_exit_6:
 		movl	$2007, %eax
 		popl	%ebx
 		movl	%eax, (%ebx)
-		leal	vd_010, %eax
+		leal	vd_020, %eax
 		pushl	%eax
 		popl	%eax
 		movl	$4, %edx
@@ -1201,7 +1201,7 @@ for_exit_6:
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		leal	vd_010, %eax
+		leal	vd_020, %eax
 		pushl	%eax
 		popl	%eax
 		movl	$0, %edx
@@ -1218,7 +1218,7 @@ for_exit_6:
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		leal	vd_010, %eax
+		leal	vd_020, %eax
 		pushl	%eax
 		popl	%eax
 		movl	$4, %edx
@@ -1231,8 +1231,8 @@ for_exit_6:
 		call	_writeln_int
 		addl	$8, %esp
 		movl	$1, %eax
-		movl	%eax, vw_012
-		movl	vw_012, %eax
+		movl	%eax, vw_022
+		movl	vw_022, %eax
 		pushl	%eax
 		movl	$1, %eax
 		popl	%edx
@@ -1257,48 +1257,48 @@ if_false_5:
 		addl	$8, %esp
 if_exit_5:
 		movl	$23, %eax
-		movl	%eax, va_013
+		movl	%eax, va_023
 		movl	$500, %eax
-		movl	%eax, va_013
+		movl	%eax, va_023
 		movl	cz_026, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	va_013, %eax
+		movl	va_023, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
 		movl	$3, %eax
 		negl	%eax
-		movl	%eax, vi_001
+		movl	%eax, vi_011
 		movl	cz_027, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
-		movl	vi_001, %eax
+		movl	vi_011, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
 		movb	$97,%al
-		movb	%al,va_014
+		movb	%al,va_024
 		subl	%eax,%eax
-		movb	va_014, %al
+		movb	va_024, %al
 		pushl	%eax
 		movl	$1, %eax
 		popl	%edx
 		addl	%edx, %eax
-		movb	%al,va_014
+		movb	%al,va_024
 		movl	cz_028, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_write_string
 		addl	$8, %esp
 		subl	%eax,%eax
-		movb	va_014, %al
+		movb	va_024, %al
 		pushl	%eax
 		pushl	%ebp
 		call	_write_char
@@ -1317,17 +1317,17 @@ _start:
 .ident	"SPL: 0.1.5"
 
 #.bss variables
-		.comm va_014,1,4
-		.comm va_013,4,4
-		.comm vw_012,4,4
-		.comm vc_011,4,4
-		.comm vd_010, 12, 4
-		.comm va_009, 200, 4
-		.comm vt_008,4,4
-		.comm vi_007,4,4
-		.comm vi_006,4,4
-		.comm vi_005,4,4
-		.comm vi_004,4,4
-		.comm vb_003,4,4
-		.comm va_002,4,4
-		.comm vi_001,4,4
+		.comm va_024,1,4
+		.comm va_023,4,4
+		.comm vw_022,4,4
+		.comm vc_021,4,4
+		.comm vd_020, 12, 4
+		.comm va_019, 200, 4
+		.comm vt_018,4,4
+		.comm vi_017,4,4
+		.comm vi_016,4,4
+		.comm vi_015,4,4
+		.comm vi_014,4,4
+		.comm vb_013,4,4
+		.comm va_012,4,4
+		.comm vi_011,4,4

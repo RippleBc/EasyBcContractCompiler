@@ -91,11 +91,13 @@ void trap_in_debug();
 #ifndef GENERATE_AST
 
 %type  <num>proc_stmt assign_stmt
+%type  <num>expression
 %type  <p_symbol>factor term expr
 
 #else
 
 %type  <p_tree>proc_stmt assign_stmt
+%type  <p_tree>expression
 %type  <p_tree>factor term expr
 
 #endif
@@ -213,6 +215,7 @@ void trap_in_debug();
 %type  <p_symbol>field_decl field_decl_list
 
 %type  <p_tree>proc_stmt assign_stmt
+%type  <p_tree>expression
 %type  <p_tree>factor term expr
 
 %start  program
@@ -259,7 +262,7 @@ program
 ;
 
 first_act_at_prog
-:   
+:%empty  
 {
 	/* 初始化解析器 */
 	parser_init();
@@ -1288,10 +1291,10 @@ oLP args_list oRP
 oLP args_list oRP 
 {
 #ifdef GENERATE_AST
-	$$ = sys_tree($1->attr, $4);
+	$$ = sys_tree($1->attr, args);
 	list_append(&ast_forest, $$);
 #else
-	do_sys_routine($1->attr, $4);
+	do_sys_routine($1->attr, args);
 #endif
 	
 	pop_call_stack();
@@ -2314,12 +2317,9 @@ args_list
 		return 0;
 	}
 
-	if(arg)
-	{
-		/* 初始化参数AST树 */
-		args = arg_tree(args, rtn, arg, $1);
-	}
-
+	/* 初始化参数AST树 */
+	args = arg_tree(args, rtn, arg, $1);
+	
 #else
 	do_first_arg($1);
 #endif
