@@ -5,15 +5,12 @@
 #include  "error.h"
 #include  "x86.h"
 
-#ifdef _MSDOS_
-#include  <dos.h>
-#elif defined __linux__
+
+#if defined __linux__
 #include <time.h>
 #endif
 
 #include  _YTAB_H_
-#define  MAX_LOOP_LEVEL  16
-#define  STMT_STACK_SIZE 64
 #define  MAX_CALL_LEVEL 16
 
 static symtab *rtn =NULL;

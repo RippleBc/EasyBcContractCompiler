@@ -8,12 +8,6 @@
 #include "symtab.h"
 #include "error.h"
 #include "tree.h"
-
-#ifdef _MSDOS_
-#include "debug.h"
-#include "type.h"
-#endif
-
 #include "x86.h"
 
 extern char *yytext; /* flex用于记录匹配到的字符串 */

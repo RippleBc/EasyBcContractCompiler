@@ -3,10 +3,6 @@
 #include <string.h>
 #include <ctype.h>
 
-#ifdef _MSDOS_
-#include <io.h>
-#endif
-
 #ifdef __linux__
 #include <unistd.h>
 #endif

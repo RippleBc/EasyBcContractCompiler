@@ -8,15 +8,20 @@
 #include  "error.h"
 #include  "x86.h"
 
-#ifdef _MSDOS_
-#include  <dos.h>
-#elif defined __linux__
+#if defined __linux__
 #include <time.h>
 #endif
 
 #include  _YTAB_H_
-#define  STMT_STACK_SIZE 64
 #define  MAX_CALL_LEVEL 16
+
+static symtab *rtn = NULL;
+static symbol *arg = NULL;
+
+static symbol *call_sym[MAX_CALL_LEVEL];
+static symtab *call_stk[MAX_CALL_LEVEL];
+
+static int call_tos = MAX_CALL_LEVEL - 1;
 
 symtab *top_call_stack( )
 {
