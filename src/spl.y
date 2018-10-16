@@ -679,7 +679,8 @@ var_decl
 		q = p; 
 		p = p->next;
 		q->next = NULL;
-		/* 将变量添加到符号表中 */
+
+		/* 添加到符号表中 */
 		add_symbol_to_table(ptab, q);
 	}
 }
@@ -698,19 +699,23 @@ function_decl
 {
 	if (!err_occur())
 	{
-		/* 清除dag森林 */
+		/* 清楚DAG森林 */
 		list_clear(&dag_forest);
+
+		/* 终点AST节点 */
 		t = new_tree(TAIL, NULL, NULL, NULL);
+		/* 对应的符号表 */
 		t->u.generic.symtab = top_symtab_stack();
+		/* 放入AST森林 */
 		list_append(&ast_forest, t);
 
-		/* generate dag forest. */
+		/* 生成AST森林 */
 		gen_dag(&ast_forest, &dag_forest);
-
-		/* emit asm code. */
+		/* 生成汇编代码 */
 		emit_code(&dag_forest);
 	}
 
+	/* 弹出函数对应的符号表 */
 	pop_symtab_stack();
 }
 ;
@@ -718,55 +723,55 @@ function_decl
 function_head
 :kFUNCTION
 {
-
+	/* 清空AST森林 */
 	list_clear(&ast_forest);
+	/* 清空参数列表 */
 	list_clear(&para_list);
 
 	/* 创建符号表 */
 	ptab = new_symtab(top_symtab_stack());
+	/* 符号表压栈 */
 	push_symtab_stack(ptab);
 }
 yNAME parameters oCOLON simple_type_decl
 {
-	/* 获取对应的符号表 */
+	/* 对应的符号表 */
 	ptab = top_symtab_stack();
-	/* 使用函数名对符号表进行命名 */
+
+	/* 符号表命名 */
 	strncpy(ptab->name, $3, NAME_LEN);
-	/* 使用符号表对函数表中汇编代码进行命名 */
+
+	/* 符号表的汇编名称命名 */
 	sprintf(ptab->rname, "rtn%03d", ptab->id);
-	/* 初始化符号表大类 */
+
+	/* 符号表大类 */
 	ptab->defn = DEF_FUNCT;
 	
-	/* 初始化函数符号表类型（定义函数的返回值） */
-	if($6->type_id == TYPE_SUBRANGE)
-		ptab->type = $6->first->type;
-	else if($6->type_id == TYPE_ENUM)
+	/* 符号表小类 */
+	if($6->type_id == TYPE_SUBRANGE || $6->type_id == TYPE_ENUM)
 		ptab->type = find_type_by_id(TYPE_INTEGER);
 	else
 		ptab->type = find_type_by_id($6->type_id);
-	p = new_symbol($3, DEF_FUNCT, ptab->type->type_id);
-	p->type_link = $6;
 
-	/* 将函数对应的符号表添加到符号链表中 */
+	/* 函数符号 */
+	p = new_symbol($3, DEF_FUNCT, ptab->type->type_id);
+	/* 当函数返回值为子范围或枚举时，需要检查返回值是否合法 */
+	p->type_link = $6;
+	/* 添加到符号表中 */
 	add_symbol_to_table(ptab, p);
-	/* 将函数对应的符号表中的参数符号链表反转 */
+	/* 符号表中的参数符号链表反转 */
 	reverse_parameters(ptab);
 
-	{
-		/* 生成一颗AST树 */
-		Tree header;
-		/* 定义指令以及返回值 */
-		header = new_tree(HEADER, ptab->type, NULL, NULL);
-		/* 定义参数链表 */
-		header->u.header.para = &para_list;
-		/* 定义对应的符号表 */
-		header->u.header.symtab = ptab;
-		/* 将AST树放入AST森林中 */
-		list_append(&ast_forest, header);
-
-		/* 生成一颗以header书为根的子树，存放函数体信息 */
-		now_function = new_tree(FUNCTION, ptab->type, header, NULL);
-	}
+	/* 生成一颗AST树 */
+	Tree header;
+	/* 头部AST节点 */
+	header = new_tree(HEADER, ptab->type, NULL, NULL);
+	/* 头部AST节点的参数链表 */
+	header->u.header.para = &para_list;
+	/* 头部AST节点对应的符号表 */
+	header->u.header.symtab = ptab;
+	/* 放入AST森林 */
+	list_append(&ast_forest, header);
 }
 ;
 
@@ -814,7 +819,6 @@ yNAME parameters
 		header = new_tree(HEADER, find_type_by_id(TYPE_VOID), NULL, NULL);
 		header->u.header.para = &para_list;
 		list_append(&ast_forest, header);
-		now_function = new_tree(ROUTINE, find_type_by_id(TYPE_VOID), header, NULL);
 	}
 }
 ;

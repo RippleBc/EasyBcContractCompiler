@@ -46,8 +46,6 @@ ops_entry ops_table[] = {
 	{"INCR", INCR},
 	{"DECR", DECR},
 	{"ARRAY", ARRAY},
-	{"FUNCTION", FUNCTION},
-	{"ROUTINE", ROUTINE},
 	{"HEADER", HEADER},
 	{"TAIL	", TAIL	},
 	{"BLOCKBEG", BLOCKBEG},

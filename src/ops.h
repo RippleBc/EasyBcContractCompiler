@@ -62,8 +62,6 @@ enum {
     DECR = 45 << 4,
     ARRAY = 46 << 4,
     /* operations only appear in trees. */
-    FUNCTION = 48 << 4,		/* function tree. */
-    ROUTINE = 49 << 4,		/* routine tree. */
     HEADER = 50 << 4,		/* function header tree. */
     TAIL = 51 << 4,			/* function end tree. */
     BLOCKBEG = 52 << 4, 	/* block begin. */
