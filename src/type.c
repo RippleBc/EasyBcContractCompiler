@@ -223,21 +223,17 @@ type *new_array_type(char *name, type *pindex, type *pelement)
 {
     type *pt;
 
-    /* 其中pindex必须是可以表示数组范围的类型，只能枚举类型或者子范围类型。
-     pelement类型可以是任意类型。 */
+    /* 其中pindex必须是枚举类型或者子范围类型，pelement类可以是任意类型。 */
     if (!pindex || !pelement)
         return NULL;
 
     /* 检查规定数组下界的first属性以及规定数组上界的last属性是否合法 */
-    if (!pindex->first
-            || !pindex->last
-            || pindex->first == pindex->last)
+    if (!pindex->first || !pindex->last || pindex->first == pindex->last)
     {
         parse_error("index bound expcted", name);
         return NULL;
     }
 
-    /* pt = (type *)malloc(sizeof(type)); */
     NEW0(pt, PERM);
 
     if (!pt)
@@ -246,20 +242,20 @@ type *new_array_type(char *name, type *pindex, type *pelement)
         return NULL;
     }
 
-    /* 初始化array类型符号的名称 */
+    /* 类型名称 */
     strncpy(pt->name, name, NAME_LEN);
+    /* 类型的类型 */
     pt->type_id = TYPE_ARRAY;
-    /* 初始化元素个数 */
+    /* 类型中元素个数 */
     pt->num_ele = pindex->last->v.i -
                   pindex->first->v.i + 1;
-    /* 初始化数组的范围（指向enum或者subrange类型的第一个符号） */
+    /* 类型的下界 */
     pt->first = pindex->first;
-    /* 初始化数组的类型（新建一个匿名符号，用来表示数组项） */
+    /* 类型中的成员的类型 */
     pt->last = new_symbol("$$$", DEF_ELEMENT, pelement->type_id);
-    /* 初始化数组项的名称 */
+    /* 类型中的成员的类型的名称 */
     sprintf(pt->last->rname, "ary_ele");
 
-    /* 内存检查 */
     if (!pt->last)
     {
         internal_error("Insufficient memory");

@@ -258,8 +258,6 @@ program_head
 	global_env.u.program.tab = Global_symtab;
 	/* call initialization interface. */
 	(*(IR->program_begin))(&global_env);
-
-
 }
 |error oSEMI
 ;
@@ -310,7 +308,7 @@ sub_routine
 ;
 
 routine_head
-:const_part type_part var_part routine_part {/* 依次定义常量、自定义类型以及变量和routine（函数以及过程） */}
+:const_part type_part var_part routine_part {/* 依次定义常量、自定义类型、变量以及自定义函数和过程（函数和过程不分先后顺序） */}
 ;
 
 const_part
@@ -321,16 +319,16 @@ const_part
 const_expr_list
 :const_expr_list yNAME oEQUAL const_value oSEMI
 {
-	/* 给const_value命名 */
+	/* 命名 */
 	strncpy($4->name, $2, NAME_LEN);
-	/* 将const类型symbol放入符号表中 */
+	/* 放入符号表 */
 	add_symbol_to_table(top_symtab_stack(), $4);
 }
 |yNAME oEQUAL const_value oSEMI
 {
-	/* 给const_value命名 */
+	/* 命名 */
 	strncpy($3->name, $1, NAME_LEN);
-	/* 将const类型symbol放入符号表中 */
+	/* 放入符号表 */
 	add_symbol_to_table(top_symtab_stack(), $3);
 }
 ;
@@ -338,30 +336,29 @@ const_expr_list
 const_value
 :cINTEGER
 {
-	/* 先采用默认命名，随后会被正确命名 */
-	p = new_symbol("$$$", DEF_CONST,
-		TYPE_INTEGER);
+	/* 符号 */
+	p = new_symbol("$$$", DEF_CONST, TYPE_INTEGER);
 
-	/* 给symbol赋值 */
+	/* 符号值 */
 	p->v.i = $1;
+
 	$$ = p;
 }
 |cREAL
 {
-	p = new_symbol("$$$",DEF_CONST,
-		TYPE_REAL);
+	p = new_symbol("$$$",DEF_CONST, TYPE_REAL);
 
-	/* 给symbol赋值，将字符串转化为浮点数 */
+	/* 字符串转化为浮点数 */
 	p->v.f = atof($1);
+
 	$$ = p;
 }
 |cCHAR
 {
-	p = new_symbol("$$$", DEF_CONST,
-		TYPE_CHAR);
+	p = new_symbol("$$$", DEF_CONST, TYPE_CHAR);
 
-	/* 给symbol赋值 */
 	p->v.c= $1[1];
+
 	$$ = p;
 }
 |cSTRING
@@ -369,43 +366,38 @@ const_value
 	p = new_symbol("$$$", DEF_CONST,
 		TYPE_STRING);
 
-	/* 给symbol赋值，字符串 */
 	p->v.s = strdup($1);
+
 	$$ = p;
 }
 |SYS_CON
 {
-	p = new_symbol("$$$", DEF_CONST,
-		TYPE_UNKNOWN);
+	/* 系统常量符号 */
+	p = new_symbol("$$$", DEF_CONST, TYPE_UNKNOWN);
 
 	switch($1)
 	{
 	case cMAXINT:
 		strcpy(p->rname, "maxint");
-		/* 定义symbol值 */
+		/* 符号值（最大整型） */
 		p->v.i = (1 << (IR->intmetric.size * 8)) - 1;
-		/* 定义symbol类型 */
+		/* 符号类型 */
 		p->type = find_type_by_id(TYPE_INTEGER);
 		break;
 
 	case cFALSE:
 		strcpy(p->rname, "0");
-		/* 定义symbol值 */
 		p->v.b = 0;
-		/* 定义symbol类型 */
 		p->type = find_type_by_id(TYPE_BOOLEAN);
 		break;
 		  
 	case cTRUE:
 		strcpy(p->rname, "1");
-		/* 定义symbol值 */
 		p->v.b = 1;
-		/* 定义symbol类型 */
 		p->type = find_type_by_id(TYPE_BOOLEAN);
 		break; 
 
 	default:
-		/* 不是上述七大类型，默认为空 */
 		p->type = find_type_by_id(TYPE_VOID);
 		break;
 	}
@@ -429,19 +421,19 @@ type_definition
 {
 	if($3->name[0] == '$')
 	{
-		/* 新创建的自定义类型符号 */
+		/* 全新的自定义类型符号 */
 		$$ = $3;
-		/* 自定义类型符号命名 */
+		/* 命名 */
 		strncpy($$->name, $1, NAME_LEN);
 	}
-	else{
-		/* 使用自定义类型符号创建自定义类型，直接clone已有的自定义类型符号 */
+	else
+	{
+		/* 已有的自定义类型符号创建自定义类型 */
 		$$ = clone_type($3);
-		/* 自定义类型符号命名 */
+		/* 命名 */
 		strncpy($$->name, $1, NAME_LEN);
-		/* 将类型添加到符号表中 */
-		add_type_to_table(
-			top_symtab_stack(), $$);
+		/* 添加到符号表 */
+		add_type_to_table(top_symtab_stack(), $$);
 	}
 }
 ;
@@ -455,20 +447,15 @@ type_decl
 array_type_decl
 :kARRAY oLB simple_type_decl oRB kOF type_decl
 {
-	/* 创建一个自定义数组类型 */
 	$$ = new_array_type("$$$", $3, $6);
-	/* 添加到符号表中 */
-	add_type_to_table(
-		top_symtab_stack(),$$);
+	add_type_to_table(top_symtab_stack(), $$);
 }
 ;
 
 record_type_decl
 :kRECORD field_decl_list kEND
 {
-	/* 创建一个自定义RECORD类型 */
 	$$ = new_record_type("$$$", $2);
-	/* 添加到符号表中 */
  	add_type_to_table(top_symtab_stack(), $$);
 }
 ;
@@ -476,18 +463,16 @@ record_type_decl
 field_decl_list
 :field_decl_list field_decl
 {
-	/* 将指针移动到链表的末尾 */
+	/* 指向属性符号链表的末尾 */
 	for(p = $1; p->next; p = p->next);
 
-	/* 链接创建的record属性成员 */
+	/* 添加到属性符号链表末尾 */
 	p->next = $2;
 
-	/* 定义为链表的record属性符号链表的头部 */
-	$$ = $1;  
+	$$ = $1;
 }
 |field_decl
 {
-	/* record关键字之后，必须定义至少一个属性 */
 	$$ = $1;
 }
 ;
@@ -495,20 +480,20 @@ field_decl_list
 field_decl
 :name_list oCOLON type_decl oSEMI
 {
-	/* type_decl可以是已经定义的自定义类型（已经位于符号表中）或者现场定义的自定义类型，
-		 也就是说可以直接使用record上面定义的自定义类型 */
+	/* 遍历名称符号表 */
 	for(p = $1; p; p = p->next) {
 
+		/* 定义符号小类 */
 		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
-			/* 子范围类型 */
+			/* 变量（子范围或枚举类型）的类型由其类型的成员（子范围或枚举类型中的成员）的类型定义 */
 			p->type = $3->first->type;
 		else
-		  /* 可以是任意类型 */
 			p->type = find_type_by_id($3->type_id);
 
-		/* 主要用于检查enum或者subrange类型变量的赋值操作是否合法 */
+		/* 检查子范围和枚举类型的符号值是否合法 */
 		p->type_link = $3;
-		/* 符号大类定义 */
+
+		/* 定义符号大类 */
 		p->defn = DEF_FIELD;
 	}
 	$$ = $1;
@@ -518,7 +503,7 @@ field_decl
 simple_type_decl
 :SYS_TYPE
 {
-	/* 系统类型（char，integer，boolean，real） */
+	/* char，integer，boolean，real */
 	pt = find_type_by_name($1);
 
 	if(!pt)
@@ -541,148 +526,123 @@ simple_type_decl
 }
 |oLP name_list oRP
 {
-	/* 初始化一个枚举类型 */
+	/* 枚举类型 */
 	$$ = new_enum_type("$$$");
 
-	/* 初始化枚举类型的符号链表 */
+	/* 枚举类型的符号链表 */
 	add_enum_elements($$, $2);
 
-	/* 将枚举类型放入符号表 */
-	add_type_to_table(
-		top_symtab_stack(),$$);
+	/* 枚举类型放入符号表 */
+	add_type_to_table(top_symtab_stack(), $$);
 }
 |const_value oDOTDOT const_value
 {
-  /* 检查oDOTDOT前后的类型是否一致 */
-	if($1->type->type_id != $3->type->type_id){
+  /* 子范围类型的前后常量类型必须一致 */
+	if($1->type->type_id != $3->type->type_id)
+	{
 		parse_error("type mismatch","");
 		return 0;
 	}
 	
-	/* 初始化一个子范围类型 */
+	/* 子范围类型 */
 	$$ = new_subrange_type("$$$", $1->type->type_id);
 
-	/* 将子范围类型放入符号表 */
-	add_type_to_table(
-		top_symtab_stack(), $$);
+	/* 子范围类型放入符号表 */
+	add_type_to_table(top_symtab_stack(), $$);
 
-	/* 初始化子范围类型的上下界限，
-	 上下界的类型必须可以强制转换为int类型（integer、boolean、char），
-	 char类型可以转化为相应的ASCII码。 */
+	/* 子范围类型的上下界 */
 	if($1->type->type_id == TYPE_INTEGER)
-		set_subrange_bound($$,
-			(int)$1->v.i, (int)$3->v.i);
+		set_subrange_bound($$, (int)$1->v.i, (int)$3->v.i);
 	else if ($1->type->type_id == TYPE_BOOLEAN)
-		set_subrange_bound($$,
-			(int)$1->v.b, (int)$3->v.b);
+		set_subrange_bound($$, (int)$1->v.b, (int)$3->v.b);
 	else if ($1->type->type_id == TYPE_CHAR)
-		set_subrange_bound($$,
-			(int)$1->v.c, (int)$3->v.c);
+		set_subrange_bound($$, (int)$1->v.c, (int)$3->v.c);
 	else
 		parse_error("invalid element type of subrange","");
 }
 |oMINUS const_value oDOTDOT const_value
 {
-	/* 检查oDOTDOT前后的类型是否一致 */
 	if($2->type->type_id != $4->type->type_id){
 		parse_error("type mismatch","");
 		return 0;
 	}
 
-	/* 初始化一个子范围类型 */
 	$$ = new_subrange_type("$$$", $2->type->type_id);
 		
-	/* 将子范围类型放入符号表 */
-	add_type_to_table(
-		top_symtab_stack(), $$);
+	add_type_to_table(top_symtab_stack(), $$);
 
-	/* 初始化子范围类型的上下界限，
-	 上下界的类型必须可以强制转换为int类型（integer、boolean），
-	 char类型可以转化为相应的ASCII码。 */
 	if($2->type->type_id == TYPE_INTEGER){
-		$2->v.i= -$2->v.i;
-		set_subrange_bound($$,
-			(int)$2->v.i, (int)$4->v.i);
+		/* 转化为负数 */
+		$2->v.i = -$2->v.i;
+		set_subrange_bound($$, (int)$2->v.i, (int)$4->v.i);
 	}
 	else if ($2->type->type_id == TYPE_BOOLEAN){
-		/* 将const_value按位异或，经过转化后，1变成0，0变成1。 */
+		/* 1转化为0，0转化为1 */
 		$2->v.b ^= 1;
-		set_subrange_bound($$,
-			(int)$2->v.b,(int)$4->v.b);
+		set_subrange_bound($$, (int)$2->v.b,(int)$4->v.b);
 	}
 	else if ($2->type->type_id == TYPE_CHAR)
-		parse_error("invalid operator","");
+		parse_error("invalid operator", "");
 	else
-   		parse_error("invalid element type of subrange","");
+   		parse_error("invalid element type of subrange", "");
 }
 |oMINUS const_value oDOTDOT oMINUS const_value
 {
 	if($2->type->type_id != $5->type->type_id) {
-		parse_error("type mismatch.","");
+		parse_error("type mismatch", "");
 		return  0;
 	}
 	
 	$$ = new_subrange_type("$$$", $2->type->type_id);
 
-	add_type_to_table(
-		top_symtab_stack(),$$);
+	add_type_to_table(top_symtab_stack(), $$);
 
 	if($2->type->type_id == TYPE_INTEGER){
 		$2->v.i = -$2->v.i;
 		$5->v.i = -$5->v.i;
 	
-		set_subrange_bound($$,(int)$2->v.i,
-			(int)$5->v.i);
+		set_subrange_bound($$, (int)$2->v.i, (int)$5->v.i);
 	}
 	else if ($2->type->type_id == TYPE_BOOLEAN){
 		$2->v.b ^= 1;
 		$5->v.b ^= 1;
-		set_subrange_bound($$,(int)$2->v.b,
-		(int)$5->v.b);
+
+		set_subrange_bound($$, (int)$2->v.b, (int)$5->v.b);
 	}
 	else if ($2->type->type_id == TYPE_CHAR)
-		parse_error("invalid operator","");
+		parse_error("invalid operator", "");
 	else
-		parse_error("invalid element type of subrange","");
+		parse_error("invalid element type of subrange", "");
 }
 |yNAME oDOTDOT yNAME
 {
 	
-	/* 通过自定义类型名称从符号表中寻找自定义类型 */
+	/* 符号（枚举） */
 	p = find_element(top_symtab_stack(), $1);
 	if(!p){
 		parse_error("Undeclared identifier", $1);
-		/* 一个临时的DEF_ELEMENT大类，TYPE_INTEGER小类的符号作为局部变量添加到符号表中 */
 		install_temporary_symbol($1, DEF_ELEMENT, TYPE_INTEGER);
 	}
-	/* 检查用户自定义类型关联的符号是否是ELEMENT类型 */
 	if(p->defn != DEF_ELEMENT){
 		parse_error("not an element identifier", $1);
 	}
 	
-	/* 寻找用户自定义类型关联的符号 */
+	/* 符号（枚举） */
 	q = find_element(top_symtab_stack(), $3);
 	if(!q){
 		parse_error("Undeclared identifier", $3);
-		/* 一个临时的DEF_ELEMENT大类，TYPE_INTEGER小类的符号作为局部变量添加到符号表中 */
 		install_temporary_symbol($3, DEF_ELEMENT, TYPE_INTEGER);
 	}
-	/* 检查用户自定义类型关联的符号是否是ELEMENT类型 */
 	if(q->defn != DEF_ELEMENT){
 		parse_error("Not an element identifier", $3);
 	}
 	
-	if(p && q){
-		/* p和q都存在，创建一个TYPE_INTEGER类型的子范围类型， */
-		$$ = new_subrange_type("$$$", TYPE_INTEGER);
-		/* 子范围类型添加到符号表中 */
-		add_type_to_table(
-			top_symtab_stack(), $$);
-		/* 设置子范围类型的上下界 */
-		set_subrange_bound($$, p->v.i, q->v.i);
-	}
-	else
-		$$ = NULL;
+	/* 子范围类型 */
+	$$ = new_subrange_type("$$$", TYPE_INTEGER);
+	/* 添加到符号表 */
+	add_type_to_table(top_symtab_stack(), $$);
+	/* 子范围类型的上下界 */
+	set_subrange_bound($$, p->v.i, q->v.i);
 }
 ;
 
@@ -699,21 +659,20 @@ var_decl_list
 var_decl
 :name_list oCOLON type_decl oSEMI
 {
-	/* 获取对应的符号表 */
+	/* 对应的符号表 */
 	ptab = top_symtab_stack();
 	
-	/* 遍历符号表 */
-	for(p = $1; p ;){
+	/* 遍历名称符号链表 */
+	for(p = $1; p;){
 		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
-			/* 其中TYPE_ENUM类型符号只能是integer，TYPE_SUBRANGE类型符号可以是char或者integer，
-			 对TYPE_SUBRANGE以及TYPE_ENUM类型符号定义的变量进行操作时，实际上只能对其中一个元素进行操作。
-			 那enum(enum1, enum2)类型的变量来说，要么是enum1要么是enum2，不能即是enum1又是enum2. */
+			/* 变量（子范围以及枚举类型）的类型是由其类型中的成员（子范围或者枚举类型的成员）的类型定义 */
 			p->type = find_type_by_id($3->first->type->type_id);
 		else
 			p->type = find_type_by_id($3->type_id);
 
-		/* 主要用于检查enum或者subrange类型变量的赋值操作是否合法 */
+		/* 检查子范围和枚举类型的符号值是否合法 */
 		p->type_link = $3;
+		
 		/* 定义符号大类 */
 		p->defn = DEF_VAR;
 
@@ -723,6 +682,7 @@ var_decl
 		/* 将变量添加到符号表中 */
 		add_symbol_to_table(ptab, q);
 	}
+
 	$1 = NULL;
 }
 ;
