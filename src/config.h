@@ -23,11 +23,5 @@ Xinterface;
 */
 #define DEBUG				(0)
 
-#ifdef __linux__
-#define HAVE_SNPRINTF	1
-#define HAVE_VSNPRINTF	1
-#define HAVE_STRCASECMP	1
-#endif
-
 #endif
 

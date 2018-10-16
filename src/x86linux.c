@@ -4,12 +4,6 @@
 #include  "symtab.h"
 #include  "error.h"
 #include  "x86.h"
-
-
-#if defined __linux__
-#include <time.h>
-#endif
-
 #include  _YTAB_H_
 #define  MAX_CALL_LEVEL 16
 
