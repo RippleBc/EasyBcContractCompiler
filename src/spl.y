@@ -672,7 +672,7 @@ var_decl
 
 		/* 检查子范围和枚举类型的符号值是否合法 */
 		p->type_link = $3;
-		
+
 		/* 定义符号大类 */
 		p->defn = DEF_VAR;
 
@@ -682,8 +682,6 @@ var_decl
 		/* 将变量添加到符号表中 */
 		add_symbol_to_table(ptab, q);
 	}
-
-	$1 = NULL;
 }
 ;
 
