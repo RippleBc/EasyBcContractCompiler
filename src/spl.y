@@ -1674,35 +1674,32 @@ term
 factor
 :yNAME
 {
-	/* 因素，表达式的基本组成部分之一（因素和操作符） */
-	p = NULL;
-
-	if((p = find_symbol(top_symtab_stack(), $1)))
+	/* 对应的符号 */
+	p = find_symbol(top_symtab_stack(), $1);
+	if(p)
 	{
-		/* 普通符号，不能直接对array以及record类型的符号进行运算操作（需要制定下标或者属性） */
-		if(p->type->type_id == TYPE_ARRAY
-			||p->type->type_id == TYPE_RECORD)
+		/* 类型检查 */
+		if(p->type->type_id == TYPE_ARRAY || p->type->type_id == TYPE_RECORD)
 		{
-			parse_error("rvalue expected",  "");
+			parse_error("rvalue expected", "");
 			return 0;
 		}
 	}
-	else if ((ptab = find_routine($1)) == NULL) /* 寻找自定义函数或者过程 */
+	else
 	{
 		parse_error("Undeclard identificr", $1);
-		/* 既不是普通符号也不是自定义函数或者过程，
-		 创建一个临时符号（目的是为了让解析程序可以继续往下执行） */
 		p = install_temporary_symbol($1, DEF_VAR, TYPE_INTEGER);
 	}
-	if (p)
+	
+	if (p->defn == DEF_FUNCT || p->defn == DEF_PROC)
 	{
-		/* 普通符号 */
-		$$ = id_factor_tree(NULL, p);
+		/* 函数或者过程调用AST节点 */
+		$$ = call_tree(p->tab, NULL);
 	}
 	else
 	{
-		/* 自定义函数或者过程调用（无参数调用） */
-		$$ = call_tree(ptab, NULL);
+		/* 取值AST节点 */
+		$$ = id_factor_tree(NULL, p);
 	}
 }
 |yNAME
