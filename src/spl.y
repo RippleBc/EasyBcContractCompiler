@@ -1194,52 +1194,44 @@ if_stmt
 }
 expression kTHEN
 {
-	/* 初始化名称 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_false_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
-
-	/* 初始化符号 */
+	/* 标签符号（ELSE子句的入口） */
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
-
-	/* 初始化条件跳转AST节点（expression为假时，进行跳转，为真时继续往下执行） */
+	/* 条件跳转AST节点（条件为假时跳转到ELSE标签的入口） */
 	t = cond_jump_tree($3, false, new_label);
 	list_append(&ast_forest, t);
 }
 stmt
 {
-  /* 初始化符号 */
+  /* 初始化符号（ELSE子句的入口） */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_false_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
-
-	/* 初始化IF标签AST节点（指定结束的位置） */
+	/* 标签AST节点（ELSE子句的入口） */
 	t = label_tree(new_label);
-
 	/* 记录AST节点 */
 	push_ast_stack(t);
 
-	/* 初始化符号 */
+	/* 初始化符号（IF结构出口） */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
-
-	/* 初始化IF跳转AST节点（执行完毕后跳转到结束位置，如果kELSE那部分内容存在则跳过） */
+	/* 条件跳转AST节点（IF子句执行完毕后，跳转到IF结构的出口） */
 	t = jump_tree(exit_label);
 	list_append(&ast_forest, t);
-	
-	/* 获取AST节点 */
-	t = pop_ast_stack();
 
+	/* 获取标签AST节点（ELSE子句的入口） */
+	t = pop_ast_stack();
 	list_append(&ast_forest, t);
 }
 else_clause
 {
-	/* 初始化符号 */
+	/* 初始化符号（IF结构出口） */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
-
-	/* 初始化ELSE标签AST节点 */
+	/* 标签AST节点（IF结构出口） */
 	t = label_tree(exit_label);
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
@@ -1263,22 +1255,25 @@ else_clause
 repeat_stmt
 :kREPEAT
 {
-	/* 初始化REPEAT标签节点 */
 	push_lbl_stack(repeat_label_count++);
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "repeat_%d", repeat_label_count - 1);
 	mini_buf[sizeof(mini_buf) - 1] = 0;
+	/* 标签符号（REPEAT结构的入口） */
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
+	/* 标签AST节点（REPEAT结构的入口） */
 	t = label_tree(new_label);
 	list_append(&ast_forest, t);
 }
 stmt_list kUNTIL expression
 {
-	/* 初始化REPEAT条件跳转AST节点 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "repeat_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
+	/* 标签符号（REPEAT结构的入口） */
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
-	t = cond_jump_tree($5, false, new_label);
+	/* 条件跳转AST节点（条件为真时，跳转到REPEAT结构的入口） */
+	t = cond_jump_tree($5, true, new_label);
 	list_append(&ast_forest, t);
+
 	pop_lbl_stack();
 }
 ;
@@ -1286,41 +1281,46 @@ stmt_list kUNTIL expression
 while_stmt
 :kWHILE
 {
-  /* 初始化WHILE标签AST节点 */
 	push_lbl_stack(while_label_count++);
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_test_%d", while_label_count - 1);
 	mini_buf[sizeof(mini_buf) - 1] = 0;
+	/* 标签符号（WHILE结构的入口） */
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
+	/* 标签AST节点（WHILE结构的入口） */
 	t = label_tree(test_label);
+
 	list_append(&ast_forest, t);
 }
 expression kDO
 {
-	/* 初始化WHILE条件跳转AST节点 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
+	/* 标签符号（WHILE结构的出口） */
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
+	/* 条件跳转AST节点（条件为假时，跳转到WHILE结构的出口） */
 	t = cond_jump_tree($3, false, exit_label);
+
 	list_append(&ast_forest, t);
 }
 stmt
 {
-	/* generate while_exit_%d label tree and push. */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
+	/* 标签符号（WHILE结构的出口） */
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
+	/* 标签AST节点（WHILE结构的出口） */
 	t = label_tree(exit_label);
 	push_ast_stack(t);
 
-	/* 初始化跳转AST节点（跳转到WHILE标签） */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_test_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
+	/* 标签符号（WHILE结构的入口） */
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
-	/* jump to test tree. */
+	/* 跳转AST节点（跳转到WHILE结构的入口） */
 	t = jump_tree(test_label);
 	list_append(&ast_forest, t);
 
-	/* pop while_exit_%d label tree and append. */
+	/* 获取标签AST节点（WHILE结构的出口） */
 	t = pop_ast_stack();
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
@@ -1330,13 +1330,15 @@ stmt
 for_stmt
 :kFOR yNAME oASSIGN expression
 {
-	p = find_symbol(top_symtab_stack(),$2);
+	/* 变量对应的符号 */
+	p = find_symbol(top_symtab_stack(), $2);
 	if(!p || p->defn != DEF_VAR)
 	{
 		parse_error("lvalue expected","");
 		return 0;
 	}
 
+	/* 检查变量取值格式 */
 	if(p->type->type_id == TYPE_ARRAY
 		||p->type->type_id == TYPE_RECORD)
 	{
@@ -1344,17 +1346,19 @@ for_stmt
 		return 0;
 	}
 	
-	/* assign tree */
+	/* 地址AST节点 */
 	t = address_tree(NULL, p);
+	/* 保存地址AST节点（FOR中条件判断相关的变量） */
 	push_ast_stack(t);
+	/* 赋值AST节点 */
 	list_append(&ast_forest, assign_tree(t, $4));
 
-	/* label tree. */
 	push_lbl_stack(for_label_count++);
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "for_test_%d", for_label_count - 1);
 	mini_buf[sizeof(mini_buf) - 1] = 0;
+	/* 标签符号（FOR结构的入口） */
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
-
+	/* 标签AST节点（FOR结构的入口） */
 	t = label_tree(test_label);
 	list_append(&ast_forest, t);
 }
@@ -1362,14 +1366,16 @@ direction expression kDO
 {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "for_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
+	/* 标签符号（FOR结构的出口） */
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
-
-
-	p = find_symbol(top_symtab_stack(),$2);
+	/* 变量对应的符号 */
+	p = find_symbol(top_symtab_stack(), $2);
+	/* 取值AST节点（获取变量的值） */
 	t = id_factor_tree(NULL, p);
 
 	if ($6 == kTO)
 	{
+		/* 比较AST节点 */
 		t = compare_expr_tree(LE, t, $7);
 	}
 	else
@@ -1377,37 +1383,43 @@ direction expression kDO
 		t = compare_expr_tree(GE, t, $7);
 	}
 
+	/* 条件跳转AST节点（条件为假时，跳转到FOR结构的出口） */
 	t = cond_jump_tree(t, false, exit_label);
 	list_append(&ast_forest, t);
 }
 stmt
 {
+	/* 获取地址AST节点（FOR中条件判断相关的变量） */
 	t = pop_ast_stack();
 
 	if ($6 == kTO)
 	{
+		/* 递增AST节点（FOR中条件判断相关的变量递增） */
 		t = incr_one_tree(t);
 	}
 	else
 	{
 		t = decr_one_tree(t);
 	}
-
 	list_append(&ast_forest, t);
 
-	/* jump ast. */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "for_test_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
+	/* 标签符号（FOR结构的出口） */
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
+	/* 跳转AST节点（跳转到FOR结构的入口） */
 	t = jump_tree(test_label);
 	list_append(&ast_forest, t);
 
-	/* add label ast. */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "for_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
+
+	/* 标签符号（FOR结构的出口） */
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
+	/* 标签AST符号（FOR结构的出口） */
 	t = label_tree(exit_label);
 	list_append(&ast_forest, t);
+
 	pop_lbl_stack();
 }
 ;
@@ -1429,6 +1441,7 @@ case_stmt
 	push_lbl_stack(switch_label_count++);
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_test_%d", switch_label_count - 1);
 	mini_buf[sizeof(mini_buf) - 1] = 0;
+	/* 标签符号 */
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 
 	case_label_count = 0;
