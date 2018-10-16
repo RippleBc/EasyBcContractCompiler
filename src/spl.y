@@ -48,7 +48,7 @@ void push_case_ast_stack(List newlist);
 
 struct list ast_forest;
 struct list para_list;				/* for parameter list. */
-List  case_list = NULL;
+List  case_list = NULL;       /* CASE结构使用 */
 struct list dag_forest;				/* for dags. */
 Tree args; /* 参数AST树 */
 Tree now_function; /* 当前函数的AST树 */
@@ -1443,44 +1443,49 @@ case_stmt
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	/* 标签符号 */
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
-
-	case_label_count = 0;
+	/* 跳转AST节点（条件测试的入口） */
 	t = jump_tree(test_label);
 	list_append(&ast_forest, t);
+
+	/* 在STMT区域为case_list分配内存 */
 	NEW0(case_list, STMT);
 	push_case_ast_stack(case_list);
 	case_label_count = 0;
 	push_case_stack(case_label_count++);
-	/* list_clear(&case_list); */
 }
 expression kOF case_expr_list
 {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_test_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
+	/* 标签符号（条件测试的入口） */
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
-
+	/* 标签AST节点（条件测试的入口） */
 	t = label_tree(test_label);
 	list_append(&ast_forest, t);
 	case_list = pop_case_ast_stack();
-	{
-		int n = list_length(case_list);
-		Tree *cases = (Tree *)list_ltov(case_list, PERM);
-		int i;
 
-		for (i = 0; i < n; i += 2)
-		{
-			new_label = cases[i]->u.label.label;
-			
-			t = compare_expr_tree(EQ, $3, cases[i + 1]);
-			t = cond_jump_tree(t, true, new_label);
-			list_append(&ast_forest, t);
-		}
+	/* 将CASE子句从链表结构转化为数组结构 */
+	int n = list_length(case_list);
+	Tree *cases = (Tree *)list_ltov(case_list, PERM);
+	int i;
+
+	/* 遍历CASE子句数组（用来产生条件测试的内容） */
+	for (i = 0; i < n; i += 2)
+	{
+		/* 获取标签符号（CASE子句的入口） */
+		new_label = cases[i]->u.label.label;
+		/* 比较AST节点（CASE子句判断条件） */
+		t = compare_expr_tree(EQ, $3, cases[i + 1]);
+		/* 条件跳转AST节点（条件为真时跳转到指定的CASE子句） */
+		t = cond_jump_tree(t, true, new_label);
+		list_append(&ast_forest, t);
 	}
 
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
+	/* 标签符号（CASE结构的出口） */
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
-	
+	/* 标签AST节点（CASE结构的出口） */
 	t = label_tree(exit_label);
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
@@ -1502,37 +1507,44 @@ case_expr
 
 	push_case_stack(case_label_count);
 
+	/* 标签符号（CASE子句的入口） */
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
+	/* 标签AST节点（CASE子句的入口） */
 	t = label_tree(new_label);
 	list_append(&ast_forest, t);
 
+	/* 获取CASE子句链表 */
 	case_list = top_case_ast_stack();
+	/* 将标签AST节点（CASE子句的入口）放入CASE子句链表 */
 	list_append(case_list, t);
 
+	/* 常数AST节点（CASE子句判断条件） */
 	t = const_tree($1);
+	/* 将常数AST节点（CASE子句判断条件）放入CASE子句链表 */
 	list_append(case_list, t);
 }
 oCOLON stmt
 {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
+	/* 标签符号（CASE结构的出口） */
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
-
+	/* 跳转AST节点（CASE结构的出口） */
 	t = jump_tree(exit_label);
 	list_append(&ast_forest, t);
 }
 oSEMI
 |yNAME
 {
-	p = find_symbol(
-		top_symtab_stack(),$1);
+	/* 变量对应的符号 */
+	p = find_symbol(top_symtab_stack(),$1);
 	if(!p){
 			parse_error("Undeclared identifier",$1);
 			install_temporary_symbol($1, DEF_CONST, TYPE_INTEGER);
 			/* return 0; */
 	}
-	if(p->defn != DEF_ELEMENT
-		&&p->defn != DEF_CONST){
+	/* 检查变量类型（CASE子句中的判断条件只能是枚举或者常量类型） */
+	if(p->defn != DEF_ELEMENT && p->defn != DEF_CONST){
 			parse_error("Element name expected","");
 			return 0;
 	}
@@ -1574,27 +1586,27 @@ expression
 }
 |expression oGT expr
 {
-	/* 比较运算AST树（>），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
+	/* 比较运算AST树（>） */
 	$$ = compare_expr_tree(GT, $1, $3);
 }
 |expression oLE expr
 {
-	/* 比较运算AST树（<=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
+	/* 比较运算AST树（<=） */
 	$$ = compare_expr_tree(LE, $1, $3);
 }
 |expression oLT expr
 {
-	/* 比较运算AST树（<），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
+	/* 比较运算AST树（<） */
 	$$ = compare_expr_tree(LT, $1, $3);
 }
 |expression oEQUAL expr
 {
-	/* 比较运算AST树（=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
+	/* 比较运算AST树（=） */
 	$$ = compare_expr_tree(EQ, $1, $3);
 }
 |expression oUNEQU  expr
 {
-	/* 比较运算AST树（<>，表示不想等），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
+	/* 比较运算AST树（<>，不相等） */
 	$$ = compare_expr_tree(NE, $1, $3);
 }
 |expr
@@ -1611,12 +1623,12 @@ expr
 }
 |expr oMINUS term
 {
-	/* 二元运算AST树（-），由于优先级问题，放在expr表达式中（expr表达式中的运算优先级比term中的要低），仅支持左结合 */
+	/* 二元运算AST树（-） */
 	$$ = binary_expr_tree(SUB, $1, $3);
 }
 |expr kOR term
 {
-	/* 二元运算AST树（or），由于优先级问题，放在expr表达式中（expr表达式中的运算优先级比term中的要低），仅支持左结合  */
+	/* 二元运算AST树（or）  */
 	$$ = binary_expr_tree(OR, $1, $3);
 }
 |term
@@ -1633,22 +1645,22 @@ term
 }
 |term oDIV factor
 {
-	/* 二元运算AST树（/），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
+	/* 二元运算AST树（/） */
 	$$ = binary_expr_tree(DIV, $1, $3);
 }
 |term kDIV factor
 {
-	/* 二元运算AST树（div），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
+	/* 二元运算AST树（div） */
 	$$ = binary_expr_tree(DIV, $1, $3);
 }
 |term kMOD factor
 {
-	/* 二元运算AST树（mod），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
+	/* 二元运算AST树（mod） */
 	$$ = binary_expr_tree(MOD, $1, $3);
 }
 |term kAND factor
 {
-	/* 二元运算AST树（and），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
+	/* 二元运算AST树（and） */
 	$$ = binary_expr_tree(AND, $1, $3);
 }
 |factor
@@ -2037,7 +2049,6 @@ List top_case_ast_stack()
 		return case_ast_stk[case_ast_stk_tos + 1];
 }
 
-/* add a temporary symbol when encounted a not defined symbol */
 Symbol install_temporary_symbol(char *name, int deftype, int typeid)
 {
 	Symbol p = new_symbol(name, deftype, typeid);
