@@ -756,7 +756,7 @@ repeat_0:
 		xorl	%eax, %eax
 j_009:
 		cmpl	$1, %eax
-		jl	repeat_0
+		jge	repeat_0
 		movl	$30, %eax
 		movl	%eax, va_012
 for_test_2:
@@ -903,7 +903,7 @@ j_014:
 		popl	%edx
 		andl	%edx, %eax
 		cmpl	$1, %eax
-		jl	repeat_1
+		jge	repeat_1
 		movl	cz_018, %eax
 		pushl	%eax
 		pushl	%ebp

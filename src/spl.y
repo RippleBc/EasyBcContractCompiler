@@ -1118,6 +1118,8 @@ oLP args_list oRP
 	{
 		arg = NULL;
 	}
+
+	push_call_stack(rtn);
 }
 oLP args_list oRP 
 {
@@ -1126,6 +1128,8 @@ oLP args_list oRP
 
 	/* 放入AST森林 */
 	list_append(&ast_forest, $$);
+
+	pop_call_stack();
 }
 |SYS_PROC 
 {
@@ -1137,11 +1141,17 @@ oLP args_list oRP
 	{
 		arg = NULL;
 	}
+
+	push_call_stack(rtn);
 }
 oLP args_list oRP 
 {
 	$$ = sys_tree($1->attr, args);
+
+	/* 放入AST森林 */
 	list_append(&ast_forest, $$);
+
+	pop_call_stack();
 }
 |pREAD oLP factor oRP
 {
