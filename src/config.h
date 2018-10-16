@@ -12,8 +12,6 @@ typedef struct
 }
 Xinterface;
 
-#define GENERATE_AST		(1) 
-
 #define DAG_DEBUG			(2)
 #define CONST_FOLDING_DEBUG	(4)
 #define COMMON_EXPR_DEBUG	(8)

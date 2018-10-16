@@ -188,9 +188,11 @@ Node travel(Tree tp)
         const_folding(p);
         break;
     case COND:
+        /* 查找表达式AST节点，判断真假 */
         l = travel(tp->kids[0]);
         reset();
         p = new_node(op, l, NULL, tp->u.cond_jump.label);
+        /* 初始化标签，初始化跳转条件 */
         p->u.cond.label = tp->u.cond_jump.label;
         p->u.cond.true_or_false = tp->u.cond_jump.true_or_false;
         break;
@@ -376,7 +378,7 @@ int gen_dag(List ast_forest, List dag_forest)
     for (i = 0, dag_count = 0; i < n ; i++)
     {
         Tree ast = forest[i];
-        /* 遍历AST树，获取dag节点 */
+        /* 遍历AST树，生成DAG节点 */
         Node dag = travel(ast);
         if (dag)
         {

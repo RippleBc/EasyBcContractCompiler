@@ -95,14 +95,11 @@ void prepare_file(char *fname)
 
     snprintf(pasname, sizeof(pasname), "%s.pas", fname);
 
-#ifdef GENERATE_AST
+
 	if (IR == &x86_linux_interface)
     	snprintf(datname, sizeof(datname), "%s.s", fname);
 	else
     	snprintf(datname, sizeof(datname), "%s.asm", fname);
-#else
-   	snprintf(datname, sizeof(datname), "%s.asm", fname);
-#endif
 
     snprintf(codname, sizeof(codname), "%s.cod", fname);
     snprintf(errname, sizeof(errname), "%s.err", fname);

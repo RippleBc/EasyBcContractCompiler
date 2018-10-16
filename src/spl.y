@@ -34,8 +34,6 @@ Env main_env;
 Symtab	rtn = NULL; /* 表示system routine */
 Symbol	arg = NULL;
 
-#ifdef GENERATE_AST
-
 /* 记录AST上下文 */
 Tree pop_ast_stack();
 Tree top_ast_stack();
@@ -74,8 +72,6 @@ int		do_label_count;				/* count for label of do. */
 int		while_label_count;			/* count for label of while. */
 int		for_label_count;			/* count for label of for. */
 
-#endif
-
 int parser_init();
 
 Symbol install_temporary_symbol(char *name, int deftype, int typeid);
@@ -87,21 +83,6 @@ void trap_in_debug();
 #define DEBUG_POINT	trap_in_debug();
 #endif
 
-#if 0
-#ifndef GENERATE_AST
-
-%type  <num>proc_stmt assign_stmt
-%type  <num>expression
-%type  <p_symbol>factor term expr
-
-#else
-
-%type  <p_tree>proc_stmt assign_stmt
-%type  <p_tree>expression
-%type  <p_tree>factor term expr
-
-#endif
-#endif
 %}
 
 %union {
@@ -227,7 +208,7 @@ program
 {
 	/* 弹出无效的symtab */
 	pop_symtab_stack();
-#ifdef GENERATE_AST
+
 	if (!err_occur())
 	{
 		/* 清空dag_forest */
@@ -253,10 +234,7 @@ program
 		/* call end interface. */
 		(*(IR->program_end))(&global_env);
 	}
-#else
-	emit_main_epilogue(Global_symtab);
-	emit_program_epilogue(Global_symtab);
-#endif
+
 	return 0;
 }
 ;
@@ -283,13 +261,11 @@ program_head
 	snprintf(Global_symtab->rname, sizeof(Global_symtab->rname), "main");
 	/* 初始化大类 */
 	Global_symtab->defn = DEF_PROG;
-#ifdef GENERATE_AST
+
 	global_env.u.program.tab = Global_symtab;
 	/* call initialization interface. */
 	(*(IR->program_begin))(&global_env);
-#else
-	emit_program_prologue(Global_symtab);
-#endif
+
 
 }
 |error oSEMI
@@ -298,17 +274,12 @@ program_head
 sub_program
 :routine_head
 {
-#ifdef GENERATE_AST
 	main_env.u.main.tab = Global_symtab;
 	(*(IR->main_begin))(&main_env);
 	list_clear(&ast_forest);
 	list_clear(&para_list);
 	
 	push_symtab_stack(Global_symtab);
-
-#else
-	emit_main_prologue(Global_symtab);
-#endif
 }
 routine_body {}
 ;
@@ -346,14 +317,7 @@ sub_routine
 ;
 
 routine_head
-:const_part type_part var_part routine_part
-{
-/* 依次定义常量、自定义类型以及变量和routine（函数以及过程） */
-#ifdef GENERATE_AST
-#else
-	emit_routine_prologue(top_symtab_stack());
-#endif
-}
+:const_part type_part var_part routine_part {/* 依次定义常量、自定义类型以及变量和routine（函数以及过程） */}
 ;
 
 const_part
@@ -781,7 +745,6 @@ routine_part
 function_decl
 :function_head oSEMI sub_routine oSEMI 
 {
-#ifdef GENERATE_AST
 	if (!err_occur())
 	{
 		/* 清除dag森林 */
@@ -796,9 +759,6 @@ function_decl
 		/* emit asm code. */
 		emit_code(&dag_forest);
 	}
-#else
-	emit_routine_epilogue(top_symtab_stack());
-#endif
 
 	pop_symtab_stack();
 }
@@ -807,10 +767,10 @@ function_decl
 function_head
 :kFUNCTION
 {
-#ifdef GENERATE_AST
+
 	list_clear(&ast_forest);
 	list_clear(&para_list);
-#endif
+
 	/* 创建符号表 */
 	ptab = new_symtab(top_symtab_stack());
 	push_symtab_stack(ptab);
@@ -840,7 +800,7 @@ yNAME parameters oCOLON simple_type_decl
 	add_symbol_to_table(ptab, p);
 	/* 将函数对应的符号表中的参数符号链表反转 */
 	reverse_parameters(ptab);
-#ifdef GENERATE_AST
+
 	{
 		/* 生成一颗AST树 */
 		Tree header;
@@ -856,14 +816,12 @@ yNAME parameters oCOLON simple_type_decl
 		/* 生成一颗以header书为根的子树，存放函数体信息 */
 		now_function = new_tree(FUNCTION, ptab->type, header, NULL);
 	}
-#endif	
 }
 ;
 
 procedure_decl
 :procedure_head oSEMI sub_routine oSEMI
 {
-#ifdef GENERATE_AST
 	{
 		list_clear(&dag_forest);
 		t = new_tree(TAIL, NULL, NULL, NULL);
@@ -875,9 +833,6 @@ procedure_decl
 		/* emit asm code. */
 		emit_code(&dag_forest);
 	}
-#else
-	emit_routine_epilogue(top_symtab_stack());
-#endif
 
 	pop_symtab_stack();
 }
@@ -886,10 +841,8 @@ procedure_decl
 procedure_head
 :kPROCEDURE
 {
-#ifdef GENERATE_AST
 	list_clear(&ast_forest);
 	list_clear(&para_list);
-#endif
 
 	ptab = new_symtab(top_symtab_stack());
 	push_symtab_stack(ptab);
@@ -904,7 +857,6 @@ yNAME parameters
 	add_symbol_to_table(ptab,p);
 	reverse_parameters(ptab);
 
-#ifdef GENERATE_AST
 	{
 		Tree header;
 		
@@ -913,7 +865,6 @@ yNAME parameters
 		list_append(&ast_forest, header);
 		now_function = new_tree(ROUTINE, find_type_by_id(TYPE_VOID), header, NULL);
 	}
-#endif	
 }
 ;
 
@@ -950,12 +901,12 @@ para_type_list
 		q = p; 
 		p = p->next;
 		q->next = NULL;
+
 		/* 将符号放入符号表中 */
 		add_symbol_to_table(ptab, q);
-#ifdef GENERATE_AST
+
 		/* append to paralist. */
 		list_append(&para_list, q);
-#endif
 	}
 
 	$1 = NULL;
@@ -980,10 +931,9 @@ para_type_list
 		q->next=NULL;
 		/* 将符号放入符号表中 */
 		add_symbol_to_table(ptab,q);
-#ifdef GENERATE_AST
+
 		/* append to para_list. */
 		list_append(&para_list, q);
-#endif
 	}
 	$1 = NULL;
 }
@@ -1051,11 +1001,8 @@ assign_stmt
 	if (p && p->defn != DEF_FUNCT)
 	{
 	/* 检查yNAME和expression的类型是否匹配 */
-	#ifdef GENERATE_AST
+
 		if(p->type->type_id != $3->result_type->type_id)
-	#else
-		if(p->type->type_id != $3)
-	#endif
 		{
 			parse_error("type mismatch","");
 			/* return 0; */
@@ -1068,11 +1015,7 @@ assign_stmt
 		if(ptab)
 		{
 		/* 检查yNAME和expression的类型是否匹配 */
-		#ifdef GENERATE_AST
 			if(ptab->type->type_id != $3->result_type->type_id)
-		#else
-			if(ptab->type->type_id != $3)
-		#endif
 			{
 				parse_error("type mismatch","");
 				/* return 0; */
@@ -1080,17 +1023,12 @@ assign_stmt
 		}
 		else{
 			parse_error("Undeclared identifier.",$1);
-		#ifdef GENERATE_AST
 			/* 定义一个临时symbol，使得同一个错误在程序接下来的执行过程中不会反复出现 */
 			install_temporary_symbol($1, DEF_VAR, $3->result_type->type_id);
-		#else
-			install_temporary_symbol($1, DEF_VAR, $3);
-		#endif
 			/* return 0; */
 		}
 	}
 
-#ifdef GENERATE_AST
 	/* 地址AST树 */
 	t = address_tree(NULL, p);
 
@@ -1099,17 +1037,6 @@ assign_stmt
 	
 	/* 放入AST森林 */
 	list_append(&ast_forest, $$);
-#else
-	
-	if (p && p->defn != DEF_FUNCT)
-	{
-		do_assign(p, $3);
-	}
-	else
-	{
-		do_function_assign(ptab, $3);
-	}
-#endif
 }
 |yNAME oLB
 {
@@ -1124,17 +1051,11 @@ assign_stmt
 	
 	/* 将当前符号压栈 */
 	push_term_stack(p);
-#ifdef GENERATE_AST
-#else
-	emit_load_address(p);
-	emit_push_op(TYPE_INTEGER);
-#endif
 }
 expression oRB
 {
 	/* 获取符号 */
 	p = top_term_stack();
-#ifdef GENERATE_AST
 	
 	/* 数组AST节点（定位数组项） */
 	t = array_factor_tree(p, $4);
@@ -1144,13 +1065,9 @@ expression oRB
 
 	/* 当前AST节点压栈 */
 	push_ast_stack(t);
-#else
-	do_array_factor(p);
-#endif
 }
 oASSIGN expression
 {
-#ifdef GENERATE_AST
 	/* 获取AST节点 */
 	t = pop_ast_stack();
 
@@ -1159,10 +1076,6 @@ oASSIGN expression
 
 	/* 放入AST森林 */
 	list_append(&ast_forest, $$);
-#else
-	p = pop_term_stack();
-	do_assign(p, $8);
-#endif
 }
 |yNAME oDOT yNAME
 {
@@ -1178,29 +1091,15 @@ oASSIGN expression
 		return 0;
 	}
 
-#ifdef GENERATE_AST
 	t = field_tree(p, q);
 	t = address_tree(t, q);
 	push_ast_stack(t);
-#else
-	emit_load_address(p);
-	emit_push_op(TYPE_INTEGER);
-	do_record_factor(p,q);
-	push_term_stack(p);
-	push_term_stack(q);
-#endif
 }
 oASSIGN expression
 {
-#ifdef GENERATE_AST
 	t = pop_ast_stack();
 	$$ = assign_tree(t, $6);
 	list_append(&ast_forest, $$);
-#else
-	q = pop_term_stack();
-	p = pop_term_stack();
-	do_assign(q, $6);
-#endif
 }
 ;
 
@@ -1214,13 +1113,9 @@ proc_stmt
 		return 0;
 	}
 
-#ifdef GENERATE_AST
 	/* 初始化调用AST节点 */
 	$$ = call_tree(ptab, NULL);
 	list_append(&ast_forest, $$);
-#else
-	do_procedure_call(ptab);
-#endif
 }
 |yNAME
 {
@@ -1236,24 +1131,16 @@ proc_stmt
 }
 oLP args_list oRP
 {
-#ifdef GENERATE_AST
 	/* 初始化调用AST节点，其中args表示参数AST节点。 */
 	$$ = call_tree(top_call_stack(), args);
 	list_append(&ast_forest, $$);
-#else
-	do_procedure_call(top_call_stack());
-#endif
   /* 清除调用上下文 */
 	pop_call_stack();
 }
 |SYS_PROC
 {
-#ifdef GENERATE_AST
 	$$ = sys_tree($1->attr, NULL);
 	list_append(&ast_forest, $$);
-#else
-	do_sys_routine($1->attr, 0);
-#endif
 }
 |SYS_PROC 
 {
@@ -1270,12 +1157,8 @@ oLP args_list oRP
 }
 oLP args_list oRP 
 {
-#ifdef GENERATE_AST
 	$$ = sys_tree($1->attr, args);
 	list_append(&ast_forest, $$);
-#else
-	do_sys_routine($1->attr, args);
-#endif
 	
 	pop_call_stack();
 }
@@ -1285,51 +1168,39 @@ oLP args_list oRP
 		parse_error("too few parameters in call to", "read");
 		return 0;
 	}
-#ifdef GENERATE_AST
 	if (generic($3->op) == LOAD)
 		t = address_tree(NULL, $3->u.generic.sym);
 	else
 		t = address_tree($3, $3->u.generic.sym);
 	$$ = sys_tree(pREAD, t);
 	list_append(&ast_forest, $$);
-#else
-	emit_load_address($3);
-	do_sys_routine(pREAD, $3->type->type_id);
-#endif
 }
 ;
 
 compound_stmt
 :kBEGIN
 {
-#ifdef GENERATE_AST
 	/* 标记block开始 */
 	t = new_tree(BLOCKBEG, NULL, NULL, NULL);
 	list_append(&ast_forest, t);
-#endif
 }
 stmt_list
 kEND
 {
-#ifdef GENERATE_AST
 	/* 标记block结束 */
 	t = new_tree(BLOCKEND, NULL, NULL, NULL);
 	list_append(&ast_forest, t);
-#endif
 }
 ;
 
 if_stmt
 :kIF 
 {
-#ifdef GENERATE_AST
 	/* 记录标签层级 */
 	push_lbl_stack(if_label_count++);
-#endif
 }
 expression kTHEN
 {
-#ifdef GENERATE_AST
 	/* 初始化名称 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_false_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -1340,19 +1211,15 @@ expression kTHEN
 	/* 初始化条件跳转AST节点（expression为假时，进行跳转，为真时继续往下执行） */
 	t = cond_jump_tree($3, false, new_label);
 	list_append(&ast_forest, t);
-#else
-	do_if_test();
-#endif
 }
 stmt
 {
-#ifdef GENERATE_AST
   /* 初始化符号 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_false_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 
-	/* 初始化IF标签AST节点 */
+	/* 初始化IF标签AST节点（指定结束的位置） */
 	t = label_tree(new_label);
 
 	/* 记录AST节点 */
@@ -1363,33 +1230,26 @@ stmt
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 
-	/* 初始化IF跳转AST节点（执行完毕后跳转到结束位置，kELSE那部分内容不需要执行） */
+	/* 初始化IF跳转AST节点（执行完毕后跳转到结束位置，如果kELSE那部分内容存在则跳过） */
 	t = jump_tree(exit_label);
 	list_append(&ast_forest, t);
 	
 	/* 获取AST节点 */
 	t = pop_ast_stack();
+
 	list_append(&ast_forest, t);
-#else
-	do_if_clause();
-#endif
 }
 else_clause
 {
-#ifdef GENERATE_AST
 	/* 初始化符号 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 
-	/* 初始化IF标签AST节点 */
+	/* 初始化ELSE标签AST节点 */
 	t = label_tree(exit_label);
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
-
-#else
-	do_if_exit();
-#endif
 }
 |kIF error 
 {
@@ -1410,7 +1270,6 @@ else_clause
 repeat_stmt
 :kREPEAT
 {
-#ifdef GENERATE_AST
 	/* 初始化REPEAT标签节点 */
 	push_lbl_stack(repeat_label_count++);
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "repeat_%d", repeat_label_count - 1);
@@ -1418,13 +1277,9 @@ repeat_stmt
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	t = label_tree(new_label);
 	list_append(&ast_forest, t);
-#else
-	do_repeat_start();
-#endif
 }
 stmt_list kUNTIL expression
 {
-#ifdef GENERATE_AST
 	/* 初始化REPEAT条件跳转AST节点 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "repeat_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -1432,16 +1287,12 @@ stmt_list kUNTIL expression
 	t = cond_jump_tree($5, false, new_label);
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
-#else
-	do_repeat_exit();
-#endif
 }
 ;
 
 while_stmt
 :kWHILE
 {
-#ifdef GENERATE_AST
   /* 初始化WHILE标签AST节点 */
 	push_lbl_stack(while_label_count++);
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_test_%d", while_label_count - 1);
@@ -1449,27 +1300,18 @@ while_stmt
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	t = label_tree(test_label);
 	list_append(&ast_forest, t);
-#else
-	do_while_start();
-#endif
 }
 expression kDO
 {
-#ifdef GENERATE_AST
 	/* 初始化WHILE条件跳转AST节点 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	t = cond_jump_tree($3, false, exit_label);
 	list_append(&ast_forest, t);
-#else
-	do_while_expr();
-#endif
 }
 stmt
 {
-#ifdef GENERATE_AST
-
 	/* generate while_exit_%d label tree and push. */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -1489,9 +1331,6 @@ stmt
 	t = pop_ast_stack();
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
-#else
-	do_while_exit();
-#endif
 }
 ;
 
@@ -1511,7 +1350,6 @@ for_stmt
 		parse_error("lvalue expected","");
 		return 0;
 	}
-#ifdef GENERATE_AST
 	
 	/* assign tree */
 	t = address_tree(NULL, p);
@@ -1526,15 +1364,9 @@ for_stmt
 
 	t = label_tree(test_label);
 	list_append(&ast_forest, t);
-
-#else
-	do_for_start(p);
-#endif
 }
 direction expression kDO
 {
-#ifdef GENERATE_AST
-
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "for_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
@@ -1554,13 +1386,9 @@ direction expression kDO
 
 	t = cond_jump_tree(t, false, exit_label);
 	list_append(&ast_forest, t);
-#else
-	do_for_test($6);
-#endif
 }
 stmt
 {
-#ifdef GENERATE_AST
 	t = pop_ast_stack();
 
 	if ($6 == kTO)
@@ -1588,10 +1416,6 @@ stmt
 	t = label_tree(exit_label);
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
-
-#else
-	do_for_exit();
-#endif
 }
 ;
 
@@ -1609,7 +1433,6 @@ direction
 case_stmt
 :kCASE 
 {
-#ifdef GENERATE_AST
 	push_lbl_stack(switch_label_count++);
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_test_%d", switch_label_count - 1);
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -1623,18 +1446,9 @@ case_stmt
 	case_label_count = 0;
 	push_case_stack(case_label_count++);
 	/* list_clear(&case_list); */
-#endif
 }
-expression kOF
+expression kOF case_expr_list
 {
-#ifdef GENERATE_AST
-#else
-	do_case_start();
-#endif
-}
-case_expr_list
-{
-#ifdef GENERATE_AST
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_test_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
@@ -1664,10 +1478,6 @@ case_expr_list
 	t = label_tree(exit_label);
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
-
-#else
-	do_case_test();
-#endif
 }
 kEND
 ;
@@ -1680,8 +1490,6 @@ case_expr_list
 case_expr
 :const_value
 {
-#ifdef GENERATE_AST
-	
 	case_label_count = pop_case_stack();
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "case_%d_%d", top_lbl_stack(), case_label_count++);
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -1697,22 +1505,15 @@ case_expr
 
 	t = const_tree($1);
 	list_append(case_list, t);
-#else
-	add_case_const($1);
-#endif
 }
 oCOLON stmt
 {
-#ifdef GENERATE_AST
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 
 	t = jump_tree(exit_label);
 	list_append(&ast_forest, t);
-#else
-	do_case_jump();
-#endif
 }
 oSEMI
 |yNAME
@@ -1729,7 +1530,6 @@ oSEMI
 			parse_error("Element name expected","");
 			return 0;
 	}
-#ifdef GENERATE_AST
 	case_label_count = top_case_stack();
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "case_%d_%d", top_lbl_stack(), case_label_count++);
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -1744,22 +1544,14 @@ oSEMI
 
 	t = id_factor_tree(NULL, p);
 	list_append(case_list, t);
-#else
-	emit_load_value(p);
-	add_case_const(p);
-#endif
 }
 oCOLON stmt
 {
-#ifdef GENERATE_AST
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	t = jump_tree(exit_label);
 	list_append(&ast_forest, t);
-#else
-	do_case_jump();
-#endif
 }
 oSEMI
 ;
@@ -1769,257 +1561,94 @@ goto_stmt
 ;
 
 expression
-:expression
-{
-#ifdef GENERATE_AST
-#else
-    emit_push_op($1);
-#endif
-}
-oGE expr
+:expression oGE expr
 {
 #ifdef GENERATE_AST
 	/* 比较运算AST树（>=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
-	$$ = compare_expr_tree(GE, $1, $4);
+	$$ = compare_expr_tree(GE, $1, $3);
 #else
-	do_expression($4, oGE);
+	do_expression($3, oGE);
 	$$ = TYPE_BOOLEAN;
 #endif
 }
-|expression
+|expression oGT expr
 {
-#ifdef GENERATE_AST
-#else
-   	emit_push_op($1);
-#endif
-}
-oGT expr
-{
-#ifdef GENERATE_AST
 	/* 比较运算AST树（>），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
-	$$ = compare_expr_tree(GT, $1, $4);
-#else
-	do_expression($4, oGT);
-	$$ = TYPE_BOOLEAN;
-#endif
+	$$ = compare_expr_tree(GT, $1, $3);
 }
-|expression
+|expression oLE expr
 {
-#ifdef GENERATE_AST
-#else
-   emit_push_op($1);
-#endif
-}
-oLE expr
-{
-#ifdef GENERATE_AST
 	/* 比较运算AST树（<=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
-	$$ = compare_expr_tree(LE, $1, $4);
-#else
-
-	do_expression($4,oLE);
-	$$ = TYPE_BOOLEAN;
-#endif
+	$$ = compare_expr_tree(LE, $1, $3);
 }
-|expression
+|expression oLT expr
 {
-#ifdef GENERATE_AST
-#else
-	emit_push_op($1);
-#endif
-}
-oLT expr
-{
-#ifdef GENERATE_AST
 	/* 比较运算AST树（<），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
-	$$ = compare_expr_tree(LT, $1, $4);
-#else
-	do_expression($4,oLT);
-	$$ = TYPE_BOOLEAN;
-#endif
+	$$ = compare_expr_tree(LT, $1, $3);
 }
-|expression
+|expression oEQUAL expr
 {
-#ifdef GENERATE_AST
-#else
-	emit_push_op($1);
-#endif
-}
-oEQUAL expr
-{
-#ifdef GENERATE_AST
 	/* 比较运算AST树（=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
-	$$ = compare_expr_tree(EQ, $1, $4);
-#else
-	do_expression($4,oEQUAL);
-	$$ = TYPE_BOOLEAN;
-#endif
+	$$ = compare_expr_tree(EQ, $1, $3);
 }
-|expression
+|expression oUNEQU  expr
 {
-#ifdef GENERATE_AST
-#else
-	emit_push_op($1);
-#endif
-}
-oUNEQU  expr
-{
-#ifdef GENERATE_AST
 	/* 比较运算AST树（<>，表示不想等），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
-	$$ = compare_expr_tree(NE, $1, $4);
-#else
-	do_expression($4, oUNEQU);
-	$$ = TYPE_BOOLEAN;
-#endif
+	$$ = compare_expr_tree(NE, $1, $3);
 }
 |expr
 {
-#ifdef GENERATE_AST
 	$$ = $1;
-#else
-	$$ = $1->type->type_id;
-#endif
 }
 ;
 
 expr
-:expr
+:expr oPLUS term
 {
-#ifdef GENERATE_AST
-#else
-	emit_push_op($1->type->type_id);
-#endif
-}
-oPLUS term
-{
-#ifdef GENERATE_AST
 	/* 二元运算AST树（+），由于优先级问题，放在expr表达式中（expr表达式中的运算优先级比term中的要低），仅支持左结合 */
-	$$ = binary_expr_tree(ADD, $1, $4);
-#else
-	do_expr($4,oPLUS);
-#endif
+	$$ = binary_expr_tree(ADD, $1, $3);
 }
-|expr
+|expr oMINUS term
 {
-#ifdef GENERATE_AST
-#else
-	emit_push_op($1->type->type_id);
-#endif
-}
-oMINUS term
-{
-#ifdef GENERATE_AST
 	/* 二元运算AST树（-），由于优先级问题，放在expr表达式中（expr表达式中的运算优先级比term中的要低），仅支持左结合 */
-	$$ = binary_expr_tree(SUB, $1, $4);
-#else
-	do_expr($4 ,oMINUS);
-#endif
+	$$ = binary_expr_tree(SUB, $1, $3);
 }
-|expr
+|expr kOR term
 {
-#ifdef GENERATE_AST
-#else
-	emit_push_op($1->type->type_id);
-#endif
-}
-kOR term
-{
-#ifdef GENERATE_AST
 	/* 二元运算AST树（or），由于优先级问题，放在expr表达式中（expr表达式中的运算优先级比term中的要低），仅支持左结合  */
-	$$ = binary_expr_tree(OR, $1, $4);
-#else
-	do_expression($4,kOR);
-#endif
+	$$ = binary_expr_tree(OR, $1, $3);
 }
 |term
 {
-#ifdef GENERATE_AST
 	$$ = $1;
-#endif
 }
 ;
 
 term
-:term
+:term oMUL factor
 {
-#ifdef GENERATE_AST
-#else
-	emit_push_op($1->type->type_id);
-#endif
-}
-oMUL factor
-{
-#ifdef GENERATE_AST
 	/* 二元运算AST树（*），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
-	$$ = binary_expr_tree(MUL, $1, $4);
-#else
-	do_term($4, oMUL);
-#endif
+	$$ = binary_expr_tree(MUL, $1, $3);
 }
-|term
+|term oDIV factor
 {
-#ifdef GENERATE_AST
-#else
-	emit_push_op($1->type->type_id);
-#endif
-}
-oDIV factor
-{
-#ifdef GENERATE_AST
 	/* 二元运算AST树（/），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
-	$$ = binary_expr_tree(DIV, $1, $4);
-#else
-	do_term($4,kDIV);
-#endif
+	$$ = binary_expr_tree(DIV, $1, $3);
 }
-|term
+|term kDIV factor
 {
-#ifdef GENERATE_AST
-#else
-	emit_push_op($1->type->type_id);
-#endif
-}
-kDIV factor
-{
-#ifdef GENERATE_AST
 	/* 二元运算AST树（div），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
-	$$ = binary_expr_tree(DIV, $1, $4);
-#else
-	do_term($4, kDIV);
-#endif
+	$$ = binary_expr_tree(DIV, $1, $3);
 }
-|term
+|term kMOD factor
 {
-#ifdef GENERATE_AST
-#else
-	emit_push_op($1->type->type_id);
-#endif
-
-}
-kMOD factor
-{
-#ifdef GENERATE_AST
 	/* 二元运算AST树（mod），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
-	$$ = binary_expr_tree(MOD, $1, $4);
-#else
-	do_term($4, kMOD);
-#endif
+	$$ = binary_expr_tree(MOD, $1, $3);
 }
-|term
+|term kAND factor
 {
-#ifdef GENERATE_AST
-#else
-	emit_push_op($1->type->type_id);
-#endif
-}
-kAND factor
-{
-#ifdef GENERATE_AST
 	/* 二元运算AST树（and），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
-	$$ = binary_expr_tree(AND, $1, $4);
-#else
-	do_term($4,kAND);
-#endif
+	$$ = binary_expr_tree(AND, $1, $3);
 }
 |factor
 {
