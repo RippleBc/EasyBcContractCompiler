@@ -187,7 +187,7 @@ void trap_in_debug();
 %type  <p_type>array_type_decl record_type_decl
 %type  <p_symbol>field_decl field_decl_list
 
-%type  <p_tree>proc_stmt assign_stmt
+%type  <p_tree>call_stmt assign_stmt
 %type  <p_tree>expression
 %type  <p_tree>factor term expr
 
@@ -916,7 +916,7 @@ stmt_list
 stmt
 :%empty {}
 |assign_stmt {}
-|proc_stmt {}
+|call_stmt {}
 |compound_stmt {}
 |if_stmt {}
 |repeat_stmt {}
@@ -989,18 +989,15 @@ expression oRB
 	/* 获取符号 */
 	p = top_term_stack();
 	
-	/* 数组AST节点（定位数组项） */
+	/* 数组AST节点 */
 	t = array_factor_tree(p, $4);
-
-	/* 地址AST节点（定位变量） */
+	/* 地址AST节点 */
 	t = address_tree(t, p);
 
-	/* 当前AST节点压栈 */
 	push_ast_stack(t);
 }
 oASSIGN expression
 {
-	/* 获取AST节点 */
 	t = pop_ast_stack();
 
 	/* 赋值AST节点 */
@@ -1011,42 +1008,60 @@ oASSIGN expression
 }
 |yNAME oDOT yNAME
 {
+	/* 对应的符号 */
 	p = find_symbol(top_symtab_stack(), $1);
 	if(!p || p->type->type_id != TYPE_RECORD){
 		parse_error("Undeclared record vaiable", $1);
 		return 0;
 	}
 
+	/* 对应的属性 */
 	q = find_field(p, $3);
 	if(!q || q->defn != DEF_FIELD){
 		parse_error("Undeclared field", $3);
 		return 0;
 	}
 
+	/* 属性AST节点 */
 	t = field_tree(p, q);
+	/* 地址AST节点 */
 	t = address_tree(t, q);
+
 	push_ast_stack(t);
 }
 oASSIGN expression
 {
 	t = pop_ast_stack();
+
+	/* 赋值AST节点 */
 	$$ = assign_tree(t, $6);
+
+	/* 放入AST森林 */
 	list_append(&ast_forest, $$);
 }
 ;
 
-proc_stmt
+call_stmt
 :yNAME
 {
-	/* 符号表 */
-	ptab = find_routine($1);
-	if(!ptab || ptab->defn != DEF_PROC){
-		parse_error("Undeclared procedure", $1);
+	/* 对应符号 */
+	p = find_symbol($1);
+	if(!p){
+		parse_error("Undeclared procedure or function", $1);
 		return 0;
 	}
 
-	/* 初始化调用AST节点 */
-	$$ = call_tree(ptab, NULL);
+	/* 类型检查 */
+	if(p->defn != DEF_FUNCT || p->defn != DEF_PROC)
+	{
+		parse_error("nonprocedure or nonfunction can not be called", $1);
+		return 0;
+	}
+
+	/* 函数或过程调用AST节点 */
+	$$ = call_tree(p->tab, NULL);
+
+	/* 放入AST森林 */
 	list_append(&ast_forest, $$);
 }
 |yNAME
