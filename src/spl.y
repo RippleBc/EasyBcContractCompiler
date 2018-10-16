@@ -944,25 +944,16 @@ assign_stmt
 
 	if (p)
 	{
-		if (p->defn == DEF_FUNCT || p->defn == DEF_PROC)
+		/* 类型检查 */
+		if(p->type->type_id != $3->result_type->type_id)
 		{
-			/* 函数和过程不能进行赋值操作 */
-			parse_error("funct can not be assinged", "");
+			parse_error("type mismatch", "");
 			return 0;
 		}
-		else
-		{
-			/* 类型检查 */
-			if(p->type->type_id != $3->result_type->type_id)
-			{
-				parse_error("type mismatch", "");
-				return 0;
-			}
-		}		
 	}
 	else
 	{
-		parse_error("undeclared identifier", $1);
+		parse_error("Undeclared identifier.", $1);
 		install_temporary_symbol($1, DEF_VAR, $3->result_type->type_id);
 	}
 
