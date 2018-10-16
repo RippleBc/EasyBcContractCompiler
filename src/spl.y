@@ -1163,7 +1163,11 @@ oLP args_list oRP
 		t = address_tree(NULL, $3->u.generic.sym);
 	else
 		t = address_tree($3, $3->u.generic.sym);
+
+	/* 系统函数或者系统过程调用AST节点 */
 	$$ = sys_tree(pREAD, t);
+
+	/* 放入AST森林 */
 	list_append(&ast_forest, $$);
 }
 ;
@@ -1171,15 +1175,19 @@ oLP args_list oRP
 compound_stmt
 :kBEGIN
 {
-	/* 标记block开始 */
+	/* 开始块AST节点 */
 	t = new_tree(BLOCKBEG, NULL, NULL, NULL);
+
+	/* 放入AST森林 */
 	list_append(&ast_forest, t);
 }
 stmt_list
 kEND
 {
-	/* 标记block结束 */
+	/* 结束块AST节点 */
 	t = new_tree(BLOCKEND, NULL, NULL, NULL);
+
+	/* 放入AST森林 */
 	list_append(&ast_forest, t);
 }
 ;
