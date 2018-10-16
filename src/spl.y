@@ -103,7 +103,6 @@ void trap_in_debug();
 %term kFILE
 %term kFOR
 %term kFUNCTION
-%term kGOTO
 %term kIF
 %term kIN
 %term kLABEL
@@ -904,7 +903,7 @@ var_para_list
 ;
 
 routine_body
-:compound_stmt {/* 混合类型的语句（算数，赋值，判断，循环，跳转等） */}
+:compound_stmt {}
 ;
 
 stmt_list
@@ -915,21 +914,15 @@ stmt_list
 ;
 
 stmt
-:cINTEGER oCOLON non_label_stmt {/* 用于case语句 */}
-| non_label_stmt {}
-;
-
-non_label_stmt
 :%empty {}
-| assign_stmt { }
-| proc_stmt { /* 过程或者函数调用 */ }
-| compound_stmt {/* compound_stmt可以嵌套 */}
-| if_stmt { }
-| repeat_stmt { }
-| while_stmt { }
-| for_stmt { }
-| case_stmt { }
-| goto_stmt { }
+|assign_stmt {}
+|proc_stmt {}
+|compound_stmt {}
+|if_stmt {}
+|repeat_stmt {}
+|while_stmt {}
+|for_stmt {}
+|case_stmt {}
 ;
 
 assign_stmt
@@ -1532,10 +1525,6 @@ oCOLON stmt
 	list_append(&ast_forest, t);
 }
 oSEMI
-;
-
-goto_stmt
-:kGOTO cINTEGER
 ;
 
 expression
