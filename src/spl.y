@@ -928,7 +928,7 @@ stmt
 assign_stmt
 :yNAME oASSIGN expression
 {
-	/* 寻找对应的符号 */
+	/* 对应的符号 */
 	p = find_symbol(top_symtab_stack(), $1);
 	if (p == NULL)
 	{
@@ -936,51 +936,40 @@ assign_stmt
 		p = install_temporary_symbol($1, DEF_VAR, TYPE_INTEGER);
 	}
 
-	/* 检查赋值形式是否合法 */
-	if(p->type->type_id == TYPE_ARRAY
-		||p->type->type_id == TYPE_RECORD)
+	/* 检查赋值是否合法 */
+	if(p->type->type_id == TYPE_ARRAY || p->type->type_id == TYPE_RECORD)
 	{
-		parse_error("lvalue expected","");
-		/* return 0; */
+		parse_error("lvalue expected", "");
 	}
 
-	if (p && p->defn != DEF_FUNCT)
+	if (p)
 	{
-	/* 检查yNAME和expression的类型是否匹配 */
-
-		if(p->type->type_id != $3->result_type->type_id)
+		if (p->defn == DEF_FUNCT || p->defn == DEF_PROC)
 		{
-			parse_error("type mismatch","");
-			/* return 0; */
+			/* 函数和过程不能进行赋值操作 */
+			parse_error("funct can not be assinged", "");
+			return 0;
 		}
+		else
+		{
+			/* 类型检查 */
+			if(p->type->type_id != $3->result_type->type_id)
+			{
+				parse_error("type mismatch", "");
+				return 0;
+			}
+		}		
 	}
 	else
 	{
-		/* 函数或者过程 */
-		ptab = find_routine($1);
-		if(ptab)
-		{
-		/* 检查yNAME和expression的类型是否匹配 */
-			if(ptab->type->type_id != $3->result_type->type_id)
-			{
-				parse_error("type mismatch","");
-				/* return 0; */
-			}
-		}
-		else{
-			parse_error("Undeclared identifier.",$1);
-			/* 定义一个临时symbol，使得同一个错误在程序接下来的执行过程中不会反复出现 */
-			install_temporary_symbol($1, DEF_VAR, $3->result_type->type_id);
-			/* return 0; */
-		}
+		parse_error("undeclared identifier", $1);
+		install_temporary_symbol($1, DEF_VAR, $3->result_type->type_id);
 	}
 
 	/* 地址AST树 */
 	t = address_tree(NULL, p);
-
 	/* 赋值AST树 */
 	$$ = assign_tree(t, $3);
-	
 	/* 放入AST森林 */
 	list_append(&ast_forest, $$);
 }
