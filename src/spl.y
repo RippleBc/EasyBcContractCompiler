@@ -778,17 +778,15 @@ yNAME parameters oCOLON simple_type_decl
 procedure_decl
 :procedure_head oSEMI sub_routine oSEMI
 {
-	{
-		list_clear(&dag_forest);
-		t = new_tree(TAIL, NULL, NULL, NULL);
-		list_append(&ast_forest, t);
 
-		/* generate dag forest. */
-		gen_dag(&ast_forest, &dag_forest);
+	list_clear(&dag_forest);
 
-		/* emit asm code. */
-		emit_code(&dag_forest);
-	}
+	t = new_tree(TAIL, NULL, NULL, NULL);
+	t->u.generic.symtab = top_symtab_stack();
+	list_append(&ast_forest, t);
+
+	gen_dag(&ast_forest, &dag_forest);
+	emit_code(&dag_forest);
 
 	pop_symtab_stack();
 }
@@ -807,19 +805,17 @@ yNAME parameters
 {
 	ptab = top_symtab_stack();
 	strncpy(ptab->name, $3, NAME_LEN);
-	sprintf(ptab->rname, "rtn%03d",ptab->id);
+	sprintf(ptab->rname, "rtn%03d", ptab->id);
 	ptab->defn = DEF_PROC;
+
 	p = new_symbol($3, DEF_PROC, TYPE_VOID);
-	add_symbol_to_table(ptab,p);
+	add_symbol_to_table(ptab, p);
 	reverse_parameters(ptab);
 
-	{
-		Tree header;
-		
-		header = new_tree(HEADER, find_type_by_id(TYPE_VOID), NULL, NULL);
-		header->u.header.para = &para_list;
-		list_append(&ast_forest, header);
-	}
+	Tree header;
+	header = new_tree(HEADER, find_type_by_id(TYPE_VOID), NULL, NULL);
+	header->u.header.para = &para_list;
+	list_append(&ast_forest, header);
 }
 ;
 
@@ -827,7 +823,9 @@ parameters
 :%empty {/* 参数部分可以为空 */}
 |oLP para_decl_list oRP
 {
+	/* 对应的符号表 */
 	ptab = top_symtab_stack();
+	/* 符号表大小 */
 	ptab->local_size = 0;
 }
 ;
@@ -840,12 +838,12 @@ para_decl_list
 para_type_list
 :val_para_list oCOLON simple_type_decl
 {
-	/* 获取当前符号表 */
+	/* 对应的符号表 */
 	ptab = top_symtab_stack();
 
+	/* 遍历名称符号链表 */
 	for(p = $1; p;)
 	{
-		/* 初始化val_para_list符号链表中的符号的大类以及小类 */
 		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
 			p->type = $3->first->type;
 		else
@@ -857,26 +855,23 @@ para_type_list
 		p = p->next;
 		q->next = NULL;
 
-		/* 将符号放入符号表中 */
+		/* 放入符号表中 */
 		add_symbol_to_table(ptab, q);
 
-		/* append to paralist. */
+		/* 放入形参链表 */
 		list_append(&para_list, q);
 	}
-
-	$1 = NULL;
 }
 |var_para_list oCOLON simple_type_decl
 {
+	/* 对应的符号表 */
 	ptab = top_symtab_stack();
 
+	/* 遍历名称符号链表 */
 	for(p = $1; p;)
 	{
-		/* 初始化val_para_list符号链表中的符号的大类以及小类 */
-		if($3->type_id == TYPE_SUBRANGE)
+		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
 			p->type = $3->first->type;
-		else if($3->type_id == TYPE_ENUM)
-			p->type = find_type_by_id(TYPE_INTEGER);
 		else
 			p->type = find_type_by_id($3->type_id);
 		p->type_link = $3;
@@ -884,18 +879,21 @@ para_type_list
 
 		q = p; p = p->next;
 		q->next=NULL;
-		/* 将符号放入符号表中 */
-		add_symbol_to_table(ptab,q);
 
-		/* append to para_list. */
+		/* 放入符号表中 */
+		add_symbol_to_table(ptab, q);
+
+		/* 放入形参链表 */
 		list_append(&para_list, q);
 	}
-	$1 = NULL;
 }
 ;
 
 val_para_list
-:name_list {/* 默认val_para_list的值等于name_list的值 */}
+:name_list 
+{ 
+	$$ = $1 
+}
 ;
 
 var_para_list
