@@ -7,11 +7,8 @@
 
 #define MAX_CALL_LEVEL 16
 
-#define LABEL_SLINK     "static_link"
-#define LABEL_RETVAL    "retval_addr"
-#define LABEL_HIRETVAL  "retval_addr_hi"
-
-#define STACK_SEG       512
+#define LABEL_RETVAL "-4(%ebp)"
+#define LABEL_SLINK "8(%ebp)"
 
 static symtab *rtn =NULL;
 static symbol *arg = NULL;
@@ -63,17 +60,6 @@ static void do_linux_first_arg(int);
 static int emit_linux_address = 0;
 
 extern char datname[FILE_NAME_LEN];
-
-#ifdef LABEL_RETVAL
-#undef LABEL_RETVAL
-#define LABEL_RETVAL "-4(%ebp)"
-#endif
-
-
-#ifdef LABEL_SLINK
-#undef LABEL_SLINK
-#define LABEL_SLINK	"8(%ebp)"
-#endif
 
 symtab *top_call_stack( )
 {
