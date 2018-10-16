@@ -1045,7 +1045,7 @@ call_stmt
 :yNAME
 {
 	/* 对应符号 */
-	p = find_symbol($1);
+	p = find_symbol(top_symtab_stack(), $1);
 	if(!p){
 		parse_error("Undeclared procedure or function", $1);
 		return 0;
