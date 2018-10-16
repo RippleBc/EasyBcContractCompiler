@@ -953,7 +953,7 @@ assign_stmt
 	}
 	else
 	{
-		parse_error("Undeclared identifier.", $1);
+		parse_error("undeclared identifier.", $1);
 		install_temporary_symbol($1, DEF_VAR, $3->result_type->type_id);
 	}
 
@@ -966,12 +966,18 @@ assign_stmt
 }
 |yNAME oLB
 {
-	/* 符号表 */
+	/* 对应的符号 */
 	p = find_symbol(top_symtab_stack(), $1);
-
-	/* 检查符号类型 */
-	if(!p || p->type->type_id != TYPE_ARRAY){
-		parse_error("Undeclared array name",$1);
+	if(p == NULL)
+	{
+		parse_error("undefined identifier", $1);
+		return 0;
+	}
+	
+	/* 检查赋值是否合法 */
+	if(p->type->type_id != TYPE_ARRAY)
+	{
+		parse_error("var type mismatch", $1);
 		return 0;
 	}
 	
