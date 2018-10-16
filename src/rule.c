@@ -73,7 +73,6 @@
 #include "symtab.h"
 #include "error.h"
 #include "tree.h"
-#include "x86.h"
 
 extern char *yytext; /* flex用于记录匹配到的字符串 */
 symtab *ptab; /* 符号表表头 */
@@ -143,7 +142,7 @@ void trap_in_debug();
 #endif
 
 
-#line 147 "rule.c" /* yacc.c:339  */
+#line 146 "rule.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -273,7 +272,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 82 "spl.y" /* yacc.c:355  */
+#line 81 "spl.y" /* yacc.c:355  */
 
 	char 		p_char[NAME_LEN];
 	int 		num;
@@ -283,7 +282,7 @@ union YYSTYPE
 	KEYENTRY	*p_lex; /* 关键字 */
 	Tree 		p_tree;
 
-#line 287 "rule.c" /* yacc.c:355  */
+#line 286 "rule.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -300,7 +299,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 304 "rule.c" /* yacc.c:358  */
+#line 303 "rule.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -606,23 +605,23 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   201,   201,   237,   250,   265,   270,   269,   282,   299,
-     305,   306,   310,   314,   318,   319,   323,   330,   340,   350,
-     359,   368,   377,   419,   420,   424,   425,   429,   451,   452,
-     453,   457,   468,   478,   489,   497,   520,   530,   543,   555,
-     585,   619,   649,   691,   692,   696,   697,   701,   732,   733,
-     734,   735,   736,   740,   763,   762,   817,   837,   836,   866,
-     867,   875,   876,   880,   908,   937,   941,   948,   952,   953,
-     954,   959,   960,   964,   965,   966,   967,   968,   969,   970,
-     971,   972,   973,   977,  1036,  1050,  1035,  1075,  1074,  1101,
-    1115,  1114,  1134,  1140,  1139,  1159,  1176,  1175,  1192,  1197,
-    1210,  1191,  1249,  1253,  1248,  1260,  1261,  1266,  1265,  1289,
-    1299,  1288,  1333,  1363,  1332,  1417,  1421,  1429,  1445,  1428,
-    1480,  1481,  1486,  1504,  1485,  1514,  1543,  1513,  1554,  1558,
-    1563,  1568,  1573,  1578,  1583,  1588,  1595,  1600,  1605,  1610,
-    1617,  1622,  1627,  1632,  1637,  1642,  1649,  1683,  1682,  1701,
-    1709,  1708,  1721,  1750,  1755,  1760,  1766,  1765,  1789,  1817,
-    1831
+       0,   200,   200,   236,   249,   264,   269,   268,   281,   298,
+     304,   305,   309,   313,   317,   318,   322,   329,   339,   349,
+     358,   367,   376,   418,   419,   423,   424,   428,   450,   451,
+     452,   456,   467,   477,   488,   496,   519,   529,   542,   554,
+     584,   618,   648,   690,   691,   695,   696,   700,   731,   732,
+     733,   734,   735,   739,   762,   761,   816,   836,   835,   865,
+     866,   874,   875,   879,   907,   936,   940,   947,   951,   952,
+     953,   958,   959,   963,   964,   965,   966,   967,   968,   969,
+     970,   971,   972,   976,  1035,  1049,  1034,  1074,  1073,  1100,
+    1114,  1113,  1133,  1139,  1138,  1158,  1175,  1174,  1191,  1196,
+    1209,  1190,  1248,  1252,  1247,  1259,  1260,  1265,  1264,  1288,
+    1298,  1287,  1332,  1362,  1331,  1416,  1420,  1428,  1444,  1427,
+    1479,  1480,  1485,  1503,  1484,  1513,  1542,  1512,  1553,  1557,
+    1562,  1567,  1572,  1577,  1582,  1587,  1594,  1599,  1604,  1609,
+    1616,  1621,  1626,  1631,  1636,  1641,  1648,  1682,  1681,  1700,
+    1708,  1707,  1720,  1749,  1754,  1759,  1765,  1764,  1788,  1816,
+    1830
 };
 #endif
 
@@ -1631,7 +1630,7 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 202 "spl.y" /* yacc.c:1646  */
+#line 201 "spl.y" /* yacc.c:1646  */
     {
 	/* 弹出无效的symtab */
 	pop_symtab_stack();
@@ -1664,11 +1663,11 @@ yyreduce:
 
 	return 0;
 }
-#line 1668 "rule.c" /* yacc.c:1646  */
+#line 1667 "rule.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 238 "spl.y" /* yacc.c:1646  */
+#line 237 "spl.y" /* yacc.c:1646  */
     {
 	/* 初始化解析器 */
 	parser_init();
@@ -1679,11 +1678,11 @@ yyreduce:
 	/* 将全局符号表压入符号表栈中 */
 	push_symtab_stack(Global_symtab);
 }
-#line 1683 "rule.c" /* yacc.c:1646  */
+#line 1682 "rule.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 251 "spl.y" /* yacc.c:1646  */
+#line 250 "spl.y" /* yacc.c:1646  */
     {
 	/* 初始化全局符号表的名称 */
 	strcpy(Global_symtab->name, (yyvsp[-1].p_char));
@@ -1698,11 +1697,11 @@ yyreduce:
 
 
 }
-#line 1702 "rule.c" /* yacc.c:1646  */
+#line 1701 "rule.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 270 "spl.y" /* yacc.c:1646  */
+#line 269 "spl.y" /* yacc.c:1646  */
     {
 	main_env.u.main.tab = Global_symtab;
 	(*(IR->main_begin))(&main_env);
@@ -1711,17 +1710,17 @@ yyreduce:
 	
 	push_symtab_stack(Global_symtab);
 }
-#line 1715 "rule.c" /* yacc.c:1646  */
+#line 1714 "rule.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 278 "spl.y" /* yacc.c:1646  */
+#line 277 "spl.y" /* yacc.c:1646  */
     {}
-#line 1721 "rule.c" /* yacc.c:1646  */
+#line 1720 "rule.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 283 "spl.y" /* yacc.c:1646  */
+#line 282 "spl.y" /* yacc.c:1646  */
     {
 	/* 匹配 oCOMMA yNAME */
 	p = new_symbol((yyvsp[0].p_char), DEF_UNKNOWN, TYPE_UNKNOWN);
@@ -1738,73 +1737,73 @@ yyreduce:
 	/* 永远指向头部 */
 	(yyval.p_symbol) = (yyvsp[-2].p_symbol);
 }
-#line 1742 "rule.c" /* yacc.c:1646  */
+#line 1741 "rule.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 300 "spl.y" /* yacc.c:1646  */
+#line 299 "spl.y" /* yacc.c:1646  */
     {
 	/* 匹配 yNAME */
 	p = new_symbol((yyvsp[0].p_char), DEF_UNKNOWN, TYPE_UNKNOWN);
 	(yyval.p_symbol) = p;
 }
-#line 1752 "rule.c" /* yacc.c:1646  */
+#line 1751 "rule.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 305 "spl.y" /* yacc.c:1646  */
+#line 304 "spl.y" /* yacc.c:1646  */
     {}
-#line 1758 "rule.c" /* yacc.c:1646  */
+#line 1757 "rule.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 306 "spl.y" /* yacc.c:1646  */
+#line 305 "spl.y" /* yacc.c:1646  */
     {}
-#line 1764 "rule.c" /* yacc.c:1646  */
+#line 1763 "rule.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 314 "spl.y" /* yacc.c:1646  */
+#line 313 "spl.y" /* yacc.c:1646  */
     {/* 依次定义常量、自定义类型以及变量和routine（函数以及过程） */}
-#line 1770 "rule.c" /* yacc.c:1646  */
+#line 1769 "rule.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 318 "spl.y" /* yacc.c:1646  */
+#line 317 "spl.y" /* yacc.c:1646  */
     {}
-#line 1776 "rule.c" /* yacc.c:1646  */
+#line 1775 "rule.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 319 "spl.y" /* yacc.c:1646  */
+#line 318 "spl.y" /* yacc.c:1646  */
     {}
-#line 1782 "rule.c" /* yacc.c:1646  */
+#line 1781 "rule.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 324 "spl.y" /* yacc.c:1646  */
+#line 323 "spl.y" /* yacc.c:1646  */
     {
 	/* 给const_value命名 */
 	strncpy((yyvsp[-1].p_symbol)->name, (yyvsp[-3].p_char), NAME_LEN);
 	/* 将const类型symbol放入符号表中 */
 	add_symbol_to_table(top_symtab_stack(), (yyvsp[-1].p_symbol));
 }
-#line 1793 "rule.c" /* yacc.c:1646  */
+#line 1792 "rule.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 331 "spl.y" /* yacc.c:1646  */
+#line 330 "spl.y" /* yacc.c:1646  */
     {
 	/* 给const_value命名 */
 	strncpy((yyvsp[-1].p_symbol)->name, (yyvsp[-3].p_char), NAME_LEN);
 	/* 将const类型symbol放入符号表中 */
 	add_symbol_to_table(top_symtab_stack(), (yyvsp[-1].p_symbol));
 }
-#line 1804 "rule.c" /* yacc.c:1646  */
+#line 1803 "rule.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 341 "spl.y" /* yacc.c:1646  */
+#line 340 "spl.y" /* yacc.c:1646  */
     {
 	/* 先采用默认命名，随后会被正确命名 */
 	p = new_symbol("$$$", DEF_CONST,
@@ -1814,11 +1813,11 @@ yyreduce:
 	p->v.i = (yyvsp[0].num);
 	(yyval.p_symbol) = p;
 }
-#line 1818 "rule.c" /* yacc.c:1646  */
+#line 1817 "rule.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 351 "spl.y" /* yacc.c:1646  */
+#line 350 "spl.y" /* yacc.c:1646  */
     {
 	p = new_symbol("$$$",DEF_CONST,
 		TYPE_REAL);
@@ -1827,11 +1826,11 @@ yyreduce:
 	p->v.f = atof((yyvsp[0].p_char));
 	(yyval.p_symbol) = p;
 }
-#line 1831 "rule.c" /* yacc.c:1646  */
+#line 1830 "rule.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 360 "spl.y" /* yacc.c:1646  */
+#line 359 "spl.y" /* yacc.c:1646  */
     {
 	p = new_symbol("$$$", DEF_CONST,
 		TYPE_CHAR);
@@ -1840,11 +1839,11 @@ yyreduce:
 	p->v.c= (yyvsp[0].p_char)[1];
 	(yyval.p_symbol) = p;
 }
-#line 1844 "rule.c" /* yacc.c:1646  */
+#line 1843 "rule.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 369 "spl.y" /* yacc.c:1646  */
+#line 368 "spl.y" /* yacc.c:1646  */
     {
 	p = new_symbol("$$$", DEF_CONST,
 		TYPE_STRING);
@@ -1853,11 +1852,11 @@ yyreduce:
 	p->v.s = strdup((yyvsp[0].p_char));
 	(yyval.p_symbol) = p;
 }
-#line 1857 "rule.c" /* yacc.c:1646  */
+#line 1856 "rule.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 378 "spl.y" /* yacc.c:1646  */
+#line 377 "spl.y" /* yacc.c:1646  */
     {
 	p = new_symbol("$$$", DEF_CONST,
 		TYPE_UNKNOWN);
@@ -1896,35 +1895,35 @@ yyreduce:
 
 	(yyval.p_symbol) = p;
 }
-#line 1900 "rule.c" /* yacc.c:1646  */
+#line 1899 "rule.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 419 "spl.y" /* yacc.c:1646  */
+#line 418 "spl.y" /* yacc.c:1646  */
     {}
-#line 1906 "rule.c" /* yacc.c:1646  */
+#line 1905 "rule.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 420 "spl.y" /* yacc.c:1646  */
+#line 419 "spl.y" /* yacc.c:1646  */
     {}
-#line 1912 "rule.c" /* yacc.c:1646  */
+#line 1911 "rule.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 424 "spl.y" /* yacc.c:1646  */
+#line 423 "spl.y" /* yacc.c:1646  */
     {}
-#line 1918 "rule.c" /* yacc.c:1646  */
+#line 1917 "rule.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 425 "spl.y" /* yacc.c:1646  */
+#line 424 "spl.y" /* yacc.c:1646  */
     {}
-#line 1924 "rule.c" /* yacc.c:1646  */
+#line 1923 "rule.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 430 "spl.y" /* yacc.c:1646  */
+#line 429 "spl.y" /* yacc.c:1646  */
     {
 	if((yyvsp[-1].p_type)->name[0] == '$')
 	{
@@ -1943,29 +1942,29 @@ yyreduce:
 			top_symtab_stack(), (yyval.p_type));
 	}
 }
-#line 1947 "rule.c" /* yacc.c:1646  */
+#line 1946 "rule.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 451 "spl.y" /* yacc.c:1646  */
+#line 450 "spl.y" /* yacc.c:1646  */
     {}
-#line 1953 "rule.c" /* yacc.c:1646  */
+#line 1952 "rule.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 452 "spl.y" /* yacc.c:1646  */
+#line 451 "spl.y" /* yacc.c:1646  */
     {}
-#line 1959 "rule.c" /* yacc.c:1646  */
+#line 1958 "rule.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 453 "spl.y" /* yacc.c:1646  */
+#line 452 "spl.y" /* yacc.c:1646  */
     {}
-#line 1965 "rule.c" /* yacc.c:1646  */
+#line 1964 "rule.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 458 "spl.y" /* yacc.c:1646  */
+#line 457 "spl.y" /* yacc.c:1646  */
     {
 	/* 创建一个自定义数组类型 */
 	(yyval.p_type) = new_array_type("$$$", (yyvsp[-3].p_type), (yyvsp[0].p_type));
@@ -1973,22 +1972,22 @@ yyreduce:
 	add_type_to_table(
 		top_symtab_stack(),(yyval.p_type));
 }
-#line 1977 "rule.c" /* yacc.c:1646  */
+#line 1976 "rule.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 469 "spl.y" /* yacc.c:1646  */
+#line 468 "spl.y" /* yacc.c:1646  */
     {
 	/* 创建一个自定义RECORD类型 */
 	(yyval.p_type) = new_record_type("$$$", (yyvsp[-1].p_symbol));
 	/* 添加到符号表中 */
  	add_type_to_table(top_symtab_stack(), (yyval.p_type));
 }
-#line 1988 "rule.c" /* yacc.c:1646  */
+#line 1987 "rule.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 479 "spl.y" /* yacc.c:1646  */
+#line 478 "spl.y" /* yacc.c:1646  */
     {
 	/* 将指针移动到链表的末尾 */
 	for(p = (yyvsp[-1].p_symbol); p->next; p = p->next);
@@ -1999,20 +1998,20 @@ yyreduce:
 	/* 定义为链表的record属性符号链表的头部 */
 	(yyval.p_symbol) = (yyvsp[-1].p_symbol);  
 }
-#line 2003 "rule.c" /* yacc.c:1646  */
+#line 2002 "rule.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 490 "spl.y" /* yacc.c:1646  */
+#line 489 "spl.y" /* yacc.c:1646  */
     {
 	/* record关键字之后，必须定义至少一个属性 */
 	(yyval.p_symbol) = (yyvsp[0].p_symbol);
 }
-#line 2012 "rule.c" /* yacc.c:1646  */
+#line 2011 "rule.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 498 "spl.y" /* yacc.c:1646  */
+#line 497 "spl.y" /* yacc.c:1646  */
     {
 	/* type_decl可以是已经定义的自定义类型（已经位于符号表中）或者现场定义的自定义类型，
 		 也就是说可以直接使用record上面定义的自定义类型 */
@@ -2032,11 +2031,11 @@ yyreduce:
 	}
 	(yyval.p_symbol) = (yyvsp[-3].p_symbol);
 }
-#line 2036 "rule.c" /* yacc.c:1646  */
+#line 2035 "rule.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 521 "spl.y" /* yacc.c:1646  */
+#line 520 "spl.y" /* yacc.c:1646  */
     {
 	/* 系统类型（char，integer，boolean，real） */
 	pt = find_type_by_name((yyvsp[0].p_char));
@@ -2046,11 +2045,11 @@ yyreduce:
 
 	(yyval.p_type) = pt;
 }
-#line 2050 "rule.c" /* yacc.c:1646  */
+#line 2049 "rule.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 531 "spl.y" /* yacc.c:1646  */
+#line 530 "spl.y" /* yacc.c:1646  */
     {
   /* 用户自定义类型 */
 	pt = find_type_by_name((yyvsp[0].p_char));
@@ -2063,11 +2062,11 @@ yyreduce:
 
 	(yyval.p_type) = pt;
 }
-#line 2067 "rule.c" /* yacc.c:1646  */
+#line 2066 "rule.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 544 "spl.y" /* yacc.c:1646  */
+#line 543 "spl.y" /* yacc.c:1646  */
     {
 	/* 初始化一个枚举类型 */
 	(yyval.p_type) = new_enum_type("$$$");
@@ -2079,11 +2078,11 @@ yyreduce:
 	add_type_to_table(
 		top_symtab_stack(),(yyval.p_type));
 }
-#line 2083 "rule.c" /* yacc.c:1646  */
+#line 2082 "rule.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 556 "spl.y" /* yacc.c:1646  */
+#line 555 "spl.y" /* yacc.c:1646  */
     {
   /* 检查oDOTDOT前后的类型是否一致 */
 	if((yyvsp[-2].p_symbol)->type->type_id != (yyvsp[0].p_symbol)->type->type_id){
@@ -2113,11 +2112,11 @@ yyreduce:
 	else
 		parse_error("invalid element type of subrange","");
 }
-#line 2117 "rule.c" /* yacc.c:1646  */
+#line 2116 "rule.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 586 "spl.y" /* yacc.c:1646  */
+#line 585 "spl.y" /* yacc.c:1646  */
     {
 	/* 检查oDOTDOT前后的类型是否一致 */
 	if((yyvsp[-2].p_symbol)->type->type_id != (yyvsp[0].p_symbol)->type->type_id){
@@ -2151,11 +2150,11 @@ yyreduce:
 	else
    		parse_error("invalid element type of subrange","");
 }
-#line 2155 "rule.c" /* yacc.c:1646  */
+#line 2154 "rule.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 620 "spl.y" /* yacc.c:1646  */
+#line 619 "spl.y" /* yacc.c:1646  */
     {
 	if((yyvsp[-3].p_symbol)->type->type_id != (yyvsp[0].p_symbol)->type->type_id) {
 		parse_error("type mismatch.","");
@@ -2185,11 +2184,11 @@ yyreduce:
 	else
 		parse_error("invalid element type of subrange","");
 }
-#line 2189 "rule.c" /* yacc.c:1646  */
+#line 2188 "rule.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 650 "spl.y" /* yacc.c:1646  */
+#line 649 "spl.y" /* yacc.c:1646  */
     {
 	
 	/* 通过自定义类型名称从符号表中寻找自定义类型 */
@@ -2228,35 +2227,35 @@ yyreduce:
 	else
 		(yyval.p_type) = NULL;
 }
-#line 2232 "rule.c" /* yacc.c:1646  */
+#line 2231 "rule.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 691 "spl.y" /* yacc.c:1646  */
+#line 690 "spl.y" /* yacc.c:1646  */
     {}
-#line 2238 "rule.c" /* yacc.c:1646  */
+#line 2237 "rule.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 692 "spl.y" /* yacc.c:1646  */
+#line 691 "spl.y" /* yacc.c:1646  */
     {}
-#line 2244 "rule.c" /* yacc.c:1646  */
+#line 2243 "rule.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 696 "spl.y" /* yacc.c:1646  */
+#line 695 "spl.y" /* yacc.c:1646  */
     {}
-#line 2250 "rule.c" /* yacc.c:1646  */
+#line 2249 "rule.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 697 "spl.y" /* yacc.c:1646  */
+#line 696 "spl.y" /* yacc.c:1646  */
     {}
-#line 2256 "rule.c" /* yacc.c:1646  */
+#line 2255 "rule.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 702 "spl.y" /* yacc.c:1646  */
+#line 701 "spl.y" /* yacc.c:1646  */
     {
 	/* 获取对应的符号表 */
 	ptab = top_symtab_stack();
@@ -2284,41 +2283,41 @@ yyreduce:
 	}
 	(yyvsp[-3].p_symbol) = NULL;
 }
-#line 2288 "rule.c" /* yacc.c:1646  */
+#line 2287 "rule.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 732 "spl.y" /* yacc.c:1646  */
+#line 731 "spl.y" /* yacc.c:1646  */
     {}
-#line 2294 "rule.c" /* yacc.c:1646  */
+#line 2293 "rule.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 733 "spl.y" /* yacc.c:1646  */
+#line 732 "spl.y" /* yacc.c:1646  */
     {/* 自定义函数可以嵌套 */}
-#line 2300 "rule.c" /* yacc.c:1646  */
+#line 2299 "rule.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 734 "spl.y" /* yacc.c:1646  */
+#line 733 "spl.y" /* yacc.c:1646  */
     {/*  自定义过程可以嵌套 */}
-#line 2306 "rule.c" /* yacc.c:1646  */
+#line 2305 "rule.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 735 "spl.y" /* yacc.c:1646  */
+#line 734 "spl.y" /* yacc.c:1646  */
     {}
-#line 2312 "rule.c" /* yacc.c:1646  */
+#line 2311 "rule.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 736 "spl.y" /* yacc.c:1646  */
+#line 735 "spl.y" /* yacc.c:1646  */
     {}
-#line 2318 "rule.c" /* yacc.c:1646  */
+#line 2317 "rule.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 741 "spl.y" /* yacc.c:1646  */
+#line 740 "spl.y" /* yacc.c:1646  */
     {
 	if (!err_occur())
 	{
@@ -2337,11 +2336,11 @@ yyreduce:
 
 	pop_symtab_stack();
 }
-#line 2341 "rule.c" /* yacc.c:1646  */
+#line 2340 "rule.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 763 "spl.y" /* yacc.c:1646  */
+#line 762 "spl.y" /* yacc.c:1646  */
     {
 
 	list_clear(&ast_forest);
@@ -2351,11 +2350,11 @@ yyreduce:
 	ptab = new_symtab(top_symtab_stack());
 	push_symtab_stack(ptab);
 }
-#line 2355 "rule.c" /* yacc.c:1646  */
+#line 2354 "rule.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 773 "spl.y" /* yacc.c:1646  */
+#line 772 "spl.y" /* yacc.c:1646  */
     {
 	/* 获取对应的符号表 */
 	ptab = top_symtab_stack();
@@ -2397,11 +2396,11 @@ yyreduce:
 		now_function = new_tree(FUNCTION, ptab->type, header, NULL);
 	}
 }
-#line 2401 "rule.c" /* yacc.c:1646  */
+#line 2400 "rule.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 818 "spl.y" /* yacc.c:1646  */
+#line 817 "spl.y" /* yacc.c:1646  */
     {
 	{
 		list_clear(&dag_forest);
@@ -2417,11 +2416,11 @@ yyreduce:
 
 	pop_symtab_stack();
 }
-#line 2421 "rule.c" /* yacc.c:1646  */
+#line 2420 "rule.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 837 "spl.y" /* yacc.c:1646  */
+#line 836 "spl.y" /* yacc.c:1646  */
     {
 	list_clear(&ast_forest);
 	list_clear(&para_list);
@@ -2429,11 +2428,11 @@ yyreduce:
 	ptab = new_symtab(top_symtab_stack());
 	push_symtab_stack(ptab);
 }
-#line 2433 "rule.c" /* yacc.c:1646  */
+#line 2432 "rule.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 845 "spl.y" /* yacc.c:1646  */
+#line 844 "spl.y" /* yacc.c:1646  */
     {
 	ptab = top_symtab_stack();
 	strncpy(ptab->name, (yyvsp[-1].p_char), NAME_LEN);
@@ -2452,38 +2451,38 @@ yyreduce:
 		now_function = new_tree(ROUTINE, find_type_by_id(TYPE_VOID), header, NULL);
 	}
 }
-#line 2456 "rule.c" /* yacc.c:1646  */
+#line 2455 "rule.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 866 "spl.y" /* yacc.c:1646  */
+#line 865 "spl.y" /* yacc.c:1646  */
     {/* 参数部分可以为空 */}
-#line 2462 "rule.c" /* yacc.c:1646  */
+#line 2461 "rule.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 868 "spl.y" /* yacc.c:1646  */
+#line 867 "spl.y" /* yacc.c:1646  */
     {
 	ptab = top_symtab_stack();
 	ptab->local_size = 0;
 }
-#line 2471 "rule.c" /* yacc.c:1646  */
+#line 2470 "rule.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 875 "spl.y" /* yacc.c:1646  */
+#line 874 "spl.y" /* yacc.c:1646  */
     {/* 不同类型的参数之间使用符号';'进行分割 */}
-#line 2477 "rule.c" /* yacc.c:1646  */
+#line 2476 "rule.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 876 "spl.y" /* yacc.c:1646  */
+#line 875 "spl.y" /* yacc.c:1646  */
     {}
-#line 2483 "rule.c" /* yacc.c:1646  */
+#line 2482 "rule.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 881 "spl.y" /* yacc.c:1646  */
+#line 880 "spl.y" /* yacc.c:1646  */
     {
 	/* 获取当前符号表 */
 	ptab = top_symtab_stack();
@@ -2511,11 +2510,11 @@ yyreduce:
 
 	(yyvsp[-2].p_symbol) = NULL;
 }
-#line 2515 "rule.c" /* yacc.c:1646  */
+#line 2514 "rule.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 909 "spl.y" /* yacc.c:1646  */
+#line 908 "spl.y" /* yacc.c:1646  */
     {
 	ptab = top_symtab_stack();
 
@@ -2541,121 +2540,121 @@ yyreduce:
 	}
 	(yyvsp[-2].p_symbol) = NULL;
 }
-#line 2545 "rule.c" /* yacc.c:1646  */
+#line 2544 "rule.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 937 "spl.y" /* yacc.c:1646  */
+#line 936 "spl.y" /* yacc.c:1646  */
     {/* 默认val_para_list的值等于name_list的值 */}
-#line 2551 "rule.c" /* yacc.c:1646  */
+#line 2550 "rule.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 942 "spl.y" /* yacc.c:1646  */
+#line 941 "spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_symbol) = (yyvsp[0].p_symbol);
 }
-#line 2559 "rule.c" /* yacc.c:1646  */
+#line 2558 "rule.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 948 "spl.y" /* yacc.c:1646  */
+#line 947 "spl.y" /* yacc.c:1646  */
     {/* 混合类型的语句（算数，赋值，判断，循环，跳转等） */}
-#line 2565 "rule.c" /* yacc.c:1646  */
+#line 2564 "rule.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 952 "spl.y" /* yacc.c:1646  */
+#line 951 "spl.y" /* yacc.c:1646  */
     {/* 可以是空函数 */}
-#line 2571 "rule.c" /* yacc.c:1646  */
+#line 2570 "rule.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 953 "spl.y" /* yacc.c:1646  */
+#line 952 "spl.y" /* yacc.c:1646  */
     {}
-#line 2577 "rule.c" /* yacc.c:1646  */
+#line 2576 "rule.c" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 954 "spl.y" /* yacc.c:1646  */
+#line 953 "spl.y" /* yacc.c:1646  */
     {/* 错误处理 */}
-#line 2583 "rule.c" /* yacc.c:1646  */
+#line 2582 "rule.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 959 "spl.y" /* yacc.c:1646  */
+#line 958 "spl.y" /* yacc.c:1646  */
     {/* 用于case语句 */}
-#line 2589 "rule.c" /* yacc.c:1646  */
+#line 2588 "rule.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 960 "spl.y" /* yacc.c:1646  */
+#line 959 "spl.y" /* yacc.c:1646  */
     {}
-#line 2595 "rule.c" /* yacc.c:1646  */
+#line 2594 "rule.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 964 "spl.y" /* yacc.c:1646  */
+#line 963 "spl.y" /* yacc.c:1646  */
     {}
-#line 2601 "rule.c" /* yacc.c:1646  */
+#line 2600 "rule.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 965 "spl.y" /* yacc.c:1646  */
+#line 964 "spl.y" /* yacc.c:1646  */
     { }
-#line 2607 "rule.c" /* yacc.c:1646  */
+#line 2606 "rule.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 966 "spl.y" /* yacc.c:1646  */
+#line 965 "spl.y" /* yacc.c:1646  */
     { /* 过程或者函数调用 */ }
-#line 2613 "rule.c" /* yacc.c:1646  */
+#line 2612 "rule.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 967 "spl.y" /* yacc.c:1646  */
+#line 966 "spl.y" /* yacc.c:1646  */
     {/* compound_stmt可以嵌套 */}
-#line 2619 "rule.c" /* yacc.c:1646  */
+#line 2618 "rule.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 968 "spl.y" /* yacc.c:1646  */
+#line 967 "spl.y" /* yacc.c:1646  */
     { }
-#line 2625 "rule.c" /* yacc.c:1646  */
+#line 2624 "rule.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 969 "spl.y" /* yacc.c:1646  */
+#line 968 "spl.y" /* yacc.c:1646  */
     { }
-#line 2631 "rule.c" /* yacc.c:1646  */
+#line 2630 "rule.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 970 "spl.y" /* yacc.c:1646  */
+#line 969 "spl.y" /* yacc.c:1646  */
     { }
-#line 2637 "rule.c" /* yacc.c:1646  */
+#line 2636 "rule.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 971 "spl.y" /* yacc.c:1646  */
+#line 970 "spl.y" /* yacc.c:1646  */
     { }
-#line 2643 "rule.c" /* yacc.c:1646  */
+#line 2642 "rule.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 972 "spl.y" /* yacc.c:1646  */
+#line 971 "spl.y" /* yacc.c:1646  */
     { }
-#line 2649 "rule.c" /* yacc.c:1646  */
+#line 2648 "rule.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 973 "spl.y" /* yacc.c:1646  */
+#line 972 "spl.y" /* yacc.c:1646  */
     { }
-#line 2655 "rule.c" /* yacc.c:1646  */
+#line 2654 "rule.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 978 "spl.y" /* yacc.c:1646  */
+#line 977 "spl.y" /* yacc.c:1646  */
     {
 	/* 寻找对应的符号 */
 	p = find_symbol(top_symtab_stack(), (yyvsp[-2].p_char));
@@ -2713,11 +2712,11 @@ yyreduce:
 	/* 放入AST森林 */
 	list_append(&ast_forest, (yyval.p_tree));
 }
-#line 2717 "rule.c" /* yacc.c:1646  */
+#line 2716 "rule.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 1036 "spl.y" /* yacc.c:1646  */
+#line 1035 "spl.y" /* yacc.c:1646  */
     {
 	/* 符号表 */
 	p = find_symbol(top_symtab_stack(), (yyvsp[-1].p_char));
@@ -2731,11 +2730,11 @@ yyreduce:
 	/* 将当前符号压栈 */
 	push_term_stack(p);
 }
-#line 2735 "rule.c" /* yacc.c:1646  */
+#line 2734 "rule.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 1050 "spl.y" /* yacc.c:1646  */
+#line 1049 "spl.y" /* yacc.c:1646  */
     {
 	/* 获取符号 */
 	p = top_term_stack();
@@ -2749,11 +2748,11 @@ yyreduce:
 	/* 当前AST节点压栈 */
 	push_ast_stack(t);
 }
-#line 2753 "rule.c" /* yacc.c:1646  */
+#line 2752 "rule.c" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 1064 "spl.y" /* yacc.c:1646  */
+#line 1063 "spl.y" /* yacc.c:1646  */
     {
 	/* 获取AST节点 */
 	t = pop_ast_stack();
@@ -2764,11 +2763,11 @@ yyreduce:
 	/* 放入AST森林 */
 	list_append(&ast_forest, (yyval.p_tree));
 }
-#line 2768 "rule.c" /* yacc.c:1646  */
+#line 2767 "rule.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 1075 "spl.y" /* yacc.c:1646  */
+#line 1074 "spl.y" /* yacc.c:1646  */
     {
 	p = find_symbol(top_symtab_stack(), (yyvsp[-2].p_char));
 	if(!p || p->type->type_id != TYPE_RECORD){
@@ -2786,21 +2785,21 @@ yyreduce:
 	t = address_tree(t, q);
 	push_ast_stack(t);
 }
-#line 2790 "rule.c" /* yacc.c:1646  */
+#line 2789 "rule.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 1093 "spl.y" /* yacc.c:1646  */
+#line 1092 "spl.y" /* yacc.c:1646  */
     {
 	t = pop_ast_stack();
 	(yyval.p_tree) = assign_tree(t, (yyvsp[0].p_tree));
 	list_append(&ast_forest, (yyval.p_tree));
 }
-#line 2800 "rule.c" /* yacc.c:1646  */
+#line 2799 "rule.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 1102 "spl.y" /* yacc.c:1646  */
+#line 1101 "spl.y" /* yacc.c:1646  */
     {
 	/* 符号表 */
 	ptab = find_routine((yyvsp[0].p_char));
@@ -2813,11 +2812,11 @@ yyreduce:
 	(yyval.p_tree) = call_tree(ptab, NULL);
 	list_append(&ast_forest, (yyval.p_tree));
 }
-#line 2817 "rule.c" /* yacc.c:1646  */
+#line 2816 "rule.c" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 1115 "spl.y" /* yacc.c:1646  */
+#line 1114 "spl.y" /* yacc.c:1646  */
     {
 	/* 符号表 */
 	ptab = find_routine((yyvsp[0].p_char));
@@ -2829,11 +2828,11 @@ yyreduce:
 	/* 保存调用上下文 */
 	push_call_stack(ptab);
 }
-#line 2833 "rule.c" /* yacc.c:1646  */
+#line 2832 "rule.c" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 1127 "spl.y" /* yacc.c:1646  */
+#line 1126 "spl.y" /* yacc.c:1646  */
     {
 	/* 初始化调用AST节点，其中args表示参数AST节点。 */
 	(yyval.p_tree) = call_tree(top_call_stack(), args);
@@ -2841,20 +2840,20 @@ yyreduce:
   /* 清除调用上下文 */
 	pop_call_stack();
 }
-#line 2845 "rule.c" /* yacc.c:1646  */
+#line 2844 "rule.c" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 1135 "spl.y" /* yacc.c:1646  */
+#line 1134 "spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_tree) = sys_tree((yyvsp[0].p_lex)->attr, NULL);
 	list_append(&ast_forest, (yyval.p_tree));
 }
-#line 2854 "rule.c" /* yacc.c:1646  */
+#line 2853 "rule.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 1140 "spl.y" /* yacc.c:1646  */
+#line 1139 "spl.y" /* yacc.c:1646  */
     {
 	rtn = find_sys_routine((yyvsp[0].p_lex)->attr);
 
@@ -2867,22 +2866,22 @@ yyreduce:
 
 	push_call_stack(rtn);
 }
-#line 2871 "rule.c" /* yacc.c:1646  */
+#line 2870 "rule.c" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 1153 "spl.y" /* yacc.c:1646  */
+#line 1152 "spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_tree) = sys_tree((yyvsp[-4].p_lex)->attr, args);
 	list_append(&ast_forest, (yyval.p_tree));
 	
 	pop_call_stack();
 }
-#line 2882 "rule.c" /* yacc.c:1646  */
+#line 2881 "rule.c" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 1160 "spl.y" /* yacc.c:1646  */
+#line 1159 "spl.y" /* yacc.c:1646  */
     {
 	if(!(yyvsp[-1].p_tree)){
 		parse_error("too few parameters in call to", "read");
@@ -2895,40 +2894,40 @@ yyreduce:
 	(yyval.p_tree) = sys_tree(pREAD, t);
 	list_append(&ast_forest, (yyval.p_tree));
 }
-#line 2899 "rule.c" /* yacc.c:1646  */
+#line 2898 "rule.c" /* yacc.c:1646  */
     break;
 
   case 96:
-#line 1176 "spl.y" /* yacc.c:1646  */
+#line 1175 "spl.y" /* yacc.c:1646  */
     {
 	/* 标记block开始 */
 	t = new_tree(BLOCKBEG, NULL, NULL, NULL);
 	list_append(&ast_forest, t);
 }
-#line 2909 "rule.c" /* yacc.c:1646  */
+#line 2908 "rule.c" /* yacc.c:1646  */
     break;
 
   case 97:
-#line 1183 "spl.y" /* yacc.c:1646  */
+#line 1182 "spl.y" /* yacc.c:1646  */
     {
 	/* 标记block结束 */
 	t = new_tree(BLOCKEND, NULL, NULL, NULL);
 	list_append(&ast_forest, t);
 }
-#line 2919 "rule.c" /* yacc.c:1646  */
+#line 2918 "rule.c" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 1192 "spl.y" /* yacc.c:1646  */
+#line 1191 "spl.y" /* yacc.c:1646  */
     {
 	/* 记录标签层级 */
 	push_lbl_stack(if_label_count++);
 }
-#line 2928 "rule.c" /* yacc.c:1646  */
+#line 2927 "rule.c" /* yacc.c:1646  */
     break;
 
   case 99:
-#line 1197 "spl.y" /* yacc.c:1646  */
+#line 1196 "spl.y" /* yacc.c:1646  */
     {
 	/* 初始化名称 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_false_%d", top_lbl_stack());
@@ -2941,11 +2940,11 @@ yyreduce:
 	t = cond_jump_tree((yyvsp[-1].p_tree), false, new_label);
 	list_append(&ast_forest, t);
 }
-#line 2945 "rule.c" /* yacc.c:1646  */
+#line 2944 "rule.c" /* yacc.c:1646  */
     break;
 
   case 100:
-#line 1210 "spl.y" /* yacc.c:1646  */
+#line 1209 "spl.y" /* yacc.c:1646  */
     {
   /* 初始化符号 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_false_%d", top_lbl_stack());
@@ -2972,11 +2971,11 @@ yyreduce:
 
 	list_append(&ast_forest, t);
 }
-#line 2976 "rule.c" /* yacc.c:1646  */
+#line 2975 "rule.c" /* yacc.c:1646  */
     break;
 
   case 101:
-#line 1237 "spl.y" /* yacc.c:1646  */
+#line 1236 "spl.y" /* yacc.c:1646  */
     {
 	/* 初始化符号 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_exit_%d", top_lbl_stack());
@@ -2988,39 +2987,39 @@ yyreduce:
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
 }
-#line 2992 "rule.c" /* yacc.c:1646  */
+#line 2991 "rule.c" /* yacc.c:1646  */
     break;
 
   case 102:
-#line 1249 "spl.y" /* yacc.c:1646  */
+#line 1248 "spl.y" /* yacc.c:1646  */
     {
 	printf("expression expected.\n");
 }
-#line 3000 "rule.c" /* yacc.c:1646  */
+#line 2999 "rule.c" /* yacc.c:1646  */
     break;
 
   case 103:
-#line 1253 "spl.y" /* yacc.c:1646  */
+#line 1252 "spl.y" /* yacc.c:1646  */
     {
 	printf("then matched.\n");
 }
-#line 3008 "rule.c" /* yacc.c:1646  */
+#line 3007 "rule.c" /* yacc.c:1646  */
     break;
 
   case 105:
-#line 1260 "spl.y" /* yacc.c:1646  */
+#line 1259 "spl.y" /* yacc.c:1646  */
     {}
-#line 3014 "rule.c" /* yacc.c:1646  */
+#line 3013 "rule.c" /* yacc.c:1646  */
     break;
 
   case 106:
-#line 1261 "spl.y" /* yacc.c:1646  */
+#line 1260 "spl.y" /* yacc.c:1646  */
     {}
-#line 3020 "rule.c" /* yacc.c:1646  */
+#line 3019 "rule.c" /* yacc.c:1646  */
     break;
 
   case 107:
-#line 1266 "spl.y" /* yacc.c:1646  */
+#line 1265 "spl.y" /* yacc.c:1646  */
     {
 	/* 初始化REPEAT标签节点 */
 	push_lbl_stack(repeat_label_count++);
@@ -3030,11 +3029,11 @@ yyreduce:
 	t = label_tree(new_label);
 	list_append(&ast_forest, t);
 }
-#line 3034 "rule.c" /* yacc.c:1646  */
+#line 3033 "rule.c" /* yacc.c:1646  */
     break;
 
   case 108:
-#line 1276 "spl.y" /* yacc.c:1646  */
+#line 1275 "spl.y" /* yacc.c:1646  */
     {
 	/* 初始化REPEAT条件跳转AST节点 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "repeat_%d", top_lbl_stack());
@@ -3044,11 +3043,11 @@ yyreduce:
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
 }
-#line 3048 "rule.c" /* yacc.c:1646  */
+#line 3047 "rule.c" /* yacc.c:1646  */
     break;
 
   case 109:
-#line 1289 "spl.y" /* yacc.c:1646  */
+#line 1288 "spl.y" /* yacc.c:1646  */
     {
   /* 初始化WHILE标签AST节点 */
 	push_lbl_stack(while_label_count++);
@@ -3058,11 +3057,11 @@ yyreduce:
 	t = label_tree(test_label);
 	list_append(&ast_forest, t);
 }
-#line 3062 "rule.c" /* yacc.c:1646  */
+#line 3061 "rule.c" /* yacc.c:1646  */
     break;
 
   case 110:
-#line 1299 "spl.y" /* yacc.c:1646  */
+#line 1298 "spl.y" /* yacc.c:1646  */
     {
 	/* 初始化WHILE条件跳转AST节点 */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_exit_%d", top_lbl_stack());
@@ -3071,11 +3070,11 @@ yyreduce:
 	t = cond_jump_tree((yyvsp[-1].p_tree), false, exit_label);
 	list_append(&ast_forest, t);
 }
-#line 3075 "rule.c" /* yacc.c:1646  */
+#line 3074 "rule.c" /* yacc.c:1646  */
     break;
 
   case 111:
-#line 1308 "spl.y" /* yacc.c:1646  */
+#line 1307 "spl.y" /* yacc.c:1646  */
     {
 	/* generate while_exit_%d label tree and push. */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_exit_%d", top_lbl_stack());
@@ -3097,11 +3096,11 @@ yyreduce:
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
 }
-#line 3101 "rule.c" /* yacc.c:1646  */
+#line 3100 "rule.c" /* yacc.c:1646  */
     break;
 
   case 112:
-#line 1333 "spl.y" /* yacc.c:1646  */
+#line 1332 "spl.y" /* yacc.c:1646  */
     {
 	p = find_symbol(top_symtab_stack(),(yyvsp[-2].p_char));
 	if(!p || p->defn != DEF_VAR)
@@ -3131,11 +3130,11 @@ yyreduce:
 	t = label_tree(test_label);
 	list_append(&ast_forest, t);
 }
-#line 3135 "rule.c" /* yacc.c:1646  */
+#line 3134 "rule.c" /* yacc.c:1646  */
     break;
 
   case 113:
-#line 1363 "spl.y" /* yacc.c:1646  */
+#line 1362 "spl.y" /* yacc.c:1646  */
     {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "for_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -3157,11 +3156,11 @@ yyreduce:
 	t = cond_jump_tree(t, false, exit_label);
 	list_append(&ast_forest, t);
 }
-#line 3161 "rule.c" /* yacc.c:1646  */
+#line 3160 "rule.c" /* yacc.c:1646  */
     break;
 
   case 114:
-#line 1385 "spl.y" /* yacc.c:1646  */
+#line 1384 "spl.y" /* yacc.c:1646  */
     {
 	t = pop_ast_stack();
 
@@ -3191,27 +3190,27 @@ yyreduce:
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
 }
-#line 3195 "rule.c" /* yacc.c:1646  */
+#line 3194 "rule.c" /* yacc.c:1646  */
     break;
 
   case 115:
-#line 1418 "spl.y" /* yacc.c:1646  */
+#line 1417 "spl.y" /* yacc.c:1646  */
     {
 	(yyval.num) = kTO;
 }
-#line 3203 "rule.c" /* yacc.c:1646  */
+#line 3202 "rule.c" /* yacc.c:1646  */
     break;
 
   case 116:
-#line 1422 "spl.y" /* yacc.c:1646  */
+#line 1421 "spl.y" /* yacc.c:1646  */
     {
 	(yyval.num) = kDOWNTO;
 }
-#line 3211 "rule.c" /* yacc.c:1646  */
+#line 3210 "rule.c" /* yacc.c:1646  */
     break;
 
   case 117:
-#line 1429 "spl.y" /* yacc.c:1646  */
+#line 1428 "spl.y" /* yacc.c:1646  */
     {
 	push_lbl_stack(switch_label_count++);
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_test_%d", switch_label_count - 1);
@@ -3227,11 +3226,11 @@ yyreduce:
 	push_case_stack(case_label_count++);
 	/* list_clear(&case_list); */
 }
-#line 3231 "rule.c" /* yacc.c:1646  */
+#line 3230 "rule.c" /* yacc.c:1646  */
     break;
 
   case 118:
-#line 1445 "spl.y" /* yacc.c:1646  */
+#line 1444 "spl.y" /* yacc.c:1646  */
     {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_test_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -3263,11 +3262,11 @@ yyreduce:
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
 }
-#line 3267 "rule.c" /* yacc.c:1646  */
+#line 3266 "rule.c" /* yacc.c:1646  */
     break;
 
   case 122:
-#line 1486 "spl.y" /* yacc.c:1646  */
+#line 1485 "spl.y" /* yacc.c:1646  */
     {
 	case_label_count = pop_case_stack();
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "case_%d_%d", top_lbl_stack(), case_label_count++);
@@ -3285,11 +3284,11 @@ yyreduce:
 	t = const_tree((yyvsp[0].p_symbol));
 	list_append(case_list, t);
 }
-#line 3289 "rule.c" /* yacc.c:1646  */
+#line 3288 "rule.c" /* yacc.c:1646  */
     break;
 
   case 123:
-#line 1504 "spl.y" /* yacc.c:1646  */
+#line 1503 "spl.y" /* yacc.c:1646  */
     {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -3298,11 +3297,11 @@ yyreduce:
 	t = jump_tree(exit_label);
 	list_append(&ast_forest, t);
 }
-#line 3302 "rule.c" /* yacc.c:1646  */
+#line 3301 "rule.c" /* yacc.c:1646  */
     break;
 
   case 125:
-#line 1514 "spl.y" /* yacc.c:1646  */
+#line 1513 "spl.y" /* yacc.c:1646  */
     {
 	p = find_symbol(
 		top_symtab_stack(),(yyvsp[0].p_char));
@@ -3331,11 +3330,11 @@ yyreduce:
 	t = id_factor_tree(NULL, p);
 	list_append(case_list, t);
 }
-#line 3335 "rule.c" /* yacc.c:1646  */
+#line 3334 "rule.c" /* yacc.c:1646  */
     break;
 
   case 126:
-#line 1543 "spl.y" /* yacc.c:1646  */
+#line 1542 "spl.y" /* yacc.c:1646  */
     {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -3343,161 +3342,161 @@ yyreduce:
 	t = jump_tree(exit_label);
 	list_append(&ast_forest, t);
 }
-#line 3347 "rule.c" /* yacc.c:1646  */
+#line 3346 "rule.c" /* yacc.c:1646  */
     break;
 
   case 129:
-#line 1559 "spl.y" /* yacc.c:1646  */
+#line 1558 "spl.y" /* yacc.c:1646  */
     {
 	/* 比较运算AST树（>=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
 	(yyval.p_tree) = compare_expr_tree(GE, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3356 "rule.c" /* yacc.c:1646  */
+#line 3355 "rule.c" /* yacc.c:1646  */
     break;
 
   case 130:
-#line 1564 "spl.y" /* yacc.c:1646  */
+#line 1563 "spl.y" /* yacc.c:1646  */
     {
 	/* 比较运算AST树（>），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
 	(yyval.p_tree) = compare_expr_tree(GT, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3365 "rule.c" /* yacc.c:1646  */
+#line 3364 "rule.c" /* yacc.c:1646  */
     break;
 
   case 131:
-#line 1569 "spl.y" /* yacc.c:1646  */
+#line 1568 "spl.y" /* yacc.c:1646  */
     {
 	/* 比较运算AST树（<=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
 	(yyval.p_tree) = compare_expr_tree(LE, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3374 "rule.c" /* yacc.c:1646  */
+#line 3373 "rule.c" /* yacc.c:1646  */
     break;
 
   case 132:
-#line 1574 "spl.y" /* yacc.c:1646  */
+#line 1573 "spl.y" /* yacc.c:1646  */
     {
 	/* 比较运算AST树（<），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
 	(yyval.p_tree) = compare_expr_tree(LT, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3383 "rule.c" /* yacc.c:1646  */
+#line 3382 "rule.c" /* yacc.c:1646  */
     break;
 
   case 133:
-#line 1579 "spl.y" /* yacc.c:1646  */
+#line 1578 "spl.y" /* yacc.c:1646  */
     {
 	/* 比较运算AST树（=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
 	(yyval.p_tree) = compare_expr_tree(EQ, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3392 "rule.c" /* yacc.c:1646  */
+#line 3391 "rule.c" /* yacc.c:1646  */
     break;
 
   case 134:
-#line 1584 "spl.y" /* yacc.c:1646  */
+#line 1583 "spl.y" /* yacc.c:1646  */
     {
 	/* 比较运算AST树（<>，表示不想等），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
 	(yyval.p_tree) = compare_expr_tree(NE, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3401 "rule.c" /* yacc.c:1646  */
+#line 3400 "rule.c" /* yacc.c:1646  */
     break;
 
   case 135:
-#line 1589 "spl.y" /* yacc.c:1646  */
+#line 1588 "spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_tree) = (yyvsp[0].p_tree);
 }
-#line 3409 "rule.c" /* yacc.c:1646  */
+#line 3408 "rule.c" /* yacc.c:1646  */
     break;
 
   case 136:
-#line 1596 "spl.y" /* yacc.c:1646  */
+#line 1595 "spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（+），由于优先级问题，放在expr表达式中（expr表达式中的运算优先级比term中的要低），仅支持左结合 */
 	(yyval.p_tree) = binary_expr_tree(ADD, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3418 "rule.c" /* yacc.c:1646  */
+#line 3417 "rule.c" /* yacc.c:1646  */
     break;
 
   case 137:
-#line 1601 "spl.y" /* yacc.c:1646  */
+#line 1600 "spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（-），由于优先级问题，放在expr表达式中（expr表达式中的运算优先级比term中的要低），仅支持左结合 */
 	(yyval.p_tree) = binary_expr_tree(SUB, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3427 "rule.c" /* yacc.c:1646  */
+#line 3426 "rule.c" /* yacc.c:1646  */
     break;
 
   case 138:
-#line 1606 "spl.y" /* yacc.c:1646  */
+#line 1605 "spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（or），由于优先级问题，放在expr表达式中（expr表达式中的运算优先级比term中的要低），仅支持左结合  */
 	(yyval.p_tree) = binary_expr_tree(OR, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3436 "rule.c" /* yacc.c:1646  */
+#line 3435 "rule.c" /* yacc.c:1646  */
     break;
 
   case 139:
-#line 1611 "spl.y" /* yacc.c:1646  */
+#line 1610 "spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_tree) = (yyvsp[0].p_tree);
 }
-#line 3444 "rule.c" /* yacc.c:1646  */
+#line 3443 "rule.c" /* yacc.c:1646  */
     break;
 
   case 140:
-#line 1618 "spl.y" /* yacc.c:1646  */
+#line 1617 "spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（*），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
 	(yyval.p_tree) = binary_expr_tree(MUL, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3453 "rule.c" /* yacc.c:1646  */
+#line 3452 "rule.c" /* yacc.c:1646  */
     break;
 
   case 141:
-#line 1623 "spl.y" /* yacc.c:1646  */
+#line 1622 "spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（/），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
 	(yyval.p_tree) = binary_expr_tree(DIV, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3462 "rule.c" /* yacc.c:1646  */
+#line 3461 "rule.c" /* yacc.c:1646  */
     break;
 
   case 142:
-#line 1628 "spl.y" /* yacc.c:1646  */
+#line 1627 "spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（div），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
 	(yyval.p_tree) = binary_expr_tree(DIV, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3471 "rule.c" /* yacc.c:1646  */
+#line 3470 "rule.c" /* yacc.c:1646  */
     break;
 
   case 143:
-#line 1633 "spl.y" /* yacc.c:1646  */
+#line 1632 "spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（mod），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
 	(yyval.p_tree) = binary_expr_tree(MOD, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3480 "rule.c" /* yacc.c:1646  */
+#line 3479 "rule.c" /* yacc.c:1646  */
     break;
 
   case 144:
-#line 1638 "spl.y" /* yacc.c:1646  */
+#line 1637 "spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（and），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
 	(yyval.p_tree) = binary_expr_tree(AND, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3489 "rule.c" /* yacc.c:1646  */
+#line 3488 "rule.c" /* yacc.c:1646  */
     break;
 
   case 145:
-#line 1643 "spl.y" /* yacc.c:1646  */
+#line 1642 "spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_tree) = (yyvsp[0].p_tree);
 }
-#line 3497 "rule.c" /* yacc.c:1646  */
+#line 3496 "rule.c" /* yacc.c:1646  */
     break;
 
   case 146:
-#line 1650 "spl.y" /* yacc.c:1646  */
+#line 1649 "spl.y" /* yacc.c:1646  */
     {
 	/* 因素，表达式的基本组成部分之一（因素和操作符） */
 	p = NULL;
@@ -3530,11 +3529,11 @@ yyreduce:
 		(yyval.p_tree) = call_tree(ptab, NULL);
 	}
 }
-#line 3534 "rule.c" /* yacc.c:1646  */
+#line 3533 "rule.c" /* yacc.c:1646  */
     break;
 
   case 147:
-#line 1683 "spl.y" /* yacc.c:1646  */
+#line 1682 "spl.y" /* yacc.c:1646  */
     {
 	/* 寻找自定义函数或者过程 */
 	if((ptab = find_routine((yyvsp[0].p_char))))
@@ -3545,11 +3544,11 @@ yyreduce:
 		return  0;
 	}
 }
-#line 3549 "rule.c" /* yacc.c:1646  */
+#line 3548 "rule.c" /* yacc.c:1646  */
     break;
 
   case 148:
-#line 1694 "spl.y" /* yacc.c:1646  */
+#line 1693 "spl.y" /* yacc.c:1646  */
     {
 	/* 自定义函数或者过程调用（有参调用） */
 	(yyval.p_tree) = call_tree(ptab, args);
@@ -3557,31 +3556,31 @@ yyreduce:
 	/* 函数调用结束，当前上下文退栈 */
 	pop_call_stack();
 }
-#line 3561 "rule.c" /* yacc.c:1646  */
+#line 3560 "rule.c" /* yacc.c:1646  */
     break;
 
   case 149:
-#line 1702 "spl.y" /* yacc.c:1646  */
+#line 1701 "spl.y" /* yacc.c:1646  */
     {
 	ptab = find_sys_routine((yyvsp[0].p_lex)->attr);
 
 	/* 系统函数或者过程调用（无参调用） */
 	(yyval.p_tree) = sys_tree((yyvsp[0].p_lex)->attr, NULL);
 }
-#line 3572 "rule.c" /* yacc.c:1646  */
+#line 3571 "rule.c" /* yacc.c:1646  */
     break;
 
   case 150:
-#line 1709 "spl.y" /* yacc.c:1646  */
+#line 1708 "spl.y" /* yacc.c:1646  */
     {
 	ptab = find_sys_routine((yyvsp[0].p_lex)->attr);
 	push_call_stack(ptab);
 }
-#line 3581 "rule.c" /* yacc.c:1646  */
+#line 3580 "rule.c" /* yacc.c:1646  */
     break;
 
   case 151:
-#line 1714 "spl.y" /* yacc.c:1646  */
+#line 1713 "spl.y" /* yacc.c:1646  */
     {
 	/* 获取当前需要调用的函数或者过程对应的符号表 */
 	ptab = top_call_stack();
@@ -3589,11 +3588,11 @@ yyreduce:
 	/* 系统函数或者过程调用（有参调用） */
 	(yyval.p_tree) = sys_tree((yyvsp[-4].p_lex)->attr, args);
 }
-#line 3593 "rule.c" /* yacc.c:1646  */
+#line 3592 "rule.c" /* yacc.c:1646  */
     break;
 
   case 152:
-#line 1722 "spl.y" /* yacc.c:1646  */
+#line 1721 "spl.y" /* yacc.c:1646  */
     {
 	/* 常量（term中const_value由于只在表达式中使用一次，不需要对name字段进行命名），比如表达式 1+2+3 中的 1 */
 	switch((yyvsp[0].p_symbol)->type->type_id){
@@ -3622,38 +3621,38 @@ yyreduce:
 	/* 常量AST树 */
 	(yyval.p_tree) = const_tree((yyvsp[0].p_symbol));
 }
-#line 3626 "rule.c" /* yacc.c:1646  */
+#line 3625 "rule.c" /* yacc.c:1646  */
     break;
 
   case 153:
-#line 1751 "spl.y" /* yacc.c:1646  */
+#line 1750 "spl.y" /* yacc.c:1646  */
     {
  	/* AST树（提高expression的优先级） */
 	(yyval.p_tree) = (yyvsp[-1].p_tree);
 }
-#line 3635 "rule.c" /* yacc.c:1646  */
+#line 3634 "rule.c" /* yacc.c:1646  */
     break;
 
   case 154:
-#line 1756 "spl.y" /* yacc.c:1646  */
+#line 1755 "spl.y" /* yacc.c:1646  */
     {
 	/* 一元操作符（not） */
 	(yyval.p_tree) = not_tree((yyvsp[0].p_tree));
 }
-#line 3644 "rule.c" /* yacc.c:1646  */
+#line 3643 "rule.c" /* yacc.c:1646  */
     break;
 
   case 155:
-#line 1761 "spl.y" /* yacc.c:1646  */
+#line 1760 "spl.y" /* yacc.c:1646  */
     {
 	/* 一元操作符（-） */
 	(yyval.p_tree) = neg_tree((yyvsp[0].p_tree));
 }
-#line 3653 "rule.c" /* yacc.c:1646  */
+#line 3652 "rule.c" /* yacc.c:1646  */
     break;
 
   case 156:
-#line 1766 "spl.y" /* yacc.c:1646  */
+#line 1765 "spl.y" /* yacc.c:1646  */
     {
 	/* 寻找对应的符号 */
 	p = find_symbol(
@@ -3668,11 +3667,11 @@ yyreduce:
 	/* 数组符号入栈（保存上下文） */
 	push_term_stack(p);
 }
-#line 3672 "rule.c" /* yacc.c:1646  */
+#line 3671 "rule.c" /* yacc.c:1646  */
     break;
 
   case 157:
-#line 1781 "spl.y" /* yacc.c:1646  */
+#line 1780 "spl.y" /* yacc.c:1646  */
     {
 	/* 数组符号出栈（获取上下文） */
 	p = pop_term_stack(p);
@@ -3681,11 +3680,11 @@ yyreduce:
 	/* 数组取值AST树 */
 	(yyval.p_tree) = id_factor_tree(t, p);
 }
-#line 3685 "rule.c" /* yacc.c:1646  */
+#line 3684 "rule.c" /* yacc.c:1646  */
     break;
 
   case 158:
-#line 1790 "spl.y" /* yacc.c:1646  */
+#line 1789 "spl.y" /* yacc.c:1646  */
     {
 	/* 寻找对应的符号 */
 	p = find_symbol(top_symtab_stack(), (yyvsp[-2].p_char));
@@ -3710,11 +3709,11 @@ yyreduce:
 	/* field取值AST树 */
 	(yyval.p_tree) = id_factor_tree(t, q);
 }
-#line 3714 "rule.c" /* yacc.c:1646  */
+#line 3713 "rule.c" /* yacc.c:1646  */
     break;
 
   case 159:
-#line 1818 "spl.y" /* yacc.c:1646  */
+#line 1817 "spl.y" /* yacc.c:1646  */
     {
 	/* 获取函数或者过程调用上下文 */
 	rtn = top_call_stack();
@@ -3728,11 +3727,11 @@ yyreduce:
 	/* 将参数放入参数AST树中 */
 	args = arg_tree(args, rtn, arg, (yyvsp[0].p_tree)); 
 }
-#line 3732 "rule.c" /* yacc.c:1646  */
+#line 3731 "rule.c" /* yacc.c:1646  */
     break;
 
   case 160:
-#line 1832 "spl.y" /* yacc.c:1646  */
+#line 1831 "spl.y" /* yacc.c:1646  */
     {
 	args = NULL;
 
@@ -3751,11 +3750,11 @@ yyreduce:
 	/* 初始化参数AST树 */
 	args = arg_tree(args, rtn, arg, (yyvsp[0].p_tree));
 }
-#line 3755 "rule.c" /* yacc.c:1646  */
+#line 3754 "rule.c" /* yacc.c:1646  */
     break;
 
 
-#line 3759 "rule.c" /* yacc.c:1646  */
+#line 3758 "rule.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3983,7 +3982,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1852 "spl.y" /* yacc.c:1906  */
+#line 1851 "spl.y" /* yacc.c:1906  */
 
 
 #define MAX_TERM  64

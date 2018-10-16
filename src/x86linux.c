@@ -3,14 +3,31 @@
 #include  "common.h"
 #include  "symtab.h"
 #include  "error.h"
-#include  "x86.h"
 #include  _YTAB_H_
-#define  MAX_CALL_LEVEL 16
+
+#define MAX_CALL_LEVEL 16
+
+#define LABEL_SLINK     "static_link"
+#define LABEL_RETVAL    "retval_addr"
+#define LABEL_HIRETVAL  "retval_addr_hi"
+
+#define STACK_SEG       512
 
 static symtab *rtn =NULL;
 static symbol *arg = NULL;
 static Symbol	p;
 static Symtab	ptab;
+
+static symbol *call_sym[MAX_CALL_LEVEL];
+static symtab *call_stk[MAX_CALL_LEVEL];
+
+static int call_tos = MAX_CALL_LEVEL - 1;
+
+symtab *top_call_stack();
+symtab *pop_call_stack();
+symbol *top_call_symbol();
+void set_call_stack_top(symbol *p);
+void push_call_stack(symtab *p);
 
 static void emit_linux_write1(int arg_type);
 static void emit_linux_sqrt(int arg_type);
@@ -57,6 +74,41 @@ extern char datname[FILE_NAME_LEN];
 #undef LABEL_SLINK
 #define LABEL_SLINK	"8(%ebp)"
 #endif
+
+symtab *top_call_stack( )
+{
+    return call_stk[call_tos + 1];
+}
+
+symtab *pop_call_stack()
+{
+    call_tos++;
+    if (call_tos == MAX_CALL_LEVEL)
+        internal_error("call stack underflow.");
+    rtn = call_stk[call_tos];
+    arg = call_sym[call_tos];
+    return call_stk[call_tos];
+}
+
+symbol *top_call_symbol( )
+{
+    return call_sym[call_tos + 1];
+}
+
+void set_call_stack_top(symbol *p)
+{
+    call_sym[call_tos + 1] = p;
+}
+
+void push_call_stack(symtab *p)
+{
+    call_stk[call_tos] = p;
+    call_sym[call_tos] = p->args;
+    rtn = p;
+    call_tos--;
+    if (call_tos == -1)
+        internal_error("call stack overflow.");
+}
 
 static void do_linux_sys_routine(int routine_id, int arg_type)
 {

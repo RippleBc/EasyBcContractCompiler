@@ -140,7 +140,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 82 "spl.y" /* yacc.c:1909  */
+#line 81 "spl.y" /* yacc.c:1909  */
 
 	char 		p_char[NAME_LEN];
 	int 		num;

@@ -8,7 +8,6 @@
 #include "symtab.h"
 #include "error.h"
 #include "tree.h"
-#include "x86.h"
 
 extern char *yytext; /* flex用于记录匹配到的字符串 */
 symtab *ptab; /* 符号表表头 */

@@ -13,7 +13,6 @@ CVS=cvs
 COMPILER_HEADER=common.h \
 				config.h \
 				symtab.h \
-				x86.h \
 				tree.h \
 				dag.h \
 				config.h
@@ -27,8 +26,6 @@ COMPILER_SOURCE= common.h \
 				symtab.c \
 				symtab.h \
 				type.c \
-				x86.c \
-				x86.h \
 				rule.c \
 				lex.yy.c \
 				alloc.c \
@@ -52,7 +49,6 @@ COMPILER_OBJS=error.o \
 			  list.o \
 			  dag.o \
 			  ops.o \
-			  x86.o \
 			  x86linux.o \
 			  opti.o
 
