@@ -187,7 +187,7 @@ void trap_in_debug();
 %type  <p_type>array_type_decl record_type_decl
 %type  <p_symbol>field_decl field_decl_list
 
-%type  <p_tree>call_stmt assign_stmt
+%type  <p_tree>routine_stmt assign_stmt
 %type  <p_tree>expression
 %type  <p_tree>factor term expr
 
@@ -916,7 +916,7 @@ stmt_list
 stmt
 :%empty {}
 |assign_stmt {}
-|call_stmt {}
+|routine_stmt {}
 |compound_stmt {}
 |if_stmt {}
 |repeat_stmt {}
@@ -1041,7 +1041,7 @@ oASSIGN expression
 }
 ;
 
-call_stmt
+routine_stmt
 :yNAME
 {
 	/* 对应符号 */
@@ -1066,27 +1066,65 @@ call_stmt
 }
 |yNAME
 {
-	/* 符号表 */
-	ptab = find_routine($1);
-	if(!ptab || ptab->defn != DEF_PROC){
-			parse_error("Undeclared procedure", $1);
-			return 0;
+	/* 对应符号 */
+	p = find_symbol(top_symtab_stack(), $1);
+	if(!p){
+		parse_error("Undeclared procedure or function", $1);
+		return 0;
 	}
 
-	/* 保存调用上下文 */
-	push_call_stack(ptab);
+	/* 类型检查 */
+	if(p->defn != DEF_FUNCT || p->defn != DEF_PROC)
+	{
+		parse_error("nonprocedure or nonfunction can not be called", $1);
+		return 0;
+	}
+
+	push_call_stack(p->tab);
 }
 oLP args_list oRP
 {
-	/* 初始化调用AST节点，其中args表示参数AST节点。 */
+	/* 函数或过程调用AST节点 */
 	$$ = call_tree(top_call_stack(), args);
+
+	/* 放入AST森林 */
 	list_append(&ast_forest, $$);
-  /* 清除调用上下文 */
+
 	pop_call_stack();
+}
+|SYS_FUNCT
+{
+	/* 系统函数或者系统过程调用AST节点 */
+	$$ = sys_tree($1->attr, NULL);
+
+	/* 放入AST森林 */
+	list_append(&ast_forest, $$);
 }
 |SYS_PROC
 {
 	$$ = sys_tree($1->attr, NULL);
+
+	list_append(&ast_forest, $$);
+}
+|SYS_FUNCT 
+{
+	/* 对应的系统函数或者系统过程的符号表 */
+	rtn = find_sys_routine($1->attr);
+
+	/* 参数符号链表 */
+	if(rtn)
+		arg = rtn->args;
+	else
+	{
+		arg = NULL;
+	}
+}
+oLP args_list oRP 
+{
+	/* 系统函数或者系统过程调用AST节点 */
+	$$ = sys_tree($1->attr, args);
+
+	/* 放入AST森林 */
 	list_append(&ast_forest, $$);
 }
 |SYS_PROC 
@@ -1099,19 +1137,15 @@ oLP args_list oRP
 	{
 		arg = NULL;
 	}
-
-	push_call_stack(rtn);
 }
 oLP args_list oRP 
 {
 	$$ = sys_tree($1->attr, args);
 	list_append(&ast_forest, $$);
-	
-	pop_call_stack();
 }
 |pREAD oLP factor oRP
 {
-	if(!$3){
+	if($3 == NULL){
 		parse_error("too few parameters in call to", "read");
 		return 0;
 	}
@@ -1676,7 +1710,7 @@ oLP args_list oRP
 {
 	ptab = find_sys_routine($1->attr);
 
-	/* 系统函数或者过程调用（无参调用） */
+	/* 系统函数或者过程调用AST节点 */
 	$$ = sys_tree($1->attr, NULL);
 }
 |SYS_FUNCT
