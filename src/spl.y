@@ -892,7 +892,7 @@ para_type_list
 val_para_list
 :name_list 
 { 
-	$$ = $1 
+	$$ = $1;
 }
 ;
 
