@@ -2,8 +2,8 @@
  * System independent configuration.
  */
 
-#ifndef __CONFIG_H_2007223627632636296362936424723070235_
-#define __CONFIG_H_2007223627632636296362936424723070235_
+#ifndef __CONFIG_H_
+#define __CONFIG_H_
 
 
 typedef struct

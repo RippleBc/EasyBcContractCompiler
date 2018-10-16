@@ -1,5 +1,5 @@
-#ifndef _TREE_H_TPC_
-#define _TREE_H_TPC_
+#ifndef _TREE_H_
+#define _TREE_H_
 
 #include <assert.h>
 #include <stdarg.h>

@@ -1,5 +1,5 @@
-#ifndef _SYMTAB_H
-#define _SYMTAB_H
+#ifndef _SYMTAB_H_
+#define _SYMTAB_H_
 
 /* 保存常量的值 */
 union _value_ {

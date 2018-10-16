@@ -1,5 +1,5 @@
-#ifndef _COMMON_H
-#define _COMMON_H
+#ifndef _COMMON_H_
+#define _COMMON_H_
 
 #include "config.h"
 #include <stdio.h>

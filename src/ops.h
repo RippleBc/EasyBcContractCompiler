@@ -1,5 +1,5 @@
-#ifndef _OPS_TPC_26609323423750235_H
-#define _OPS_TPC_26609323423750235_H
+#ifndef _OPS_TPC_H
+#define _OPS_TPC_H
 
 /* system routine and functions. */
 enum {
