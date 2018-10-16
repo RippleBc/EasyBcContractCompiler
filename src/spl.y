@@ -1563,13 +1563,8 @@ goto_stmt
 expression
 :expression oGE expr
 {
-#ifdef GENERATE_AST
 	/* 比较运算AST树（>=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
 	$$ = compare_expr_tree(GE, $1, $3);
-#else
-	do_expression($3, oGE);
-	$$ = TYPE_BOOLEAN;
-#endif
 }
 |expression oGT expr
 {
@@ -1679,7 +1674,6 @@ factor
 		 创建一个临时符号（目的是为了让解析程序可以继续往下执行） */
 		p = install_temporary_symbol($1, DEF_VAR, TYPE_INTEGER);
 	}
-#ifdef GENERATE_AST
 	if (p)
 	{
 		/* 普通符号 */
@@ -1690,17 +1684,6 @@ factor
 		/* 自定义函数或者过程调用（无参数调用） */
 		$$ = call_tree(ptab, NULL);
 	}
-#else
-	if(p)
-	{
-		$$ = p;
-		do_factor(p);
-	}
-	else 
-	{
-		$$ = do_function_call(ptab);
-	}
-#endif
 }
 |yNAME
 {
@@ -1715,25 +1698,18 @@ factor
 }
 oLP args_list oRP
 {
-#ifdef GENERATE_AST
 	/* 自定义函数或者过程调用（有参调用） */
 	$$ = call_tree(ptab, args);
-#else
-	$$ = do_function_call(top_call_stack());
-#endif
+
 	/* 函数调用结束，当前上下文退栈 */
 	pop_call_stack();
 }
 |SYS_FUNCT
 {
 	ptab = find_sys_routine($1->attr);
-#ifdef GENERATE_AST
+
 	/* 系统函数或者过程调用（无参调用） */
 	$$ = sys_tree($1->attr, NULL);
-#else
-	do_sys_routine(ptab->id, ptab->type->type_id);
-	$$ = ptab->locals;
-#endif
 }
 |SYS_FUNCT
 {
@@ -1744,15 +1720,9 @@ oLP args_list oRP
 {
 	/* 获取当前需要调用的函数或者过程对应的符号表 */
 	ptab = top_call_stack();
-#ifdef GENERATE_AST
+
 	/* 系统函数或者过程调用（有参调用） */
 	$$ = sys_tree($1->attr, args);
-#else
-	ptab = top_call_stack();
-	do_sys_routine(-ptab->id, ptab->type->type_id);
-	ptab = pop_call_stack();
-	$$ = ptab->locals;
-#endif
 }
 |const_value
 {
@@ -1779,42 +1749,24 @@ oLP args_list oRP
 		default:
 			break;
 	}
-#ifdef GENERATE_AST
+
 	/* 常量AST树 */
 	$$ = const_tree($1);
-#else
-	do_factor($1);
-#endif
 }
 |oLP expression oRP
 {
-#ifdef GENERATE_AST
  	/* AST树（提高expression的优先级） */
 	$$ = $2;
-#else
-	$$ = find_symbol(NULL, "");
-	$$->type = find_type_by_id($2);
-#endif
 }
 |kNOT factor
 {
-#ifdef GENERATE_AST
 	/* 一元操作符（not） */
 	$$ = not_tree($2);
-#else
-	do_not_factor($2);
-	$$ = $2;
-#endif
 }
 |oMINUS factor
 {
-#ifdef GENERATE_AST
 	/* 一元操作符（-） */
 	$$ = neg_tree($2);
-#else
-	do_negate($2);
-	$$ = $2;
-#endif
 }
 |yNAME oLB
 {
@@ -1830,28 +1782,15 @@ oLP args_list oRP
 
 	/* 数组符号入栈（保存上下文） */
 	push_term_stack(p);
-
-#ifdef GENERATE_AST
-#else
-	emit_load_address(p);
-  	emit_push_op(TYPE_INTEGER);
-#endif
 }
 expression oRB
 {
-#ifdef GENERATE_AST
 	/* 数组符号出栈（获取上下文） */
 	p = pop_term_stack(p);
 	/* 数组AST树 */
 	t = array_factor_tree(p, $4);
 	/* 数组取值AST树 */
 	$$ = id_factor_tree(t, p);
-#else
-	p = pop_term_stack(p);
-	do_array_factor(p);
-	emit_load_value(p);
-	$$ = p->type_link->last;
-#endif
 }
 |yNAME oDOT yNAME
 {
@@ -1872,27 +1811,17 @@ expression oRB
 		parse_error("Undeclared field ",$3);
 		return 0;
 	}
-	
-#ifdef GENERATE_AST
 
 	/* field的AST树 */
 	t = field_tree(p, q);
 	/* field取值AST树 */
 	$$ = id_factor_tree(t, q);
-#else
-	emit_load_address(p);
-	emit_push_op(TYPE_INTEGER);
-	do_record_factor(p,q);
-	emit_load_field(q);
-	$$ = q;
-#endif
 }
 ;
 
 args_list
 :args_list  oCOMMA  expression 
 {
-#ifdef GENERATE_AST
 	/* 获取函数或者过程调用上下文 */
 	rtn = top_call_stack();
 
@@ -1904,14 +1833,9 @@ args_list
 
 	/* 将参数放入参数AST树中 */
 	args = arg_tree(args, rtn, arg, $3); 
-#else
-	do_args($3);
-#endif
 }
 |expression 
 {
-#ifdef GENERATE_AST
-
 	args = NULL;
 
 	/* 获取上下文环境（函数或者过程对应的符号表） */
@@ -1928,10 +1852,6 @@ args_list
 
 	/* 初始化参数AST树 */
 	args = arg_tree(args, rtn, arg, $1);
-	
-#else
-	do_first_arg($1);
-#endif
 }
 ;
 
@@ -1973,7 +1893,6 @@ symbol* top_term_stack()
 /* 初始化语法解析器 */
 int parser_init()
 {
-#ifdef GENERATE_AST
 	memset(&ast_forest, 0, sizeof(ast_forest));
 	memset(&para_list, 0, sizeof(para_list));
 	memset(&case_list, 0, sizeof(case_list));
@@ -1981,11 +1900,9 @@ int parser_init()
 		do_label_count = while_label_count = 
 			case_label_count = switch_label_count = 
 				for_label_count = 0;
-#endif
 	return 0;
 }
 
-#ifdef GENERATE_AST
 Tree ast_stk[MAX_TERM];
 int ast_stk_tos = MAX_TERM - 1;
 
@@ -2113,7 +2030,6 @@ List top_case_ast_stack()
 	else
 		return case_ast_stk[case_ast_stk_tos + 1];
 }
-#endif
 
 /* add a temporary symbol when encounted a not defined symbol */
 Symbol install_temporary_symbol(char *name, int deftype, int typeid)
