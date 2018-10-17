@@ -728,6 +728,9 @@ function_head
 
 	/* 创建符号表 */
 	ptab = new_symtab(top_symtab_stack());
+
+	add_routine_to_table(top_symtab_stack(), ptab);
+
 	/* 符号表压栈 */
 	push_symtab_stack(ptab);
 }
@@ -797,6 +800,9 @@ procedure_head
 	list_clear(&para_list);
 
 	ptab = new_symtab(top_symtab_stack());
+
+	add_routine_to_table(top_symtab_stack(), ptab);
+
 	push_symtab_stack(ptab);
 }
 yNAME parameters

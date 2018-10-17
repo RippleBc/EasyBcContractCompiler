@@ -38,12 +38,6 @@ int align(int bytes)
     return bytes;
 }
 
-void enter_symtab_queue(symtab *tab)
-{
-    if (last_symtab < SYMTAB_QUEUE_SIZE)
-        symtab_queue[last_symtab ++] = tab;
-}
-
 symtab *new_symtab(symtab *parent)
 {
     symtab *p;
@@ -76,7 +70,6 @@ symtab *new_symtab(symtab *parent)
     p->id = routine_id++; /* 过程或者函数的序号 */
     p->local_size = 0; /* 局部变量的总字节数 */
     p->last_symtab = 0; /* todo */
-    enter_symtab_queue(p); /* 将新创建的符号表放入队列 */
     return p;
 }
 
@@ -179,6 +172,14 @@ symbol *reverse_parameters(symtab *ptab)
 
     ptab->args = new_list;
     return ptab->args;
+}
+
+void add_routine_to_table(symtab *tab, symtab *routine)
+{
+    if (tab->last_symtab < SYMTAB_QUEUE_SIZE)
+    {
+        tab->routine_queue[tab->last_symtab ++] = routine;
+    }
 }
 
 void add_symbol_to_table(symtab *tab, symbol *sym)
@@ -519,22 +520,25 @@ symtab *top_symtab_stack()
 /* 寻找自定义函数或者过程 */
 symtab *find_routine(symtab *tab, char *name)
 {
-    if(tab == NULL) 
-    {
-        printf("\naaaaaaaaaaaaaaaaaaaa%s\n", name);
-    }
-    else
-    {
-        printf("\n*********************%s\n", tab->name);
-    }
     int i;
-    symtab *ptab;
-    for(i = 0; i < last_symtab; i++)
+    symtab *ptab = tab, *routine;
+    while(ptab)
     {
-        ptab = symtab_queue[i];
-        if(!strcmp(ptab->name, name))
+        if(!strcmp(ptab->name, name)) 
+        {
             return ptab;
+        }
+        for(i = 0; i < ptab->last_symtab; i++)
+        {
+            routine = ptab->routine_queue[i];
+            if(!strcmp(routine->name, name))
+            {
+                return routine;
+            }
+        }
+        ptab = ptab->parent;
     }
+    
     return NULL;
 }
 

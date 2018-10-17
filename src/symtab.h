@@ -137,6 +137,7 @@ symbol *clone_symbol(symbol *);
 symbol *clone_symbol_list(symbol *);
 
 void push_symtab_stack(symtab *);
+void add_routine_to_table(symtab *, symtab *);
 void add_symbol_to_table(symtab *, symbol *);
 void add_local_to_table(symtab *, symbol *);
 void add_args_to_table(symtab *, symbol *);
