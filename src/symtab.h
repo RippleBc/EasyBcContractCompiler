@@ -1,6 +1,8 @@
 #ifndef _SYMTAB_H_
 #define _SYMTAB_H_
 
+#define  SYMTAB_QUEUE_SIZE 128 /* 符号表队列长度 */
+
 /* 保存常量的值 */
 union _value_ {
     char c;
@@ -97,6 +99,10 @@ struct _symbol_head_
     symbol *locals;
     /* 类型链接 */
     type *type_link;
+    /* todo */
+    int last_symtab;
+    /* todo */
+    struct _symbol_head_ *routine_queue[SYMTAB_QUEUE_SIZE];
     /* 链接上一层符号表，即父辈函数过程的定义 */
     struct _symbol_head_ *parent;
 };
