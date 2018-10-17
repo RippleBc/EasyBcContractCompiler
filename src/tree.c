@@ -82,6 +82,7 @@ Tree address_tree(Tree source, Symbol sym)
     
     /* 变量对应的符号 */
     t->u.generic.sym = sym;
+    
     return t;
 }
 
@@ -258,6 +259,7 @@ Tree assign_tree(Tree id, Tree expr)
 
     /* id表示一棵地址树，expr表示赋值内容 */
     t = new_tree(ASGN, id->result_type, id, expr);
+
     return t;
 }
 

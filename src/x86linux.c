@@ -1688,7 +1688,7 @@ static int gen_linux_code(Node rootnode)
 
             if (p->defn == DEF_FUNCT)
             {
-                ptab = find_routine(p->name);
+                ptab = find_routine(p->tab, p->name);
 
                 if(ptab)
                     do_linux_function_assign(ptab, rootnode->kids[0]->type->type_id);

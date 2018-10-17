@@ -124,7 +124,7 @@ symtab *System_symtab[MAX_SYS_ROUTINE];
 symtab *new_symtab(symtab *);
 symtab *make_system_table();
 symtab *new_sys_symbol(KEYENTRY);
-symtab *find_routine(char *);
+symtab *find_routine(symtab *, char *);
 symtab *find_sys_routine(int);
 symtab *pop_symtab_stack();
 symtab *top_symtab_stack();

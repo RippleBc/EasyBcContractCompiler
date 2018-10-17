@@ -268,7 +268,7 @@ sub_program
 	(*(IR->main_begin))(&main_env);
 	list_clear(&ast_forest);
 	list_clear(&para_list);
-	
+	/* 将全局符号表压入符号表栈中 */
 	push_symtab_stack(Global_symtab);
 }
 routine_body {}
@@ -481,7 +481,6 @@ field_decl
 {
 	/* 遍历名称符号表 */
 	for(p = $1; p; p = p->next) {
-
 		/* 定义符号小类 */
 		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
 			/* 变量（子范围或枚举类型）的类型由其类型的成员（子范围或枚举类型中的成员）的类型定义 */
@@ -1022,8 +1021,10 @@ oASSIGN expression
 		return 0;
 	}
 
+
 	/* 属性AST节点 */
 	t = field_tree(p, q);
+
 	/* 地址AST节点 */
 	t = address_tree(t, q);
 
@@ -1705,7 +1706,7 @@ factor
 |yNAME
 {
 	/* 寻找自定义函数或者过程 */
-	if((ptab = find_routine($1)))
+	if((ptab = find_routine(top_symtab_stack(), $1)))
   		push_call_stack(ptab);
 	else
 	{
@@ -1716,7 +1717,7 @@ factor
 oLP args_list oRP
 {
 	/* 自定义函数或者过程调用（有参调用） */
-	$$ = call_tree(ptab, args);
+	$$ = call_tree(top_call_stack(), args);
 
 	/* 函数调用结束，当前上下文退栈 */
 	pop_call_stack();

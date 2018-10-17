@@ -320,10 +320,10 @@ void add_type_to_table(symtab *ptab, type *pt)
     ptab->type_link = pt;
 
     /* ENUM类型或者RECORD类型，将里面的自定义类型项添加到局部变量二叉树表中 */
-    if (pt->type_id == TYPE_ENUM
-            || pt->type_id == TYPE_RECORD)
-        for(p = pt->first; p; p = p->next)
-            add_var_to_localtab(ptab, p);
+    // if (pt->type_id == TYPE_ENUM
+    //         || pt->type_id == TYPE_RECORD)
+    //     for(p = pt->first; p; p = p->next)
+    //         add_var_to_localtab(ptab, p);
 }
 
 type *find_type_by_name(char *name)

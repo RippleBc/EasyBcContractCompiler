@@ -517,8 +517,16 @@ symtab *top_symtab_stack()
 }
 
 /* 寻找自定义函数或者过程 */
-symtab *find_routine(char *name)
+symtab *find_routine(symtab *tab, char *name)
 {
+    if(tab == NULL) 
+    {
+        printf("\naaaaaaaaaaaaaaaaaaaa%s\n", name);
+    }
+    else
+    {
+        printf("\n*********************%s\n", tab->name);
+    }
     int i;
     symtab *ptab;
     for(i = 0; i < last_symtab; i++)
