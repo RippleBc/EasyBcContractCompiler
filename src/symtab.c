@@ -8,8 +8,6 @@
 #include  "symtab.h"
 
 #include  _YTAB_H_
-#define  SYMTAB_QUEUE_SIZE 128 /* 符号表队列长度 */
-#define  SYMTAB_STACK_SIZE 64 /* 符号表栈深度 */
 
 int const_index;
 int var_index;
@@ -18,12 +16,11 @@ int arg_index;
 int cur_level;
 int routine_id;
 int align(int);
+
+
+#define  SYMTAB_STACK_SIZE 64 /* 符号表栈深度 */
 int symtab_tos = SYMTAB_STACK_SIZE - 1;
-
-int last_symtab = 0;
-symtab *symtab_queue[SYMTAB_QUEUE_SIZE]; /* 存放已经处理完毕的symtab */
-
-symtab *symtab_stack[SYMTAB_STACK_SIZE]; /* 存放还未处理的symtab，处理完毕之后，放入symtab_queue中 */
+symtab *symtab_stack[SYMTAB_STACK_SIZE]; /*  */
 
 symtab *Global_symtab; /* 全局符号表 */
 symtab *System_symtab[MAX_SYS_ROUTINE]; /* 系统符号表 */

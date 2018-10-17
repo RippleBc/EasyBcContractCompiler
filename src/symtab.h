@@ -99,9 +99,9 @@ struct _symbol_head_
     symbol *locals;
     /* 类型链接 */
     type *type_link;
-    /* todo */
+    /* 函数或者过程的数量 */
     int last_symtab;
-    /* todo */
+    /* 函数或者过程 */
     struct _symbol_head_ *routine_queue[SYMTAB_QUEUE_SIZE];
     /* 链接上一层符号表，即父辈函数过程的定义 */
     struct _symbol_head_ *parent;
