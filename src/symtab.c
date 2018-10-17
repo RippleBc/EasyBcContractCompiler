@@ -153,7 +153,7 @@ symbol *clone_symbol_list(symbol *head)
     return new_list;
 }
 
-/* 参数链表反转（采用跟随法，无需重新分配内存） */
+/* 参数链表反转 */
 symbol *reverse_parameters(symtab *ptab)
 {
     symbol *p,*q;

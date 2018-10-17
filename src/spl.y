@@ -729,6 +729,7 @@ function_head
 	/* 创建符号表 */
 	ptab = new_symtab(top_symtab_stack());
 
+	/* 记录自定义函数 */
 	add_routine_to_table(top_symtab_stack(), ptab);
 
 	/* 符号表压栈 */
@@ -986,7 +987,6 @@ assign_stmt
 		return 0;
 	}
 	
-	/* 将当前符号压栈 */
 	push_term_stack(p);
 }
 expression oRB
@@ -1722,10 +1722,9 @@ factor
 }
 oLP args_list oRP
 {
-	/* 自定义函数或者过程调用（有参调用） */
+	/* 自定义函数或者过程调用AST节点 */
 	$$ = call_tree(top_call_stack(), args);
 
-	/* 函数调用结束，当前上下文退栈 */
 	pop_call_stack();
 }
 |SYS_FUNCT
