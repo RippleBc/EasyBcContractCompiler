@@ -18,9 +18,9 @@ int routine_id;
 int align(int);
 
 
-#define  SYMTAB_STACK_SIZE 64 /* 符号表栈深度 */
+#define  SYMTAB_STACK_SIZE 64
 int symtab_tos = SYMTAB_STACK_SIZE - 1;
-symtab *symtab_stack[SYMTAB_STACK_SIZE]; /*  */
+symtab *symtab_stack[SYMTAB_STACK_SIZE]; /* 保存上下文（符号表） */
 
 symtab *Global_symtab; /* 全局符号表 */
 symtab *System_symtab[MAX_SYS_ROUTINE]; /* 系统符号表 */
@@ -521,10 +521,12 @@ symtab *find_routine(symtab *tab, char *name)
     symtab *ptab = tab, *routine;
     while(ptab)
     {
+        /* 内部调用函数或者过程（递归调用） */
         if(!strcmp(ptab->name, name)) 
         {
             return ptab;
         }
+        /* 外部调用函数或者过程 */
         for(i = 0; i < ptab->last_symtab; i++)
         {
             routine = ptab->routine_queue[i];
