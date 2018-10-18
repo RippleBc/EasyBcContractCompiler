@@ -171,7 +171,7 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
 }
 
 /* 通常与id_factor_tree一起使用（通过field_tree获取属性，通过id_factor_tree获取属性值） */
-Tree field_tree(Symbol record, Symbol field)
+Tree record_field_tree(Symbol record, Symbol field)
 {
     Tree t;
     /* record表示记录类型的自定义变量符号，
