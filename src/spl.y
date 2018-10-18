@@ -1032,7 +1032,7 @@ oASSIGN expression
 	t = record_field_tree(p, q);
 
 	/* 地址AST节点 */
-	t = address_tree(t, p);
+	t = address_tree(t, q);
 
 	push_ast_stack(t);
 }
