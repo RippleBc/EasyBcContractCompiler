@@ -995,7 +995,7 @@ expression oRB
 	p = top_term_stack();
 	
 	/* 数组AST节点 */
-	t = array_factor_tree(p, $4);
+	t = array_index_tree(p, $4);
 	/* 地址AST节点 */
 	t = address_tree(t, p);
 
@@ -1029,7 +1029,7 @@ oASSIGN expression
 
 
 	/* 属性AST节点 */
-	t = field_tree(p, q);
+	t = record_field_tree(p, q);
 
 	/* 地址AST节点 */
 	t = address_tree(t, p);
@@ -1810,7 +1810,7 @@ expression oRB
 	/* 数组符号出栈（获取上下文） */
 	p = pop_term_stack(p);
 	/* 数组AST树 */
-	t = array_factor_tree(p, $4);
+	t = array_index_tree(p, $4);
 	/* 数组取值AST树 */
 	$$ = id_factor_tree(t, p);
 }
@@ -1835,7 +1835,7 @@ expression oRB
 	}
 
 	/* field的AST树 */
-	t = field_tree(p, q);
+	t = record_field_tree(p, q);
 	/* field取值AST树 */
 	$$ = id_factor_tree(t, q);
 }
