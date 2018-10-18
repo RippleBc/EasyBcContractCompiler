@@ -29,7 +29,6 @@ enum {
     NEG = 12 << 4,
     CALL = 13 << 4,
     LOAD = 14 << 4,
-    RET = 15 << 4,
     ADDRG = 16 << 4,
     ADDRF = 17 << 4,
     ADDRL = 18 << 4,

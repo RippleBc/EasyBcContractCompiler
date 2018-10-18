@@ -221,10 +221,10 @@ Node travel(Tree tp)
         /* 对应系统函数或者系统过程的ID */
         p->u.sys_id = tp->u.sys.sys_id;
 
-
+        /* 读取字符或者读取字符串操作 */
         if (p->u.sys_id == pREAD || p->u.sys_id == pREADLN)
         {
-            /* kill nodes. */
+            /* 地址AST树的第一个子节点为空，变量类型不是数组或者记录 */
             if (tp->kids[0]->kids[0] == NULL)
                 kill_nodes(tp->kids[0]->u.generic.sym);
             else
@@ -259,34 +259,29 @@ Node travel(Tree tp)
         r = travel(tp->kids[1]);
         p = node(op, l, r, NULL);
 
-        /* tp->kids[0]->kids[0]表示地址AST树的第一个子节点（当变量类型为数组或者记录时，用来表示定位变量中的元素） */
+        /* 地址AST节点的第一个子节点为空，变量类型不是数组和记录 */
         if (tp->kids[0]->kids[0] == NULL)
+            /* 清除相同的变量 */
             kill_nodes(tp->kids[0]->u.generic.sym);
         else
             reset();
         break;
-    case BOR:
-    case BAND:
-    case BXOR:
+    case BOR: /* 二进制或 */
+    case BAND: /* 二进制与 */
+    case BXOR: /* 二进制异或 */
     case ADD:
     case SUB:
-    case RSH:
-    case LSH:
-        l = travel(tp->kids[0]);
-        r = travel(tp->kids[1]);
-        p = node(op, l, r, NULL);
-        const_folding(p);
-        break;
+    case RSH: /* 右移 */
+    case LSH: /* 左移 */
     case DIV:
     case MUL:
     case MOD:
         l = travel(tp->kids[0]);
         r = travel(tp->kids[1]);
         p = node(op, l, r, NULL);
+
+        /* 常量合并 */
         const_folding(p);
-        break;
-    case RET:
-        /* not used in SPL. */
         break;
     case CVF:
     case CVI:
@@ -294,7 +289,7 @@ Node travel(Tree tp)
         l = travel(tp->kids[0]);
         p = node(op, l, NULL, NULL);
         break;
-    case BCOM:
+    case BCOM: /* 二进制比较 */
     case NEG:
         l = travel(tp->kids[0]);
         p = node(op, l, NULL, NULL);
@@ -320,9 +315,13 @@ Node travel(Tree tp)
         }
         break;
     case FIELD:
+        /* tp->u.field.record表示记录符号 */
         p = node(op, NULL, NULL, tp->u.field.record);
+
         if (p->syms[1] != tp->u.field.field)
             p = new_node(op, NULL, NULL, tp->u.field.record);
+
+        /* tp->u.field.field表示属性符号 */
         p->syms[1] = tp->u.field.field;
         break;
     case ADDRG:

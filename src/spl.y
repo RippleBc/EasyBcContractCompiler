@@ -1166,10 +1166,23 @@ oLP args_list oRP
 		parse_error("too few parameters in call to", "read");
 		return 0;
 	}
+	
 	if (generic($3->op) == LOAD)
-		t = address_tree(NULL, $3->u.generic.sym);
+	{
+		if($3->kids[0]) /* 数组或者记录 */
+		{
+			t = $3->kids[0];
+		}
+		else
+		{
+			t = address_tree(NULL, $3->u.generic.sym);
+		}
+	}
 	else
-		t = address_tree($3, $3->u.generic.sym);
+	{
+		parse_error("pread need a variable argument", "");
+		return 0;
+	}
 
 	/* 系统函数或者系统过程调用AST节点 */
 	$$ = sys_tree(pREAD, t);

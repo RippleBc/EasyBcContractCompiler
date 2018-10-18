@@ -170,20 +170,21 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
     return argtree;
 }
 
-/* 通常与id_factor_tree一起使用（通过field_tree获取属性，通过id_factor_tree获取属性值） */
+/* 记录的属性 */
 Tree record_field_tree(Symbol record, Symbol field)
 {
     Tree t;
-    /* record表示记录类型的自定义变量符号，
-     field表示记录类型中的属性符号（record类型拥有多个属性，需要指定属性）。 */
+
     t = new_tree(FIELD, field->type, NULL, NULL);
+    /* 记录符号 */
     t->u.field.record = record;
+    /* 属性对应的符号 */
     t->u.field.field = field;
     return t;
 
 }
 
-/* 通常与id_factor_tree一起使用（通过array_factor_tree获取数组项，通过id_factor_tree获取数组项的值） */
+/* 数组下标 */
 Tree array_index_tree(Symbol array, Tree expr)
 {
     Tree t;
