@@ -184,7 +184,7 @@ Tree field_tree(Symbol record, Symbol field)
 }
 
 /* 通常与id_factor_tree一起使用（通过array_factor_tree获取数组项，通过id_factor_tree获取数组项的值） */
-Tree array_factor_tree(Symbol array, Tree expr)
+Tree array_index_tree(Symbol array, Tree expr)
 {
     Tree t;
     /* expr用于表示array的下标 */
