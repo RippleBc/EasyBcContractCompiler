@@ -462,7 +462,7 @@ static void emit_linux_routine_prologue(symtab *ptab)
 {
     if(ptab->defn == DEF_PROG)
         return;
-    fprintf(codfp,"\n\n# routine : %s \n",ptab->name);
+    fprintf(codfp,"\n\n# routine : %s \n", ptab->name);
     emit_linux_local_args(ptab);
 	fprintf(codfp, "\t\t.text\n");
 	fprintf(codfp, ".globl %s\n", ptab->rname);
@@ -1859,6 +1859,7 @@ static int functionprocess(List dags)
 
     for (; cp; cp = cp->link)
     {
+        /* 产生对应的汇编代码 */
         if ((ret = gen_linux_code((Node)(cp->x))) < 0)
         {
             parse_error("Error generating code.","");
