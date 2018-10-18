@@ -137,8 +137,8 @@ enum {
 typedef struct list *List;
 struct list
 {
-    void *x;					/* data or tail of list. */
-    List link;					/* next in list. */
+    void *x; /* 头部LIST节点中的x指向LIST链表的末尾节点，非头部LIST节点中的x指向AST节点或者DAG节点 */
+    List link; /* 指向下一个LIST节点 */
 };
 
 List list_append(List list, void *x);

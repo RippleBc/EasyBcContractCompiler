@@ -2,10 +2,10 @@
 
 static List freenodes;
 
-/* 新建一个list指针对象，挂到list后面 */
+/* x为DAG节点或者AST节点 */
 List list_append(List list, void *x)
 {
-    /* 定义一个list的指针对象 */
+
     List new;
 
     /* new指向freenodes指向的区域，只有当调用过list_clear之后，
@@ -17,23 +17,21 @@ List list_append(List list, void *x)
         /* 给指针在permanent区域分配内存 */
         NEW(new, PERM);
 
-    /* 列表的数据不为空 */
+    /* 节点初始化 */
+    new->link = NULL;
+    /* 记录AST节点或者DAG节点 */
+    new->x = x;
+
     if (list->x)
     {
-        /* 列表的数据的link字段指向new */
+        /* 链表末尾节点指向新节点 */
         ((List)(list->x))->link = new;
     }
-
-    /* 列表的link字段不存在，link字段指向new */
     if (!list->link)
+        /* 指向首个放入链表的节点 */
         list->link = new;
-
-    /* 列表的数据指向new */
+    /* 指向新节点（链表新的末尾节点） */
     list->x = new;
-
-    /* 初始化list对象的link和x字段 */
-    new->link = NULL;
-    new->x = x;
 
     return new;
 }

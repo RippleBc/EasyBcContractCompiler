@@ -180,6 +180,8 @@ Node travel(Tree tp)
         l = travel(tp->kids[0]);
         depth--;
         p = node(op, l, NULL, NULL);
+
+        /* 常量合并 */
         const_folding(p);
         break;
     case COND:
@@ -293,7 +295,9 @@ Node travel(Tree tp)
     case NEG:
         l = travel(tp->kids[0]);
         p = node(op, l, NULL, NULL);
-        /* const_folding(p); */
+
+        /* 常量合并 */
+        const_folding(p);
         break;
     case LOAD:
     case INDIR:
@@ -359,16 +363,14 @@ Node travel(Tree tp)
     p->op_name = get_op_name(p->op);
 #endif
 
+    /* DAG节点类型 */
     p->type = tp->result_type;
+
+    /* DAG节点与AST节点相关联 */
     tp->dag_node = p;
     return p;
 }
 
-
-/**
- * generate dag from ast.
- * return number of generated dag.
- */
 int gen_dag(List ast_forest, List dag_forest)
 {
     int n, i, dag_count;
@@ -379,19 +381,20 @@ int gen_dag(List ast_forest, List dag_forest)
 
     n = list_length(ast_forest);
 
-    /* 链表转化为数组 */
+    /* AST节点链表转化为数组 */
     forest = (Tree *)list_ltov(ast_forest, STMT);
 
-    /* reset available nodes table. */
     reset();
 
     for (i = 0, dag_count = 0; i < n ; i++)
     {
         Tree ast = forest[i];
-        /* 遍历AST树，生成DAG节点 */
+
+        /* 生成DAG节点 */
         Node dag = travel(ast);
         if (dag)
         {
+            /* 添加到DAG森林 */
             list_append(dag_forest, dag);
             dag_count++;
         }
@@ -416,26 +419,24 @@ static int mark(Node cp)
     return (*IR->mark_node)(cp);
 }
 
-/*
- * emit asm code.
- **/
 int emit_code(List dags)
 {
     int should_stop = 0;
     List cp;
 
     if (dump_dag)
+    {
         print_dags(dags);
-
-    /* chance for back end to select instructions and regisgers. */
-    cp = dags->link;
-    for (; cp; cp = cp->link)
+    }
+    
+    for (cp = dags->link; cp; cp = cp->link)
     {
         if ((should_stop = mark((Node)cp->x)) < 0)
+        {
             return should_stop;
+        }
     }
 
-    /* call back end to generate asm code. */
     (*IR->function_process)(dags);
 
     return should_stop;
