@@ -4,19 +4,15 @@
 
 static int folding_const = 0;
 
-/* do constant folding.
- */
 void const_folding(Node n)
 {
     Symbol con;
     char little_buf[NAME_LEN];
 
-    if ((generic(n->kids[0]->op) == CNST)
-            && ((n->kids[1] == NULL) || (generic(n->kids[1]->op) == CNST)))
+    if ((generic(n->kids[0]->op) == CNST) && ((n->kids[1] == NULL) || (generic(n->kids[1]->op) == CNST)))
     {
         /* do not folding strings. */
-        if ((n->kids[0]->syms[0]->type->type_id == TYPE_STRING) ||
-                ((n->kids[1] != NULL) && (n->kids[1]->syms[0]->type->type_id == TYPE_STRING)))
+        if ((n->kids[0]->syms[0]->type->type_id == TYPE_STRING) || ((n->kids[1] != NULL) && (n->kids[1]->syms[0]->type->type_id == TYPE_STRING)))
             return;
 
         snprintf(little_buf, sizeof(little_buf) - 1, "g_con_%d", folding_const++);

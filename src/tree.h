@@ -18,7 +18,7 @@ struct _node
     short op; /* 操作码 */
 #ifdef DEBUG
 
-    char *op_name; /* 操作吗名称 */
+    char *op_name; /* 操作名称 */
 #endif
 
     short count; /* 被引用的次数 */

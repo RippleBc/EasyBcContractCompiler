@@ -6,8 +6,8 @@ static int where = DAG; /* 定义DAG所在内存区域 */
 
 static struct dag
 {
-    struct _node node;
-    struct dag *hlink;
+    struct _node node; /* DAG节点 */
+    struct dag *hlink; /* 链接下一个DAG节点 */
 }*buckets[16]; /* 存放DAG node */
 
 
@@ -28,23 +28,25 @@ extern int dump_ast; /* 是否输出ast信息 */
 extern int dump_dag; /* 是否输出dag信息 */
 extern int dump_asm; /* 是否输出sam信息 */
 
-/* hash function. */
+/* 哈希函数 */
 #define available_node_hash(op, left, right, sym) (opindex(op)^((unsigned long)sym>>2))&(NELEMS(buckets)-1)
 
 static struct dag *dag_node(int op, Node l, Node r, Symbol sym)
 {
     struct dag *p;
-    /* 为dag指针变量分配内存 */
+
     NEW0(p, where);
-    /* 指定DAG对应的指令*/
+
+    /* 对应的指令*/
     p->node.op = op;
 
-    /* 指定dag对应的左节点以及右节点，刷新引用次数 */
+    /* 初始化左右节点，引用次数 */
     if ((p->node.kids[0] = l) != NULL)
         ++l->count;
     if ((p->node.kids[1] = r) != NULL)
         ++r->count;
-    /* 指定dag对应的符号 */
+
+    /* 对应的符号 */
     p->node.syms[0] = sym;
 #if DEBUG & COMMON_EXPR_DEBUG
 
@@ -62,15 +64,15 @@ static Node node(int op, Node l, Node r, Symbol sym)
     int i;
     struct dag *p;
 
-    /* 通过参数求hash值 */
+    /* DAG节点哈希值 */
     i = available_node_hash(op, l, r, sym);
 
+    /* 检查是否有相同的DAG节点 */
     for (p = buckets[i]; p; p = p->hlink)
     {
-        if (p->node.op == op && p->node.syms[0] == sym
-                &&  p->node.kids[0] == l  && p->node.kids[1] == r)
+        if (p->node.op == op && p->node.syms[0] == sym &&  p->node.kids[0] == l  && p->node.kids[1] == r)
         {
-            /* 找到相同的DAG节点，刷新被引用次数 */
+            /* 相同的DAG节点，刷新引用次数 */
             p->node.count ++;
 #if DEBUG & CONST_FOLDING_DEBUG
 
@@ -82,18 +84,22 @@ static Node node(int op, Node l, Node r, Symbol sym)
         }
     }
 
-    /* 初始化一个dag节点 */
+    /* 初始化DAG节点 */
     p = dag_node(op, l, r, sym);
-    /* 插入链表头部 */
+
+    /* 插入DAG链表头部 */
     p->hlink = buckets[i];
     buckets[i] = p;
-    /* 刷新node数量 */
+
+    /* 刷新DAG节点数量 */
     ++nodecount;
+
     return &p->node;
 }
 
 Node new_node(int op, Node l, Node r, Symbol sym)
 {
+    /* 返回DAG节点地址 */
     return &dag_node(op, l, r, sym)->node;
 }
 
@@ -104,17 +110,16 @@ static void kill_nodes(Symbol p)
 
     for (i = 0; i < NELEMS(buckets); i++)
     {
-        /* 遍历buckets[i]对应的dag节点链表 */
         for (q = &buckets[i]; *q; )
         {
-            /* 清除dag节点（当前只优化LOAD指令） */
+            /* 清楚与符号p相关联的节点 */
             if (generic((*q)->node.op) == LOAD &&
                     ((*q)->node.syms[0] == p))
             {
 #if DEBUG & COMMON_EXPR_DEBUG
                 printf("node %s killed.\n", p->name);
 #endif
-
+                /* 清除当前DAG节点 */
                 *q = (*q)->hlink;
                 --nodecount;
             }
@@ -133,51 +138,41 @@ static void reset(void)
     nodecount = 0;
 }
 
-/* 遍历AST树，将其转化为中间代码DAG，
- 在转换过程中进行公共子表达式删除和常量表达式求值 */
 Node travel(Tree tp)
 {
-    Node p = NULL, l, r;
+    Node p = NULL, l = NULL, r = NULL;
     int op;
 
     if (tp == NULL)
         return NULL;
 
-    l = r = NULL;
-
     if (tp->dag_node)
-        /* 如果已经拥有DAG节点，返回DAG节点  */
         return tp->dag_node;
 
     travel_level++;
 
-    /* 根据指令进行优化 */
     op = tp->op;
     switch (generic(tp->op))
     {
-    case AND:
-        if (depth++ == 0)
-            reset();
-        /* 遍历左右节点 */
-        l = travel(tp->kids[0]);
-        r = travel(tp->kids[1]);
-        depth--;
-        p = node(op, l, r, NULL);
-        const_folding(p);
-        break;
     case ARRAY:
-        /* 遍历左节点 */
+        
+        /* tp->kids[0]表示数组的下标（表达式） */
         l = travel(tp->kids[0]);
-        /* 提供左节点以及对应符号 */
+        
+        /* tp->u.generic.sym表示数组对应的符号 */
         p = node(op, l, NULL, tp->u.generic.sym);
         break;
+    case AND:
     case OR:
         if (depth++ == 0)
             reset();
+
         l = travel(tp->kids[0]);
         r = travel(tp->kids[1]);
         depth--;
         p = node(op, l, r, NULL);
+
+        /* 常量合并 */
         const_folding(p);
         break;
     case NOT:
@@ -188,18 +183,22 @@ Node travel(Tree tp)
         const_folding(p);
         break;
     case COND:
-        /* 查找表达式AST节点，判断真假 */
+        /* tp->kids[0]表示判断条件（表达式） */
         l = travel(tp->kids[0]);
         reset();
         p = new_node(op, l, NULL, tp->u.cond_jump.label);
-        /* 初始化标签，初始化跳转条件 */
+
+        /* 跳转标签符号 */
         p->u.cond.label = tp->u.cond_jump.label;
+
+        /* 跳转条件（为真跳转还是为假跳转） */
         p->u.cond.true_or_false = tp->u.cond_jump.true_or_false;
         break;
     case CNST:
         p = new_node(op, NULL, NULL, tp->u.generic.sym);
         break;
     case RIGHT:
+        /* 参数AST节点的子节点，表示实参 */
         l = travel(tp->kids[0]);
         r = travel(tp->kids[1]);
         p = node(op, l, r, NULL);
@@ -211,14 +210,19 @@ Node travel(Tree tp)
     case CALL:
         l = travel(tp->kids[0]);
         p = new_node(op, l, NULL, NULL);
+
+        /* 自定义函数或者过程调用对应的符号表 */
         p->symtab = tp->u.call.symtab;
         break;
     case SYS:
         l = travel(tp->kids[0]);
         p = new_node(op, l, NULL, NULL);
+
+        /* 对应系统函数或者系统过程的ID */
         p->u.sys_id = tp->u.sys.sys_id;
-        if (p->u.sys_id == pREAD ||
-                p->u.sys_id == pREADLN)
+
+
+        if (p->u.sys_id == pREAD || p->u.sys_id == pREADLN)
         {
             /* kill nodes. */
             if (tp->kids[0]->kids[0] == NULL)
@@ -230,7 +234,11 @@ Node travel(Tree tp)
     case ARG:
         l = travel(tp->kids[0]);
         r = travel(tp->kids[1]);
+
+        /* tp->u.arg.sym表示参数对应的符号 */
         p = new_node(op, l, r, tp->u.arg.sym);
+
+        /* tp->u.arg.symtab表示对应的符号表 */
         p->symtab = tp->u.arg.symtab;
         break;
     case EQ:
@@ -242,13 +250,16 @@ Node travel(Tree tp)
         l = travel(tp->kids[0]);
         r = travel(tp->kids[1]);
         p = node(op, l, r, NULL);
+
+        /* 常量合并 */
         const_folding(p);
         break;
     case ASGN:
         l = travel(tp->kids[0]);
         r = travel(tp->kids[1]);
         p = node(op, l, r, NULL);
-        /* kill nodes. */
+
+        /* tp->kids[0]->kids[0]表示地址AST树的第一个子节点（当变量类型为数组或者记录时，用来表示定位变量中的元素） */
         if (tp->kids[0]->kids[0] == NULL)
             kill_nodes(tp->kids[0]->u.generic.sym);
         else

@@ -1032,7 +1032,7 @@ oASSIGN expression
 	t = field_tree(p, q);
 
 	/* 地址AST节点 */
-	t = address_tree(t, q);
+	t = address_tree(t, p);
 
 	push_ast_stack(t);
 }
@@ -1794,8 +1794,7 @@ oLP args_list oRP
 |yNAME oLB
 {
 	/* 寻找对应的符号 */
-	p = find_symbol(
-		top_symtab_stack(), $1);
+	p = find_symbol(top_symtab_stack(), $1);
 	
 	/* 检查符号类型是否是数组 */
 	if(!p || p->type->type_id != TYPE_ARRAY){
