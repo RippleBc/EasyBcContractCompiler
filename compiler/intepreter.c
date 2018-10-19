@@ -1,19 +1,24 @@
-#include "common.h"
-#include "symtab.h"
+#include  <stdio.h>
+#include  "common.h"
+#include  "symtab.h"
+#include  "error.h"
+#include  _YTAB_H_
 
-Symtab ptab = Global_symtab;
+Symtab ptab;
 Symbol p;
 Symbol q;
 
 int ast_process(List asts)
 {
+    ptab = Global_symtab;
+
     List cp = asts->link;
     int ret = 0;
 
     for (; cp; cp = cp->link)
     {
         /* 解析执行AST */
-        if ((ret = intepret((Node)(cp->x))) < 0)
+        if ((ret = intepret((Tree)(cp->x))) < 0)
         {
             parse_error("Error generating code.", "");
             return ret;
@@ -22,40 +27,41 @@ int ast_process(List asts)
     return ret;
 }
 
-static int intepret(List ast)
+int intepret(Tree ast)
 {
-  int ret = 0;
   Tree ptree;
 
-  gen_level++;
-
-  switch (generic(rootnode->op))
+  switch (generic(ast->op))
   {
   case HEADER: /* 表示过程以及函数定义的开始 */  
   case TAIL: /* 表示过程以及函数定义的结束 */
   	break;
 	case SYS:
 	{
-		if (rootnode->kids[0] == NULL)
+    printf("\nSYS\n");
+		if (ast->kids[0] == NULL)
 		{
 			/* 没有参数 */
 		}
 		else {
 			/* 有参数 */
-			switch (rootnode->u.sys_id)
+			switch (ast->u.sys.sys_id)
       {
         case pWRITELN:
         {
         	/* 参数对应的符号 */
-					p = find_symbol(ptab, ast->kids[0]->u.arg.sym->name);
-        	printf("%d", p->v.i);
+					// p = find_symbol(ptab, ast->kids[0]->u.arg.sym->name);
+        	// printf("%d", p->v.i);
+          printf("aaaa");
         }
         break;
+      }
 		}
 	}
 	break;
 	case RIGHT:
 	{
+    printf("\nRIGHT\n");
 		/* 参数对应的符号 */
 		p = find_symbol(ptab, ast->kids[0]->u.arg.sym->name);
 
@@ -66,7 +72,7 @@ static int intepret(List ast)
   	}
 
   	/* 参数赋值 */
-  	p->v.i = ast->kids[0]->u.generic.val->i;
+  	p->v.i = ast->kids[0]->u.generic.val.i;
 
   	/* 计算其余参数的值 */
   	if(ast->kids[1] != NULL)
@@ -77,6 +83,7 @@ static int intepret(List ast)
 	break;
 	case ARG:
 	{
+    printf("\nARG\n");
 		/* 参数对应的符号 */
 		p = find_symbol(ptab, ast->kids[0]->u.arg.sym->name);
 
@@ -87,7 +94,7 @@ static int intepret(List ast)
   	}
 
   	/* 参数赋值 */
-  	p->v.i = ast->kids[0]->u.generic.val->i;
+  	p->v.i = ast->kids[0]->u.generic.val.i;
 
   	/* 计算其余参数的值 */
   	if(ast->kids[1] != NULL)
@@ -98,6 +105,7 @@ static int intepret(List ast)
 	break;
   case ASGN:
   {
+    printf("\nASGN\n");
   	/* 对应的符号 */
   	Symbol p = find_symbol(ptab, ast->kids[0]->u.generic.sym->name);
 
@@ -108,11 +116,12 @@ static int intepret(List ast)
   	}
   	
   	/* 变量赋值 */
-  	p->v.i = ast->kids[1]->u.generic.val->i;
+  	p->v.i = ast->kids[1]->u.generic.val.i;
   }
   break;
   case ADD:
   {
+    printf("\nADD\n");
   	/* 计算左表达式AST节点对应的值 */
   	if(ast->kids[0]->kids[0] != NULL || ast->kids[0]->kids[1] != NULL)
   	{
@@ -125,11 +134,12 @@ static int intepret(List ast)
   		intepret(ast->kids[1]);
   	}
 
-  	ast->u.generic.val->i = ast->kids[0]->u.generic.val->i + ast->kids[1]->u.generic.val->i;
+  	ast->u.generic.val.i = ast->kids[0]->u.generic.val.i + ast->kids[1]->u.generic.val.i;
   }
   break;
   case SUB:
   {
+    printf("\nSUB\n");
   	/* 计算左表达式AST节点对应的值 */
   	if(ast->kids[0]->kids[0] != NULL || ast->kids[0]->kids[1] != NULL)
   	{
@@ -142,14 +152,15 @@ static int intepret(List ast)
   		intepret(ast->kids[1]);
   	}
 
-  	ast->u.generic.val->i = ast->kids[0]->u.generic.val->i - ast->kids[1]->u.generic.val->i;
+  	ast->u.generic.val.i = ast->kids[0]->u.generic.val.i - ast->kids[1]->u.generic.val.i;
   }
   break;
   case BLOCKBEG:
   case BLOCKEND:
       break;
   default:
-      assert(0);
-      break;
+      return 0;
   }
+
+  return 1;
 }

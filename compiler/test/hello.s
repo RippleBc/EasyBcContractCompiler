@@ -7,17 +7,6 @@ sys_call_id = 0x80
 exit_syscall = 0x1
 
 .data
-.globl cz_001
-		.section .rodata
-		.align 4
-.LCcz_001:
-		.string "inta = "
-		.data
-		.align 4
-		.type cz_001 @object
-		.size cz_001, 4
-cz_001:
-		.long .LCcz_001
 
 
 #---program helloworld ---
@@ -30,33 +19,28 @@ _main:
 		pushl	%ebp
 		movl	%esp, %ebp
 		movl	$30, %eax
-		movl	%eax, vi_002
+		movl	%eax, vi_012
 		movl	$20, %eax
-		movl	%eax, vi_003
-		movl	vi_002, %eax
+		movl	%eax, vi_013
+		movl	vi_012, %eax
 		pushl	%eax
-		movl	vi_003, %eax
+		movl	vi_013, %eax
 		popl	%edx
 		addl	%edx, %eax
 		pushl	%eax
 		movl	$3, %eax
 		pushl	%eax
-		movl	vi_002, %eax
+		movl	vi_012, %eax
 		pushl	%eax
-		movl	vi_003, %eax
+		movl	vi_013, %eax
 		popl	%edx
 		addl	%edx, %eax
 		popl	%edx
 		imul	%edx
 		popl	%edx
 		addl	%edx, %eax
-		movl	%eax, vi_001
-		movl	cz_001, %eax
-		pushl	%eax
-		pushl	%ebp
-		call	_writeln_string
-		addl	$8, %esp
-		movl	vi_001, %eax
+		movl	%eax, vi_011
+		movl	vi_011, %eax
 		pushl	%eax
 		pushl	%ebp
 		call	_writeln_int
@@ -75,6 +59,6 @@ _start:
 .ident	"SPL: 0.1.5"
 
 #.bss variables
-		.comm vi_003,4,4
-		.comm vi_002,4,4
-		.comm vi_001,4,4
+		.comm vi_013,4,4
+		.comm vi_012,4,4
+		.comm vi_011,4,4

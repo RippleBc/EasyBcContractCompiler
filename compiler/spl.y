@@ -216,7 +216,7 @@ program
 		list_append(&ast_forest, t);
 		
 		/* 通过AST解析器输出结果 */
-		ast_process(&ast_forest)；
+		ast_process(&ast_forest);
 
 		/* generate dag forest. */
 		gen_dag(&ast_forest, &dag_forest);
@@ -1054,43 +1054,14 @@ oASSIGN expression
 routine_stmt
 :yNAME
 {
-	/* 对应符号 */
-	p = find_symbol(top_symtab_stack(), $1);
-	if(!p){
-		parse_error("Undeclared procedure or function", $1);
-		return 0;
-	}
-
-	/* 类型检查 */
-	if(p->defn != DEF_FUNCT || p->defn != DEF_PROC)
+	/* 寻找自定义函数或者过程 */
+	if((ptab = find_routine(top_symtab_stack(), $1)))
+  		push_call_stack(ptab);
+	else
 	{
-		parse_error("nonprocedure or nonfunction can not be called", $1);
-		return 0;
+		parse_error("Undeclared funtion", $1);
+		return  0;
 	}
-
-	/* 函数或过程调用AST节点 */
-	$$ = call_tree(p->tab, NULL);
-
-	/* 放入AST森林 */
-	list_append(&ast_forest, $$);
-}
-|yNAME
-{
-	/* 对应符号 */
-	p = find_symbol(top_symtab_stack(), $1);
-	if(!p){
-		parse_error("Undeclared procedure or function", $1);
-		return 0;
-	}
-
-	/* 类型检查 */
-	if(p->defn != DEF_FUNCT || p->defn != DEF_PROC)
-	{
-		parse_error("nonprocedure or nonfunction can not be called", $1);
-		return 0;
-	}
-
-	push_call_stack(p->tab);
 }
 oLP args_list oRP
 {
@@ -1121,14 +1092,6 @@ oLP args_list oRP
 	/* 对应的系统函数或者系统过程的符号表 */
 	rtn = find_sys_routine($1->attr);
 
-	/* 参数符号链表 */
-	if(rtn)
-		arg = rtn->args;
-	else
-	{
-		arg = NULL;
-	}
-
 	push_call_stack(rtn);
 }
 oLP args_list oRP 
@@ -1144,13 +1107,6 @@ oLP args_list oRP
 |SYS_PROC 
 {
 	rtn = find_sys_routine($1->attr);
-
-	if(rtn)
-		arg = rtn->args;
-	else
-	{
-		arg = NULL;
-	}
 
 	push_call_stack(rtn);
 }
@@ -1714,16 +1670,8 @@ factor
 		p = install_temporary_symbol($1, DEF_VAR, TYPE_INTEGER);
 	}
 	
-	if (p->defn == DEF_FUNCT || p->defn == DEF_PROC)
-	{
-		/* 函数或者过程调用AST节点 */
-		$$ = call_tree(p->tab, NULL);
-	}
-	else
-	{
-		/* 取值AST节点 */
-		$$ = id_factor_tree(NULL, p);
-	}
+	/* 取值AST节点 */
+	$$ = id_factor_tree(NULL, p);
 }
 |yNAME
 {
@@ -1732,7 +1680,7 @@ factor
   		push_call_stack(ptab);
 	else
 	{
-		parse_error("Undeclared funtion",$1);
+		parse_error("Undeclared funtion or procedure", $1);
 		return  0;
 	}
 }
@@ -1858,7 +1806,8 @@ expression oRB
 ;
 
 args_list
-:args_list  oCOMMA  expression 
+:%empty { args = NULL; }
+|args_list  oCOMMA  expression 
 {
 	/* 获取函数或者过程调用上下文 */
 	rtn = top_call_stack();

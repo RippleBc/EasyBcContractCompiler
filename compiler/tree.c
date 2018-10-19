@@ -185,12 +185,13 @@ Tree array_index_tree(Symbol array, Tree expr)
 }
 
 /*  常量树 */
-Tree const_tree(Symbol constval)
+Tree const_tree(Symbol const_val)
 {
     Tree t;
 
-    t = new_tree(CNST, constval->type, NULL, NULL);
-    t->u.generic.sym = constval;
+    t = new_tree(CNST, const_val->type, NULL, NULL);
+    t->u.generic.sym = const_val;
+    t->u.generic.val = const_val->v;
     return t;
 }
 

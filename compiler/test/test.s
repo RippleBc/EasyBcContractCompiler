@@ -623,8 +623,7 @@ _main:
 		popl	%edx
 		addl	%edx, %eax
 		movl	%eax, vi_017
-		movl	$3, %eax
-		negl	%eax
+		movl	$-3, %eax
 		movl	%eax, vi_011
 		movl	vi_011, %eax
 		pushl	%eax
@@ -1270,8 +1269,7 @@ if_exit_5:
 		pushl	%ebp
 		call	_writeln_int
 		addl	$8, %esp
-		movl	$3, %eax
-		negl	%eax
+		movl	$-3, %eax
 		movl	%eax, vi_011
 		movl	cz_027, %eax
 		pushl	%eax

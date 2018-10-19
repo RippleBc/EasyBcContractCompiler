@@ -36,7 +36,8 @@ COMPILER_SOURCE= common.h \
 				dag.c \
 				ops.c \
 				x86linux.c \
-				opti.c
+				opti.c \
+				intepreter.c
 
 COMPILER_OBJS=error.o \
 			  lex.yy.o \
@@ -50,7 +51,8 @@ COMPILER_OBJS=error.o \
 			  dag.o \
 			  ops.o \
 			  x86linux.o \
-			  opti.o
+			  opti.o \
+			  intepreter.o
 
 COMPILER_AUTOFILES=y.tab.c \
 				   lex.yy.c \

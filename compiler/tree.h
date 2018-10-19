@@ -52,7 +52,7 @@ typedef struct _tree
   
         struct
         {
-            Value val; /* 值 */
+            value val; /* 值 */
             Symbol sym; /* 相关联的symbol（变量或者参数） */
             Symtab symtab; /* 相关联的符号表 */
         }
