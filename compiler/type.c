@@ -410,12 +410,22 @@ type *clone_type(type *src)
         pt->last = clone_symbol(src->last);
         pt->first->next = pt->last;
         break;
-    case  TYPE_INTEGER:
-    case  TYPE_CHAR:
-    case  TYPE_BOOLEAN:
-    case  TYPE_REAL:
+    case TYPE_INTEGER:
+    case TYPE_CHAR:
+    case TYPE_BOOLEAN:
+    case TYPE_REAL:
         pt = new_system_type(src->type_id);
         break;
+    case TYPE_ARRAY:
+    {
+        
+    }
+    break;
+    case TYPE_RECORD:
+    {
+
+    }
+    break;
 	default:
         pt = NULL;
         break;
