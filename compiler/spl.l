@@ -460,8 +460,8 @@ KEYENTRY Keytable[] = {
 {"var",		kVAR,		KEYWORD, 0, 0 },
 {"while",	kWHILE,		KEYWORD, 0, 0 },
 {"with",	kWITH, 		KEYWORD, 0, 0 },
-{"write",	SYS_PROC,	pWRITE, 0, 0 },
-{"writeln",	SYS_PROC,	pWRITELN, 0, 0 },
+{"write",	SYS_PROC,	pWRITE, 0, TYPE_INTEGER },
+{"writeln",	SYS_PROC,	pWRITELN, 0, TYPE_INTEGER },
 {"----",	LAST_ENTRY,	KEYWORD, 0, 0 },
 };
 

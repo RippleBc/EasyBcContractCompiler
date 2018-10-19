@@ -191,7 +191,9 @@ Tree const_tree(Symbol const_val)
 
     t = new_tree(CNST, const_val->type, NULL, NULL);
     t->u.generic.sym = const_val;
-    t->u.generic.val = const_val->v;
+    printf("\ncreate const tree\n");
+
+
     return t;
 }
 

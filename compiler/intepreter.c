@@ -44,15 +44,19 @@ int intepret(Tree ast)
 			/* 没有参数 */
 		}
 		else {
+      /*  */
+      intepret(ast->kids[0]);
+
 			/* 有参数 */
 			switch (ast->u.sys.sys_id)
       {
         case pWRITELN:
         {
         	/* 参数对应的符号 */
-					// p = find_symbol(ptab, ast->kids[0]->u.arg.sym->name);
-        	// printf("%d", p->v.i);
-          printf("aaaa");
+					p = ast->kids[0]->u.arg.sym;
+
+          /*  */
+        	printf("%d", p->v.i);
         }
         break;
       }
@@ -62,8 +66,6 @@ int intepret(Tree ast)
 	case RIGHT:
 	{
     printf("\nRIGHT\n");
-		/* 参数对应的符号 */
-		p = find_symbol(ptab, ast->kids[0]->u.arg.sym->name);
 
 		/* 计算表达式AST节点对应的值 */
   	if(ast->kids[0]->kids[0] != NULL || ast->kids[0]->kids[1] != NULL)
@@ -71,8 +73,11 @@ int intepret(Tree ast)
   		intepret(ast->kids[0]);
   	}
 
-  	/* 参数赋值 */
-  	p->v.i = ast->kids[0]->u.generic.val.i;
+    /* 参数对应的符号 */
+    p = ast->u.arg.sym;
+
+    /* 参数赋值 */
+    p->v.i = ast->kids[0]->u.generic.val.i;
 
   	/* 计算其余参数的值 */
   	if(ast->kids[1] != NULL)
@@ -84,14 +89,15 @@ int intepret(Tree ast)
 	case ARG:
 	{
     printf("\nARG\n");
-		/* 参数对应的符号 */
-		p = find_symbol(ptab, ast->kids[0]->u.arg.sym->name);
 
-		/* 计算表达式AST节点对应的值 */
-  	if(ast->kids[0]->kids[0] != NULL || ast->kids[0]->kids[1] != NULL)
+		/* 计算参数的值 */
+  	if(ast->kids[0] != NULL)
   	{
   		intepret(ast->kids[0]);
   	}
+
+    /* 参数对应的符号 */
+    p = ast->u.arg.sym;
 
   	/* 参数赋值 */
   	p->v.i = ast->kids[0]->u.generic.val.i;
@@ -103,56 +109,122 @@ int intepret(Tree ast)
   	}
 	}
 	break;
+  case LOAD:
+  {
+    printf("\nLOAD\n");
+
+    ast->u.generic.val.i = ast->u.generic.sym->v.i;
+  }
+  break;
   case ASGN:
   {
     printf("\nASGN\n");
+
   	/* 对应的符号 */
-  	Symbol p = find_symbol(ptab, ast->kids[0]->u.generic.sym->name);
+  	p = ast->kids[0]->u.generic.sym;
 
   	/* 计算表达式AST节点对应的值 */
-  	if(ast->kids[1]->kids[0] != NULL || ast->kids[1]->kids[1] != NULL)
+  	if(ast->kids[1])
   	{
   		intepret(ast->kids[1]);
   	}
   	
   	/* 变量赋值 */
   	p->v.i = ast->kids[1]->u.generic.val.i;
+
+    printf("\nasign result %d\n", p->v.i);
+  }
+  break;
+  case CNST:
+  {
+    printf("\nCONST\n");
+
+    ast->u.generic.val.i = ast->u.generic.sym->v.i;
+
+    printf("\nconst result: %d\n", ast->u.generic.val.i);
+
   }
   break;
   case ADD:
   {
     printf("\nADD\n");
+
   	/* 计算左表达式AST节点对应的值 */
-  	if(ast->kids[0]->kids[0] != NULL || ast->kids[0]->kids[1] != NULL)
+  	if(ast->kids[0])
   	{
   		intepret(ast->kids[0]);
   	}
 
   	/* 计算右表达式AST节点对应的值 */
-  	if(ast->kids[1]->kids[0] != NULL || ast->kids[1]->kids[1] != NULL)
+  	if(ast->kids[1])
   	{
   		intepret(ast->kids[1]);
   	}
 
   	ast->u.generic.val.i = ast->kids[0]->u.generic.val.i + ast->kids[1]->u.generic.val.i;
+
+    printf("\nadd result %d\n", ast->u.generic.val.i);
   }
   break;
   case SUB:
   {
     printf("\nSUB\n");
+
   	/* 计算左表达式AST节点对应的值 */
-  	if(ast->kids[0]->kids[0] != NULL || ast->kids[0]->kids[1] != NULL)
+  	if(ast->kids[0] != NULL)
   	{
   		intepret(ast->kids[0]);
   	}
 
   	/* 计算右表达式AST节点对应的值 */
-  	if(ast->kids[1]->kids[0] != NULL || ast->kids[1]->kids[1] != NULL)
+  	if(ast->kids[1] != NULL)
   	{
   		intepret(ast->kids[1]);
   	}
 
   	ast->u.generic.val.i = ast->kids[0]->u.generic.val.i - ast->kids[1]->u.generic.val.i;
+  }
+  break;
+  case MUL:
+  {
+    printf("\nMUL\n");
+
+    /* 计算左表达式AST节点对应的值 */
+    if(ast->kids[0] != NULL)
+    {
+      intepret(ast->kids[0]);
+    }
+
+    /* 计算右表达式AST节点对应的值 */
+    if(ast->kids[1] != NULL)
+    {
+      intepret(ast->kids[1]);
+    }
+
+    ast->u.generic.val.i = ast->kids[0]->u.generic.val.i * ast->kids[1]->u.generic.val.i;
+
+    printf("\nmul result %d\n", ast->u.generic.val.i);
+  }
+  break;
+  case DIV:
+  {
+    printf("\nDIV\n");
+
+    /* 计算左表达式AST节点对应的值 */
+    if(ast->kids[0] != NULL)
+    {
+      intepret(ast->kids[0]);
+    }
+
+    /* 计算右表达式AST节点对应的值 */
+    if(ast->kids[1] != NULL)
+    {
+      intepret(ast->kids[1]);
+    }
+
+    ast->u.generic.val.i = ast->kids[0]->u.generic.val.i / ast->kids[1]->u.generic.val.i;
+
+    printf("\ndiv result %d\n", ast->u.generic.val.i);
   }
   break;
   case BLOCKBEG:

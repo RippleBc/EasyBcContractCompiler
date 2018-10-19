@@ -39,6 +39,12 @@ _main:
 		imul	%edx
 		popl	%edx
 		addl	%edx, %eax
+		pushl	%eax
+		movl	$4, %eax
+		movl	%eax, %ecx
+		popl	%eax
+		subl	%edx,%edx
+		idiv	%ecx
 		movl	%eax, vi_011
 		movl	vi_011, %eax
 		pushl	%eax
@@ -59,6 +65,8 @@ _start:
 .ident	"SPL: 0.1.5"
 
 #.bss variables
+		.comm vi_015, 12, 4
+		.comm vi_014, 200, 4
 		.comm vi_013,4,4
 		.comm vi_012,4,4
 		.comm vi_011,4,4

@@ -447,12 +447,10 @@ symtab* new_sys_symbol(KEYENTRY entry)
 
         if(!p)
             internal_error("Insufficent memory.");
-
         /* 初始化参数符号 */
         strcpy(p->name, "arg");
         p->defn = DEF_VALPARA;
         p->type = find_type_by_id(entry.arg_type);
-        
         /* 将参数符号放入系统符号表 */
         add_args_to_table(ptab, p);
     }
@@ -479,6 +477,11 @@ int get_symbol_size(symbol *sym)
     case TYPE_REAL:
         return  IR->floatmetric.size;
     case TYPE_STRING:
+        if(sym->v.s == NULL)
+        {
+            /* */
+            return size(CHAR);
+        }
         return size(CHAR) * (strlen(sym->v.s) + 1);
     case TYPE_ARRAY:
         /* 用户自定义类型，需要从_type_链表中寻找 */

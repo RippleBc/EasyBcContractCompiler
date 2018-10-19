@@ -666,14 +666,20 @@ var_decl
 	/* 遍历名称符号链表 */
 	for(p = $1; p;){
 		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
+		{
 			/* 变量（子范围以及枚举类型）的类型是由其类型中的成员（子范围或者枚举类型的成员）的类型定义 */
 			p->type = find_type_by_id($3->first->type->type_id);
+			//p->type_link = $3;
+		}
 		else
+		{
 			p->type = find_type_by_id($3->type_id);
+			/* 检查子范围和枚举类型的符号值是否合法 */
+			//p->type_link = clone_type($3);
+		}
 
-		/* 检查子范围和枚举类型的符号值是否合法 */
 		p->type_link = $3;
-
+		
 		/* 定义符号大类 */
 		p->defn = DEF_VAR;
 
@@ -1806,7 +1812,11 @@ expression oRB
 ;
 
 args_list
-:%empty { args = NULL; }
+:%empty 
+{
+	/**/
+	args = NULL; 
+}
 |args_list  oCOMMA  expression 
 {
 	/* 获取函数或者过程调用上下文 */
