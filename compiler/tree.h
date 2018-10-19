@@ -49,8 +49,7 @@ typedef struct _tree
     struct _tree *kids[2]; /* 代表左子树和右子树 */
     Node dag_node; /* 对应的DAG节点 */
     union {
-
-        /* for general nodes. */
+  
         struct
         {
             Value val; /* 值 */
@@ -59,13 +58,12 @@ typedef struct _tree
         }
         generic;
 
-        /* for arg nodes. */
         struct
         {
             Symbol sym; /* 相关联的symbol（参数） */
             Symtab symtab; /* 相关联的符号表 */
         }
-        arg;
+        arg; /* 实参 */
 
         /* for field operation node. */
         struct
@@ -75,7 +73,6 @@ typedef struct _tree
         }
         field;
 
-        /* for function/routine call */
         struct
         {
             /* routine/function symtab，函数和过程拥有一个symtab对象，
@@ -83,9 +80,8 @@ typedef struct _tree
              因此只需要提供函数或者过程的symtab即可对其进行调用。 */
             Symtab symtab;
         }
-        call; /* 调用函数 */
+        call; /* 函数或者过程调用 */
 
-        /* for function/routine header. */
         struct
         {
             List para;					/* parameter list. */
@@ -93,27 +89,25 @@ typedef struct _tree
         }
         header; /* 函数头，需要提供参数列表以及对应的symtab */
 
-        /* for system function/routine. */
+       
         struct
         {
             int sys_id;					/* call id. */
         }
-        sys;
+        sys; /* 系统函数或者系统过程调用 */
 
-        /* for conditional jump. */
         struct
         {
             Symbol label;
             int true_or_false;
         }
-        cond_jump;
+        cond_jump; /* 条件跳转 */
 
-        /* for label. */
         struct
         {
             Symbol label;
         }
-        label;
+        label; /* 标签 */
 
     } u;
 }

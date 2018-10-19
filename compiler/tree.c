@@ -103,17 +103,6 @@ Tree not_tree(Tree source)
     return t;
 }
 
-
-/* Right tree.
- * holding arguments, comma operations.
- * root表示参数AST树的左子树，newrightpart表示表达式AST树。
- */
-Tree right_tree(Tree *root, Tree newrightpart)
-{
-    
-}
-
-
 /* arguments tree.
  * set argtree to NULL when first called.
  * argtree表示可以参数AST树、function表示函数对应的符号表、arg指向符号表中的参数链表的头部、expr表示实参
@@ -263,9 +252,7 @@ Tree assign_tree(Tree id, Tree expr)
     return t;
 }
 
-/* 
- * 标签.
- */
+/* 标签 */
 Tree label_tree(Symbol label)
 {
     Tree t;
