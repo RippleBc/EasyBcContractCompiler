@@ -21,7 +21,8 @@ program helloworld;
 		intd[5] := 50;
 		intb := 10 + 20;
 		intc := 20;
-		inta := ((intb + intc) + 3 * (intb + intc)) / 4 + intd[1] * 2;
+		inte.year := 30;
+		inta := ((intb + intc) + 3 * (intb + intc)) / 4 + intd[2] * 2 + inte.year;
 		writeln(inta);
 	end
 .
