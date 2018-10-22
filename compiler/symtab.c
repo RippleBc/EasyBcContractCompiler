@@ -641,4 +641,3 @@ symbol *find_local_symbol(symtab *tab, char *name)
     }
     return NULL;
 }
-

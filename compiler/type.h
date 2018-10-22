@@ -11,3 +11,4 @@ type *find_type_by_name(char *name);
 type *find_type_by_id(int id);
 type *clone_type(type *src);
 int get_type_size(type *pt);
+type *init_type_link(type *src)

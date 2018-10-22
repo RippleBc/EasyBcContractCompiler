@@ -224,10 +224,10 @@ program
 		/* emit asm code. */
 		emit_code(&dag_forest);
 
-		(*(IR->main_end))(&main_env);
+		// (*(IR->main_end))(&main_env);
 
 		/* call end interface. */
-		(*(IR->program_end))(&global_env);
+		// (*(IR->program_end))(&global_env);
 	}
 
 	return 0;
@@ -675,8 +675,7 @@ var_decl
 			p->type = find_type_by_id($3->type_id);
 		}
 
-		/* 检查子范围和枚举类型的符号值是否合法 */
-		p->type_link = $3;
+		p->type_link = init_type_link($3);
 
 		/* 定义符号大类 */
 		p->defn = DEF_VAR;

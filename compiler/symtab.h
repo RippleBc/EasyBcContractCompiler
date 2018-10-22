@@ -165,6 +165,5 @@ type *new_array_type(char *name,type *pindex, type *pelement);
 int align(int);
 void make_system_symtab();
 symbol *reverse_parameters(symtab *);
-
 #endif
 

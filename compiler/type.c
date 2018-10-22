@@ -225,8 +225,10 @@ type *new_array_type(char *name, type *pindex, type *pelement)
 
     /* 其中pindex必须是枚举类型或者子范围类型，pelement类可以是任意类型。 */
     if (!pindex || !pelement)
+    {
+        parse_error("need index or type", name);
         return NULL;
-
+    }
     /* 检查规定数组下界的first属性以及规定数组上界的last属性是否合法 */
     if (!pindex->first || !pindex->last || pindex->first == pindex->last)
     {
@@ -241,7 +243,6 @@ type *new_array_type(char *name, type *pindex, type *pelement)
         internal_error("Insufficient memory.");
         return NULL;
     }
-
     /* 类型名称 */
     strncpy(pt->name, name, NAME_LEN);
     /* 类型的类型 */
@@ -261,6 +262,7 @@ type *new_array_type(char *name, type *pindex, type *pelement)
         internal_error("Insufficient memory");
         return NULL;
     }
+
     return pt;
 }
 
@@ -318,12 +320,6 @@ void add_type_to_table(symtab *ptab, type *pt)
     /* 将新定义的类型插入类型链表头部 */
     pt->next = ptab->type_link;
     ptab->type_link = pt;
-
-    /* ENUM类型或者RECORD类型，将里面的自定义类型项添加到局部变量二叉树表中 */
-    // if (pt->type_id == TYPE_ENUM
-    //         || pt->type_id == TYPE_RECORD)
-    //     for(p = pt->first; p; p = p->next)
-    //         add_var_to_localtab(ptab, p);
 }
 
 type *find_type_by_name(char *name)
@@ -418,12 +414,41 @@ type *clone_type(type *src)
         break;
     case TYPE_ARRAY:
     {
-        
+        /*  */
+        type* subrange_p = new_subrange_type("$$$", TYPE_INTEGER);
+        set_subrange_bound(subrange_p, src->first->v.i, src->num_ele);
+
+        /*  */
+        type* ele_type = clone_type(src->last->type);
+
+        /*  */
+        pt = new_array_type(src->name, subrange_p, ele_type);
     }
     break;
     case TYPE_RECORD:
     {
+        symbol *first = NULL, *p = NULL, *q = NULL, *temp = NULL;
 
+        /*  */
+        temp = src->first;
+
+        for(temp; temp != NULL; temp = temp->next)
+        {
+            q = clone_symbol(temp);
+
+            if(p == NULL)
+            {
+                first = p = q;
+            }
+            else
+            {
+                p->next = q;
+                p = p->next;
+            }
+        }
+
+        /* */
+        pt = new_record_type(src->name, first);
     }
     break;
 	default:
@@ -433,8 +458,88 @@ type *clone_type(type *src)
     return pt;
 }
 
-int get_type_size(type *pt)
+type *init_type_link(type *src)
 {
+    int i;
+    switch(src->type_id)
+    {
+        case TYPE_ARRAY:
+        {
+            src = clone_type(src);
+
+            symbol *p = NULL, *q = NULL;
+            int i = 1;
+
+            /*  */
+            while(i <= src->num_ele)
+            {
+                q = new_symbol("$$$", src->last->defn, src->last->type->type_id);
+
+                snprintf(q->name, sizeof(q->name), "%d", i);
+                
+                q->type_link = init_type_link(src->last->type);
+
+                if(p == NULL)
+                {
+                    src->first = p = q;
+                }
+                else
+                {
+                    p->next = q;
+                    p = p->next;
+                }
+
+                i++;
+            }
+
+            src->last = p;
+
+            return src;
+        }
+        break;
+        case TYPE_RECORD:
+        {
+            src = clone_type(src);
+
+            /*  */
+            symbol *p = NULL, *q = NULL, *temp = NULL;
+            
+            for(temp = src->first; temp != NULL; temp = temp->next)
+            {
+
+                q = clone_symbol(temp);
+                q->type_link = init_type_link(q->type);
+
+                if(p == NULL)
+                {
+                    src->first = p = q;
+                }
+                else
+                {
+                    p->next = q;
+                    p = p->next;
+
+                    /* */
+                    if(p->next == NULL)
+                    {
+                        src->last = p;
+                    }
+                }
+            }
+
+            return src;
+        }
+        break;
+        default:
+        {
+            return src;
+        }
+        break;
+    }
+}
+
+int get_type_size(type *pt)
+{ 
     if (!pt)
         return 0;
 
@@ -447,4 +552,3 @@ int get_type_size(type *pt)
     }
     return 0;
 }
-

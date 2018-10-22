@@ -421,25 +421,26 @@ static int mark(Node cp)
 
 int emit_code(List dags)
 {
-    int should_stop = 0;
-    List cp;
+    // int should_stop = 0;
+    // List cp;
 
-    if (dump_dag)
-    {
-        print_dags(dags);
-    }
+    // if (dump_dag)
+    // {
+    //     print_dags(dags);
+    // }
     
-    for (cp = dags->link; cp; cp = cp->link)
-    {
-        if ((should_stop = mark((Node)cp->x)) < 0)
-        {
-            return should_stop;
-        }
-    }
+    // for (cp = dags->link; cp; cp = cp->link)
+    // {
+    //     if ((should_stop = mark((Node)cp->x)) < 0)
+    //     {
+    //         return should_stop;
+    //     }
+    // }
 
-    (*IR->function_process)(dags);
+    // (*IR->function_process)(dags);
 
-    return should_stop;
+    // return should_stop;
+    return 0;
 }
 
 static void print_node(Node n)

@@ -46,7 +46,6 @@ int intepret(Tree ast)
 		else {
       /*  */
       intepret(ast->kids[0]);
-
 			/* 有参数 */
 			switch (ast->u.sys.sys_id)
       {
@@ -114,6 +113,8 @@ int intepret(Tree ast)
     printf("\nLOAD\n");
 
     ast->u.generic.val.i = ast->u.generic.sym->v.i;
+
+    printf("\nload result: %d\n", ast->u.generic.val.i);
   }
   break;
   case ASGN:
@@ -235,4 +236,10 @@ int intepret(Tree ast)
   }
 
   return 1;
+}
+
+
+void astCompute()
+{
+
 }

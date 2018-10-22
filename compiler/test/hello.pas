@@ -14,9 +14,10 @@ program helloworld;
 		intd : arr;
 		inte : date;
 	begin
+		intd[1] := 10;
 		intb := 10 + 20;
 		intc := 20;
-		inta := ((intb + intc) + 3 * (intb + intc)) / 4;
+		inta := ((intb + intc) + 3 * (intb + intc)) / 4 + intd[1] * 2;
 		writeln(inta);
 	end
 .
