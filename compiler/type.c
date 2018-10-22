@@ -461,6 +461,8 @@ type *clone_type(type *src)
 type *init_type_link(type *src)
 {
     int i;
+    type *new_type;
+
     switch(src->type_id)
     {
         case TYPE_ARRAY:
@@ -491,7 +493,7 @@ type *init_type_link(type *src)
 
                 i++;
             }
-
+            
             src->last = p;
 
             return src;

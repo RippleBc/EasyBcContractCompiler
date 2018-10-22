@@ -15,6 +15,10 @@ program helloworld;
 		inte : date;
 	begin
 		intd[1] := 10;
+		intd[2] := 20;
+		intd[3] := 30;
+		intd[4] := 40;
+		intd[5] := 50;
 		intb := 10 + 20;
 		intc := 20;
 		inta := ((intb + intc) + 3 * (intb + intc)) / 4 + intd[1] * 2;

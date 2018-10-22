@@ -38,7 +38,6 @@ int intepret(Tree ast)
   	break;
 	case SYS:
 	{
-    printf("\nSYS\n");
 		if (ast->kids[0] == NULL)
 		{
 			/* 没有参数 */
@@ -55,7 +54,7 @@ int intepret(Tree ast)
 					p = ast->kids[0]->u.arg.sym;
 
           /*  */
-        	printf("%d", p->v.i);
+        	printf("\n%d\n", p->v.i);
         }
         break;
       }
@@ -64,7 +63,7 @@ int intepret(Tree ast)
 	break;
 	case RIGHT:
 	{
-    printf("\nRIGHT\n");
+    printf("\nRIGHT, ");
 
 		/* 计算表达式AST节点对应的值 */
   	if(ast->kids[0]->kids[0] != NULL || ast->kids[0]->kids[1] != NULL)
@@ -87,7 +86,7 @@ int intepret(Tree ast)
 	break;
 	case ARG:
 	{
-    printf("\nARG\n");
+    printf("\nARG, ");
 
 		/* 计算参数的值 */
   	if(ast->kids[0] != NULL)
@@ -110,46 +109,89 @@ int intepret(Tree ast)
 	break;
   case LOAD:
   {
-    printf("\nLOAD\n");
+    /*  */
+    if(ast->kids[0])
+    {
+      intepret(ast->kids[0]);
+      ast->u.generic.sym = ast->kids[0]->u.generic.sym;
+      ast->u.generic.val.i = ast->kids[0]->u.generic.sym->v.i;
+    }
+    else
+    {
+      ast->u.generic.val.i = ast->u.generic.sym->v.i;
+    }
 
-    ast->u.generic.val.i = ast->u.generic.sym->v.i;
+    printf("load %s\n", ast->u.generic.sym->name);
+  }
+  break;
+  case FIELD:
+  {
+    
+    ast->u.generic.sym = ast->u.field.field;
+  }
+  break;
+  case ARRAY:
+  {
+    char ele_name[NAME_LEN];
+    /* */
+    for(p = ast->u.generic.sym->type_link->first; p != NULL; p = p->next)
+    {
+      intepret(ast->kids[0]);
 
-    printf("\nload result: %d\n", ast->u.generic.val.i);
+      snprintf(ele_name, sizeof(ele_name), "%d", ast->kids[0]->u.generic.val.i);
+      if(is_symbol(p, ele_name))
+      {
+        ast->u.generic.sym = p;
+        break;
+      }
+    }
+    if(p == NULL)
+    {
+      parse_error("array index out of bound", "");
+      return 0;
+    }
+  }
+  break;
+  case ADDRG:
+  {
+    /*  */
+    if(ast->kids[0])
+    {
+      intepret(ast->kids[0]);
+      ast->u.generic.sym = ast->kids[0]->u.generic.sym;
+    }
   }
   break;
   case ASGN:
   {
-    printf("\nASGN\n");
-
-  	/* 对应的符号 */
-  	p = ast->kids[0]->u.generic.sym;
+    /*  */
+    if(ast->kids[0])
+    {
+      intepret(ast->kids[0]);
+    }
 
   	/* 计算表达式AST节点对应的值 */
   	if(ast->kids[1])
   	{
+      printf("asign begin %s %d\n", ast->kids[0]->u.generic.sym->name, ast->kids[0]->u.generic.sym->v.i);
   		intepret(ast->kids[1]);
+      printf("asign end %s %d\n", ast->kids[0]->u.generic.sym->name, ast->kids[0]->u.generic.sym->v.i);
   	}
   	
+    /* 对应的符号 */
+    p = ast->kids[0]->u.generic.sym;
+    
   	/* 变量赋值 */
   	p->v.i = ast->kids[1]->u.generic.val.i;
-
-    printf("\nasign result %d\n", p->v.i);
   }
   break;
   case CNST:
   {
-    printf("\nCONST\n");
-
     ast->u.generic.val.i = ast->u.generic.sym->v.i;
-
-    printf("\nconst result: %d\n", ast->u.generic.val.i);
-
   }
   break;
   case ADD:
   {
-    printf("\nADD\n");
-
   	/* 计算左表达式AST节点对应的值 */
   	if(ast->kids[0])
   	{
@@ -163,14 +205,10 @@ int intepret(Tree ast)
   	}
 
   	ast->u.generic.val.i = ast->kids[0]->u.generic.val.i + ast->kids[1]->u.generic.val.i;
-
-    printf("\nadd result %d\n", ast->u.generic.val.i);
   }
   break;
   case SUB:
   {
-    printf("\nSUB\n");
-
   	/* 计算左表达式AST节点对应的值 */
   	if(ast->kids[0] != NULL)
   	{
@@ -188,8 +226,6 @@ int intepret(Tree ast)
   break;
   case MUL:
   {
-    printf("\nMUL\n");
-
     /* 计算左表达式AST节点对应的值 */
     if(ast->kids[0] != NULL)
     {
@@ -203,14 +239,10 @@ int intepret(Tree ast)
     }
 
     ast->u.generic.val.i = ast->kids[0]->u.generic.val.i * ast->kids[1]->u.generic.val.i;
-
-    printf("\nmul result %d\n", ast->u.generic.val.i);
   }
   break;
   case DIV:
   {
-    printf("\nDIV\n");
-
     /* 计算左表达式AST节点对应的值 */
     if(ast->kids[0] != NULL)
     {
@@ -224,8 +256,6 @@ int intepret(Tree ast)
     }
 
     ast->u.generic.val.i = ast->kids[0]->u.generic.val.i / ast->kids[1]->u.generic.val.i;
-
-    printf("\ndiv result %d\n", ast->u.generic.val.i);
   }
   break;
   case BLOCKBEG:

@@ -169,8 +169,8 @@ Tree record_field_tree(Symbol record, Symbol field)
     t->u.field.record = record;
     /* 属性对应的符号 */
     t->u.field.field = field;
-    return t;
 
+    return t;
 }
 
 /* 数组下标 */
@@ -181,6 +181,7 @@ Tree array_index_tree(Symbol array, Tree expr)
     t = new_tree(ARRAY, array->type->first->type, expr, NULL);
     /* 对应的array符号 */
     t->u.generic.sym = array;
+
     return t;
 }
 
@@ -191,8 +192,6 @@ Tree const_tree(Symbol const_val)
 
     t = new_tree(CNST, const_val->type, NULL, NULL);
     t->u.generic.sym = const_val;
-    printf("\ncreate const tree\n");
-
 
     return t;
 }

@@ -65,6 +65,14 @@ typedef struct _tree
         }
         arg; /* 实参 */
 
+        /* for element operation */
+        struct
+        {
+            Symbol array; /*  */
+            Symbol ele; /*  */
+        }
+        element; /*  */
+
         /* for field operation node. */
         struct
         {

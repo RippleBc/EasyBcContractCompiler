@@ -1002,6 +1002,7 @@ expression oRB
 	
 	/* 数组AST节点 */
 	t = array_index_tree(p, $4);
+	
 	/* 地址AST节点 */
 	t = address_tree(t, p);
 
