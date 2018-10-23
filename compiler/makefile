@@ -16,24 +16,7 @@ COMPILER_HEADER=common.h \
 				tree.h \
 				dag.h
 
-COMPILER_SOURCE= common.h \
-				error.c \
-				config.h \
-				main.c \
-				symtab.c \
-				symtab.h \
-				type.c \
-				rule.c \
-				lex.yy.c \
-				alloc.c \
-				tree.c \
-				tree.h \
-				list.c \
-				dag.h \
-				dag.c \
-				ops.c \
-				opti.c \
-				intepreter.c
+
 
 COMPILER_OBJS=error.o \
 			  lex.yy.o \
@@ -57,22 +40,23 @@ COMPILER_AUTOFILES=lex.yy.c \
 
 all: $(COMPILER_DIST)
 
-dag.o: dag.c common.h
+dag.o: dag.c
 	$(CC) $(CFLAGS) -c $<
 
-alloc.o: alloc.c common.h
+alloc.o: alloc.c
 	$(CC) $(CFLAGS) -c $<
 
-%.o:%.c $(COMPILER_HEADER)
+%.o:%.c
 	$(CC) $(CFLAGS) -c $<
 
 lex.yy.c:spl.l rule.c
 	$(FLEX) $(FLEXFLAGS) spl.l
 
+# $@--目标文件, $^--所有的依赖文件, $<--第一个依赖文件
 rule.c:spl.y
-	$(BISON) $(BISONFLAGS) -o rule.c $<
+	$(BISON) $(BISONFLAGS) -o $@ $<
 
-$(COMPILER_DIST):$(COMPILER_OBJS) $(COMPILER_HEADER)
+$(COMPILER_DIST):$(COMPILER_OBJS)
 	gcc -o $(COMPILER_DIST) $(LDFLAGS) $(COMPILER_OBJS)
 
 clean:
