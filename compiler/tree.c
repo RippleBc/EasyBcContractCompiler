@@ -128,8 +128,8 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
             /* expr中的类型 */
             t = new_tree(ARG, expr->result_type, expr, NULL);
 
-        t->u.arg.sym = arg; /* 参数符号 */
-        t->u.arg.symtab = function; /* 函数符号表 */
+        t->u.generic.sym = arg; /* 参数符号 */
+        t->u.generic.symtab = function; /* 函数符号表 */
         return t;
     }
 
@@ -153,8 +153,8 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
         right = right->kids[1];
     }
 
-    right->u.arg.sym = arg; /* 参数符号 */
-    right->u.arg.symtab = function; /* 函数符号表 */
+    right->u.generic.sym = arg; /* 参数符号 */
+    right->u.generic.symtab = function; /* 函数符号表 */
 
     return argtree;
 }
@@ -202,7 +202,7 @@ Tree call_tree(Symtab routine, Tree argstree)
     Tree t;
 
     t = new_tree(CALL, routine->type, argstree, NULL);
-    t->u.call.symtab = routine;
+    t->u.generic.symtab = routine;
     return t;
 }
 
@@ -260,7 +260,7 @@ Tree label_tree(Symbol label)
     Tree t;
 
     t = new_tree(LABEL, label->type, NULL, NULL);
-    t->u.label.label = label;
+    t->u.generic.sym = label;
     return t;
 }
 
@@ -330,7 +330,7 @@ static void print_tree(Tree tp)
         printf("%s (%s)\n", get_op_name(generic(tp->op)), tp->u.generic.sym->name);
         break;
     case LABEL:
-        printf("LABEL (%s)\n", tp->u.label.label->name);
+        printf("LABEL (%s)\n", tp->u.generic.sym->name);
         break;
     case JUMP:
         printf("JUMP (%s)\n", tp->u.generic.sym->name);

@@ -214,7 +214,7 @@ Node travel(Tree tp)
         p = new_node(op, l, NULL, NULL);
 
         /* 自定义函数或者过程调用对应的符号表 */
-        p->symtab = tp->u.call.symtab;
+        p->symtab = tp->u.generic.symtab;
         break;
     case SYS:
         l = travel(tp->kids[0]);
@@ -238,10 +238,10 @@ Node travel(Tree tp)
         r = travel(tp->kids[1]);
 
         /* tp->u.arg.sym表示参数对应的符号 */
-        p = new_node(op, l, r, tp->u.arg.sym);
+        p = new_node(op, l, r, tp->u.generic.sym);
 
         /* tp->u.arg.symtab表示对应的符号表 */
-        p->symtab = tp->u.arg.symtab;
+        p->symtab = tp->u.generic.symtab;
         break;
     case EQ:
     case NE:
@@ -345,7 +345,7 @@ Node travel(Tree tp)
         p = new_node(tp->op, NULL, NULL, NULL);
         break;
     case LABEL:
-        p = new_node(tp->op, NULL, NULL, tp->u.label.label);
+        p = new_node(tp->op, NULL, NULL, tp->u.generic.sym);
         break;
     case INCR:
     case DECR:

@@ -58,20 +58,6 @@ typedef struct _tree
         }
         generic;
 
-        struct
-        {
-            Symbol sym; /* 相关联的symbol（参数） */
-            Symtab symtab; /* 相关联的符号表 */
-        }
-        arg; /* 实参 */
-
-        /* for element operation */
-        struct
-        {
-            Symbol array; /*  */
-            Symbol ele; /*  */
-        }
-        element; /*  */
 
         /* for field operation node. */
         struct
@@ -80,15 +66,6 @@ typedef struct _tree
             Symbol field; /* 相关联的symbol（record中的字段） */
         }
         field;
-
-        struct
-        {
-            /* routine/function symtab，函数和过程拥有一个symtab对象，
-             其中定义了函数中的局部变量（参数以及变量）、自定义类型、返回值类型等信息。
-             因此只需要提供函数或者过程的symtab即可对其进行调用。 */
-            Symtab symtab;
-        }
-        call; /* 函数或者过程调用 */
 
         struct
         {
@@ -110,13 +87,6 @@ typedef struct _tree
             int true_or_false;
         }
         cond_jump; /* 条件跳转 */
-
-        struct
-        {
-            Symbol label;
-        }
-        label; /* 标签 */
-
     } u;
 }
 tree;

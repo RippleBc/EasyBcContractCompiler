@@ -33,6 +33,41 @@ int intepret(Tree ast)
 
   switch (generic(ast->op))
   {
+  case SYS:
+  {
+    if (ast->kids[0] == NULL)
+    {
+      /* 没有参数 */
+    }
+    else {
+      /*  */
+      intepret(ast->kids[0]);
+      /* 有参数 */
+      switch (ast->u.sys.sys_id)
+      {
+        case pWRITELN:
+        {
+          /* 参数对应的符号 */
+          p = ast->kids[0]->u.generic.sym;
+
+          /*  */
+          printf("\n%d\n", p->v.i);
+        }
+        break;
+      }
+    }
+  }
+  break;
+  case CALL:
+  {
+    /*  */
+    
+  }
+  break;
+  }
+
+  switch (generic(ast->op))
+  {
 	case RIGHT:
 	{
     printf("\nRIGHT, ");
@@ -44,7 +79,7 @@ int intepret(Tree ast)
   	}
 
     /* 参数对应的符号 */
-    p = ast->u.arg.sym;
+    p = ast->u.generic.sym;
 
     /* 参数赋值 */
     p->v.i = ast->kids[0]->u.generic.val.i;
@@ -67,7 +102,7 @@ int intepret(Tree ast)
   	}
 
     /* 参数对应的符号 */
-    p = ast->u.arg.sym;
+    p = ast->u.generic.sym;
 
   	/* 参数赋值 */
   	p->v.i = ast->kids[0]->u.generic.val.i;
@@ -79,9 +114,6 @@ int intepret(Tree ast)
   	}
 	}
 	break;
-  
-  
-  
   }
 
   switch (generic(ast->op))
@@ -89,31 +121,6 @@ int intepret(Tree ast)
     case CNST:
     {
       ast->u.generic.val.i = ast->u.generic.sym->v.i;
-    }
-    break;
-    case SYS:
-    {
-      if (ast->kids[0] == NULL)
-      {
-        /* 没有参数 */
-      }
-      else {
-        /*  */
-        intepret(ast->kids[0]);
-        /* 有参数 */
-        switch (ast->u.sys.sys_id)
-        {
-          case pWRITELN:
-          {
-            /* 参数对应的符号 */
-            p = ast->kids[0]->u.arg.sym;
-
-            /*  */
-            printf("\n%d\n", p->v.i);
-          }
-          break;
-        }
-      }
     }
     break;
   }

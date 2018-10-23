@@ -1462,7 +1462,7 @@ expression kOF case_expr_list
 	for (i = 0; i < n; i += 2)
 	{
 		/* 获取标签符号（CASE子句的入口） */
-		new_label = cases[i]->u.label.label;
+		new_label = cases[i]->u.generic.sym;
 		/* 比较AST节点（CASE子句判断条件） */
 		t = compare_expr_tree(EQ, $3, cases[i + 1]);
 		/* 条件跳转AST节点（条件为真时跳转到指定的CASE子句） */
