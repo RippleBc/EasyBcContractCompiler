@@ -14,13 +14,10 @@ COMPILER_HEADER=common.h \
 				config.h \
 				symtab.h \
 				tree.h \
-				dag.h \
-				config.h
+				dag.h
 
 COMPILER_SOURCE= common.h \
 				error.c \
-				h.l \
-				h.y \
 				config.h \
 				main.c \
 				symtab.c \
@@ -52,10 +49,8 @@ COMPILER_OBJS=error.o \
 			  opti.o \
 			  intepreter.o
 
-COMPILER_AUTOFILES=y.tab.c \
-				   lex.yy.c \
+COMPILER_AUTOFILES=lex.yy.c \
 				   rule.c \
-				   h.tab.h \
 				   rule.h
 
 .SUFFIXES:.c
