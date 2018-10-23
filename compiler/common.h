@@ -196,7 +196,6 @@ BlockContext;
 
 typedef struct interface
     {
-
         /* type interface */
         Metrics charmetric;
         Metrics shortmetric;
