@@ -1260,7 +1260,7 @@ stmt kUNTIL expression
 	/* 标签符号（REPEAT结构的入口） */
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 条件跳转AST节点（条件为真时，跳转到REPEAT结构的入口） */
-	t = cond_jump_tree($5, true, new_label);
+	t = cond_jump_tree($5, false, new_label);
 	list_append(&ast_forest, t);
 
 	pop_lbl_stack();
@@ -1493,7 +1493,6 @@ case_expr
 	case_label_count = pop_case_stack();
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "case_%d_%d", top_lbl_stack(), case_label_count++);
 	mini_buf[sizeof(mini_buf) - 1] = 0;
-
 	push_case_stack(case_label_count);
 
 	/* 标签符号（CASE子句的入口） */

@@ -237,7 +237,6 @@ Tree binary_expr_tree(int op, Tree left, Tree right)
 Tree compare_expr_tree(int op, Tree left, Tree right)
 {
     Tree t;
-
     /* AST树类型为布尔型 */
     t = new_tree(op, find_type_by_id(TYPE_BOOLEAN), left, right);
     return t;

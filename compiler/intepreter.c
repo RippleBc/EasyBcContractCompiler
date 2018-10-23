@@ -11,15 +11,32 @@ Symbol q;
 List cp;
 
 static int label_tree_index = 0;
-static List label_tree_queue[128];
+static List label_tree_queue[256];
 
 void ast_process(List asts)
 {
     ptab = Global_symtab;
+    Tree t;
+    
+    /*  */
+    for(cp = asts->link; cp != NULL; cp = cp->link)
+    {
+      t = (Tree)(cp->x);
+      if(generic(t->op) == LABEL)
+      {
+        label_tree_queue[label_tree_index++] = cp;
+      }
+    }
 
+    /*  */
     for(cp = asts->link; cp != NULL; cp = cp->link)
     {
       interpret((Tree)(cp->x));
+      if(cp == NULL)
+      {
+        printf("*********************ERROR*********************");
+        break;
+      }
     }
 }
 
@@ -39,22 +56,9 @@ void jump_to_label(Symbol label)
     i--;
   }
 
-  /*  */
-  if(i < 0)
-  {
-    for(cp = cp->link; cp != NULL; cp = cp->link)
-    {
-      Tree ast = (Tree)(cp->x);
-      if(generic(ast->op) == LABEL && !strcmp(ast->u.generic.sym->name, label->name))
-      {
-        return;
-      }
-    }
-  }
-
   if(cp == NULL)
   {
-    parse_error("label is not exist %s", label->name);
+    printf("label is not exist %s", label->name);
   }
 }
 
@@ -62,9 +66,29 @@ void interpret(Tree ast)
 {
   switch (generic(ast->op))
   {
+    case INCR:
+    {
+      /* */
+      interpret(ast->kids[0]);
+      /* */
+      ast->kids[0]->u.generic.sym->v.i++;
+    }
+    break;
+    case DECR:
+    {
+      /*  */
+      interpret(ast->kids[0]);
+      /*  */
+      ast->kids[0]->u.generic.sym->v.i--;
+    }
+    break;
+  }
+
+  switch (generic(ast->op))
+  {
   case LABEL:
   {
-    label_tree_queue[label_tree_index++] = cp;
+    
   }
   break;
   case JUMP:
@@ -188,7 +212,7 @@ void interpret(Tree ast)
     case ARRAY:
     {
       char ele_name[NAME_LEN];
-      /* */
+      /*  */
       for(p = ast->u.generic.sym->type_link->first; p != NULL; p = p->next)
       {
         interpret(ast->kids[0]);
@@ -325,6 +349,108 @@ void interpret(Tree ast)
       ast->u.generic.val.i = ast->kids[0]->u.generic.val.i / ast->kids[1]->u.generic.val.i;
     }
     break;
+    case EQ:
+    {
+      /* 计算左表达式AST节点对应的值 */
+      if(ast->kids[0] != NULL)
+      {
+        interpret(ast->kids[0]);
+      }
+
+      /* 计算右表达式AST节点对应的值 */
+      if(ast->kids[1] != NULL)
+      {
+        interpret(ast->kids[1]);
+      }
+
+      ast->u.generic.val.i = ast->kids[0]->u.generic.val.i == ast->kids[1]->u.generic.val.i;
+    }
+    break;
+    case NE:
+    {
+      /* 计算左表达式AST节点对应的值 */
+      if(ast->kids[0] != NULL)
+      {
+        interpret(ast->kids[0]);
+      }
+
+      /* 计算右表达式AST节点对应的值 */
+      if(ast->kids[1] != NULL)
+      {
+        interpret(ast->kids[1]);
+      }
+
+      ast->u.generic.val.i = ast->kids[0]->u.generic.val.i != ast->kids[1]->u.generic.val.i;
+    }
+    break;
+    case GE:
+    {
+      /* 计算左表达式AST节点对应的值 */
+      if(ast->kids[0] != NULL)
+      {
+        interpret(ast->kids[0]);
+      }
+
+      /* 计算右表达式AST节点对应的值 */
+      if(ast->kids[1] != NULL)
+      {
+        interpret(ast->kids[1]);
+      }
+
+      ast->u.generic.val.i = ast->kids[0]->u.generic.val.i >= ast->kids[1]->u.generic.val.i;
+    }
+    break;
+    case GT:
+    {
+      /* 计算左表达式AST节点对应的值 */
+      if(ast->kids[0] != NULL)
+      {
+        interpret(ast->kids[0]);
+      }
+
+      /* 计算右表达式AST节点对应的值 */
+      if(ast->kids[1] != NULL)
+      {
+        interpret(ast->kids[1]);
+      }
+
+      ast->u.generic.val.i = ast->kids[0]->u.generic.val.i > ast->kids[1]->u.generic.val.i;
+    }
+    break;
+    case LE:
+    {
+      /* 计算左表达式AST节点对应的值 */
+      if(ast->kids[0] != NULL)
+      {
+        interpret(ast->kids[0]);
+      }
+
+      /* 计算右表达式AST节点对应的值 */
+      if(ast->kids[1] != NULL)
+      {
+        interpret(ast->kids[1]);
+      }
+
+      ast->u.generic.val.i = ast->kids[0]->u.generic.val.i <= ast->kids[1]->u.generic.val.i;
+    }
+    break;
+    case LT:
+    {
+      /* 计算左表达式AST节点对应的值 */
+      if(ast->kids[0] != NULL)
+      {
+        interpret(ast->kids[0]);
+      }
+
+      /* 计算右表达式AST节点对应的值 */
+      if(ast->kids[1] != NULL)
+      {
+        interpret(ast->kids[1]);
+      }
+
+      ast->u.generic.val.i = ast->kids[0]->u.generic.val.i < ast->kids[1]->u.generic.val.i;
+    }
+    break;
   }
 
   switch (generic(ast->op))
@@ -336,10 +462,4 @@ void interpret(Tree ast)
     case BLOCKEND:
         break;
   }
-}
-
-
-void astCompute()
-{
-
 }
