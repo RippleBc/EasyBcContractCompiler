@@ -205,25 +205,6 @@ typedef struct interface
         Metrics doublemetric;
         Metrics pointermetric;
         Metrics structmetric;
-
-        /* function interface. */
-        int (*program_begin)(Env *);
-        int (*program_end)(Env *);
-        int (*main_begin)(Env *);
-        int (*main_end)(Env *);
-        int (*def_address)(Symbol p, Symbol q, long n);
-        int (*block_begin)(BlockContext *context);
-        int (*block_end)(BlockContext *context);
-        int (*global_variable)(Symbol symbol);
-        int (*local_variable)(Symbol symbol);
-        int (*def_label)(Symbol symbol);
-        int (*def_const)(int type, Value value);
-        int (*alloc_space)(int n);
-        int (*mark_node)(Node rootnode);
-        int (*gen_code)(Node rootnode);
-        int (*function_process)(List dags);
-        void (*def_export)(Symbol);
-        void (*def_import)(Symbol);
     }
 Interface;
 

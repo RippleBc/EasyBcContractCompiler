@@ -4,10 +4,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "common.h"
-#include "symtab.h"
-#include "error.h"
-#include "tree.h"
+#include "../common.h"
+#include "../libs/symtab.h"
+#include "../libs/error.h"
+#include "../libs/tree.h"
 
 extern char *yytext; /* flex用于记录匹配到的字符串 */
 symtab *ptab; /* 符号表表头 */
@@ -46,21 +46,6 @@ List pop_case_ast_stack();
 List top_case_ast_stack();
 void push_case_ast_stack(List newlist);
 
-/*  */
-#define MAX_CALL_LEVEL 16
-
-static symbol *call_sym[MAX_CALL_LEVEL];
-static symtab *call_stk[MAX_CALL_LEVEL];
-
-static int call_tos = MAX_CALL_LEVEL - 1;
-
-symtab *top_call_stack();
-symtab *pop_call_stack();
-symbol *top_call_symbol();
-void set_call_stack_top(symbol *p);
-void push_call_stack(symtab *p);
-
-/*  */
 struct list ast_forest;
 struct list para_list;				/* for parameter list. */
 List  case_list = NULL;       /* CASE结构使用 */
@@ -238,6 +223,11 @@ program
 
 		/* emit asm code. */
 		emit_code(&dag_forest);
+
+		// (*(IR->main_end))(&main_env);
+
+		/* call end interface. */
+		// (*(IR->program_end))(&global_env);
 	}
 
 	return 0;
@@ -268,6 +258,8 @@ program_head
 	Global_symtab->defn = DEF_PROG;
 
 	global_env.u.program.tab = Global_symtab;
+	/* call initialization interface. */
+	(*(IR->program_begin))(&global_env);
 }
 |error oSEMI
 ;
@@ -276,6 +268,7 @@ sub_program
 :routine_head
 {
 	main_env.u.main.tab = Global_symtab;
+	(*(IR->main_begin))(&main_env);
 	list_clear(&ast_forest);
 	list_clear(&para_list);
 	/* 将全局符号表压入符号表栈中 */
@@ -2041,39 +2034,4 @@ Symbol install_temporary_symbol(char *name, int deftype, int typeid)
 
 void trap_in_debug(){
 	printf("trap_in_debug()\n");
-}
-
-symtab *top_call_stack( )
-{
-    return call_stk[call_tos + 1];
-}
-
-symtab *pop_call_stack()
-{
-    call_tos++;
-    if (call_tos == MAX_CALL_LEVEL)
-        internal_error("call stack underflow.");
-    rtn = call_stk[call_tos];
-    arg = call_sym[call_tos];
-    return call_stk[call_tos];
-}
-
-symbol *top_call_symbol( )
-{
-    return call_sym[call_tos + 1];
-}
-
-void set_call_stack_top(symbol *p)
-{
-    call_sym[call_tos + 1] = p;
-}
-
-void push_call_stack(symtab *p)
-{
-    call_stk[call_tos] = p;
-    call_sym[call_tos] = p->args;
-    rtn = p;
-    call_tos--;
-    if (call_tos == -1)
-        internal_error("call stack overflow.");
 }

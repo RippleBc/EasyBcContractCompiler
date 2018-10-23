@@ -35,7 +35,6 @@ COMPILER_SOURCE= common.h \
 				dag.h \
 				dag.c \
 				ops.c \
-				x86linux.c \
 				opti.c \
 				intepreter.c
 
@@ -50,7 +49,6 @@ COMPILER_OBJS=error.o \
 			  list.o \
 			  dag.o \
 			  ops.o \
-			  x86linux.o \
 			  opti.o \
 			  intepreter.o
 

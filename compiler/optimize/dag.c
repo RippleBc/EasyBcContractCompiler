@@ -1,4 +1,4 @@
-#include "common.h"
+#include "../common.h"
 
 #include _YTAB_H_
 
@@ -405,19 +405,19 @@ int gen_dag(List ast_forest, List dag_forest)
     return dag_count;
 }
 
-// static int mark(Node cp)
-// {
-//     /* mark children first. */
-//     if (cp->kids[0])
-//         mark(cp->kids[0]);
-//     if (cp->kids[1])
-//         mark(cp->kids[1]);
-//     if (cp->kids[2])
-//         mark(cp->kids[2]);
+static int mark(Node cp)
+{
+    /* mark children first. */
+    if (cp->kids[0])
+        mark(cp->kids[0]);
+    if (cp->kids[1])
+        mark(cp->kids[1]);
+    if (cp->kids[2])
+        mark(cp->kids[2]);
 
-//     /* mark node itself. */
-//     return (*IR->mark_node)(cp);
-// }
+    /* mark node itself. */
+    return (*IR->mark_node)(cp);
+}
 
 int emit_code(List dags)
 {

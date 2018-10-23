@@ -33,35 +33,24 @@ int dump_token = 0;
 
 void print_result(char *);
 
-extern Interface x86_linux_interface;
 extern union header *arena[LASTARENA];
 
-Binding bindings[] =
-{
-    {"x86linux", &x86_linux_interface}
+Interface x86_linux_interface = {
+    {1, 1},     /* charmetric */
+    {2, 2},     /* shortmetric */
+    {4, 4},     /* intmetric */
+    {4, 4},     /* floatmetric */
+    {8, 8},     /* doublemetric */
+    {4, 4},     /* pointermetric */
+    {4, 4},     /* structmetric */
 };
 
 Interface *IR = &x86_linux_interface;
 
 void init_spl()
 {
-	memset(arena, 0, sizeof(arena));
-	signup();
-}
-
-Interface * find_target(char *target_name)
-{
-    int i;
-
-    for (i = 0; i < sizeof(bindings) / sizeof(Binding); i++)
-    {
-        if (strcasecmp(bindings[i].name, target_name) == 0)
-        {
-            return bindings[i].ir;
-        }
-    }
-
-    return NULL;
+    memset(arena, 0, sizeof(arena));
+    signup();
 }
 
 void prepare_file(char *fname)
@@ -86,11 +75,7 @@ void prepare_file(char *fname)
 
     snprintf(pasname, sizeof(pasname), "%s.pas", fname);
 
-
-	if (IR == &x86_linux_interface)
-    	snprintf(datname, sizeof(datname), "%s.s", fname);
-	else
-    	snprintf(datname, sizeof(datname), "%s.asm", fname);
+    snprintf(datname, sizeof(datname), "%s.asm", fname);
 
     snprintf(codname, sizeof(codname), "%s.cod", fname);
     snprintf(errname, sizeof(errname), "%s.err", fname);
@@ -138,7 +123,7 @@ int main(int argc, char **argv)
 
     if (argc == 1)
     {
-        printf("\nUsage :%s [-t targetmachine] [-d stad] filename[.pas]\n\n", argv[0]);
+        printf("\nUsage :%s [-d stad] filename[.pas]\n\n", argv[0]);
         return 1;
     }
 
@@ -158,26 +143,6 @@ int main(int argc, char **argv)
         {
             switch(arg[0][1])
             {
-            case 't':
-				if (strlen(*arg) == 2)
-				{
-                	arg++;
-                	IR = find_target(*arg);
-				}
-				else
-				{
-                	IR = find_target(*arg + 2);
-				}
-
-                if (IR == NULL)
-                {
-                    printf("Can't find target %s, only x86linux is supported.\n",
-                           *arg);
-                    return 1;
-                }
-
-                arg++;
-                break;
             case 'd':
                 {
                     char *p = arg[1];
