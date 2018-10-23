@@ -1253,7 +1253,7 @@ repeat_stmt
 	t = label_tree(new_label);
 	list_append(&ast_forest, t);
 }
-stmt_list kUNTIL expression
+stmt kUNTIL expression
 {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "repeat_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;

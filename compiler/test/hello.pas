@@ -22,7 +22,26 @@ program helloworld;
 		intb := 10 + 20;
 		intc := 20;
 		inte.year := 30;
-		inta := ((intb + intc) + 3 * (intb + intc)) / 4 + intd[2] * 2 + inte.year;
+		inte.month := 5;
+		inta := ((intb + intc) + 3 * (intb + intc)) / 4 + intd[2] * 2 + inte.month;
 		writeln(inta);
+
+		if(1) then
+		begin
+			writeln(1);
+			if(0) then
+			begin
+				writeln(1);
+			end
+			else writeln(0);
+		end
+		else writeln(0);
+
+		
+
+
+
+
+		writeln(100);
 	end
 .
