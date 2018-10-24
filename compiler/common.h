@@ -174,7 +174,7 @@ extern Env main_env; /* 主程序 */
 #include "tree.h"
 
 /* nodes and dags. */
-#include "dag.h"
+#include "./optimize/dag.h"
 
 /* target interface */
 #include "config.h"

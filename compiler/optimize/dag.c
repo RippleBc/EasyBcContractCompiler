@@ -1,5 +1,5 @@
-#include "common.h"
-#include "./parser/rule.h"
+#include "../common.h"
+#include "../parser/rule.h"
 
 static int where = DAG; /* 定义DAG所在内存区域 */
 

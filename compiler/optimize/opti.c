@@ -1,5 +1,5 @@
-#include "common.h"
-#include "./parser/rule.h"
+#include "../common.h"
+#include "../parser/rule.h"
 
 static int folding_const = 0;
 
