@@ -161,99 +161,8 @@ Node travel(Tree tp)
         /* tp->u.generic.sym表示数组对应的符号 */
         p = node(op, l, NULL, tp->u.generic.sym);
         break;
-    case AND:
-    case OR:
-        if (depth++ == 0)
-            reset();
-
-        l = travel(tp->kids[0]);
-        r = travel(tp->kids[1]);
-        depth--;
-        p = node(op, l, r, NULL);
-
-        /* 常量合并 */
-        const_folding(p);
-        break;
-    case NOT:
-        depth++;
-        l = travel(tp->kids[0]);
-        depth--;
-        p = node(op, l, NULL, NULL);
-
-        /* 常量合并 */
-        const_folding(p);
-        break;
-    case COND:
-        /* tp->kids[0]表示判断条件（表达式） */
-        l = travel(tp->kids[0]);
-        reset();
-        p = new_node(op, l, NULL, tp->u.cond_jump.label);
-
-        /* 跳转标签符号 */
-        p->u.cond.label = tp->u.cond_jump.label;
-
-        /* 跳转条件（为真跳转还是为假跳转） */
-        p->u.cond.true_or_false = tp->u.cond_jump.true_or_false;
-        break;
     case CNST:
         p = new_node(op, NULL, NULL, tp->u.generic.sym);
-        break;
-    case RIGHT:
-        /* 参数AST节点的子节点，表示实参 */
-        l = travel(tp->kids[0]);
-        r = travel(tp->kids[1]);
-        p = node(op, l, r, NULL);
-        break;
-    case JUMP:
-        p = new_node(op, NULL, NULL, tp->u.generic.sym);
-        reset();
-        break;
-    case CALL:
-        l = travel(tp->kids[0]);
-        p = new_node(op, l, NULL, NULL);
-
-        /* 自定义函数或者过程调用对应的符号表 */
-        p->symtab = tp->u.generic.symtab;
-        break;
-    case SYS:
-        l = travel(tp->kids[0]);
-        p = new_node(op, l, NULL, NULL);
-
-        /* 对应系统函数或者系统过程的ID */
-        p->u.sys_id = tp->u.sys.sys_id;
-
-        /* 读取字符或者读取字符串操作 */
-        if (p->u.sys_id == pREAD || p->u.sys_id == pREADLN)
-        {
-            /* 地址AST树的第一个子节点为空，变量类型不是数组或者记录 */
-            if (tp->kids[0]->kids[0] == NULL)
-                kill_nodes(tp->kids[0]->u.generic.sym);
-            else
-                reset();
-        }
-        break;
-    case ARG:
-        l = travel(tp->kids[0]);
-        r = travel(tp->kids[1]);
-
-        /* tp->u.arg.sym表示参数对应的符号 */
-        p = new_node(op, l, r, tp->u.generic.sym);
-
-        /* tp->u.arg.symtab表示对应的符号表 */
-        p->symtab = tp->u.generic.symtab;
-        break;
-    case EQ:
-    case NE:
-    case GT:
-    case GE:
-    case LE:
-    case LT:
-        l = travel(tp->kids[0]);
-        r = travel(tp->kids[1]);
-        p = node(op, l, r, NULL);
-
-        /* 常量合并 */
-        const_folding(p);
         break;
     case ASGN:
         l = travel(tp->kids[0]);
@@ -267,36 +176,11 @@ Node travel(Tree tp)
         else
             reset();
         break;
-    case BOR: /* 二进制或 */
-    case BAND: /* 二进制与 */
-    case BXOR: /* 二进制异或 */
-    case ADD:
-    case SUB:
-    case RSH: /* 右移 */
-    case LSH: /* 左移 */
-    case DIV:
-    case MUL:
-    case MOD:
-        l = travel(tp->kids[0]);
-        r = travel(tp->kids[1]);
-        p = node(op, l, r, NULL);
-
-        /* 常量合并 */
-        const_folding(p);
-        break;
     case CVF:
     case CVI:
     case CVP:
         l = travel(tp->kids[0]);
         p = node(op, l, NULL, NULL);
-        break;
-    case BCOM: /* 二进制比较 */
-    case NEG:
-        l = travel(tp->kids[0]);
-        p = node(op, l, NULL, NULL);
-
-        /* 常量合并 */
-        const_folding(p);
         break;
     case LOAD:
     case INDIR:
@@ -331,6 +215,145 @@ Node travel(Tree tp)
         l = travel(tp->kids[0]);
         p = node(op, l, NULL, tp->u.generic.sym);
         break;
+    }
+
+    switch (generic(tp->op))
+    {
+    case LABEL:
+        p = new_node(tp->op, NULL, NULL, tp->u.generic.sym);
+        break;
+    case ARG:
+        l = travel(tp->kids[0]);
+        r = travel(tp->kids[1]);
+
+        /* tp->u.arg.sym表示参数对应的符号 */
+        p = new_node(op, l, r, tp->u.generic.sym);
+
+        /* tp->u.arg.symtab表示对应的符号表 */
+        p->symtab = tp->u.generic.symtab;
+        break;
+    case RIGHT:
+        /* 参数AST节点的子节点，表示实参 */
+        l = travel(tp->kids[0]);
+        r = travel(tp->kids[1]);
+        p = node(op, l, r, NULL);
+        break;
+    case COND:
+        /* tp->kids[0]表示判断条件（表达式） */
+        l = travel(tp->kids[0]);
+        reset();
+        p = new_node(op, l, NULL, tp->u.cond_jump.label);
+
+        /* 跳转标签符号 */
+        p->u.cond.label = tp->u.cond_jump.label;
+
+        /* 跳转条件（为真跳转还是为假跳转） */
+        p->u.cond.true_or_false = tp->u.cond_jump.true_or_false;
+        break;
+    case JUMP:
+        p = new_node(op, NULL, NULL, tp->u.generic.sym);
+        reset();
+        break;
+    case CALL:
+        l = travel(tp->kids[0]);
+        p = new_node(op, l, NULL, NULL);
+
+        /* 自定义函数或者过程调用对应的符号表 */
+        p->symtab = tp->u.generic.symtab;
+        break;
+    case SYS:
+        l = travel(tp->kids[0]);
+        p = new_node(op, l, NULL, NULL);
+
+        /* 对应系统函数或者系统过程的ID */
+        p->u.sys_id = tp->u.sys.sys_id;
+
+        /* 读取字符或者读取字符串操作 */
+        if (p->u.sys_id == pREAD || p->u.sys_id == pREADLN)
+        {
+            /* 地址AST树的第一个子节点为空，变量类型不是数组或者记录 */
+            if (tp->kids[0]->kids[0] == NULL)
+                kill_nodes(tp->kids[0]->u.generic.sym);
+            else
+                reset();
+        }
+        break;
+    }
+
+    switch (generic(tp->op))
+    {
+    case INCR:
+    case DECR:
+        l = travel(tp->kids[0]);
+        p = new_node(tp->op, l, NULL, NULL);
+        break;
+    }
+
+    switch (generic(tp->op))
+    {
+    case AND:
+    case OR:
+        if (depth++ == 0)
+            reset();
+
+        l = travel(tp->kids[0]);
+        r = travel(tp->kids[1]);
+        depth--;
+        p = node(op, l, r, NULL);
+
+        /* 常量合并 */
+        const_folding(p);
+        break;
+    case NOT:
+        depth++;
+        l = travel(tp->kids[0]);
+        depth--;
+        p = node(op, l, NULL, NULL);
+
+        /* 常量合并 */
+        const_folding(p);
+        break;
+    case NEG:
+        l = travel(tp->kids[0]);
+        p = node(op, l, NULL, NULL);
+
+        /* 常量合并 */
+        const_folding(p);
+        break;
+    case EQ:
+    case NE:
+    case GT:
+    case GE:
+    case LE:
+    case LT:
+        l = travel(tp->kids[0]);
+        r = travel(tp->kids[1]);
+        p = node(op, l, r, NULL);
+
+        /* 常量合并 */
+        const_folding(p);
+        break;
+    case BOR: /* 二进制或 */
+    case BAND: /* 二进制与 */
+    case BXOR: /* 二进制异或 */
+    case LSH: /* 左移 */
+    case RSH: /* 右移 */
+    case ADD:
+    case SUB:
+    case DIV:
+    case MUL:
+    case MOD:
+        l = travel(tp->kids[0]);
+        r = travel(tp->kids[1]);
+        p = node(op, l, r, NULL);
+
+        /* 常量合并 */
+        const_folding(p);
+        break;
+    }
+
+    switch (generic(tp->op))
+    {
     case HEADER:
         p = new_node(tp->op, NULL, NULL, NULL);
         p->symtab = tp->u.header.symtab;
@@ -343,16 +366,6 @@ Node travel(Tree tp)
     case BLOCKEND:
         p = new_node(tp->op, NULL, NULL, NULL);
         break;
-    case LABEL:
-        p = new_node(tp->op, NULL, NULL, tp->u.generic.sym);
-        break;
-    case INCR:
-    case DECR:
-        l = travel(tp->kids[0]);
-        p = new_node(tp->op, l, NULL, NULL);
-        break;
-    default:
-        assert(0);
     }
 
 
@@ -383,6 +396,7 @@ int gen_dag(List ast_forest, List dag_forest)
     /* AST节点链表转化为数组 */
     forest = (Tree *)list_ltov(ast_forest, STMT);
 
+    /*  */
     reset();
 
     for (i = 0, dag_count = 0; i < n ; i++)
@@ -401,45 +415,8 @@ int gen_dag(List ast_forest, List dag_forest)
 
     /* clean temporary memory. */
     deallocate(STMT);
+
     return dag_count;
-}
-
-// static int mark(Node cp)
-// {
-//     /* mark children first. */
-//     if (cp->kids[0])
-//         mark(cp->kids[0]);
-//     if (cp->kids[1])
-//         mark(cp->kids[1]);
-//     if (cp->kids[2])
-//         mark(cp->kids[2]);
-
-//     /* mark node itself. */
-//     return (*IR->mark_node)(cp);
-// }
-
-int emit_code(List dags)
-{
-    // int should_stop = 0;
-    // List cp;
-
-    // if (dump_dag)
-    // {
-    //     print_dags(dags);
-    // }
-    
-    // for (cp = dags->link; cp; cp = cp->link)
-    // {
-    //     if ((should_stop = mark((Node)cp->x)) < 0)
-    //     {
-    //         return should_stop;
-    //     }
-    // }
-
-    // (*IR->function_process)(dags);
-
-    // return should_stop;
-    return 0;
 }
 
 static void print_node(Node n)

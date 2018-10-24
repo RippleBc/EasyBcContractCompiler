@@ -230,14 +230,11 @@ program
 		/* 将AST节点挂到ast_forest后面 */
 		list_append(&ast_forest, t);
 		
-		/* 通过AST解析器输出结果 */
-		ast_process(&ast_forest);
-
 		/* generate dag forest. */
 		gen_dag(&ast_forest, &dag_forest);
 
-		/* emit asm code. */
-		emit_code(&dag_forest);
+		/* 通过AST解析器输出结果 */
+		interpret(&ast_forest);
 	}
 
 	return 0;
@@ -722,8 +719,7 @@ function_decl
 
 		/* 生成AST森林 */
 		gen_dag(&ast_forest, &dag_forest);
-		/* 生成汇编代码 */
-		emit_code(&dag_forest);
+
 	}
 
 	/* 弹出函数对应的符号表 */
@@ -801,7 +797,6 @@ procedure_decl
 	list_append(&ast_forest, t);
 
 	gen_dag(&ast_forest, &dag_forest);
-	emit_code(&dag_forest);
 
 	pop_symtab_stack();
 }

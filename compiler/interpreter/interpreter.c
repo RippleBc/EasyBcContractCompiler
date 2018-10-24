@@ -13,7 +13,7 @@ List cp;
 static int label_tree_index = 0;
 static List label_tree_queue[256];
 
-void ast_process(List asts)
+void interpret(List asts)
 {
     ptab = Global_symtab;
     Tree t;
@@ -31,7 +31,7 @@ void ast_process(List asts)
     /*  */
     for(cp = asts->link; cp != NULL; cp = cp->link)
     {
-      interpret((Tree)(cp->x));
+      node_process((Tree)(cp->x));
       if(cp == NULL)
       {
         printf("*********************ERROR*********************");
@@ -62,14 +62,14 @@ void jump_to_label(Symbol label)
   }
 }
 
-void interpret(Tree ast)
+void node_process(Tree ast)
 {
   switch (generic(ast->op))
   {
     case INCR:
     {
       /* */
-      interpret(ast->kids[0]);
+      node_process(ast->kids[0]);
       /* */
       ast->kids[0]->u.generic.sym->v.i++;
     }
@@ -77,7 +77,7 @@ void interpret(Tree ast)
     case DECR:
     {
       /*  */
-      interpret(ast->kids[0]);
+      node_process(ast->kids[0]);
       /*  */
       ast->kids[0]->u.generic.sym->v.i--;
     }
@@ -98,7 +98,7 @@ void interpret(Tree ast)
   break;
   case COND:
   {
-    interpret(ast->kids[0]);
+    node_process(ast->kids[0]);
 
     if((ast->kids[0]->u.generic.val.i == 0 && ast->u.cond_jump.true_or_false == false) || 
       (ast->kids[0]->u.generic.val.i != 0 && ast->u.cond_jump.true_or_false == true))
@@ -119,7 +119,7 @@ void interpret(Tree ast)
     }
     else {
       /*  */
-      interpret(ast->kids[0]);
+      node_process(ast->kids[0]);
       /* 有参数 */
       switch (ast->u.sys.sys_id)
       {
@@ -153,7 +153,7 @@ void interpret(Tree ast)
 		/* 计算表达式AST节点对应的值 */
   	if(ast->kids[0]->kids[0] != NULL || ast->kids[0]->kids[1] != NULL)
   	{
-  		interpret(ast->kids[0]);
+  		node_process(ast->kids[0]);
   	}
 
     /* 参数对应的符号 */
@@ -165,7 +165,7 @@ void interpret(Tree ast)
   	/* 计算其余参数的值 */
   	if(ast->kids[1] != NULL)
   	{
-  		interpret(ast->kids[1]);
+  		node_process(ast->kids[1]);
   	}
 	}
 	break;
@@ -174,7 +174,7 @@ void interpret(Tree ast)
 		/* 计算参数的值 */
   	if(ast->kids[0] != NULL)
   	{
-  		interpret(ast->kids[0]);
+  		node_process(ast->kids[0]);
   	}
 
     /* 参数对应的符号 */
@@ -186,19 +186,10 @@ void interpret(Tree ast)
   	/* 计算其余参数的值 */
   	if(ast->kids[1] != NULL)
   	{
-  		interpret(ast->kids[1]);
+  		node_process(ast->kids[1]);
   	}
 	}
 	break;
-  }
-
-  switch (generic(ast->op))
-  {
-    case CNST:
-    {
-      ast->u.generic.val.i = ast->u.generic.sym->v.i;
-    }
-    break;
   }
 
   switch (generic(ast->op))
@@ -215,7 +206,7 @@ void interpret(Tree ast)
       /*  */
       for(p = ast->u.generic.sym->type_link->first; p != NULL; p = p->next)
       {
-        interpret(ast->kids[0]);
+        node_process(ast->kids[0]);
 
         snprintf(ele_name, sizeof(ele_name), "%d", ast->kids[0]->u.generic.val.i);
         if(is_symbol(p, ele_name))
@@ -236,7 +227,7 @@ void interpret(Tree ast)
       /*  */
       if(ast->kids[0])
       {
-        interpret(ast->kids[0]);
+        node_process(ast->kids[0]);
         ast->u.generic.sym = ast->kids[0]->u.generic.sym;
       }
     }
@@ -246,7 +237,7 @@ void interpret(Tree ast)
       /*  */
       if(ast->kids[0])
       {
-        interpret(ast->kids[0]);
+        node_process(ast->kids[0]);
         ast->u.generic.sym = ast->kids[0]->u.generic.sym;
         ast->u.generic.val.i = ast->kids[0]->u.generic.sym->v.i;
       }
@@ -261,13 +252,13 @@ void interpret(Tree ast)
       /*  */
       if(ast->kids[0])
       {
-        interpret(ast->kids[0]);
+        node_process(ast->kids[0]);
       }
 
       /* 计算表达式AST节点对应的值 */
       if(ast->kids[1])
       {
-        interpret(ast->kids[1]);
+        node_process(ast->kids[1]);
       }
       
       /* 对应的符号 */
@@ -275,6 +266,11 @@ void interpret(Tree ast)
 
       /* 变量赋值 */
       p->v.i = ast->kids[1]->u.generic.val.i;
+    }
+    break;
+    case CNST:
+    {
+      ast->u.generic.val.i = ast->u.generic.sym->v.i;
     }
     break;
   }
@@ -286,13 +282,13 @@ void interpret(Tree ast)
       /* 计算左表达式AST节点对应的值 */
       if(ast->kids[0])
       {
-        interpret(ast->kids[0]);
+        node_process(ast->kids[0]);
       }
 
       /* 计算右表达式AST节点对应的值 */
       if(ast->kids[1])
       {
-        interpret(ast->kids[1]);
+        node_process(ast->kids[1]);
       }
 
       ast->u.generic.val.i = ast->kids[0]->u.generic.val.i + ast->kids[1]->u.generic.val.i;
@@ -303,13 +299,13 @@ void interpret(Tree ast)
       /* 计算左表达式AST节点对应的值 */
       if(ast->kids[0] != NULL)
       {
-        interpret(ast->kids[0]);
+        node_process(ast->kids[0]);
       }
 
       /* 计算右表达式AST节点对应的值 */
       if(ast->kids[1] != NULL)
       {
-        interpret(ast->kids[1]);
+        node_process(ast->kids[1]);
       }
 
       ast->u.generic.val.i = ast->kids[0]->u.generic.val.i - ast->kids[1]->u.generic.val.i;
@@ -320,13 +316,13 @@ void interpret(Tree ast)
       /* 计算左表达式AST节点对应的值 */
       if(ast->kids[0] != NULL)
       {
-        interpret(ast->kids[0]);
+        node_process(ast->kids[0]);
       }
 
       /* 计算右表达式AST节点对应的值 */
       if(ast->kids[1] != NULL)
       {
-        interpret(ast->kids[1]);
+        node_process(ast->kids[1]);
       }
 
       ast->u.generic.val.i = ast->kids[0]->u.generic.val.i * ast->kids[1]->u.generic.val.i;
@@ -337,13 +333,13 @@ void interpret(Tree ast)
       /* 计算左表达式AST节点对应的值 */
       if(ast->kids[0] != NULL)
       {
-        interpret(ast->kids[0]);
+        node_process(ast->kids[0]);
       }
 
       /* 计算右表达式AST节点对应的值 */
       if(ast->kids[1] != NULL)
       {
-        interpret(ast->kids[1]);
+        node_process(ast->kids[1]);
       }
 
       ast->u.generic.val.i = ast->kids[0]->u.generic.val.i / ast->kids[1]->u.generic.val.i;
@@ -354,13 +350,13 @@ void interpret(Tree ast)
       /* 计算左表达式AST节点对应的值 */
       if(ast->kids[0] != NULL)
       {
-        interpret(ast->kids[0]);
+        node_process(ast->kids[0]);
       }
 
       /* 计算右表达式AST节点对应的值 */
       if(ast->kids[1] != NULL)
       {
-        interpret(ast->kids[1]);
+        node_process(ast->kids[1]);
       }
 
       ast->u.generic.val.i = ast->kids[0]->u.generic.val.i == ast->kids[1]->u.generic.val.i;
@@ -371,13 +367,13 @@ void interpret(Tree ast)
       /* 计算左表达式AST节点对应的值 */
       if(ast->kids[0] != NULL)
       {
-        interpret(ast->kids[0]);
+        node_process(ast->kids[0]);
       }
 
       /* 计算右表达式AST节点对应的值 */
       if(ast->kids[1] != NULL)
       {
-        interpret(ast->kids[1]);
+        node_process(ast->kids[1]);
       }
 
       ast->u.generic.val.i = ast->kids[0]->u.generic.val.i != ast->kids[1]->u.generic.val.i;
@@ -388,13 +384,13 @@ void interpret(Tree ast)
       /* 计算左表达式AST节点对应的值 */
       if(ast->kids[0] != NULL)
       {
-        interpret(ast->kids[0]);
+        node_process(ast->kids[0]);
       }
 
       /* 计算右表达式AST节点对应的值 */
       if(ast->kids[1] != NULL)
       {
-        interpret(ast->kids[1]);
+        node_process(ast->kids[1]);
       }
 
       ast->u.generic.val.i = ast->kids[0]->u.generic.val.i >= ast->kids[1]->u.generic.val.i;
@@ -405,13 +401,13 @@ void interpret(Tree ast)
       /* 计算左表达式AST节点对应的值 */
       if(ast->kids[0] != NULL)
       {
-        interpret(ast->kids[0]);
+        node_process(ast->kids[0]);
       }
 
       /* 计算右表达式AST节点对应的值 */
       if(ast->kids[1] != NULL)
       {
-        interpret(ast->kids[1]);
+        node_process(ast->kids[1]);
       }
 
       ast->u.generic.val.i = ast->kids[0]->u.generic.val.i > ast->kids[1]->u.generic.val.i;
@@ -422,13 +418,13 @@ void interpret(Tree ast)
       /* 计算左表达式AST节点对应的值 */
       if(ast->kids[0] != NULL)
       {
-        interpret(ast->kids[0]);
+        node_process(ast->kids[0]);
       }
 
       /* 计算右表达式AST节点对应的值 */
       if(ast->kids[1] != NULL)
       {
-        interpret(ast->kids[1]);
+        node_process(ast->kids[1]);
       }
 
       ast->u.generic.val.i = ast->kids[0]->u.generic.val.i <= ast->kids[1]->u.generic.val.i;
@@ -439,13 +435,13 @@ void interpret(Tree ast)
       /* 计算左表达式AST节点对应的值 */
       if(ast->kids[0] != NULL)
       {
-        interpret(ast->kids[0]);
+        node_process(ast->kids[0]);
       }
 
       /* 计算右表达式AST节点对应的值 */
       if(ast->kids[1] != NULL)
       {
-        interpret(ast->kids[1]);
+        node_process(ast->kids[1]);
       }
 
       ast->u.generic.val.i = ast->kids[0]->u.generic.val.i < ast->kids[1]->u.generic.val.i;
