@@ -5,9 +5,9 @@
 #include <string.h>
 #include <ctype.h>
 #include "../common.h"
-#include "../symtab.h"
+#include "../ast/symtab.h"
 #include "../error.h"
-#include "../tree.h"
+#include "../ast/tree.h"
 
 extern char *yytext; /* flex用于记录匹配到的字符串 */
 symtab *ptab; /* 符号表表头 */

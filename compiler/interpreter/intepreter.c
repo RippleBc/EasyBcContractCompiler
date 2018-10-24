@@ -1,6 +1,6 @@
 #include  <stdio.h>
 #include  "../common.h"
-#include  "../symtab.h"
+#include  "../ast/symtab.h"
 #include  "../error.h"
 #include  "../parser/rule.h"
 

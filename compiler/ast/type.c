@@ -3,9 +3,9 @@
 #include  <stdlib.h>
 #include  <string.h>
 #include  <ctype.h>
-#include  "common.h"
+#include  "../common.h"
 #include  "symtab.h"
-# include  "error.h"
+# include  "../error.h"
 
 static int type_index = 0;
 

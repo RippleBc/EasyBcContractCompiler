@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <string.h>
-#include "common.h"
+#include "../common.h"
 #include "symtab.h"
 
 struct _node;

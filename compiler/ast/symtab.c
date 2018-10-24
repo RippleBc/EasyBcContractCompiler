@@ -3,10 +3,10 @@
 #include  <stdlib.h>
 #include  <string.h>
 #include  <ctype.h>
-#include  "common.h"
-#include  "error.h"
+#include  "../common.h"
+#include  "../error.h"
 #include  "symtab.h"
-#include  "./parser/rule.h"
+#include  "../parser/rule.h"
 
 int const_index;
 int var_index;

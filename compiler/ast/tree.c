@@ -1,4 +1,4 @@
-#include "common.h"
+#include "../common.h"
 
 /* alloc memory from tree arena. */
 static int where = TREE;

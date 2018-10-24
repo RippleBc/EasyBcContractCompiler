@@ -6,7 +6,7 @@ CC=gcc
 CFLAGS=-g -Wall
 
 #
-SUB_DIRS=parser interpreter optimize
+SUB_DIRS=parser interpreter optimize ast
 
 #记住当前工程的根目录路径
 ROOT_DIR=$(shell pwd)

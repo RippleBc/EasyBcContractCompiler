@@ -130,7 +130,7 @@ enum {
 #define opindex(op) (((op)>>4)&0x3F)
 
 /* symbol and type definition. */
-#include "symtab.h"
+#include "./ast/symtab.h"
 
 typedef struct list *List;
 struct list
@@ -171,7 +171,7 @@ extern Env global_env; /* 全局 */
 extern Env main_env; /* 主程序 */
 
 /* trees */
-#include "tree.h"
+#include "./ast/tree.h"
 
 /* nodes and dags. */
 #include "./optimize/dag.h"
