@@ -1,4 +1,4 @@
-#include "common.h"
+#include "../common.h"
 
 ops_entry ops_table[] = {
 

@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "error.h"
-#include "ops.h"
+#include "./parser/error.h"
+#include "./ast/ops.h"
 
 #define KEYWORD		-1 /* 表示关键字 */
 #define _PC_VER_    "0.1.5" /* 编译器版本 */
@@ -124,8 +124,6 @@ enum {
 };
 
 /* for operations. */
-#include "ops.h"
-
 #define generic(op)  ((op)&0x3F0)
 #define opindex(op) (((op)>>4)&0x3F)
 
