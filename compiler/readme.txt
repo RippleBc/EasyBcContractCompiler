@@ -1,9 +1,11 @@
-
 SPL compiler.
 
-Copyright Zhejiang University.
+1. Produce lexer/parser file
 
-1. Install
+$make pre
+
+2. Install
+
 
 To install SPL compiler, just run:
 
@@ -12,7 +14,7 @@ $make
 Then executable file splc is ready.
 
 
-2. Run test
+3. Run test
 
 ./debug/splc test/hello.pas
 
