@@ -85,6 +85,6 @@ program helloworld;
 				end;
 		end;
 
-		writeln(1234567890);
+		writeln(inte.year);
 	end
 .

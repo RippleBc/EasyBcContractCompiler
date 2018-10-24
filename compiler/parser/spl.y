@@ -1004,9 +1004,6 @@ expression oRB
 	
 	/* 数组AST节点 */
 	t = array_index_tree(p, $4);
-	
-	/* 地址AST节点 */
-	t = address_tree(t, p);
 
 	push_ast_stack(t);
 }
@@ -1039,9 +1036,6 @@ oASSIGN expression
 
 	/* 属性AST节点 */
 	t = record_field_tree(p, q);
-
-	/* 地址AST节点 */
-	t = address_tree(t, q);
 
 	push_ast_stack(t);
 }
