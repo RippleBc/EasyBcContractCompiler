@@ -1,8 +1,8 @@
 #include  <stdio.h>
-#include  "common.h"
-#include  "symtab.h"
-#include  "error.h"
-#include  "./parser/rule.h"
+#include  "../common.h"
+#include  "../symtab.h"
+#include  "../error.h"
+#include  "../parser/rule.h"
 
 Symtab ptab;
 Symbol p;
