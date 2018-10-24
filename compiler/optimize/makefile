@@ -1,6 +1,3 @@
-CC=gcc
-LDFLAGS=-g -Wall
-
 #获取当前目录下的c文件集
 CUR_SOURCE=${wildcard *.c}
 #将对应的c文件名转为o文件

@@ -24,7 +24,7 @@ CUR_OBJS=${patsubst %.c, $(OBJS_DIR)/%.o, $(notdir $(CUR_SOURCE))}
 COMPILER_AUTOFILES=parser/lex.yy.c parser/rule.c parser/rule.h
 
 #
-export OBJS_DIR CC
+export OBJS_DIR CC CFLAGS
 
 all:$(SUB_DIRS) $(CUR_OBJS) DEBUG 
 
