@@ -14,6 +14,6 @@ Then executable file splc is ready.
 
 2. Run test
 
-./splc test/hello.pas
+./debug/splc test/hello.pas
 
 
