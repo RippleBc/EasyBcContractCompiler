@@ -224,12 +224,7 @@ void node_process(Tree ast)
     break;
     case ADDRG:
     {
-      /*  */
-      if(ast->kids[0])
-      {
-        node_process(ast->kids[0]);
-        ast->u.generic.sym = ast->kids[0]->u.generic.sym;
-      }
+      
     }
     break;
     case LOAD:
