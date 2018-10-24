@@ -27,8 +27,7 @@ extern int dump_ast; /* 是否输出ast信息 */
 extern int dump_dag; /* 是否输出dag信息 */
 extern int dump_asm; /* 是否输出sam信息 */
 
-/* 哈希函数 */
-#define available_node_hash(op, left, right, sym) (opindex(op)^((unsigned long)sym>>2))&(NELEMS(buckets)-1)
+#define available_node_hash(op, sym) (opindex(op)^((unsigned long)sym>>2))&(NELEMS(buckets)-1)
 
 static struct dag *dag_node(int op, Node l, Node r, Symbol sym)
 {
@@ -36,19 +35,19 @@ static struct dag *dag_node(int op, Node l, Node r, Symbol sym)
 
     NEW0(p, where);
 
-    /* 对应的指令*/
+    /* 指令*/
     p->node.op = op;
 
-    /* 初始化左右节点，引用次数 */
+    /* 引用次数 */
     if ((p->node.kids[0] = l) != NULL)
         ++l->count;
     if ((p->node.kids[1] = r) != NULL)
         ++r->count;
 
-    /* 对应的符号 */
+    /* 符号 */
     p->node.syms[0] = sym;
-#if DEBUG & COMMON_EXPR_DEBUG
 
+#if DEBUG & COMMON_EXPR_DEBUG
     if (sym)
         printf("node %s (%s) created.\n", get_op_name(generic(op)), sym->name);
     else
@@ -63,34 +62,34 @@ static Node node(int op, Node l, Node r, Symbol sym)
     int i;
     struct dag *p;
 
-    /* DAG节点哈希值 */
-    i = available_node_hash(op, l, r, sym);
+    i = available_node_hash(op, sym);
 
-    /* 检查是否有相同的DAG节点 */
     for (p = buckets[i]; p; p = p->hlink)
     {
+        /* 检查节点是否存在 */
         if (p->node.op == op && p->node.syms[0] == sym &&  p->node.kids[0] == l  && p->node.kids[1] == r)
         {
-            /* 相同的DAG节点，刷新引用次数 */
+            /* 公共表达式存在，刷新引用次数 */
             p->node.count ++;
-#if DEBUG & CONST_FOLDING_DEBUG
 
+#if DEBUG & CONST_FOLDING_DEBUG
             printf("common expr found %s (%s).\n",
                    get_op_name(generic(p->node.op)),
                    p->node.syms[0]->name);
 #endif
+            /* 返回已经存在的公共表达式 */
             return &p->node;
         }
     }
 
-    /* 初始化DAG节点 */
+    /* 创建新节点 */
     p = dag_node(op, l, r, sym);
 
-    /* 插入DAG链表头部 */
+    /* 插入 */
     p->hlink = buckets[i];
     buckets[i] = p;
 
-    /* 刷新DAG节点数量 */
+    /* 刷新数量 */
     ++nodecount;
 
     return &p->node;
@@ -98,33 +97,32 @@ static Node node(int op, Node l, Node r, Symbol sym)
 
 Node new_node(int op, Node l, Node r, Symbol sym)
 {
-    /* 返回DAG节点地址 */
-    return &dag_node(op, l, r, sym)->node;
+    return &(dag_node(op, l, r, sym)->node);
 }
 
 static void kill_nodes(Symbol p)
 {
     int i;
-    struct dag **q;
+    struct dag *q;
 
     for (i = 0; i < NELEMS(buckets); i++)
     {
-        for (q = &buckets[i]; *q; )
+        q = buckets[i];
+        while(q != NULL)
         {
-            /* 清楚与符号p相关联的节点 */
-            if (generic((*q)->node.op) == LOAD &&
-                    ((*q)->node.syms[0] == p))
+            /* 引用变量p的值的节点 */
+            if (generic(q->node.op) == LOAD && (q->node.syms[0] == p))
             {
 #if DEBUG & COMMON_EXPR_DEBUG
                 printf("node %s killed.\n", p->name);
 #endif
-                /* 清除当前DAG节点 */
-                *q = (*q)->hlink;
+                /* 删除节点（变量的值已经发生改变，无法被重复指定） */
+                q = q->hlink;
                 --nodecount;
             }
             else
             {
-                q = &(*q)->hlink;
+                q = q->hlink;
             }
         }
     }
@@ -151,36 +149,57 @@ Node travel(Tree tp)
     travel_level++;
 
     op = tp->op;
+
     switch (generic(tp->op))
     {
+        case CVF:
+        case CVI:
+        case CVP:
+            l = travel(tp->kids[0]);
+            /* 变量 */
+            p = node(op, l, NULL, NULL);
+            break;
+    }
+
+    switch (generic(tp->op))
+    {
+     case CNST:
+        /* 常量 */
+        p = new_node(op, NULL, NULL, tp->u.generic.sym);
+        break;
     case ARRAY:
-        
-        /* tp->kids[0]表示数组的下标（表达式） */
         l = travel(tp->kids[0]);
         
-        /* tp->u.generic.sym表示数组对应的符号 */
+        /* 数组下标，数组变量 */
         p = node(op, l, NULL, tp->u.generic.sym);
-        break;
-    case CNST:
-        p = new_node(op, NULL, NULL, tp->u.generic.sym);
         break;
     case ASGN:
         l = travel(tp->kids[0]);
         r = travel(tp->kids[1]);
+
+        /* 变量，赋值表达式 */
         p = node(op, l, r, NULL);
 
-        /* 地址AST节点的第一个子节点为空，变量类型不是数组和记录 */
+        /* 变量类型不是数组和记录 */
         if (tp->kids[0]->kids[0] == NULL)
-            /* 清除相同的变量 */
+            /* 变量值发生改变，清理对应的LOAD节点 */
             kill_nodes(tp->kids[0]->u.generic.sym);
         else
             reset();
         break;
-    case CVF:
-    case CVI:
-    case CVP:
+    case FIELD:
+        /* tp->u.field.record表示记录符号 */
+        p = node(op, NULL, NULL, tp->u.field.record);
+
+        if (p->syms[1] != tp->u.field.field)
+            p = new_node(op, NULL, NULL, tp->u.field.record);
+
+        /* tp->u.field.field表示属性符号 */
+        p->syms[1] = tp->u.field.field;
+        break;
+    case ADDRG:
         l = travel(tp->kids[0]);
-        p = node(op, l, NULL, NULL);
+        p = node(op, l, NULL, tp->u.generic.sym);
         break;
     case LOAD:
     case INDIR:
@@ -200,20 +219,6 @@ Node travel(Tree tp)
         {
             p = node(op, l, NULL, tp->u.generic.sym);
         }
-        break;
-    case FIELD:
-        /* tp->u.field.record表示记录符号 */
-        p = node(op, NULL, NULL, tp->u.field.record);
-
-        if (p->syms[1] != tp->u.field.field)
-            p = new_node(op, NULL, NULL, tp->u.field.record);
-
-        /* tp->u.field.field表示属性符号 */
-        p->syms[1] = tp->u.field.field;
-        break;
-    case ADDRG:
-        l = travel(tp->kids[0]);
-        p = node(op, l, NULL, tp->u.generic.sym);
         break;
     }
 
