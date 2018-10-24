@@ -1775,7 +1775,7 @@ expression oRB
 	/* 数组AST树 */
 	t = array_index_tree(p, $4);
 	/* 数组取值AST树 */
-	$$ = id_factor_tree(t, p);
+	$$ = id_factor_tree(t, NULL);
 }
 |yNAME oDOT yNAME
 {
@@ -1800,7 +1800,7 @@ expression oRB
 	/* field的AST树 */
 	t = record_field_tree(p, q);
 	/* field取值AST树 */
-	$$ = id_factor_tree(t, q);
+	$$ = id_factor_tree(t, NULL);
 }
 ;
 

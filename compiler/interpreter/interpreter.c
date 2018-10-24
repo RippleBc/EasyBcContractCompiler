@@ -224,12 +224,11 @@ void node_process(Tree ast)
     break;
     case ADDRG:
     {
-      
+
     }
     break;
     case LOAD:
     {
-      /*  */
       if(ast->kids[0])
       {
         node_process(ast->kids[0]);

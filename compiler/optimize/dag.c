@@ -11,7 +11,6 @@ static struct dag
 
 
 int nodecount;
-static int depth = 0;
 static struct dag *dag_node(int, Node, Node, Symbol);
 static void kill_nodes(Symbol);
 static void reset(void);
@@ -152,18 +151,18 @@ Node travel(Tree tp)
 
     switch (generic(tp->op))
     {
-        case CVF:
-        case CVI:
-        case CVP:
-            l = travel(tp->kids[0]);
-            /* 变量 */
-            p = node(op, l, NULL, NULL);
-            break;
+    case CVF:
+    case CVI:
+    case CVP:
+        l = travel(tp->kids[0]);
+        /* 变量 */
+        p = node(op, l, NULL, NULL);
+        break;
     }
 
     switch (generic(tp->op))
     {
-     case CNST:
+    case CNST:
         /* 常量 */
         p = new_node(op, NULL, NULL, tp->u.generic.sym);
         break;
@@ -173,6 +172,13 @@ Node travel(Tree tp)
         /* 数组下标，数组变量 */
         p = node(op, l, NULL, tp->u.generic.sym);
         break;
+    case FIELD:
+        /* tp->u.field.record表示记录符号 */
+        p = node(op, NULL, NULL, tp->u.field.record);
+
+        /* tp->u.field.field表示属性符号 */
+        p->syms[1] = tp->u.field.field;
+        break;
     case ASGN:
         l = travel(tp->kids[0]);
         r = travel(tp->kids[1]);
@@ -180,44 +186,26 @@ Node travel(Tree tp)
         /* 变量，赋值表达式 */
         p = node(op, l, r, NULL);
 
-        /* 变量类型不是数组和记录 */
-        if (tp->kids[0]->kids[0] == NULL)
-            /* 变量值发生改变，清理对应的LOAD节点 */
-            kill_nodes(tp->kids[0]->u.generic.sym);
-        else
-            reset();
-        break;
-    case FIELD:
-        /* tp->u.field.record表示记录符号 */
-        p = node(op, NULL, NULL, tp->u.field.record);
+        /*  */
+        kill_nodes(tp->kids[0]->u.generic.sym);
 
-        if (p->syms[1] != tp->u.field.field)
-            p = new_node(op, NULL, NULL, tp->u.field.record);
-
-        /* tp->u.field.field表示属性符号 */
-        p->syms[1] = tp->u.field.field;
         break;
     case ADDRG:
         l = travel(tp->kids[0]);
+
+        /*  */
         p = node(op, l, NULL, tp->u.generic.sym);
         break;
     case LOAD:
-    case INDIR:
-
-        if (tp->kids[0])
-            l = travel(tp->kids[0]);
-
-        if (tp->kids[0] && (generic(tp->kids[0]->op) == FIELD))
+        if(tp->u.generic.sym)
         {
-            p = node(op, l, NULL, tp->kids[0]->u.field.field);
-        }
-        else if (tp->kids[0] && (generic(tp->kids[0]->op) == ARRAY))
-        {
-            p = node(op, l, NULL, tp->kids[0]->u.generic.sym);
+            p = node(op, l, NULL, tp->u.generic.sym);
         }
         else
         {
-            p = node(op, l, NULL, tp->u.generic.sym);
+            l = travel(tp->kids[0]);
+            /*  */
+            p = node(op, l, NULL, NULL);
         }
         break;
     }
@@ -246,7 +234,7 @@ Node travel(Tree tp)
     case COND:
         /* tp->kids[0]表示判断条件（表达式） */
         l = travel(tp->kids[0]);
-        reset();
+
         p = new_node(op, l, NULL, tp->u.cond_jump.label);
 
         /* 跳转标签符号 */
@@ -257,7 +245,6 @@ Node travel(Tree tp)
         break;
     case JUMP:
         p = new_node(op, NULL, NULL, tp->u.generic.sym);
-        reset();
         break;
     case CALL:
         l = travel(tp->kids[0]);
@@ -268,6 +255,8 @@ Node travel(Tree tp)
         break;
     case SYS:
         l = travel(tp->kids[0]);
+
+        /* address tree or array field tree */
         p = new_node(op, l, NULL, NULL);
 
         /* 对应系统函数或者系统过程的ID */
@@ -276,11 +265,7 @@ Node travel(Tree tp)
         /* 读取字符或者读取字符串操作 */
         if (p->u.sys_id == pREAD || p->u.sys_id == pREADLN)
         {
-            /* 地址AST树的第一个子节点为空，变量类型不是数组或者记录 */
-            if (tp->kids[0]->kids[0] == NULL)
-                kill_nodes(tp->kids[0]->u.generic.sym);
-            else
-                reset();
+            kill_nodes(tp->kids[0]->u.generic.sym);
         }
         break;
     }
@@ -296,28 +281,7 @@ Node travel(Tree tp)
 
     switch (generic(tp->op))
     {
-    case AND:
-    case OR:
-        if (depth++ == 0)
-            reset();
-
-        l = travel(tp->kids[0]);
-        r = travel(tp->kids[1]);
-        depth--;
-        p = node(op, l, r, NULL);
-
-        /* 常量合并 */
-        const_folding(p);
-        break;
     case NOT:
-        depth++;
-        l = travel(tp->kids[0]);
-        depth--;
-        p = node(op, l, NULL, NULL);
-
-        /* 常量合并 */
-        const_folding(p);
-        break;
     case NEG:
         l = travel(tp->kids[0]);
         p = node(op, l, NULL, NULL);
@@ -325,24 +289,19 @@ Node travel(Tree tp)
         /* 常量合并 */
         const_folding(p);
         break;
+    case AND:
+    case OR:
+    case BOR: /* 二进制或 */
+    case BAND: /* 二进制与 */
+    case BXOR: /* 二进制异或 */
+    case LSH: /* 左移 */
+    case RSH: /* 右移 */
     case EQ:
     case NE:
     case GT:
     case GE:
     case LE:
     case LT:
-        l = travel(tp->kids[0]);
-        r = travel(tp->kids[1]);
-        p = node(op, l, r, NULL);
-
-        /* 常量合并 */
-        const_folding(p);
-        break;
-    case BOR: /* 二进制或 */
-    case BAND: /* 二进制与 */
-    case BXOR: /* 二进制异或 */
-    case LSH: /* 左移 */
-    case RSH: /* 右移 */
     case ADD:
     case SUB:
     case DIV:

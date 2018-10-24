@@ -3658,7 +3658,7 @@ yyreduce:
 	/* 数组AST树 */
 	t = array_index_tree(p, (yyvsp[-1].p_tree));
 	/* 数组取值AST树 */
-	(yyval.p_tree) = id_factor_tree(t, p);
+	(yyval.p_tree) = id_factor_tree(t, NULL);
 }
 #line 3664 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -3687,7 +3687,7 @@ yyreduce:
 	/* field的AST树 */
 	t = record_field_tree(p, q);
 	/* field取值AST树 */
-	(yyval.p_tree) = id_factor_tree(t, q);
+	(yyval.p_tree) = id_factor_tree(t, NULL);
 }
 #line 3693 "parser/rule.c" /* yacc.c:1646  */
     break;
