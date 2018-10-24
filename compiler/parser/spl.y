@@ -6,7 +6,7 @@
 #include <ctype.h>
 #include "../common.h"
 #include "../ast/symtab.h"
-#include "../error.h"
+#include "error.h"
 #include "../ast/tree.h"
 
 extern char *yytext; /* flex用于记录匹配到的字符串 */

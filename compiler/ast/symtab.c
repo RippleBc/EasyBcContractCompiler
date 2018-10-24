@@ -4,7 +4,7 @@
 #include  <string.h>
 #include  <ctype.h>
 #include  "../common.h"
-#include  "../error.h"
+#include  "../parser/error.h"
 #include  "symtab.h"
 #include  "../parser/rule.h"
 

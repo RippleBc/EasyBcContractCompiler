@@ -5,7 +5,7 @@
 #include  <ctype.h>
 #include  "../common.h"
 #include  "symtab.h"
-# include  "../error.h"
+# include  "../parser/error.h"
 
 static int type_index = 0;
 

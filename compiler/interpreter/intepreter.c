@@ -1,7 +1,7 @@
 #include  <stdio.h>
 #include  "../common.h"
 #include  "../ast/symtab.h"
-#include  "../error.h"
+#include  "../parser/error.h"
 #include  "../parser/rule.h"
 
 Symtab ptab;
