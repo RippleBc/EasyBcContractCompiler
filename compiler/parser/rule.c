@@ -2629,7 +2629,7 @@ yyreduce:
 	}
 
 	/* 地址AST树 */
-	t = address_tree(NULL, p);
+	t = address_tree(p);
 	/* 赋值AST树 */
 	(yyval.p_tree) = assign_tree(t, (yyvsp[0].p_tree));
 	/* 放入AST森林 */
@@ -2844,7 +2844,7 @@ yyreduce:
 		}
 		else
 		{
-			t = address_tree(NULL, (yyvsp[-1].p_tree)->u.generic.sym);
+			t = address_tree((yyvsp[-1].p_tree)->u.generic.sym);
 		}
 	}
 	else
@@ -3088,7 +3088,7 @@ yyreduce:
 	}
 	
 	/* 地址AST节点 */
-	t = address_tree(NULL, p);
+	t = address_tree(p);
 	/* 保存地址AST节点（FOR中条件判断相关的变量） */
 	push_ast_stack(t);
 	/* 赋值AST节点 */

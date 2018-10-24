@@ -71,15 +71,11 @@ Tree id_factor_tree(Tree source, Symbol sym)
     return t;
 }
 
-Tree address_tree(Tree source, Symbol sym)
+Tree address_tree(Symbol sym)
 {
     Tree t;
 
-    /* 当变量类型为数组或者记录时，source（ARRAY AST节点或者FIELD AST节点）用来定位变量中的元素 */
-    if (source)
-        t = new_tree(ADDRG, source->result_type, source, NULL);
-    else
-        t = new_tree(ADDRG, sym->type, NULL, NULL);
+    t = new_tree(ADDRG, sym->type, NULL, NULL);
     
     /* 变量对应的符号 */
     t->u.generic.sym = sym;

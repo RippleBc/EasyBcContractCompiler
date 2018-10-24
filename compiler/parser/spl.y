@@ -972,7 +972,7 @@ assign_stmt
 	}
 
 	/* 地址AST树 */
-	t = address_tree(NULL, p);
+	t = address_tree(p);
 	/* 赋值AST树 */
 	$$ = assign_tree(t, $3);
 	/* 放入AST森林 */
@@ -1134,7 +1134,7 @@ oLP args_list oRP
 		}
 		else
 		{
-			t = address_tree(NULL, $3->u.generic.sym);
+			t = address_tree($3->u.generic.sym);
 		}
 	}
 	else
@@ -1332,7 +1332,7 @@ for_stmt
 	}
 	
 	/* 地址AST节点 */
-	t = address_tree(NULL, p);
+	t = address_tree(p);
 	/* 保存地址AST节点（FOR中条件判断相关的变量） */
 	push_ast_stack(t);
 	/* 赋值AST节点 */
