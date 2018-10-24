@@ -5,7 +5,7 @@
 #include <ctype.h>
 #include "../common.h"
 
-#include _YTAB_H_
+#include "rule.h"
 
 int Keytable_size = 0;
 

@@ -6,8 +6,7 @@
 #include  "common.h"
 #include  "error.h"
 #include  "symtab.h"
-
-#include  _YTAB_H_
+#include  "./parser/rule.h"
 
 int const_index;
 int var_index;

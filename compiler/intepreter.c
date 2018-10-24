@@ -2,7 +2,7 @@
 #include  "common.h"
 #include  "symtab.h"
 #include  "error.h"
-#include  _YTAB_H_
+#include  "./parser/rule.h"
 
 Symtab ptab;
 Symbol p;

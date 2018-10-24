@@ -1,6 +1,5 @@
 #include "common.h"
-
-#include _YTAB_H_
+#include "./parser/rule.h"
 
 static int folding_const = 0;
 

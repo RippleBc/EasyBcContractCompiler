@@ -30,8 +30,8 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef YY_YY_RULE_H_INCLUDED
-# define YY_YY_RULE_H_INCLUDED
+#ifndef YY_YY_PARSER_RULE_H_INCLUDED
+# define YY_YY_PARSER_RULE_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -139,7 +139,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 96 "spl.y" /* yacc.c:1909  */
+#line 96 "parser/spl.y" /* yacc.c:1909  */
 
 	char 		p_char[NAME_LEN];
 	int 		num;
@@ -149,7 +149,7 @@ union YYSTYPE
 	KEYENTRY	*p_lex; /* 关键字 */
 	Tree 		p_tree;
 
-#line 153 "rule.h" /* yacc.c:1909  */
+#line 153 "parser/rule.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -162,4 +162,4 @@ extern YYSTYPE yylval;
 
 int yyparse (void);
 
-#endif /* !YY_YY_RULE_H_INCLUDED  */
+#endif /* !YY_YY_PARSER_RULE_H_INCLUDED  */

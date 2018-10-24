@@ -13,8 +13,6 @@
 
 #define FILE_NAME_LEN	(64)
 
-#define		_YTAB_H_		"rule.h"
-
 #ifdef WIN32
 #define YY_NO_UNISTD_H
 #endif
