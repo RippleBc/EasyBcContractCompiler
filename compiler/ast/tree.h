@@ -24,6 +24,7 @@ struct _node
     short count; /* 被引用的次数 */
     Symbol syms[3]; /* 相关联的symbol */
     Symtab symtab; /* 相关联的symtab */
+    value val; /* 值 */
     union {
         int		sys_id; /* 系统调用ID */
         struct
