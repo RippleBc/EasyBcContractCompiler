@@ -283,6 +283,7 @@ void node_process(Node node)
     {
       if(node->kids[0])
       {
+        /* array or field */
         node_process(node->kids[0]);
         node->syms[0] = node->kids[0]->syms[0];
         node->val.i = node->kids[0]->syms[0]->v.i;
