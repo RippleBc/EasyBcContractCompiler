@@ -99,11 +99,11 @@ program helloworld;
 					4: writeln(4);
 				end;
 		end;
-		writeln(1234567890);
+		writeln(1111111111);
 
 		inta := testfunc(1, 2);
 		writeln(inta);
-		writeln(1234567890);
+		writeln(1111111111);
 
 		writeln(inte.year);
 	end

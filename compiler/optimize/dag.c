@@ -233,7 +233,7 @@ Node travel(Tree tp)
         /* 参数AST节点的子节点，表示实参 */
         l = travel(tp->kids[0]);
         r = travel(tp->kids[1]);
-        p = node(op, l, r, NULL);
+        p = node(op, l, r, tp->u.generic.sym);
         break;
     case COND:
         /* tp->kids[0]表示判断条件（表达式） */

@@ -11,6 +11,30 @@ Symbol q;
 List cp;
 
 /*  */
+static int return_statck_deep = 256;
+static List return_stack[256];
+
+static int push_return_stack(List l)
+{
+  if(return_statck_deep < 1)
+  {
+    return 0;
+  }
+  return_stack[--return_statck_deep] = l;
+  return 1;
+}
+
+static List pop_return_stack()
+{
+  return return_stack[return_statck_deep++];
+}
+
+static List top_return_stack()
+{
+  return return_stack[return_statck_deep];
+}
+
+/*  */
 static int call_statck_deep = 256;
 static int call_stack[256];
 
@@ -34,7 +58,6 @@ static int top_call_stack()
   return call_statck_deep;
 }
 
-
 void assign_local(Symtab tab, Symbol p, int val)
 {
   /*  */
@@ -44,6 +67,11 @@ void assign_local(Symtab tab, Symbol p, int val)
 void assign_arg(Symtab tab, Symbol p, int val)
 {
   /*  */
+  call_stack[call_statck_deep + IR->intmetric.align + p->offset - get_symbol_align_size(p)] = val;
+}
+
+void assign_return(Symtab tab, Symbol p, int val)
+{
   call_stack[call_statck_deep + IR->intmetric.align + p->offset - get_symbol_align_size(p)] = val;
 }
 
@@ -57,9 +85,18 @@ int load_arg(Symtab tab, Symbol p)
   return call_stack[call_statck_deep + IR->intmetric.align + p->offset - get_symbol_align_size(p)];
 }
 
+int load_return(Symtab tab, Symbol p)
+{
+  return call_stack[call_statck_deep + IR->intmetric.align + p->offset - get_symbol_align_size(p)];
+}
+
 /*  */
 static int label_node_index = 0;
 static List label_node_queue[256];
+
+/*  */
+static int function_node_index = 0;
+static List function_node_queue[256];
 
 /*  */
 void interpret(List dag)
@@ -75,6 +112,10 @@ void interpret(List dag)
       {
         label_node_queue[label_node_index++] = cp;
       }
+      else if(generic(n->op) == HEADER)
+      {
+        function_node_queue[function_node_index++] = cp;
+      }
     }
 
     /*  */
@@ -87,6 +128,28 @@ void interpret(List dag)
         break;
       }
     }
+}
+
+void jump_to_function(Symtab function)
+{
+  /*  */
+  int i = function_node_index - 1;
+  while(i >= 0)
+  {
+    Node function_node = (Node)(function_node_queue[i]->x);
+    if(!strcmp(function_node->symtab->name, function->name))
+    {
+      cp = function_node_queue[i];
+      return;
+    }
+
+    i--;
+  }
+
+  if(cp == NULL)
+  {
+    printf("function is not exist %s", function->name);
+  }
 }
 
 void jump_to_label(Symbol label)
@@ -187,11 +250,23 @@ void node_process(Node node)
   break;
   case CALL:
   {
+
+    if (node->kids[0] != NULL)
+    {
+      node_process(node->kids[0]);
+    }
+
     /*  */
     push_symtab_stack(node->symtab);
 
     /*  */
     push_call_stack(node->symtab);
+
+    /*  */
+    push_return_stack(cp);
+
+    /*  */
+    jump_to_function(top_symtab_stack());
   }
   break;
   }
@@ -203,7 +278,7 @@ void node_process(Node node)
     printf("\nRIGHT, ");
 
     /* 计算表达式AST节点对应的值 */
-    if(node->kids[0]->kids[0] != NULL || node->kids[0]->kids[1] != NULL)
+    if(node->kids[0] != NULL)
     {
       node_process(node->kids[0]);
     }
@@ -211,8 +286,15 @@ void node_process(Node node)
     /* 参数对应的符号 */
     p = node->syms[0];
 
-    /* 参数赋值 */
-    p->v.i = node->kids[0]->val.i;
+    if(top_symtab_stack()->level == 0)
+    {
+      /* 参数赋值 */
+      p->v.i = node->kids[0]->val.i;
+    }
+    else
+    {
+      p->v.i = load_arg(top_symtab_stack(), p);
+    }
 
     /* 计算其余参数的值 */
     if(node->kids[1] != NULL)
@@ -291,7 +373,22 @@ void node_process(Node node)
         p = node->syms[0];
       }
 
-      node->val.i = p->v.i;
+      if(top_symtab_stack()->level == 0)
+      {
+        /*  */
+        node->val.i = p->v.i;
+      }
+      else
+      {
+        /*  */
+        if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
+        {
+          node->val.i = load_arg(top_symtab_stack(), p);
+        }
+        else {
+          node->val.i = load_local(top_symtab_stack(), p);
+        }
+      }
     }
     break;
     case ASGN:
@@ -313,8 +410,30 @@ void node_process(Node node)
         node_process(node->kids[1]);
       }
 
-      /* 变量赋值 */
-      p->v.i = node->kids[1]->val.i;
+      if(top_symtab_stack()->level == 0)
+      {
+        /* 变量赋值 */
+        p->v.i = node->kids[1]->val.i;
+      }
+      else
+      {
+        /*  */
+        if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
+        {
+          assign_arg(top_symtab_stack(), p, node->kids[1]->val.i);
+        }
+        else if(p->defn == DEF_FUNCT) {
+          assign_return(top_symtab_stack(), p, node->kids[1]->val.i);
+        }
+        else if(p->defn == DEF_PROC)
+        {
+
+        }
+        else
+        {
+          assign_local(top_symtab_stack(), p, node->kids[1]->val.i);
+        }
+      }
     }
     break;
     case CNST:
@@ -502,10 +621,12 @@ void node_process(Node node)
   {
     case HEADER: /* 表示过程以及函数定义的开始 */  
     {
+      /*  */
     }
     break;
     case TAIL: /* 表示过程以及函数定义的结束 */
     {
+      cp = pop_return_stack();
     }
     break;
     case BLOCKBEG:
