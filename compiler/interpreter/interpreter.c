@@ -10,7 +10,6 @@ Symbol q;
 
 List cp;
 
-
 /*  */
 static int call_statck_deep = 256;
 static int call_stack[256];
@@ -189,6 +188,10 @@ void node_process(Node node)
   case CALL:
   {
     /*  */
+    push_symtab_stack(node->symtab);
+
+    /*  */
+    push_call_stack(node->symtab);
   }
   break;
   }
@@ -496,13 +499,10 @@ void node_process(Node node)
   {
     case HEADER: /* 表示过程以及函数定义的开始 */  
     {
-      push_call_stack(node->symtab);
-      ptab = node->symtab;
     }
     break;
     case TAIL: /* 表示过程以及函数定义的结束 */
     {
-      pop_call_stack(node->symtab);
     }
     break;
     case BLOCKBEG:
