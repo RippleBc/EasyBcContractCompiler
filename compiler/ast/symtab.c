@@ -241,6 +241,8 @@ void add_var_to_localtab(symtab *tab, symbol *sym)
 /* 添加局部变量到symtab中 */
 void add_local_to_table(symtab *tab, symbol *sym)
 {
+    int var_size;
+
     if(!tab || !sym)
         return;
 
@@ -251,25 +253,15 @@ void add_local_to_table(symtab *tab, symbol *sym)
     else
         sprintf(sym->rname, "v%c_%03d", sym->name[0], new_index(var));
 
-    /* 计算symtab中参数所占用的空间 */
-    int arg_size = get_symbol_align_size(sym);
-
-    if(tab->level)
+    if(tab->level && 
+        ((tab->defn == DEF_FUNCT && sym->defn != DEF_FUNCT) 
+        || (tab->defn == DEF_PROC && sym->defn != DEF_PROC)))
     {
-        if(tab->defn == DEF_FUNCT
-                && sym->defn != DEF_FUNCT)
-        {
-            /* symtab为函数，记录局部变量在symtab中偏移量 */
-            sym->offset = tab->local_size + arg_size;
-            /* 计算symtab中局部变量所占用的空间 */
-            tab->local_size += arg_size;
-        }
-        else if(tab->defn == DEF_PROC
-                 && sym->defn != DEF_PROC)
-        {
-            sym->offset = tab->local_size + arg_size;
-            tab->local_size += arg_size;
-        }
+        var_size = get_symbol_align_size(sym);
+        /* symtab为函数，记录局部变量在symtab中偏移量 */
+        sym->offset = tab->local_size + var_size;
+        /* 计算symtab中局部变量所占用的空间 */
+        tab->local_size += var_size;
     }
 
     /* 添加sym到局部变量链表中，从头部插入 */
