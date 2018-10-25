@@ -495,7 +495,7 @@ int get_symbol_align_size(symbol *sym)
         return  IR->intmetric.align;
     case TYPE_ARRAY:
         /* 用户自定义类型，需要从_type_链表中寻找 */
-        return  get_type_size(sym->type_link);
+        return get_type_size(sym->type_link);
     case TYPE_RECORD:
         /* 用户自定义类型，需要从_type_链表中寻找 */
         return get_type_size(sym->type_link);

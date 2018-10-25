@@ -15,24 +15,50 @@ List cp;
 static int call_statck_deep = 256;
 static int call_stack[256];
 
-int push_stack(int var)
+static int push_call_stack(Symtab tab)
 {
-  if(call_statck_deep <= 0)
+  if(call_statck_deep < (tab->local_size + tab->args_size + IR->intmetric.align))
   {
     return 0;
   }
-  call_stack[--call_statck_deep] = var;
+  call_statck_deep -= (tab->local_size + tab->args_size + IR->intmetric.align);
   return 1;
 }
-int pop_stack()
+
+static void pop_call_stack(Symtab tab)
 {
-  return call_stack[call_statck_deep--];
-}
-int top_stack()
-{
-  return call_stack[call_statck_deep];
+  call_statck_deep += (tab->local_size + tab->args_size + IR->intmetric.align);
 }
 
+static int top_call_stack()
+{
+  return call_statck_deep;
+}
+
+
+void assign_local(Symtab tab, Symbol p, int val)
+{
+  /*  */
+  call_stack[call_statck_deep + IR->intmetric.align + tab->args_size + p->offset - get_symbol_align_size(p)] = val;
+}
+
+void assign_arg(Symtab tab, Symbol p, int val)
+{
+  /*  */
+  call_stack[call_statck_deep + IR->intmetric.align + p->offset - get_symbol_align_size(p)] = val;
+}
+
+int load_local(Symtab tab, Symbol p)
+{
+  return call_stack[call_statck_deep + IR->intmetric.align + tab->args_size + p->offset - get_symbol_align_size(p)];
+}
+
+int load_arg(Symtab tab, Symbol p)
+{
+  return call_stack[call_statck_deep + IR->intmetric.align + p->offset - get_symbol_align_size(p)];
+}
+
+/*  */
 static int label_node_index = 0;
 static List label_node_queue[256];
 
@@ -469,8 +495,16 @@ void node_process(Node node)
   switch (generic(node->op))
   {
     case HEADER: /* 表示过程以及函数定义的开始 */  
+    {
+      push_call_stack(node->symtab);
+      ptab = node->symtab;
+    }
+    break;
     case TAIL: /* 表示过程以及函数定义的结束 */
-      break;
+    {
+      pop_call_stack(node->symtab);
+    }
+    break;
     case BLOCKBEG:
     case BLOCKEND:
         break;

@@ -13,7 +13,20 @@ program helloworld;
 		inta, intb, intc, intf, intg: integer;
 		intd : arr;
 		inte : date;
-
+	function testfunc(x,y:integer):integer;
+		var
+			k,sum : integer;
+		begin
+			sum := 1;
+			for k:=2 to x div 2 do
+			begin
+			if x mod k = 0 then 
+					begin
+							sum := sum + k;
+					end;
+			end;
+			testfunc := x + y; 
+		end;
 	begin
 		intd[1] := 10;
 		intd[2] := 20;
@@ -86,6 +99,11 @@ program helloworld;
 					4: writeln(4);
 				end;
 		end;
+		writeln(1234567890);
+
+		inta := testfunc(1, 2);
+		writeln(inta);
+		writeln(1234567890);
 
 		writeln(inte.year);
 	end
