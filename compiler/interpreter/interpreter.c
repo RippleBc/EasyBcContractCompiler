@@ -64,10 +64,12 @@ void jump_to_label(Symbol label)
 
 void node_process(Node node)
 {
-  // if(node->compute == true)
-  // {
-  //   return;
-  // }
+  if(node->compute == true)
+  {
+    printf("get node computed op: %s, result: %d\n", node->op_name, node->val.i);
+    // return;
+  }
+
   switch (generic(node->op))
   {
     case INCR:

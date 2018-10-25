@@ -10,7 +10,7 @@ program helloworld;
 		colors = (red,yellow,blue,white,black,green);
 		age = 1..150;
 	var
-		inta, intb, intc : integer;
+		inta, intb, intc, intf, intg: integer;
 		intd : arr;
 		inte : date;
 
@@ -24,6 +24,8 @@ program helloworld;
 		intc := 20;
 		inte.year := 30;
 		inte.month := 5;
+		intf := intd[1] + intb;
+		intg := intd[1] + intb;
 		inta := ((intb + intc) + 3 * (intb + intc)) / 4 + intd[2] * 2 + inte.month + intd[1];
 		writeln(inta);
 		writeln(1234567890);

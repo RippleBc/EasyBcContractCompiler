@@ -74,10 +74,8 @@ static Node node(int op, Node l, Node r, Symbol sym)
             /* 公共表达式存在，刷新引用次数 */
             p->node.count ++;
 
-#if DEBUG & CONST_FOLDING_DEBUG
-            printf("common expr found %s (%s).\n",
-                   get_op_name(generic(p->node.op)),
-                   p->node.syms[0]->name);
+#if DEBUG & COMMON_EXPR_DEBUG
+            printf("common expr found %s (%s).\n", get_op_name(generic(p->node.op)), p->node.syms[0]->name);
 #endif
             /* 返回已经存在的公共表达式 */
             return &p->node;

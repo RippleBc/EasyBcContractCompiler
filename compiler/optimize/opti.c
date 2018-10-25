@@ -125,13 +125,13 @@ void const_folding(Node n)
 
         }
         
+#if DEBUG & CONST_FOLDING_DEBUG
+        printf("Const folded to %p(%d). left %d, right %d\n", n, n->syms[0]->v.i, n->kids[0]->syms[0]->v.i, 
+            n->kids[1] == NULL ? -1 : n->kids[1]->syms[0]->v.i);
+#endif
+
         /*  */
         n->kids[0] = n->kids[1] = NULL;
         n->op = CNST;
-
-#if DEBUG & CONST_FOLDING_DEBUG
-        printf("Const folded to %p(%d).\n", n, n->syms[0]->v.i);
-#endif
-
     }
 }
