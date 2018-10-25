@@ -251,21 +251,24 @@ void add_local_to_table(symtab *tab, symbol *sym)
     else
         sprintf(sym->rname, "v%c_%03d", sym->name[0], new_index(var));
 
+    /* 计算symtab中参数所占用的空间 */
+    int arg_size = get_symbol_align_size(sym);
+
     if(tab->level)
     {
         if(tab->defn == DEF_FUNCT
                 && sym->defn != DEF_FUNCT)
         {
             /* symtab为函数，记录局部变量在symtab中偏移量 */
-            sym->offset = tab->local_size + 3 * IR->intmetric.size;
+            sym->offset = tab->local_size + arg_size;
             /* 计算symtab中局部变量所占用的空间 */
-            tab->local_size += get_symbol_align_size(sym);
+            tab->local_size += arg_size;
         }
         else if(tab->defn == DEF_PROC
                  && sym->defn != DEF_PROC)
         {
-            sym->offset = tab->local_size + IR->intmetric.size;
-            tab->local_size += get_symbol_align_size(sym);
+            sym->offset = tab->local_size + arg_size;
+            tab->local_size += arg_size;
         }
     }
 
