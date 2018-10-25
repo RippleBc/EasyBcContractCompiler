@@ -248,8 +248,7 @@ void node_process(Node node)
   {
     case FIELD:
     {
-      /**/
-      node->syms[0] = node->syms[1];  
+      
     }
     break;
     case ARRAY:
@@ -263,7 +262,7 @@ void node_process(Node node)
         snprintf(ele_name, sizeof(ele_name), "%d", node->kids[0]->val.i);
         if(is_symbol(p, ele_name))
         {
-          node->syms[0] = p;
+          node->syms[1] = p;
           break;
         }
       }
@@ -285,31 +284,34 @@ void node_process(Node node)
       {
         /* array or field */
         node_process(node->kids[0]);
-        node->syms[0] = node->kids[0]->syms[0];
-        node->val.i = node->kids[0]->syms[0]->v.i;
+        p = node->syms[0] = node->kids[0]->syms[1];
       }
       else
       {
-        node->val.i = node->syms[0]->v.i;
+        p = node->syms[0];
       }
+
+      node->val.i = p->v.i;
     }
     break;
     case ASGN:
     {
       /*  */
-      if(node->kids[0])
+      if(generic(node->kids[0]->op) == ARRAY || generic(node->kids[0]->op) == FIELD)
       {
+        /* array or filed */
         node_process(node->kids[0]);
+        p = node->syms[0] = node->kids[0]->syms[1];
       }
-
+      else
+      {
+        p = node->syms[0] = node->kids[0]->syms[0];
+      }
       /* 计算表达式AST节点对应的值 */
       if(node->kids[1])
       {
         node_process(node->kids[1]);
       }
-      
-      /* 对应的符号 */
-      p = node->kids[0]->syms[0];
 
       /* 变量赋值 */
       p->v.i = node->kids[1]->val.i;
