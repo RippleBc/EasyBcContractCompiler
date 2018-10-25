@@ -14,7 +14,6 @@ int arg_index;
 
 int cur_level;
 int routine_id;
-int align(int);
 
 
 #define  SYMTAB_STACK_SIZE 64
@@ -25,14 +24,6 @@ symtab *Global_symtab; /* 全局符号表 */
 symtab *System_symtab[MAX_SYS_ROUTINE]; /* 系统符号表 */
 
 extern int Keytable_size;
-
-/* 用于对齐，符号的字节大小必须是偶数 */
-int align(int bytes)
-{
-    while (bytes % 2)
-        bytes++;
-    return bytes;
-}
 
 symtab *new_symtab(symtab *parent)
 {
@@ -268,13 +259,13 @@ void add_local_to_table(symtab *tab, symbol *sym)
             /* symtab为函数，记录局部变量在symtab中偏移量 */
             sym->offset = tab->local_size + 3 * IR->intmetric.size;
             /* 计算symtab中局部变量所占用的空间 */
-            tab->local_size += align(get_symbol_size(sym));
+            tab->local_size += get_symbol_align_size(sym);
         }
-        else if (tab->defn == DEF_PROC
+        else if(tab->defn == DEF_PROC
                  && sym->defn != DEF_PROC)
         {
             sym->offset = tab->local_size + IR->intmetric.size;
-            tab->local_size += align(get_symbol_size(sym));
+            tab->local_size += get_symbol_align_size(sym);
         }
     }
 
@@ -304,7 +295,7 @@ void add_args_to_table(symtab *tab, symbol *sym)
     /* 计算rname，形式为aN_000、aN_001 */
     sprintf(sym->rname, "a%c_%03d", sym->name[0], new_index(arg));
     /* 计算symtab中参数所占用的空间 */
-    var_size = align(get_symbol_size(sym));
+    var_size = get_symbol_align_size(sym);
     tab->args_size += var_size;
 
     /* 重新计算其他参数在symtab中的偏移量 */
@@ -476,12 +467,37 @@ int get_symbol_size(symbol *sym)
     case TYPE_REAL:
         return  IR->floatmetric.size;
     case TYPE_STRING:
-        if(sym->v.s == NULL)
-        {
-            /* */
-            return size(CHAR);
-        }
-        return size(CHAR) * (strlen(sym->v.s) + 1);
+        return  IR->intmetric.size;
+    case TYPE_ARRAY:
+        internal_error("can not get array symbol size");
+        break;
+    case TYPE_RECORD:
+        internal_error("can not get record symbol size");
+        break;
+    case TYPE_UNKNOWN:
+        internal_error("Unknown type.");
+        break;
+    default:
+        break;
+    }
+    return 0;
+}
+
+int get_symbol_align_size(symbol *sym)
+{
+    switch(sym->type->type_id)
+    {
+    case TYPE_INTEGER:
+        return  IR->intmetric.align;
+    case TYPE_CHAR:
+        return  IR->charmetric.align;
+    case TYPE_BOOLEAN:
+        return  IR->intmetric.align;
+    case TYPE_REAL:
+        return  IR->floatmetric.align;
+    case TYPE_STRING:
+        /*  */
+        return  IR->intmetric.align;
     case TYPE_ARRAY:
         /* 用户自定义类型，需要从_type_链表中寻找 */
         return  get_type_size(sym->type_link);

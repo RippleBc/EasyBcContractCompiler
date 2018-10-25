@@ -10,9 +10,33 @@ Symbol q;
 
 List cp;
 
+
+/*  */
+static int call_statck_deep = 256;
+static int call_stack[256];
+
+int push_stack(int var)
+{
+  if(call_statck_deep <= 0)
+  {
+    return 0;
+  }
+  call_stack[--call_statck_deep] = var;
+  return 1;
+}
+int pop_stack()
+{
+  return call_stack[call_statck_deep--];
+}
+int top_stack()
+{
+  return call_stack[call_statck_deep];
+}
+
 static int label_node_index = 0;
 static List label_node_queue[256];
 
+/*  */
 void interpret(List dag)
 {
     ptab = Global_symtab;

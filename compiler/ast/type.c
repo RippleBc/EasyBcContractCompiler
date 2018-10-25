@@ -66,27 +66,38 @@ type *new_system_type(int base_type)
     pt->type_id = base_type; /* 初始化type_id */
     pt->next = NULL;
     pt->first = pt->last = NULL;
-
     /* 初始化类型符号的名称 */
     switch(base_type)
     {
     case TYPE_INTEGER:
+    {
         strcpy(pt->name, "integer");
+    }
         break;
     case TYPE_CHAR:
+    {
         strcpy(pt->name, "char");
+    }
         break;
     case TYPE_BOOLEAN:
+    {
         strcpy(pt->name, "boolean");
+    }
         break;
     case TYPE_REAL:
+    {
         strcpy(pt->name, "real");
+    }
         break;
     case TYPE_VOID:
+    {
         strcpy(pt->name, "void");
+    }
         break;
     case TYPE_UNKNOWN:
+    {
         strcpy(pt->name, "****");
+    }
         break;
     default:
         break;
@@ -294,7 +305,7 @@ type *new_record_type(char *name, symbol *fields)
         /* 计算符号在内存中的偏移量，位于record前面位置的属性偏移量小，往后依次增大 */
         p->offset = pt->size;
         /* 计算record类型占用的空间 */
-        pt->size += align(get_symbol_size(p));
+        pt->size += get_symbol_align_size(p);
         /* 计算record类型的属性数量 */
         pt->num_ele++;
     }
@@ -548,7 +559,7 @@ int get_type_size(type *pt)
     switch(pt->type_id)
     {
     case TYPE_ARRAY:
-        return pt->num_ele * get_symbol_size(pt->first);
+        return pt->num_ele * get_symbol_align_size(pt->first);
     case TYPE_RECORD:
         return pt->size;
     }

@@ -154,7 +154,7 @@ type *find_type_by_name(char *);
 type *find_type_by_id(int);
 type *find_local_type(char *);
 int is_symbol(symbol *p, char *);
-int get_symbol_size(symbol *);
+int get_symbol_align_size(symbol *);
 int get_type_size(type *);
 
 int stoi(char *s,int radix);
@@ -162,7 +162,6 @@ void set_subrange_bound(type *pt,int lower,int upper);
 void add_enum_elements(type *pt, symbol *symlist);
 type *new_array_type(char *name,type *pindex, type *pelement);
 
-int align(int);
 void make_system_symtab();
 symbol *reverse_parameters(symtab *);
 #endif
