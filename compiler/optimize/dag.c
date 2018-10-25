@@ -37,6 +37,9 @@ static struct dag *dag_node(int op, Node l, Node r, Symbol sym)
     /* 指令*/
     p->node.op = op;
 
+    /*  */
+    p->node.compute = false;
+
     /* 引用次数 */
     if ((p->node.kids[0] = l) != NULL)
         ++l->count;

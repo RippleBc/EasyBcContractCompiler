@@ -64,6 +64,10 @@ void jump_to_label(Symbol label)
 
 void node_process(Node node)
 {
+  // if(node->compute == true)
+  // {
+  //   return;
+  // }
   switch (generic(node->op))
   {
     case INCR:
@@ -139,7 +143,6 @@ void node_process(Node node)
   case CALL:
   {
     /*  */
-    
   }
   break;
   }
@@ -196,6 +199,7 @@ void node_process(Node node)
   {
     case FIELD:
     {
+      /**/
       node->syms[0] = node->syms[1];  
     }
     break;
@@ -285,6 +289,9 @@ void node_process(Node node)
       }
 
       node->val.i = node->kids[0]->val.i + node->kids[1]->val.i;
+
+      /*  */
+      node->compute = true;
     }
     break;
     case SUB:
@@ -302,6 +309,9 @@ void node_process(Node node)
       }
 
       node->val.i = node->kids[0]->val.i - node->kids[1]->val.i;
+
+      /*  */
+      node->compute = true;
     }
     break;
     case MUL:
@@ -319,6 +329,9 @@ void node_process(Node node)
       }
 
       node->val.i = node->kids[0]->val.i * node->kids[1]->val.i;
+
+      /*  */
+      node->compute = true;
     }
     break;
     case DIV:
@@ -336,6 +349,9 @@ void node_process(Node node)
       }
 
       node->val.i = node->kids[0]->val.i / node->kids[1]->val.i;
+
+      /*  */
+      node->compute = true;
     }
     break;
     case EQ:
@@ -353,6 +369,9 @@ void node_process(Node node)
       }
 
       node->val.i = node->kids[0]->val.i == node->kids[1]->val.i;
+
+      /*  */
+      node->compute = true;
     }
     break;
     case NE:
@@ -370,6 +389,9 @@ void node_process(Node node)
       }
 
       node->val.i = node->kids[0]->val.i != node->kids[1]->val.i;
+
+      /*  */
+      node->compute = true;
     }
     break;
     case GE:
@@ -387,6 +409,9 @@ void node_process(Node node)
       }
 
       node->val.i = node->kids[0]->val.i >= node->kids[1]->val.i;
+
+      /*  */
+      node->compute = true;
     }
     break;
     case GT:
@@ -404,6 +429,9 @@ void node_process(Node node)
       }
 
       node->val.i = node->kids[0]->val.i > node->kids[1]->val.i;
+
+      /*  */
+      node->compute = true;
     }
     break;
     case LE:
@@ -421,6 +449,9 @@ void node_process(Node node)
       }
 
       node->val.i = node->kids[0]->val.i <= node->kids[1]->val.i;
+
+      /*  */
+      node->compute = true;
     }
     break;
     case LT:
@@ -438,6 +469,9 @@ void node_process(Node node)
       }
 
       node->val.i = node->kids[0]->val.i < node->kids[1]->val.i;
+
+      /*  */
+      node->compute = true;
     }
     break;
   }
