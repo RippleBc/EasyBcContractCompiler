@@ -37,9 +37,6 @@ static struct dag *dag_node(int op, Node l, Node r, Symbol sym)
     /* 指令*/
     p->node.op = op;
 
-    /*  */
-    p->node.compute = false;
-
     /* 引用次数 */
     if ((p->node.kids[0] = l) != NULL)
         ++l->count;
@@ -241,7 +238,6 @@ Node travel(Tree tp)
     case COND:
         /* tp->kids[0]表示判断条件（表达式） */
         l = travel(tp->kids[0]);
-
         p = new_node(op, l, NULL, tp->u.cond_jump.label);
 
         /* 跳转标签符号 */

@@ -22,7 +22,6 @@ struct _node
 #endif
 
     short count; /* 被引用的次数 */
-    boolean compute; /*  */
     Symbol syms[3]; /* 相关联的symbol */
     Symtab symtab; /* 相关联的symtab */
     value val; /* 值 */
