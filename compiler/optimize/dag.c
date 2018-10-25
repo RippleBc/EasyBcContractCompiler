@@ -176,6 +176,12 @@ Node travel(Tree tp)
         /* tp->u.field.record表示记录符号 */
         p = node(op, NULL, NULL, tp->u.field.record);
 
+        /*  */
+        if (p->syms[1] != tp->u.field.field)
+        {
+            p = new_node(op, NULL, NULL, tp->u.field.record);
+        }
+
         /* tp->u.field.field表示属性符号 */
         p->syms[1] = tp->u.field.field;
         break;

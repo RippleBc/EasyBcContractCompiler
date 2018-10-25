@@ -13,7 +13,7 @@ List cp;
 static int label_node_index = 0;
 static List label_node_queue[256];
 
-void dag_interpret(List dag)
+void interpret(List dag)
 {
     ptab = Global_symtab;
     Node n;
@@ -24,7 +24,6 @@ void dag_interpret(List dag)
       n = (Node)(cp->x);
       if(generic(n->op) == LABEL)
       {
-        printf("get label %s\n", n->syms[0]->name);
         label_node_queue[label_node_index++] = cp;
       }
     }
@@ -197,8 +196,7 @@ void node_process(Node node)
   {
     case FIELD:
     {
-      
-      node->syms[0] = node->syms[1];
+      node->syms[0] = node->syms[1];  
     }
     break;
     case ARRAY:

@@ -229,15 +229,12 @@ program
 		
 		/* 将AST节点挂到ast_forest后面 */
 		list_append(&ast_forest, t);
-		
-		/* 通过AST解析器输出结果 */
-		ast_interpret(&ast_forest);
 
 		/* generate dag forest. */
 		gen_dag(&ast_forest, &dag_forest);
 
 		/*  */
-		dag_interpret(&dag_forest);
+		interpret(&dag_forest);
 	}
 
 	return 0;

@@ -24,7 +24,7 @@ program helloworld;
 		intc := 20;
 		inte.year := 30;
 		inte.month := 5;
-		inta := ((intb + intc) + 3 * (intb + intc)) / 4 + intd[2] * 2 + inte.month;
+		inta := ((intb + intc) + 3 * (intb + intc)) / 4 + intd[2] * 2 + inte.month + intd[1];
 		writeln(inta);
 		writeln(1234567890);
 
