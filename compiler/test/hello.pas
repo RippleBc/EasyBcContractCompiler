@@ -101,7 +101,7 @@ program helloworld;
 		end;
 		writeln(1111111111);
 
-		inta := testfunc(1, 2);
+		
 		writeln(inta);
 		writeln(1111111111);
 
