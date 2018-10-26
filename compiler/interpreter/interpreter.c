@@ -4,9 +4,6 @@
 #include  "../parser/error.h"
 #include  "../parser/rule.h"
 
-Symbol p;
-Symbol q;
-
 List cp;
 List routine_forest;
 
@@ -133,10 +130,36 @@ void node_process(Node node)
   {
     case INCR:
     {
+      Symbol p;
+
       /* */
       node_process(node->kids[0]);
+
+      p = node->kids[0]->syms[0];
+
       /* */
-      node->kids[0]->syms[0]->v.i++;
+      if(top_symtab_stack()->level == 0)
+      {
+        node->kids[0]->syms[0]->v.i++;
+      }
+      else
+      {
+        if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
+        {
+          assign_arg(p, load_arg(p) + 1);
+        }
+        else if(p->defn == DEF_FUNCT) {
+          assign_return_val(p, load_return_val(find_symbol(top_symtab_stack(), p->name)) + 1);
+        }
+        else if(p->defn == DEF_PROC)
+        {
+
+        }
+        else
+        {
+          assign_local(p, load_local(p) + 1);
+        }
+      }
     }
     break;
     case DECR:
@@ -297,6 +320,8 @@ void node_process(Node node)
     break;
     case ARRAY:
     {
+      Symbol p;
+
       char ele_name[NAME_LEN];
       /*  */
       for(p = node->syms[0]->type_link->first; p != NULL; p = p->next)
@@ -324,6 +349,8 @@ void node_process(Node node)
     break;
     case LOAD:
     {
+      Symbol p;
+
       if(node->kids[0])
       {
         /* array or field */
@@ -355,17 +382,24 @@ void node_process(Node node)
     break;
     case ASGN:
     {
-      /*  */
-      if(generic(node->kids[0]->op) == ARRAY || generic(node->kids[0]->op) == FIELD)
+      Symbol p;
+      Symbol q;
+      if(node->kids[0])
       {
         /* array or filed */
         node_process(node->kids[0]);
+      }
+
+      /*  */
+      if(generic(node->kids[0]->op) == ARRAY || generic(node->kids[0]->op) == FIELD)
+      {
         p = node->kids[0]->syms[1];
       }
       else
       {
         p = node->kids[0]->syms[0];
       }
+
       /* 计算表达式AST节点对应的值 */
       if(node->kids[1])
       {
@@ -391,7 +425,6 @@ void node_process(Node node)
       }
       else
       {
-        printf("*********************************assign %s\n", p->name);
         int expression_val;
         if(generic(node->kids[1]->op) == CALL)
         {
@@ -604,6 +637,23 @@ void node_process(Node node)
       }
 
       node->val.i = node->kids[0]->val.i < node->kids[1]->val.i;
+    }
+    break;
+    case MOD:
+    {
+      /* 计算左表达式AST节点对应的值 */
+      if(node->kids[0] != NULL)
+      {
+        node_process(node->kids[0]);
+      }
+
+      /* 计算右表达式AST节点对应的值 */
+      if(node->kids[1] != NULL)
+      {
+        node_process(node->kids[1]);
+      }
+
+      node->val.i = node->kids[0]->val.i % node->kids[1]->val.i;
     }
     break;
   }
