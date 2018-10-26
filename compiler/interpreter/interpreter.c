@@ -40,11 +40,14 @@ void interpret(List dag)
       }
     }
 
+    List tmp;
     /*  */
     for(cp = dag->link; cp != NULL; cp = cp->link)
     {
       traverse_deep = 0;
+
       node_process((Node)(cp->x));
+
       if(cp == NULL)
       {
         printf("*********************ERROR*********************");
@@ -55,11 +58,13 @@ void interpret(List dag)
 
 void jump_to_function(Symtab function)
 {
+  Node function_node;
   /*  */
   int i = function_node_index - 1;
   while(i >= 0)
   {
-    Node function_node = (Node)(function_node_queue[i]->x);
+    function_node = (Node)(function_node_queue[i]->x);
+    /**/
     if(!strcmp(function_node->symtab->name, function->name))
     {
       cp = function_node_queue[i];
@@ -183,6 +188,18 @@ void node_process(Node node)
 
     /*  */
     push_return_position_stack(cp);
+
+    /*  */
+    push_symtab_stack(node->symtab);
+    
+    /*  */
+    push_return_val_stack(find_symbol(node->symtab, node->symtab->name));
+
+    /*  */
+    push_local_stack(node->symtab);
+
+    /*  */
+    push_args_stack(node->symtab);
 
     /*  */
     jump_to_function(top_symtab_stack());
@@ -569,31 +586,21 @@ void node_process(Node node)
   {
     case HEADER: /* 表示过程以及函数定义的开始 */  
     {
-      /*  */
-      push_symtab_stack(node->symtab);
-      
-      /*  */
-      push_return_val_stack(find_symbol(node->symtab, node->symtab->name));
 
-      /*  */
-      push_local_stack(node->symtab);
-
-      /*  */
-      push_args_stack(node->symtab);
     }
     break;
     case TAIL: /* 表示过程以及函数定义的结束 */
     {
-      cp = pop_return_position_stack();
+      // cp = pop_return_position_stack();
 
-      /*  */
-      pop_symtab_stack();
+      // /*  */
+      // pop_symtab_stack();
 
-      /*  */
-      pop_local_stack();
+      // /*  */
+      // pop_local_stack();
 
-      /*  */
-      pop_args_stack();
+      // /*  */
+      // pop_args_stack();
     }
     break;
     case BLOCKBEG:

@@ -696,8 +696,8 @@ var_decl
 
 routine_part
 :%empty {}
-|routine_part function_decl {/* 自定义函数可以嵌套 */}
-|routine_part procedure_decl {/*  自定义过程可以嵌套 */}
+|routine_part function_decl { }
+|routine_part procedure_decl { }
 |function_decl {}
 |procedure_decl {}
 ;

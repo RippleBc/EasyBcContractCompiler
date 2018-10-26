@@ -25,6 +25,9 @@ program helloworld;
 							sum := sum + k;
 					end;
 			end;
+			writeln(2222222222222222222222222);
+			writeln(sum);
+			writeln(2222222222222222222222222);
 			testfunc := x + y; 
 		end;
 	begin
