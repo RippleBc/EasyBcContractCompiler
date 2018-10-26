@@ -10,70 +10,73 @@ Symbol q;
 
 List cp;
 
-struct _call_stack_
-{
-  List forest;
+// typedef struct _call_stack_ CallStack;
+// /*  */
 
-  int label_node_index;
-  List label_node_queue[256];
+// int forest_statck_deep = 256;
+// CallStack forest_stack[256];
 
-  int function_node_index;
-  List function_node_queue[256];
-};
+// void push_forest_stack(CallStack l)
+// {
+//   forest_stack[--forest_statck_deep] = l;
+// }
 
-typedef struct _call_stack_ CallStack;
-/*  */
+// CallStack pop_forest_stack()
+// {
+//   return forest_stack[forest_statck_deep++];
+// }
 
-int forest_statck_deep = 256;
-CallStack forest_stack[256];
-
-void push_forest_stack(CallStack l)
-{
-  forest_stack[--forest_statck_deep] = l;
-}
-
-CallStack pop_forest_stack()
-{
-  return forest_stack[forest_statck_deep++];
-}
-
-CallStack top_forest_stack()
-{
-  return forest_stack[forest_statck_deep];
-}
-
-/*  */
-static int label_node_index = 0;
-static List label_node_queue[256];
-
-/*  */
-static int function_node_index = 0;
-static List function_node_queue[256];
+// CallStack top_forest_stack()
+// {
+//   return forest_stack[forest_statck_deep];
+// }
 
 static int traverse_deep;
 
 /*  */
-void interpret(List dag)
+void interpret(List routine_forest, List dag)
 {
     ptab = Global_symtab;
     Node n;
-    
+
+    LabelQueue label_queue;
+
     /*  */
+    NEW(label_queue, PERM);
+    label_queue->label_node_index = 0;
+
     for(cp = dag->link; cp != NULL; cp = cp->link)
     {
       n = (Node)(cp->x);
+      /*  */
+      cp->label_queue = label_queue;
+      /*  */
       if(generic(n->op) == LABEL)
       {
-        label_node_queue[label_node_index++] = cp;
-      }
-      else if(generic(n->op) == HEADER)
-      {
-        printf("*******************found***********************\n");
-        function_node_queue[function_node_index++] = cp;
+        label_queue->label_node_queue[label_queue->label_node_index++] = cp;
       }
     }
 
-    List tmp;
+    List cpTmp;
+    for(cp = routine_forest->link; cp != NULL; cp = cp->link)
+    {
+      NEW(label_queue, PERM);
+      label_queue->label_node_index = 0;
+      /*  */
+      for(cpTmp = (List)(cp->x); cpTmp != NULL; cpTmp = cpTmp->link)
+      {
+        n = (Node)(cpTmp->x);
+        /*  */
+        cpTmp->label_queue = label_queue;
+        /*  */
+        if(generic(n->op) == LABEL)
+        {
+          label_queue->label_node_queue[label_queue->label_node_index++] = cpTmp;
+        }
+      }
+    }
+
+
     /*  */
     for(cp = dag->link; cp != NULL; cp = cp->link)
     {
@@ -89,41 +92,17 @@ void interpret(List dag)
     }
 }
 
-void jump_to_function(Symtab function)
+void jump_to_label(List l, Symbol label)
 {
-  Node function_node;
+  LabelQueue label_queue = l->label_queue;
   /*  */
-  int i = function_node_index - 1;
+  int i = label_queue->label_node_index - 1;
   while(i >= 0)
   {
-    function_node = (Node)(function_node_queue[i]->x);
-    /**/
-    if(!strcmp(function_node->symtab->name, function->name))
-    {
-      cp = function_node_queue[i];
-      return;
-    }
-
-    i--;
-  }
-
-  if(i < 0)
-  {
-    printf("function is not exist %s\n", function->name);
-    cp = NULL;
-  }
-}
-
-void jump_to_label(Symbol label)
-{
-  /*  */
-  int i = label_node_index - 1;
-  while(i >= 0)
-  {
-    Node label_node = (Node)(label_node_queue[i]->x);
+    Node label_node = (Node)(label_queue->label_node_queue[i]->x);
     if(!strcmp(label_node->syms[0]->name, label->name))
     {
-      cp = label_node_queue[i];
+      cp = label_queue->label_node_queue[i];
       return;
     }
 
@@ -170,7 +149,7 @@ void node_process(Node node)
   break;
   case JUMP:
   {
-    jump_to_label(node->syms[0]);
+    jump_to_label(cp, node->syms[0]);
   }
   break;
   case COND:
@@ -180,7 +159,7 @@ void node_process(Node node)
     if((node->kids[0]->val.i == 0 && node->u.cond.true_or_false == false) || 
       (node->kids[0]->val.i != 0 && node->u.cond.true_or_false == true))
     {
-      jump_to_label(node->u.cond.label);
+      jump_to_label(cp, node->u.cond.label);
     }
   }
   break;
@@ -215,28 +194,25 @@ void node_process(Node node)
   break;
   case CALL:
   {
-    if (node->kids[0] != NULL)
-    {
-      node_process(node->kids[0]);
-    }
+    // if (node->kids[0] != NULL)
+    // {
+    //   node_process(node->kids[0]);
+    // }
     
-    /*  */
-    push_return_position_stack(cp);
+    // /*  */
+    // push_return_position_stack(cp);
 
-    /*  */
-    push_symtab_stack(node->symtab);
+    // /*  */
+    // push_symtab_stack(node->symtab);
     
-    /*  */
-    push_return_val_stack(find_symbol(node->symtab, node->symtab->name));
+    // /*  */
+    // push_return_val_stack(find_symbol(node->symtab, node->symtab->name));
 
-    /*  */
-    push_local_stack(node->symtab);
+    // /*  */
+    // push_local_stack(node->symtab);
 
-    /*  */
-    push_args_stack(node->symtab);
-
-    /*  */
-    jump_to_function(top_symtab_stack());
+    // /*  */
+    // push_args_stack(node->symtab);
   }
   break;
   }
@@ -275,7 +251,6 @@ void node_process(Node node)
   break;
   case ARG:
   {
-    printf("ARG\n");
     /* 计算参数的值 */
     if(node->kids[0] != NULL)
     {
@@ -626,16 +601,16 @@ void node_process(Node node)
     break;
     case TAIL: /* 表示过程以及函数定义的结束 */
     {
-      cp = pop_return_position_stack();
+      // cp = pop_return_position_stack();
 
-      /*  */
-      pop_symtab_stack();
+      // /*  */
+      // pop_symtab_stack();
 
-      /*  */
-      pop_local_stack();
+      // /*  */
+      // pop_local_stack();
 
-      /*  */
-      pop_args_stack();
+      // /*  */
+      // pop_args_stack();
     }
     break;
     case BLOCKBEG:

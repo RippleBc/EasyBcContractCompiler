@@ -130,9 +130,17 @@ enum {
 /* symbol and type definition. */
 #include "./ast/symtab.h"
 
+typedef struct _label_queue_ *LabelQueue;
+struct _label_queue_
+{
+    int label_node_index;
+    struct list *label_node_queue[256];
+};
+
 typedef struct list *List;
 struct list
 {
+    LabelQueue label_queue;
     void *x; /* 头部LIST节点中的x指向LIST链表的末尾节点，非头部LIST节点中的x指向AST节点或者DAG节点 */
     List link; /* 指向下一个LIST节点 */
 };

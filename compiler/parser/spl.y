@@ -236,7 +236,7 @@ program
 		gen_dag(&ast_forest, &dag_forest);
 
 		/*  */
-		interpret(&dag_forest);
+		interpret(&routine_forest, &dag_forest);
 	}
 
 	return 0;
@@ -723,7 +723,7 @@ function_decl
 		gen_dag(&ast_forest, &dag_forest);
 
 		/*  */
-		list_append(&routine_forest, &dag_forest);
+		list_append(&routine_forest, dag_forest.link);
 	}
 
 	/* 弹出函数对应的符号表 */
@@ -734,9 +734,6 @@ function_decl
 function_head
 :kFUNCTION
 {
-	/* */
-	list_append(&routine_forest, &ast_forest);
-
 	/* 清空AST森林 */
 	list_clear(&ast_forest);
 
@@ -798,16 +795,18 @@ procedure_decl
 :procedure_head oSEMI sub_routine oSEMI
 {
 
-	list_clear(&dag_forest);
+	if (!err_occur())
+	{
+		list_clear(&dag_forest);
 
-	t = new_tree(TAIL, NULL, NULL, NULL);
-	t->u.generic.symtab = top_symtab_stack();
-	list_append(&ast_forest, t);
+		t = new_tree(TAIL, NULL, NULL, NULL);
+		t->u.generic.symtab = top_symtab_stack();
+		list_append(&ast_forest, t);
 
-	gen_dag(&ast_forest, &dag_forest);
+		gen_dag(&ast_forest, &dag_forest);
 
-	list_append(&routine_forest, &dag_forest);
-
+		list_append(&routine_forest, dag_forest.link);
+	}
 	pop_symtab_stack();
 }
 ;
