@@ -78,10 +78,12 @@ void assign_local(Symbol p, int val)
 {
   /*  */
   local_stack[local_deep + p->offset - get_symbol_align_size(p)] = val;
+  printf("assign_local %s offset:%d val:%d\n", p->name, local_deep + p->offset - get_symbol_align_size(p), local_stack[local_deep + p->offset - get_symbol_align_size(p)]);
 }
 
-int load_local(Symtab tab, Symbol p)
+int load_local(Symbol p)
 {
+  printf("load_local %s offset:%d val:%d\n", p->name, local_deep + p->offset - get_symbol_align_size(p), local_stack[local_deep + p->offset - get_symbol_align_size(p)]);
   return local_stack[local_deep + p->offset - get_symbol_align_size(p)];
 }
 
@@ -108,11 +110,13 @@ void pop_args_stack(Symtab tab)
 void assign_arg(Symbol p, int val)
 {
   /*  */
-  local_stack[args_deep + p->offset - get_symbol_align_size(p)] = val;
+  args_stack[args_deep + p->offset - get_symbol_align_size(p)] = val;
+  printf("assign_arg %s offset:%d val:%d\n", p->name, args_deep + p->offset - get_symbol_align_size(p), args_stack[args_deep + p->offset - get_symbol_align_size(p)]);
 }
 
 
 int load_arg(Symbol p)
 {
-  return local_stack[args_deep + p->offset - get_symbol_align_size(p)];
+  printf("load_arg %s offset:%d val:%d\n", p->name, args_deep + p->offset - get_symbol_align_size(p), args_stack[args_deep + p->offset - get_symbol_align_size(p)]);
+  return args_stack[args_deep + p->offset - get_symbol_align_size(p)];
 }

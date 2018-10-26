@@ -22,12 +22,16 @@ program helloworld;
 			begin
 			if x mod k = 0 then 
 					begin
+							writeln(980986);
 							sum := sum + k;
 					end;
 			end;
-			writeln(2222222222222222222222222);
+			writeln(222222);
+			writeln(x);
+			writeln(y);
 			writeln(sum);
-			writeln(2222222222222222222222222);
+			writeln(x + y);
+			writeln(222222);
 			testfunc := x + y; 
 		end;
 	begin
@@ -102,12 +106,11 @@ program helloworld;
 					4: writeln(4);
 				end;
 		end;
-		writeln(1111111111);
+		writeln(22222222);
 
-		testfunc(1, 10);
-		writeln(inta);
-		writeln(1111111111);
-
+		testfunc(10, 1);
+		writeln(22222222);
+		writeln(inte.month);
 		writeln(inte.year);
 	end
 .

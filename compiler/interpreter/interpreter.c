@@ -4,7 +4,6 @@
 #include  "../parser/error.h"
 #include  "../parser/rule.h"
 
-Symtab ptab;
 Symbol p;
 Symbol q;
 
@@ -18,7 +17,8 @@ void interpret(List _routine_forest, List dag)
 {
   routine_forest = _routine_forest;
 
-  ptab = Global_symtab;
+  push_symtab_stack(Global_symtab);
+
   Node n;
 
   LabelQueue label_queue;
@@ -74,7 +74,7 @@ void interpret(List _routine_forest, List dag)
   }
 }
 
-void jump_to_routine(Symtab ptab)
+List find_routine_forest(Symtab ptab)
 {
   List cpTmp1, cpTmp2;
   Node n;
@@ -88,20 +88,16 @@ void jump_to_routine(Symtab ptab)
       {
         printf("found routine %s\n", n->symtab->name);
 
-        /*  */
-        push_return_position_stack(cp);
-        
-        /*  */
-        cp = cpTmp2;
-        return;
+        return cpTmp2;
       }
     }
   }
 
   if(cpTmp2 == NULL)
   {
-    cp = NULL;
     printf("routine not exist %s\n", ptab->name);
+
+    return NULL;
   }
 }
 
@@ -189,16 +185,14 @@ void node_process(Node node)
     else {
       /*  */
       node_process(node->kids[0]);
+
       /* 有参数 */
       switch (node->u.sys_id)
       {
         case pWRITELN:
         {
-          /* 参数对应的符号 */
-          p = node->kids[0]->syms[0];
-
           /*  */
-          printf("result: %d\n", p->v.i);
+          printf("result: %d\n", node->kids[0]->val.i);
         }
         break;
       }
@@ -207,29 +201,53 @@ void node_process(Node node)
   break;
   case CALL:
   {
-    // if (node->kids[0] != NULL)
-    // {
-    //   node_process(node->kids[0]);
-    // }
+    List originCp = cp;
+    cp = find_routine_forest(node->symtab);
 
-    // /*  */
-    // push_symtab_stack(node->symtab);
-    
-    // /*  */
-    // push_return_val_stack(find_symbol(node->symtab, node->symtab->name));
+    if(cp)
+    {
+      /*  */
+      push_symtab_stack(node->symtab);
 
-    // /*  */
-    // push_local_stack(node->symtab);
+      /*  */
+      push_return_position_stack(originCp);
 
-    // /*  */
-    // push_args_stack(node->symtab);
-    jump_to_routine(node->symtab);
+      /*  */
+      push_return_val_stack(find_symbol(node->symtab, node->symtab->name));
+
+      /*  */
+      push_local_stack(node->symtab);
+
+      /*  */
+      push_args_stack(node->symtab);
+
+      if (node->kids[0] != NULL)
+      {
+        node_process(node->kids[0]);
+      }
+      
+      /*  */
+      Symbol sym;
+      Node tmpNode;
+
+      int i = 0, j = 0;;
+      for(sym = node->symtab->args; sym != NULL; sym = sym->next)
+      {
+        i++;
+        j = 0;
+        for(tmpNode = node->kids[0]; tmpNode != NULL; tmpNode = tmpNode->kids[1])
+        {
+          j++;
+          if(i == j)
+          {
+            assign_arg(sym, tmpNode->val.i);
+            break;
+          }
+        }
+      }
+    }
   }
   break;
-  }
-
-  switch (generic(node->op))
-  {
   case RIGHT:
   {
     printf("RIGHT\n");
@@ -240,18 +258,8 @@ void node_process(Node node)
       node_process(node->kids[0]);
     }
 
-    /* 参数对应的符号 */
-    p = node->syms[0];
-
-    if(top_symtab_stack()->level == 0)
-    {
-      /* 参数赋值 */
-      p->v.i = node->kids[0]->val.i;
-    }
-    else
-    {
-      p->v.i = load_arg(top_symtab_stack(), p);
-    }
+    /* 参数赋值 */
+    node->val.i = node->kids[0]->val.i;
 
     /* 计算其余参数的值 */
     if(node->kids[1] != NULL)
@@ -268,11 +276,8 @@ void node_process(Node node)
       node_process(node->kids[0]);
     }
 
-    /* 参数对应的符号 */
-    p = node->syms[0];
-
     /* 参数赋值 */
-    p->v.i = node->kids[0]->val.i;
+    node->val.i = node->kids[0]->val.i;
 
     /* 计算其余参数的值 */
     if(node->kids[1] != NULL)
@@ -323,7 +328,7 @@ void node_process(Node node)
       {
         /* array or field */
         node_process(node->kids[0]);
-        p = node->syms[0] = node->kids[0]->syms[1];
+        p = node->kids[0]->syms[1];
       }
       else
       {
@@ -355,11 +360,11 @@ void node_process(Node node)
       {
         /* array or filed */
         node_process(node->kids[0]);
-        p = node->syms[0] = node->kids[0]->syms[1];
+        p = node->kids[0]->syms[1];
       }
       else
       {
-        p = node->syms[0] = node->kids[0]->syms[0];
+        p = node->kids[0]->syms[0];
       }
       /* 计算表达式AST节点对应的值 */
       if(node->kids[1])
@@ -386,7 +391,7 @@ void node_process(Node node)
       }
       else
       {
-
+        printf("*********************************assign %s\n", p->name);
         int expression_val;
         if(generic(node->kids[1]->op) == CALL)
         {
@@ -612,16 +617,17 @@ void node_process(Node node)
     break;
     case TAIL: /* 表示过程以及函数定义的结束 */
     {
+      /*  */
+      pop_symtab_stack();
+
+      /*  */
       cp = pop_return_position_stack();
 
       /*  */
-      // pop_symtab_stack();
+      pop_local_stack();
 
-      // /*  */
-      // pop_local_stack();
-
-      // /*  */
-      // pop_args_stack();
+      /*  */
+      pop_args_stack();
     }
     break;
     case BLOCKBEG:

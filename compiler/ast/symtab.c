@@ -285,14 +285,14 @@ void add_args_to_table(symtab *tab, symbol *sym)
     tab->args = sym;
     sym->tab = tab;
 
-    /* 计算局部变量在symtab中的偏移量 */
-    sym->offset = 3 * IR->intmetric.size;
     /* 计算rname，形式为aN_000、aN_001 */
     sprintf(sym->rname, "a%c_%03d", sym->name[0], new_index(arg));
     /* 计算symtab中参数所占用的空间 */
     var_size = get_symbol_align_size(sym);
     tab->args_size += var_size;
-
+    /* 计算局部变量在symtab中的偏移量 */
+    sym->offset = var_size;
+    
     /* 重新计算其他参数在symtab中的偏移量 */
     for(p = tab->args->next; p; p = p->next)
         p->offset += var_size;

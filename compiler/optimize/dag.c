@@ -192,7 +192,7 @@ Node travel(Tree tp)
 
         /*  */
         kill_nodes(tp->kids[0]->u.generic.sym);
-
+        
         break;
     case ADDRG:
         l = travel(tp->kids[0]);
