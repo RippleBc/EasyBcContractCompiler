@@ -61,6 +61,8 @@ void set_call_stack_top(symbol *p);
 void push_call_stack(symtab *p);
 
 /*  */
+struct list routine_forest;
+/*  */
 struct list ast_forest;
 struct list para_list;				/* for parameter list. */
 List  case_list = NULL;       /* CASE结构使用 */
@@ -720,6 +722,8 @@ function_decl
 		/* 生成AST森林 */
 		gen_dag(&ast_forest, &dag_forest);
 
+		/*  */
+		list_append(&routine_forest, &dag_forest);
 	}
 
 	/* 弹出函数对应的符号表 */
@@ -730,9 +734,12 @@ function_decl
 function_head
 :kFUNCTION
 {
+	/* */
+	list_append(&routine_forest, &ast_forest);
+
 	/* 清空AST森林 */
 	list_clear(&ast_forest);
-	
+
 	/* 清空参数列表 */
 	list_clear(&para_list);
 
@@ -799,6 +806,8 @@ procedure_decl
 
 	gen_dag(&ast_forest, &dag_forest);
 
+	list_append(&routine_forest, &dag_forest);
+
 	pop_symtab_stack();
 }
 ;
@@ -807,6 +816,7 @@ procedure_head
 :kPROCEDURE
 {
 	list_clear(&ast_forest);
+
 	list_clear(&para_list);
 
 	ptab = new_symtab(top_symtab_stack());
@@ -1057,7 +1067,10 @@ routine_stmt
 {
 	/* 寻找自定义函数或者过程 */
 	if((ptab = find_routine(top_symtab_stack(), $1)))
-  		push_call_stack(ptab);
+	{
+		push_call_stack(ptab);
+	}
+  		
 	else
 	{
 		parse_error("Undeclared funtion", $1);

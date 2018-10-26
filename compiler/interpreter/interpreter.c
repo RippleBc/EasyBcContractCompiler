@@ -10,6 +10,38 @@ Symbol q;
 
 List cp;
 
+struct _call_stack_
+{
+  List forest;
+
+  int label_node_index;
+  List label_node_queue[256];
+
+  int function_node_index;
+  List function_node_queue[256];
+};
+
+typedef struct _call_stack_ CallStack;
+/*  */
+
+int forest_statck_deep = 256;
+CallStack forest_stack[256];
+
+void push_forest_stack(CallStack l)
+{
+  forest_stack[--forest_statck_deep] = l;
+}
+
+CallStack pop_forest_stack()
+{
+  return forest_stack[forest_statck_deep++];
+}
+
+CallStack top_forest_stack()
+{
+  return forest_stack[forest_statck_deep];
+}
+
 /*  */
 static int label_node_index = 0;
 static List label_node_queue[256];

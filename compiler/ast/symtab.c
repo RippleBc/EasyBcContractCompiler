@@ -531,24 +531,21 @@ symtab *top_symtab_stack()
 symtab *find_routine(symtab *tab, char *name)
 {
     int i;
-    symtab *ptab = tab, *routine;
-    while(ptab)
+    symtab *routine;
+
+    /* 内部调用函数或者过程（递归调用） */
+    if(!strcmp(tab->name, name)) 
     {
-        /* 内部调用函数或者过程（递归调用） */
-        if(!strcmp(ptab->name, name)) 
+        return tab;
+    }
+    /* 外部调用函数或者过程 */
+    for(i = 0; i < tab->last_symtab; i++)
+    {
+        routine = tab->routine_queue[i];
+        if(!strcmp(routine->name, name))
         {
-            return ptab;
+            return routine;
         }
-        /* 外部调用函数或者过程 */
-        for(i = 0; i < ptab->last_symtab; i++)
-        {
-            routine = ptab->routine_queue[i];
-            if(!strcmp(routine->name, name))
-            {
-                return routine;
-            }
-        }
-        ptab = ptab->parent;
     }
     
     return NULL;

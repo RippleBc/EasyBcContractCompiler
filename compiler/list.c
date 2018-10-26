@@ -1,20 +1,13 @@
 #include "common.h"
 
-static List freenodes;
-
 /* x为DAG节点或者AST节点 */
 List list_append(List list, void *x)
 {
 
     List new;
 
-    /*  */
-    if ((new = freenodes) != NULL)
-        /*  */
-        freenodes = freenodes->link;
-    else
-        /* 给指针在permanent区域分配内存 */
-        NEW(new, PERM);
+    /* 给指针在permanent区域分配内存 */
+    NEW(new, PERM);
 
     /* 节点初始化 */
     new->link = NULL;
@@ -76,7 +69,6 @@ void **list_ltov(List list, unsigned arena)
 
 void list_clear(List list)
 {
-    freenodes = list->link;
     list->link = NULL;
     list->x = NULL;
 }
