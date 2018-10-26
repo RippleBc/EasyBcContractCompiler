@@ -36,6 +36,7 @@ void interpret(List dag)
       }
       else if(generic(n->op) == HEADER)
       {
+        printf("*******************found***********************\n");
         function_node_queue[function_node_index++] = cp;
       }
     }
@@ -74,9 +75,10 @@ void jump_to_function(Symtab function)
     i--;
   }
 
-  if(cp == NULL)
+  if(i < 0)
   {
-    printf("function is not exist %s", function->name);
+    printf("function is not exist %s\n", function->name);
+    cp = NULL;
   }
 }
 
@@ -96,9 +98,10 @@ void jump_to_label(Symbol label)
     i--;
   }
 
-  if(cp == NULL)
+  if(i < 0)
   {
-    printf("label is not exist %s", label->name);
+    printf("label is not exist %s\n", label->name);
+    cp = NULL;
   }
 }
 
@@ -180,12 +183,11 @@ void node_process(Node node)
   break;
   case CALL:
   {
-
     if (node->kids[0] != NULL)
     {
       node_process(node->kids[0]);
     }
-
+    
     /*  */
     push_return_position_stack(cp);
 
@@ -211,7 +213,7 @@ void node_process(Node node)
   {
   case RIGHT:
   {
-    printf("\nRIGHT, ");
+    printf("RIGHT\n");
 
     /* 计算表达式AST节点对应的值 */
     if(node->kids[0] != NULL)
@@ -241,6 +243,7 @@ void node_process(Node node)
   break;
   case ARG:
   {
+    printf("ARG\n");
     /* 计算参数的值 */
     if(node->kids[0] != NULL)
     {
@@ -591,16 +594,16 @@ void node_process(Node node)
     break;
     case TAIL: /* 表示过程以及函数定义的结束 */
     {
-      // cp = pop_return_position_stack();
+      cp = pop_return_position_stack();
 
-      // /*  */
-      // pop_symtab_stack();
+      /*  */
+      pop_symtab_stack();
 
-      // /*  */
-      // pop_local_stack();
+      /*  */
+      pop_local_stack();
 
-      // /*  */
-      // pop_args_stack();
+      /*  */
+      pop_args_stack();
     }
     break;
     case BLOCKBEG:

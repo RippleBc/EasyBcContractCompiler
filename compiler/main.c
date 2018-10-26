@@ -243,6 +243,5 @@ void signup()
 {
     printf("\n");
     printf("Simple Pascal Language Compiler Version %s\n", _PC_VER_);
-    printf("Copyright (c) 1997-2007 by Zhejiang University. All rights reserved.\n");
 }
 

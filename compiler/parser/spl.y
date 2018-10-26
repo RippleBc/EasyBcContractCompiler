@@ -732,6 +732,7 @@ function_head
 {
 	/* 清空AST森林 */
 	list_clear(&ast_forest);
+	
 	/* 清空参数列表 */
 	list_clear(&para_list);
 

@@ -8,10 +8,9 @@ List list_append(List list, void *x)
 
     List new;
 
-    /* new指向freenodes指向的区域，只有当调用过list_clear之后，
-     freenodes才可能不为空，这样做的目的是为了节省一部分的内存空间。 */
+    /*  */
     if ((new = freenodes) != NULL)
-        /* 重新定义freenodes，指向list指针对象new的link字段，也就是NULL */
+        /*  */
         freenodes = freenodes->link;
     else
         /* 给指针在permanent区域分配内存 */
@@ -75,10 +74,8 @@ void **list_ltov(List list, unsigned arena)
     return array;
 }
 
-/* list_clear - clear list */
 void list_clear(List list)
 {
-    /* 记录下清空了的list */
     freenodes = list->link;
     list->link = NULL;
     list->x = NULL;
