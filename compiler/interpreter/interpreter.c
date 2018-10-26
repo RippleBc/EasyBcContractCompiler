@@ -9,87 +9,100 @@ Symbol p;
 Symbol q;
 
 List cp;
-
-// typedef struct _call_stack_ CallStack;
-// /*  */
-
-// int forest_statck_deep = 256;
-// CallStack forest_stack[256];
-
-// void push_forest_stack(CallStack l)
-// {
-//   forest_stack[--forest_statck_deep] = l;
-// }
-
-// CallStack pop_forest_stack()
-// {
-//   return forest_stack[forest_statck_deep++];
-// }
-
-// CallStack top_forest_stack()
-// {
-//   return forest_stack[forest_statck_deep];
-// }
+List routine_forest;
 
 static int traverse_deep;
 
 /*  */
-void interpret(List routine_forest, List dag)
+void interpret(List _routine_forest, List dag)
 {
-    ptab = Global_symtab;
-    Node n;
+  routine_forest = _routine_forest;
 
-    LabelQueue label_queue;
+  ptab = Global_symtab;
+  Node n;
 
+  LabelQueue label_queue;
+
+  /*  */
+  NEW(label_queue, PERM);
+  label_queue->label_node_index = 0;
+
+  for(cp = dag->link; cp != NULL; cp = cp->link)
+  {
+    n = (Node)(cp->x);
     /*  */
+    cp->label_queue = label_queue;
+    /*  */
+    if(generic(n->op) == LABEL)
+    {
+      label_queue->label_node_queue[label_queue->label_node_index++] = cp;
+    }
+  }
+
+  List cpTmp;
+  for(cp = routine_forest->link; cp != NULL; cp = cp->link)
+  {
     NEW(label_queue, PERM);
     label_queue->label_node_index = 0;
-
-    for(cp = dag->link; cp != NULL; cp = cp->link)
+    /*  */
+    for(cpTmp = (List)(cp->x); cpTmp != NULL; cpTmp = cpTmp->link)
     {
-      n = (Node)(cp->x);
+      n = (Node)(cpTmp->x);
       /*  */
-      cp->label_queue = label_queue;
+      cpTmp->label_queue = label_queue;
       /*  */
       if(generic(n->op) == LABEL)
       {
-        label_queue->label_node_queue[label_queue->label_node_index++] = cp;
+        label_queue->label_node_queue[label_queue->label_node_index++] = cpTmp;
       }
     }
+  }
 
-    List cpTmp;
-    for(cp = routine_forest->link; cp != NULL; cp = cp->link)
+
+  /*  */
+  for(cp = dag->link; cp != NULL; cp = cp->link)
+  {
+    traverse_deep = 0;
+
+    node_process((Node)(cp->x));
+
+    if(cp == NULL)
     {
-      NEW(label_queue, PERM);
-      label_queue->label_node_index = 0;
+      printf("*********************ERROR*********************");
+      break;
+    }
+  }
+}
+
+void jump_to_routine(Symtab ptab)
+{
+  List cpTmp1, cpTmp2;
+  Node n;
+  for(cpTmp1 = routine_forest->link; cpTmp1 != NULL; cpTmp1 = cpTmp1->link)
+  {
+    for(cpTmp2 = (List)(cpTmp1->x); cpTmp2 != NULL; cpTmp2 = cpTmp2->link)
+    {
+      n = (Node)(cpTmp2->x);
       /*  */
-      for(cpTmp = (List)(cp->x); cpTmp != NULL; cpTmp = cpTmp->link)
+      if(n->symtab == ptab)
       {
-        n = (Node)(cpTmp->x);
+        printf("found routine %s\n", n->symtab->name);
+
         /*  */
-        cpTmp->label_queue = label_queue;
+        push_return_position_stack(cp);
+        
         /*  */
-        if(generic(n->op) == LABEL)
-        {
-          label_queue->label_node_queue[label_queue->label_node_index++] = cpTmp;
-        }
+        cp = cpTmp2;
+        return;
       }
     }
+  }
 
-
-    /*  */
-    for(cp = dag->link; cp != NULL; cp = cp->link)
-    {
-      traverse_deep = 0;
-
-      node_process((Node)(cp->x));
-
-      if(cp == NULL)
-      {
-        printf("*********************ERROR*********************");
-        break;
-      }
-    }
+  if(cpTmp2 == NULL)
+  {
+    cp = NULL;
+    printf("routine not exist %s\n", ptab->name);
+  }
 }
 
 void jump_to_label(List l, Symbol label)
@@ -198,9 +211,6 @@ void node_process(Node node)
     // {
     //   node_process(node->kids[0]);
     // }
-    
-    // /*  */
-    // push_return_position_stack(cp);
 
     // /*  */
     // push_symtab_stack(node->symtab);
@@ -213,6 +223,7 @@ void node_process(Node node)
 
     // /*  */
     // push_args_stack(node->symtab);
+    jump_to_routine(node->symtab);
   }
   break;
   }
@@ -601,9 +612,9 @@ void node_process(Node node)
     break;
     case TAIL: /* 表示过程以及函数定义的结束 */
     {
-      // cp = pop_return_position_stack();
+      cp = pop_return_position_stack();
 
-      // /*  */
+      /*  */
       // pop_symtab_stack();
 
       // /*  */
