@@ -229,6 +229,11 @@ void node_process(Node node)
 
     if(cp)
     {
+      if (node->kids[0] != NULL)
+      {
+        node_process(node->kids[0]);
+      }
+      
       /*  */
       push_symtab_stack(node->symtab);
 
@@ -244,11 +249,6 @@ void node_process(Node node)
       /*  */
       push_args_stack(node->symtab);
 
-      if (node->kids[0] != NULL)
-      {
-        node_process(node->kids[0]);
-      }
-      
       /*  */
       Symbol sym;
       Node tmpNode;

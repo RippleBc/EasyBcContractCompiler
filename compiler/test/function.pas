@@ -1,5 +1,5 @@
 program helloworld;
-	function testfunc(x,y:integer):integer;
+	function testFunc(x,y:integer):integer;
 		var
 			k,sum : integer;
 		begin
@@ -8,19 +8,28 @@ program helloworld;
 			begin
 			if x mod k = 0 then 
 					begin
-							writeln(980986);
 							sum := sum + k;
 					end;
 			end;
-			writeln(222222);
-			writeln(x);
-			writeln(y);
 			writeln(sum);
-			writeln(x + y);
-			writeln(222222);
-			testfunc := x + y; 
+			testFunc := x + y; 
+		end;
+	function testRecurveFunc(x,y:integer):integer;
+		var
+			sum : integer;
+		begin
+			sum := x + y;
+			if(x > 0) then
+			begin
+				writeln(x);
+				testRecurveFunc(x-1, y);
+			end
+			else
+				writeln(sum);
+			testRecurveFunc := x + y;
 		end;
 	begin
-		testfunc(10, 1);
+		testFunc(10, 1);
+		testRecurveFunc(10, 1);
 	end
 .
