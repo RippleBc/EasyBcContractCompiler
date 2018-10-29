@@ -4,15 +4,13 @@
 #include  "../parser/error.h"
 #include  "../parser/rule.h"
 
-List cp;
-List routine_forest;
-
-static int traverse_deep;
+List g_cp;
+List g_routine_forest;
 
 /*  */
-void interpret(List _routine_forest, List dag)
+void interpret(List routine_forest, List dag)
 {
-  routine_forest = _routine_forest;
+  g_routine_forest = routine_forest;
 
   Node n;
 
@@ -24,25 +22,25 @@ void interpret(List _routine_forest, List dag)
   NEW(label_queue, PERM);
   label_queue->label_node_index = 0;
 
-  for(cp = dag->link; cp != NULL; cp = cp->link)
+  for(g_cp = dag->link; g_cp != NULL; g_cp = g_cp->link)
   {
-    n = (Node)(cp->x);
+    n = (Node)(g_cp->x);
     /*  */
-    cp->label_queue = label_queue;
+    g_cp->label_queue = label_queue;
     /*  */
     if(generic(n->op) == LABEL)
     {
-      label_queue->label_node_queue[label_queue->label_node_index++] = cp;
+      label_queue->label_node_queue[label_queue->label_node_index++] = g_cp;
     }
   }
 
   List cpTmp;
-  for(cp = routine_forest->link; cp != NULL; cp = cp->link)
+  for(g_cp = g_routine_forest->link; g_cp != NULL; g_cp = g_cp->link)
   {
     NEW(label_queue, PERM);
     label_queue->label_node_index = 0;
     /*  */
-    for(cpTmp = (List)(cp->x); cpTmp != NULL; cpTmp = cpTmp->link)
+    for(cpTmp = (List)(g_cp->x); cpTmp != NULL; cpTmp = cpTmp->link)
     {
       n = (Node)(cpTmp->x);
       /*  */
@@ -57,13 +55,11 @@ void interpret(List _routine_forest, List dag)
 
 
   /*  */
-  for(cp = dag->link; cp != NULL; cp = cp->link)
+  for(g_cp = dag->link; g_cp != NULL; g_cp = g_cp->link)
   {
-    traverse_deep = 0;
+    node_process((Node)(g_cp->x));
 
-    node_process((Node)(cp->x));
-
-    if(cp == NULL)
+    if(g_cp == NULL)
     {
       printf("*********************ERROR*********************");
       break;
@@ -75,7 +71,7 @@ List find_routine_forest(Symtab ptab)
 {
   List cpTmp1, cpTmp2;
   Node n;
-  for(cpTmp1 = routine_forest->link; cpTmp1 != NULL; cpTmp1 = cpTmp1->link)
+  for(cpTmp1 = g_routine_forest->link; cpTmp1 != NULL; cpTmp1 = cpTmp1->link)
   {
     for(cpTmp2 = (List)(cpTmp1->x); cpTmp2 != NULL; cpTmp2 = cpTmp2->link)
     {
@@ -104,7 +100,7 @@ void jump_to_label(List l, Symbol label)
     Node label_node = (Node)(label_queue->label_node_queue[i]->x);
     if(!strcmp(label_node->syms[0]->name, label->name))
     {
-      cp = label_queue->label_node_queue[i];
+      g_cp = label_queue->label_node_queue[i];
       return;
     }
 
@@ -114,15 +110,13 @@ void jump_to_label(List l, Symbol label)
   if(i < 0)
   {
     printf("label is not exist %s\n", label->name);
-    cp = NULL;
+    g_cp = NULL;
   }
 }
 
 void node_process(Node node)
 {
-  traverse_deep++;
-
-  /*  */
+  /* 流程控制相关 */
   switch (generic(node->op))
   {
   case LABEL:
@@ -132,7 +126,7 @@ void node_process(Node node)
   break;
   case JUMP:
   {
-    jump_to_label(cp, node->syms[0]);
+    jump_to_label(g_cp, node->syms[0]);
   }
   break;
   case COND:
@@ -142,13 +136,13 @@ void node_process(Node node)
     if((node->kids[0]->val.i == 0 && node->u.cond.true_or_false == false) || 
       (node->kids[0]->val.i != 0 && node->u.cond.true_or_false == true))
     {
-      jump_to_label(cp, node->u.cond.label);
+      jump_to_label(g_cp, node->u.cond.label);
     }
   }
   break;
   }
 
-  /*  */
+  /* 函数调用相关 */
   switch (generic(node->op))
   {
   case SYS:
@@ -176,35 +170,36 @@ void node_process(Node node)
   break;
   case CALL:
   {
-    List originCp = cp;
-    cp = find_routine_forest(node->symtab);
 
-    if(cp)
+    /* 记录返回地址 */
+    push_return_position_stack(g_cp);
+
+    /* 对应函数的DAG节点森林 */
+    g_cp = find_routine_forest(node->symtab);
+
+    if(g_cp)
     {
+      /* 实参 */
       if (node->kids[0] != NULL)
       {
         node_process(node->kids[0]);
       }
       
-      /*  */
+      /* 符号表压栈 */
       push_symtab_stack(node->symtab);
 
-      /*  */
-      push_return_position_stack(originCp);
-
-      /*  */
+      /* 返回值压栈 */
       push_return_val_stack(find_symbol(node->symtab, node->symtab->name));
 
-      /*  */
+      /* 本地变量压栈 */
       push_local_stack(node->symtab);
 
-      /*  */
+      /* 实参压栈 */
       push_args_stack(node->symtab);
 
-      /*  */
+      /* 实参赋值 */
       Symbol sym;
       Node tmpNode;
-
       int i = 0, j = 0;;
       for(sym = node->symtab->args; sym != NULL; sym = sym->next)
       {
@@ -220,6 +215,10 @@ void node_process(Node node)
           }
         }
       }
+    }
+    else
+    {
+      pop_return_position_stack();
     }
   }
   break;
@@ -261,7 +260,7 @@ void node_process(Node node)
   break;
   }
 
-  /*  */
+  /* 取值赋值相关 */
   switch (generic(node->op))
   {
     case CNST:
@@ -279,11 +278,13 @@ void node_process(Node node)
       Symbol p;
 
       char ele_name[NAME_LEN];
-      /*  */
+      /* 遍历数组元素 */
       for(p = node->syms[0]->type_link->first; p != NULL; p = p->next)
       {
+        /* 数组下标 */
         node_process(node->kids[0]);
 
+        /* 对应下标的元素 */
         snprintf(ele_name, sizeof(ele_name), "%d", node->kids[0]->val.i);
         if(is_symbol(p, ele_name))
         {
@@ -309,8 +310,9 @@ void node_process(Node node)
 
       if(node->kids[0])
       {
-        /* array or field */
+        /* 地址节点 */
         node_process(node->kids[0]);
+        /* syms[0]表示数组或者记录，syms[1]表示数组成员或者属性，node->kids[0]表示ARRAY或者FIELD节点 */
         p = node->kids[0]->syms[1];
       }
       else
@@ -318,19 +320,21 @@ void node_process(Node node)
         p = node->syms[0];
       }
 
+      /* 全局变量 */
       if(top_symtab_stack()->level == 0)
       {
-        /*  */
+        /* 使用变量符号进行赋值 */
         node->val.i = p->v.i;
       }
       else
       {
-        /*  */
+        /* 参数局部类型，从栈取值 */
         if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
         {
           node->val.i = load_arg(p);
         }
         else {
+          /* 普通局部变量，从栈取值 */
           node->val.i = load_local(p);
         }
       }
@@ -342,75 +346,51 @@ void node_process(Node node)
       Symbol q;
       if(node->kids[0])
       {
-        /* array or filed */
+        /* 地址节点 */
         node_process(node->kids[0]);
       }
 
-      /*  */
       if(generic(node->kids[0]->op) == ARRAY || generic(node->kids[0]->op) == FIELD)
       {
+        /* syms[0]表示数组或者记录，syms[1]表示数组成员或者属性，node->kids[0]表示ARRAY或者FIELD节点 */
         p = node->kids[0]->syms[1];
       }
       else
       {
+        /* node->kids[0]表示ADDRG节点 */
         p = node->kids[0]->syms[0];
       }
 
-      /* 计算表达式AST节点对应的值 */
-      if(node->kids[1])
-      {
-        node_process(node->kids[1]);
-      }
+      /* 表达式AST节点 */
+      node_process(node->kids[1]);
 
       if(top_symtab_stack()->level == 0)
       {
-        if(generic(node->kids[1]->op) == CALL)
-        {
-          /*  */
-          q = find_symbol(node->kids[1]->symtab, node->kids[1]->symtab->name);
-          /*  */
-          p->v.i = load_return_val(q);
-          /*  */
-          pop_return_val_stack();
-        }
-        else
-        {
-          /* 变量赋值 */
-          p->v.i = node->kids[1]->val.i;
-        }
+        /* 变量符号直接赋值 */
+        p->v.i = node->kids[1]->val.i;
       }
       else
       {
-        int expression_val;
-        if(generic(node->kids[1]->op) == CALL)
-        {
-          /*  */
-          q = find_symbol(node->kids[1]->symtab, node->kids[1]->symtab->name);
-          /*  */
-          expression_val = load_return_val(q);
-          /*  */
-          pop_return_val_stack();
-        }
-        else
-        {
-          /* 变量赋值 */
-          expression_val = node->kids[1]->val.i;
-        }
+        /* 表达式值 */
+        int expression_val = node->kids[1]->val.i;
 
-        /*  */
         if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
         {
+          /* 参数赋值 */
           assign_arg(p, expression_val);
         }
         else if(p->defn == DEF_FUNCT) {
+          /* 函数返回值赋值 */
           assign_return_val(p, expression_val);
         }
         else if(p->defn == DEF_PROC)
         {
-
+          printf("proc can not have return val\n", p->name);
+          g_cp = NULL;
         }
         else
         {
+          /* 局部变量赋值 */
           assign_local(p, expression_val);
         }
       }
@@ -418,7 +398,7 @@ void node_process(Node node)
     break;
   }
 
-  /*  */
+  /* 二元数学运算 */
   switch (generic(node->op))
   {
     case ADD:
@@ -610,7 +590,7 @@ void node_process(Node node)
     break;
   }
 
-  /*  */
+  /* 一元数学元算 */
   switch (generic(node->op))
   {
     case INCR:
@@ -657,7 +637,7 @@ void node_process(Node node)
     break;
   }
 
-  /*  */
+  /* 代码块标记 */
   switch (generic(node->op))
   {
     case HEADER: /* 表示过程以及函数定义的开始 */  
@@ -671,7 +651,7 @@ void node_process(Node node)
       pop_symtab_stack();
 
       /*  */
-      cp = pop_return_position_stack();
+      g_cp = pop_return_position_stack();
 
       /*  */
       pop_local_stack();
