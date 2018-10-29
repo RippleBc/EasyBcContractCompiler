@@ -609,30 +609,29 @@ void node_process(Node node)
       }
       else
       {
-        if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
-        {
-          assign_arg(p, load_arg(p) + 1);
-        }
-        else if(p->defn == DEF_FUNCT) {
-          assign_return_val(p, load_return_val(find_symbol(top_symtab_stack(), p->name)) + 1);
-        }
-        else if(p->defn == DEF_PROC)
-        {
-
-        }
-        else
-        {
-          assign_local(p, load_local(p) + 1);
-        }
+       
+        assign_local(p, load_local(p) + 1);
       }
     }
     break;
     case DECR:
     {
-      /*  */
+      Symbol p;
+
+      /* */
       node_process(node->kids[0]);
-      /*  */
-      node->kids[0]->syms[0]->v.i--;
+
+      p = node->kids[0]->syms[0];
+
+      /* */
+      if(top_symtab_stack()->level == 0)
+      {
+        node->kids[0]->syms[0]->v.i--;
+      }
+      else
+      {
+        assign_local(p, load_local(p) - 1);
+      }
     }
     break;
   }

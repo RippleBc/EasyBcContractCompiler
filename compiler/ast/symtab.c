@@ -325,7 +325,7 @@ void make_system_symtab()
     sprintf(ptab->name,"system_table");
     sprintf(ptab->rname, "null");
 
-    /* 系统符号表类型链表定义（内置基础类型） */
+    /* 基础类型 */
     ptab->type_link = new_system_type(TYPE_INTEGER);
     pt = ptab->type_link;
     pt->next = new_system_type(TYPE_CHAR);
@@ -341,7 +341,6 @@ void make_system_symtab()
     pt->next = new_system_type(TYPE_UNKNOWN);
     pt = pt->next;
 
-    /* 系统符号表（记录内置基础类型）压栈 */
     push_symtab_stack(ptab);
 
     ptab->id = -1;
@@ -354,7 +353,7 @@ void make_system_symtab()
     ptab->parent = NULL;
     ptab->locals = new_symbol("", DEF_UNKNOWN, TYPE_UNKNOWN); /* 局部变量链表 */
 
-    /* 系统符号表（记录内置系统函数） */
+    /* 系统函数 */
     int n = 1;
     for(i = 0 ; i < Keytable_size; i++)
     {
@@ -369,10 +368,9 @@ void make_system_symtab()
             break;
     }
 
-    /* 系统符号表（记录内置基础类型）出栈 */
     pop_symtab_stack();
     
-    /* 记录内置系统函数的个数 */
+    /* 系统函数个数 */
     ptab->local_size = n;
 }
 

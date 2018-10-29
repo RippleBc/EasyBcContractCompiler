@@ -111,8 +111,7 @@ enum {
     TYPE_POINTER = 11,
     TYPE_DOUBLE = 12,
     TYPE_FUNCTION = 13,
-    TYPE_LONG = 14,
-    TYPE_CONST = 15
+    TYPE_LONG = 14
 };
 
 enum {
