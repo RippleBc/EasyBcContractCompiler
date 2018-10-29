@@ -401,176 +401,29 @@ void node_process(Node node)
   /* 二元数学运算 */
   switch (generic(node->op))
   {
+    case BAND:
+    case BOR:
+    case BXOR:
+    {
+
+    }
+    case LSH:
+    case RSH:
+    {
+
+    }
     case ADD:
-    {
-      /* 计算左表达式AST节点对应的值 */
-      if(node->kids[0])
-      {
-        node_process(node->kids[0]);
-      }
-
-      /* 计算右表达式AST节点对应的值 */
-      if(node->kids[1])
-      {
-        node_process(node->kids[1]);
-      }
-
-      node->val.i = node->kids[0]->val.i + node->kids[1]->val.i;
-    }
-    break;
     case SUB:
-    {
-      /* 计算左表达式AST节点对应的值 */
-      if(node->kids[0] != NULL)
-      {
-        node_process(node->kids[0]);
-      }
-
-      /* 计算右表达式AST节点对应的值 */
-      if(node->kids[1] != NULL)
-      {
-        node_process(node->kids[1]);
-      }
-
-      node->val.i = node->kids[0]->val.i - node->kids[1]->val.i;
-    }
-    break;
     case MUL:
-    {
-      /* 计算左表达式AST节点对应的值 */
-      if(node->kids[0] != NULL)
-      {
-        node_process(node->kids[0]);
-      }
-
-      /* 计算右表达式AST节点对应的值 */
-      if(node->kids[1] != NULL)
-      {
-        node_process(node->kids[1]);
-      }
-
-      node->val.i = node->kids[0]->val.i * node->kids[1]->val.i;
-    }
-    break;
     case DIV:
-    {
-      /* 计算左表达式AST节点对应的值 */
-      if(node->kids[0] != NULL)
-      {
-        node_process(node->kids[0]);
-      }
-
-      /* 计算右表达式AST节点对应的值 */
-      if(node->kids[1] != NULL)
-      {
-        node_process(node->kids[1]);
-      }
-
-      node->val.i = node->kids[0]->val.i / node->kids[1]->val.i;
-    }
-    break;
+    case AND:
+    case OR:
     case EQ:
-    {
-      /* 计算左表达式AST节点对应的值 */
-      if(node->kids[0] != NULL)
-      {
-        node_process(node->kids[0]);
-      }
-
-      /* 计算右表达式AST节点对应的值 */
-      if(node->kids[1] != NULL)
-      {
-        node_process(node->kids[1]);
-      }
-
-      node->val.i = node->kids[0]->val.i == node->kids[1]->val.i;
-    }
-    break;
     case NE:
-    {
-      /* 计算左表达式AST节点对应的值 */
-      if(node->kids[0] != NULL)
-      {
-        node_process(node->kids[0]);
-      }
-
-      /* 计算右表达式AST节点对应的值 */
-      if(node->kids[1] != NULL)
-      {
-        node_process(node->kids[1]);
-      }
-
-      node->val.i = node->kids[0]->val.i != node->kids[1]->val.i;
-    }
-    break;
     case GE:
-    {
-      /* 计算左表达式AST节点对应的值 */
-      if(node->kids[0] != NULL)
-      {
-        node_process(node->kids[0]);
-      }
-
-      /* 计算右表达式AST节点对应的值 */
-      if(node->kids[1] != NULL)
-      {
-        node_process(node->kids[1]);
-      }
-
-      node->val.i = node->kids[0]->val.i >= node->kids[1]->val.i;
-    }
-    break;
     case GT:
-    {
-      /* 计算左表达式AST节点对应的值 */
-      if(node->kids[0] != NULL)
-      {
-        node_process(node->kids[0]);
-      }
-
-      /* 计算右表达式AST节点对应的值 */
-      if(node->kids[1] != NULL)
-      {
-        node_process(node->kids[1]);
-      }
-
-      node->val.i = node->kids[0]->val.i > node->kids[1]->val.i;
-    }
-    break;
     case LE:
-    {
-      /* 计算左表达式AST节点对应的值 */
-      if(node->kids[0] != NULL)
-      {
-        node_process(node->kids[0]);
-      }
-
-      /* 计算右表达式AST节点对应的值 */
-      if(node->kids[1] != NULL)
-      {
-        node_process(node->kids[1]);
-      }
-
-      node->val.i = node->kids[0]->val.i <= node->kids[1]->val.i;
-    }
-    break;
     case LT:
-    {
-      /* 计算左表达式AST节点对应的值 */
-      if(node->kids[0] != NULL)
-      {
-        node_process(node->kids[0]);
-      }
-
-      /* 计算右表达式AST节点对应的值 */
-      if(node->kids[1] != NULL)
-      {
-        node_process(node->kids[1]);
-      }
-
-      node->val.i = node->kids[0]->val.i < node->kids[1]->val.i;
-    }
-    break;
     case MOD:
     {
       /* 计算左表达式AST节点对应的值 */
@@ -585,7 +438,7 @@ void node_process(Node node)
         node_process(node->kids[1]);
       }
 
-      node->val.i = node->kids[0]->val.i % node->kids[1]->val.i;
+      arithmetical_operate(node);
     }
     break;
   }
@@ -593,6 +446,32 @@ void node_process(Node node)
   /* 一元数学元算 */
   switch (generic(node->op))
   {
+    case BCOM:
+    case NOT:
+    case CVF:
+    case CVI:
+    case NEG:
+    {
+      Symbol p;
+
+      /* */
+      node_process(node->kids[0]);
+
+      arithmetical_operate(node);
+
+      p = node->kids[0]->syms[0];
+
+      /* */
+      if(top_symtab_stack()->level == 0)
+      {
+        assign_or_load_val(node, p);
+      }
+      else
+      {
+        assign_local(p, node->val.i);
+      }
+
+    }
     case INCR:
     {
       Symbol p;
@@ -609,7 +488,6 @@ void node_process(Node node)
       }
       else
       {
-       
         assign_local(p, load_local(p) + 1);
       }
     }

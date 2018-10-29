@@ -26,14 +26,14 @@ program helloworld;
 				testRecurveFunc(x-1, y);
 			end
 			else
-				writeln(sum);
+				writeln(1000);
 			testRecurveFunc := x + y;
 		end;
 	begin
-		inta := testFunc(10, 1) + testRecurveFunc(10, 1);
-
-		writeln(11111111111111111);
+		testFunc(10, 1);
+		writeln(1111111111);
+		testRecurveFunc(10, 1);
+		writeln(1111111111);
 		writeln(inta);
-		writeln(intb);
 	end
 .

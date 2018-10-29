@@ -100,38 +100,41 @@ void arithmetical_operate(Node con)
     single_xx(CVI, (int));
     real_single_xx(NEG, -);
     default:
-      assert(0);
-      break;
+    {
+        printf("compute error\n");
+        assert(0);
+    }
+    break;
   }
 }
 
-void assign_or_load_val(Value v, Symbol p)
+void assign_or_load_val(Node n, Symbol p)
 {
   switch(p->type->type_id)
   {
     case TYPE_INTEGER:
     {
-      v->i = p->v.i;
+      n->val.i = p->v.i;
     }
     break;
     case TYPE_CHAR:
     {
-      v->c = p->v.c;
+      n->val.c = p->v.c;
     }
     break;
     case TYPE_BOOLEAN:
     {
-      v->b = p->v.b;
+      n->val.b = p->v.b;
     }
     break;
     case TYPE_REAL:
     {
-      v->f = p->v.f;
+      n->val.f = p->v.f;
     }
     break;
     case TYPE_STRING:
     {
-      v->s = p->v.i;
+      n->val.s = p->v.i;
     }
     break;
   }
