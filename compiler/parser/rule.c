@@ -1690,7 +1690,7 @@ yyreduce:
 	snprintf(Global_symtab->rname, sizeof(Global_symtab->rname), "main");
 	/* 初始化大类 */
 	Global_symtab->defn = DEF_PROG;
-
+	/*  */
 	global_env.u.program.tab = Global_symtab;
 }
 #line 1697 "parser/rule.c" /* yacc.c:1646  */

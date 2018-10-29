@@ -1,4 +1,5 @@
 program helloworld;
+	var inta, intb: integer;
 	function testFunc(x,y:integer):integer;
 		var
 			k,sum : integer;
@@ -29,7 +30,10 @@ program helloworld;
 			testRecurveFunc := x + y;
 		end;
 	begin
-		testFunc(10, 1);
-		testRecurveFunc(10, 1);
+		inta := testFunc(10, 1) + testRecurveFunc(10, 1);
+
+		writeln(11111111111111111);
+		writeln(inta);
+		writeln(intb);
 	end
 .

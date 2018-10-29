@@ -83,8 +83,6 @@ List find_routine_forest(Symtab ptab)
       /*  */
       if(n->symtab == ptab)
       {
-        printf("found routine %s\n", n->symtab->name);
-
         return cpTmp2;
       }
     }
@@ -92,8 +90,6 @@ List find_routine_forest(Symtab ptab)
 
   if(cpTmp2 == NULL)
   {
-    printf("routine not exist %s\n", ptab->name);
-
     return NULL;
   }
 }
@@ -126,52 +122,7 @@ void node_process(Node node)
 {
   traverse_deep++;
 
-  switch (generic(node->op))
-  {
-    case INCR:
-    {
-      Symbol p;
-
-      /* */
-      node_process(node->kids[0]);
-
-      p = node->kids[0]->syms[0];
-
-      /* */
-      if(top_symtab_stack()->level == 0)
-      {
-        node->kids[0]->syms[0]->v.i++;
-      }
-      else
-      {
-        if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
-        {
-          assign_arg(p, load_arg(p) + 1);
-        }
-        else if(p->defn == DEF_FUNCT) {
-          assign_return_val(p, load_return_val(find_symbol(top_symtab_stack(), p->name)) + 1);
-        }
-        else if(p->defn == DEF_PROC)
-        {
-
-        }
-        else
-        {
-          assign_local(p, load_local(p) + 1);
-        }
-      }
-    }
-    break;
-    case DECR:
-    {
-      /*  */
-      node_process(node->kids[0]);
-      /*  */
-      node->kids[0]->syms[0]->v.i--;
-    }
-    break;
-  }
-
+  /*  */
   switch (generic(node->op))
   {
   case LABEL:
@@ -197,6 +148,7 @@ void node_process(Node node)
   break;
   }
 
+  /*  */
   switch (generic(node->op))
   {
   case SYS:
@@ -273,8 +225,6 @@ void node_process(Node node)
   break;
   case RIGHT:
   {
-    printf("RIGHT\n");
-
     /* 计算表达式AST节点对应的值 */
     if(node->kids[0] != NULL)
     {
@@ -311,8 +261,14 @@ void node_process(Node node)
   break;
   }
 
+  /*  */
   switch (generic(node->op))
   {
+    case CNST:
+    {
+      node->val.i = node->syms[0]->v.i;
+    }
+    break;
     case FIELD:
     {
       
@@ -460,13 +416,9 @@ void node_process(Node node)
       }
     }
     break;
-    case CNST:
-    {
-      node->val.i = node->syms[0]->v.i;
-    }
-    break;
   }
 
+  /*  */
   switch (generic(node->op))
   {
     case ADD:
@@ -658,6 +610,54 @@ void node_process(Node node)
     break;
   }
 
+  /*  */
+  switch (generic(node->op))
+  {
+    case INCR:
+    {
+      Symbol p;
+
+      /* */
+      node_process(node->kids[0]);
+
+      p = node->kids[0]->syms[0];
+
+      /* */
+      if(top_symtab_stack()->level == 0)
+      {
+        node->kids[0]->syms[0]->v.i++;
+      }
+      else
+      {
+        if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
+        {
+          assign_arg(p, load_arg(p) + 1);
+        }
+        else if(p->defn == DEF_FUNCT) {
+          assign_return_val(p, load_return_val(find_symbol(top_symtab_stack(), p->name)) + 1);
+        }
+        else if(p->defn == DEF_PROC)
+        {
+
+        }
+        else
+        {
+          assign_local(p, load_local(p) + 1);
+        }
+      }
+    }
+    break;
+    case DECR:
+    {
+      /*  */
+      node_process(node->kids[0]);
+      /*  */
+      node->kids[0]->syms[0]->v.i--;
+    }
+    break;
+  }
+
+  /*  */
   switch (generic(node->op))
   {
     case HEADER: /* 表示过程以及函数定义的开始 */  
