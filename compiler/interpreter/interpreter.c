@@ -14,11 +14,11 @@ void interpret(List _routine_forest, List dag)
 {
   routine_forest = _routine_forest;
 
-  push_symtab_stack(Global_symtab);
-
   Node n;
 
   LabelQueue label_queue;
+
+  push_symtab_stack(Global_symtab);
 
   /*  */
   NEW(label_queue, PERM);
