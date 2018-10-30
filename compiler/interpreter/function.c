@@ -27,7 +27,7 @@ List top_return_position_stack()
 
 /*  */
 int return_val_deep = STACK_DEEP;
-int return_val_stack[STACK_DEEP];
+value return_val_stack[STACK_DEEP];
 
 int push_return_val_stack(Symbol p)
 {
@@ -44,15 +44,15 @@ void pop_return_val_stack(Symbol p)
   return_val_deep += get_symbol_align_size(p);
 }
 
-void assign_return_val(Symbol p, int val)
+void assign_return_val(Node n, Symbol p)
 {
-  return_val_stack[return_val_deep + p->offset - get_symbol_align_size(p)] = val;
+  return_val_stack[return_val_deep + p->offset - get_symbol_align_size(p)] = n->val;
 }
 
 
-int load_return_val(Symbol p)
+void load_return_val(Node n, Symbol p)
 {
-  return return_val_stack[return_val_deep + p->offset - get_symbol_align_size(p)];
+  n->val = return_val_stack[return_val_deep + p->offset - get_symbol_align_size(p)];
 }
 
 /*  */
@@ -89,7 +89,7 @@ void load_local(Node n, Symbol p)
 
 /*  */
 int args_deep = STACK_DEEP;
-int args_stack[STACK_DEEP];
+value args_stack[STACK_DEEP];
 
 int push_args_stack(Symtab tab)
 {
@@ -106,16 +106,16 @@ void pop_args_stack(Symtab tab)
   args_deep += tab->args_size;
 }
 
-void assign_arg(Symbol p, int val)
+void assign_arg(Node n, Symbol p)
 {
   /*  */
-  args_stack[args_deep + p->offset - get_symbol_align_size(p)] = val;
+  args_stack[args_deep + p->offset - get_symbol_align_size(p)] = n->val;
   // printf("assign_arg %s offset:%d val:%d\n", p->name, args_deep + p->offset - get_symbol_align_size(p), args_stack[args_deep + p->offset - get_symbol_align_size(p)]);
 }
 
 
-int load_arg(Symbol p)
+void load_arg(Node n, Symbol p)
 {
   // printf("load_arg %s offset:%d val:%d\n", p->name, args_deep + p->offset - get_symbol_align_size(p), args_stack[args_deep + p->offset - get_symbol_align_size(p)]);
-  return args_stack[args_deep + p->offset - get_symbol_align_size(p)];
+  n->val = args_stack[args_deep + p->offset - get_symbol_align_size(p)];
 }

@@ -273,7 +273,7 @@ void node_process(Node node)
           j++;
           if(i == j)
           {
-            assign_arg(sym, tmpNode->val.i);
+            assign_arg(tmpNode, sym);
             break;
           }
         }
@@ -377,7 +377,7 @@ void node_process(Node node)
         /* 参数局部类型，从栈取值 */
         if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
         {
-          node->val.i = load_arg(p);
+          load_arg(node, p);
         }
         else {
           /* 普通局部变量，从栈取值 */
@@ -413,7 +413,7 @@ void node_process(Node node)
         /* 参数局部类型，从栈取值 */
         if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
         {
-          node->val.i = load_arg(p);
+          load_arg(node, p);
         }
         else {
           /* 普通局部变量，从栈取值 */
@@ -453,17 +453,14 @@ void node_process(Node node)
       }
       else
       {
-        /* 表达式值 */
-        int expression_val = node->kids[1]->val.i;
-
         if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
         {
           /* 参数赋值 */
-          assign_arg(p, expression_val);
+          assign_arg(node->kids[1], p);
         }
         else if(p->defn == DEF_FUNCT) {
           /* 函数返回值赋值 */
-          assign_return_val(p, expression_val);
+          assign_return_val(node->kids[1], p);
         }
         else if(p->defn == DEF_PROC)
         {
