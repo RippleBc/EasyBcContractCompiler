@@ -88,7 +88,6 @@ symbol *new_symbol(char *name, int defn, int type_id)
     p->type_link = NULL; /* 同一种类型的下一个symbol */
 
     return p;
-
 }
 
 symbol *clone_symbol(symbol *origin)
@@ -106,7 +105,7 @@ symbol *clone_symbol(symbol *origin)
     strncpy(p->rname, origin->rname, LABEL_LEN);
     p->defn = origin->defn;
     p->type = origin->type;
-    p->offset = 0;
+    p->offset = origin->offset;
     p->next = NULL;
     p->tab = NULL;
 

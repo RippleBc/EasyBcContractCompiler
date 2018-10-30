@@ -483,6 +483,8 @@ type *init_type_link(type *src)
             symbol *p = NULL, *q = NULL;
             int i = 1;
 
+            int ele_size = get_symbol_align_size(src->last);
+
             /*  */
             while(i <= src->num_ele)
             {
@@ -491,6 +493,10 @@ type *init_type_link(type *src)
                 snprintf(q->name, sizeof(q->name), "%d", i);
                 
                 q->type_link = init_type_link(src->last->type);
+
+                /*  */
+                q->offset = src->size + ele_size;
+                src->size += ele_size;
 
                 if(p == NULL)
                 {

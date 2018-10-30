@@ -1,5 +1,39 @@
 program helloworld;
 	var inta, intb: integer;
+	function testMixedType(x,y:integer):integer;
+		type
+			arr = array[1..50] of integer;
+			date = record
+				year:1900..1999;
+				month:1..12;
+				day:1..31;
+			end;
+			days = (sun,mon,tue,wed,thu,fri,sat);
+			colors = (red,yellow,blue,white,black,green);
+			age = 1..150;
+		var a : arr;
+				b : date;
+				c : days;
+				d : colors;
+				e : age;
+		begin
+			a[1] := 1;
+			a[2] := 2;
+			b.year := 2018;
+			b.month := 11;
+			b.day := 12;
+			c := mon;
+			d := yellow;
+			e := 27;
+			writeln(a[1]);
+			writeln(a[2]);
+			writeln(b.year);
+			writeln(b.month);
+			writeln(b.day);
+			writeln(c);
+			writeln(d);
+			writeln(e);
+		end;
 	function testFunc(x,y:integer):integer;
 		var
 			k,sum : integer;
@@ -31,6 +65,8 @@ program helloworld;
 			testRecurveFunc := x + y;
 		end;
 	begin
+		testMixedType(10, 1);
+		writeln(1111111111);
 		testFunc(10, 1);
 		writeln(1111111111);
 		testRecurveFunc(10, 1);

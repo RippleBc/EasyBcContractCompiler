@@ -82,7 +82,7 @@ void assign_local(Node n, Symbol p, Symbol q)
     baseOffset = q->offset;
   }
 
-  local_stack[local_deep + baseOffset + p->offset - get_symbol_align_size(p)] = n->val; 
+  local_stack[local_deep - baseOffset + p->offset - get_symbol_align_size(p)] = n->val; 
   // printf("assign_local %s offset:%d val:%d\n", p->name, local_deep + p->offset - get_symbol_align_size(p), local_stack[local_deep + p->offset - get_symbol_align_size(p)]);
 }
 
@@ -95,7 +95,7 @@ void load_local(Node n, Symbol p, Symbol q)
   }
 
   // printf("load_local %s offset:%d val:%d\n", p->name, local_deep + p->offset - get_symbol_align_size(p), local_stack[local_deep + p->offset - get_symbol_align_size(p)]);
-  n->val = local_stack[local_deep + baseOffset + p->offset - get_symbol_align_size(p)];
+  n->val = local_stack[local_deep - baseOffset + p->offset - get_symbol_align_size(p)];
 }
 
 
