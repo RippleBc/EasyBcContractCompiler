@@ -309,6 +309,7 @@ void node_process(Node node)
       Symbol p;
 
       char ele_name[NAME_LEN];
+
       /* 遍历数组元素 */
       for(p = node->syms[0]->type_link->first; p != NULL; p = p->next)
       {
