@@ -628,9 +628,9 @@ simple_type_decl
 	p = find_symbol(top_symtab_stack(), $1);
 	if(!p){
 		parse_error("Undeclared identifier", $1);
-		install_temporary_symbol($1, DEF_ELEMENT, TYPE_INTEGER);
+		install_temporary_symbol($1, DEF_ENUM_ELEMENT, TYPE_INTEGER);
 	}
-	if(p->defn != DEF_ELEMENT){
+	if(p->defn != DEF_ENUM_ELEMENT){
 		parse_error("not an element identifier", $1);
 	}
 	
@@ -638,9 +638,9 @@ simple_type_decl
 	q = find_symbol(top_symtab_stack(), $3);
 	if(!q){
 		parse_error("Undeclared identifier", $3);
-		install_temporary_symbol($3, DEF_ELEMENT, TYPE_INTEGER);
+		install_temporary_symbol($3, DEF_ENUM_ELEMENT, TYPE_INTEGER);
 	}
-	if(q->defn != DEF_ELEMENT){
+	if(q->defn != DEF_ENUM_ELEMENT){
 		parse_error("Not an element identifier", $3);
 	}
 	
@@ -1541,7 +1541,7 @@ oSEMI
 			/* return 0; */
 	}
 	/* 检查变量类型（CASE子句中的判断条件只能是枚举或者常量类型） */
-	if(p->defn != DEF_ELEMENT && p->defn != DEF_CONST){
+	if(p->defn != DEF_ENUM_ELEMENT && p->defn != DEF_CONST){
 			parse_error("Element name expected","");
 			return 0;
 	}

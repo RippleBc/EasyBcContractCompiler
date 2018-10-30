@@ -23,7 +23,7 @@ program helloworld;
 			b.month := 11;
 			b.day := 12;
 			c := mon;
-			d := yellow;
+			d := blue;
 			e := 27;
 			writeln(a[1]);
 			writeln(a[2]);

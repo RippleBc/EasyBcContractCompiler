@@ -379,8 +379,12 @@ void node_process(Node node)
       }
       else
       {
+        if(p->defn == DEF_ENUM_ELEMENT)
+        {
+          node->val = p->v;
+        }
         /* 参数局部类型，从栈取值 */
-        if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
+        else if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
         {
           load_arg(node, p, q);
         }

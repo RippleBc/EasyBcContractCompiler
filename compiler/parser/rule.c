@@ -2160,9 +2160,9 @@ yyreduce:
 	p = find_symbol(top_symtab_stack(), (yyvsp[-2].p_char));
 	if(!p){
 		parse_error("Undeclared identifier", (yyvsp[-2].p_char));
-		install_temporary_symbol((yyvsp[-2].p_char), DEF_ELEMENT, TYPE_INTEGER);
+		install_temporary_symbol((yyvsp[-2].p_char), DEF_ENUM_ELEMENT, TYPE_INTEGER);
 	}
-	if(p->defn != DEF_ELEMENT){
+	if(p->defn != DEF_ENUM_ELEMENT){
 		parse_error("not an element identifier", (yyvsp[-2].p_char));
 	}
 	
@@ -2170,9 +2170,9 @@ yyreduce:
 	q = find_symbol(top_symtab_stack(), (yyvsp[0].p_char));
 	if(!q){
 		parse_error("Undeclared identifier", (yyvsp[0].p_char));
-		install_temporary_symbol((yyvsp[0].p_char), DEF_ELEMENT, TYPE_INTEGER);
+		install_temporary_symbol((yyvsp[0].p_char), DEF_ENUM_ELEMENT, TYPE_INTEGER);
 	}
-	if(q->defn != DEF_ELEMENT){
+	if(q->defn != DEF_ENUM_ELEMENT){
 		parse_error("Not an element identifier", (yyvsp[0].p_char));
 	}
 	
@@ -3317,7 +3317,7 @@ yyreduce:
 			/* return 0; */
 	}
 	/* 检查变量类型（CASE子句中的判断条件只能是枚举或者常量类型） */
-	if(p->defn != DEF_ELEMENT && p->defn != DEF_CONST){
+	if(p->defn != DEF_ENUM_ELEMENT && p->defn != DEF_CONST){
 			parse_error("Element name expected","");
 			return 0;
 	}

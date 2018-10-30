@@ -42,8 +42,10 @@
 #define DEF_FUNCT			(8)
 #define DEF_PROG			(9)
 #define DEF_TEMPVAR			(10)
-#define DEF_ELEMENT			(11)
+#define DEF_ARRAY_ELEMENT   (11)
 #define DEF_LABEL			(12)
+#define DEF_ENUM_ELEMENT    (13)
+#define DEF_SUBRANGE_ELEMENT    (13)
 
 typedef int					boolean;
 
