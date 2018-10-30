@@ -16,6 +16,7 @@ void interpret(List routine_forest, List dag)
 
   LabelQueue label_queue;
 
+  /*  */
   push_symtab_stack(Global_symtab);
 
   /*  */
@@ -116,6 +117,9 @@ void jump_to_label(List l, Symbol label)
 
 void node_process(Node node)
 {
+
+  printf("node process %s\n", get_op_name(generic(node->op)));
+
   /* 流程控制相关 */
   switch (generic(node->op))
   {
@@ -202,7 +206,6 @@ void node_process(Node node)
   break;
   case CALL:
   {
-
     /* 记录返回地址 */
     push_return_position_stack(g_cp);
 
@@ -296,7 +299,9 @@ void node_process(Node node)
   {
     case CNST:
     {
+      printf("CNST begin\n");
       node->val = node->syms[0]->v;
+      printf("CNST end\n");
     }
     break;
     case FIELD:
@@ -306,6 +311,7 @@ void node_process(Node node)
     break;
     case ARRAY:
     {
+      printf("ARRAY begin\n");
       Symbol p;
 
       char ele_name[NAME_LEN];
@@ -329,20 +335,18 @@ void node_process(Node node)
         parse_error("array index out of bound", "");
         return;
       }
+      printf("ARRAY end\n");
     }
     break;
     case ADDRG:
     {
-      Symbol p;
-
+      Symbol p = node->syms[0];
       if(top_symtab_stack()->level == 0)
       {
-        node->val = node->syms[0]->v;
+        load_global(node, p, NULL);
       }
       else
       {
-        p = node->syms[0];
-
         /* 参数局部类型，从栈取值 */
         if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
         {
@@ -375,8 +379,7 @@ void node_process(Node node)
       /* 全局变量 */
       if(top_symtab_stack()->level == 0)
       {
-        /* 使用变量符号进行赋值 */
-        node->val = p->v;
+        load_global(node, p, q);
       }
       else
       {
@@ -398,6 +401,7 @@ void node_process(Node node)
     break;
     case ASGN:
     {
+      printf("ASGN begin\n");
       Symbol p;
       Symbol q = NULL;
 
@@ -424,8 +428,8 @@ void node_process(Node node)
 
       if(top_symtab_stack()->level == 0)
       {
-        /* 变量符号直接赋值 */
-        p->v = node->kids[1]->val;
+        /*  */
+        assign_global(node->kids[1], p, q);
       }
       else
       {
@@ -449,6 +453,7 @@ void node_process(Node node)
           assign_local(node->kids[1], p, q);
         }
       }
+      printf("ASGN end\n");
     }
     break;
   }
@@ -526,7 +531,7 @@ void node_process(Node node)
       /*  */
       if(top_symtab_stack()->level == 0)
       {
-        p->v = node->val;
+        assign_global(node, p, NULL);
       }
       else
       {

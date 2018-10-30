@@ -71,6 +71,7 @@ program helloworld;
 		writeln(1111111111);
 		testRecurveFunc(10, 1);
 		writeln(1111111111);
+		inta := 2;
 		writeln(inta);
 	end
 .
