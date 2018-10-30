@@ -452,39 +452,25 @@ void node_process(Node node)
     case CVI:
     case NEG:
     {
+      node_process(node->kids[0]);
+
+      arithmetical_operate(node);
+    }
+    case INCR:
+    {
       Symbol p;
 
-      /* */
+      /*  */
       node_process(node->kids[0]);
 
       arithmetical_operate(node);
 
       p = node->kids[0]->syms[0];
 
-      /* */
+      /*  */
       if(top_symtab_stack()->level == 0)
       {
         assign_or_load_val(node, p);
-      }
-      else
-      {
-        assign_local(p, node->val.i);
-      }
-
-    }
-    case INCR:
-    {
-      Symbol p;
-
-      /* */
-      node_process(node->kids[0]);
-
-      p = node->kids[0]->syms[0];
-
-      /* */
-      if(top_symtab_stack()->level == 0)
-      {
-        node->kids[0]->syms[0]->v.i++;
       }
       else
       {
@@ -496,15 +482,17 @@ void node_process(Node node)
     {
       Symbol p;
 
-      /* */
+      /*  */
       node_process(node->kids[0]);
+
+      arithmetical_operate(node);
 
       p = node->kids[0]->syms[0];
 
-      /* */
+      /*  */
       if(top_symtab_stack()->level == 0)
       {
-        node->kids[0]->syms[0]->v.i--;
+        assign_or_load_val(node, p);
       }
       else
       {
