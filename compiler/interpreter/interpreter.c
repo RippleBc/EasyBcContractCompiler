@@ -114,6 +114,38 @@ void jump_to_label(List l, Symbol label)
   }
 }
 
+void assign_or_load_val(Node n, Symbol p)
+{
+  switch(p->type->type_id)
+  {
+    case TYPE_INTEGER:
+    {
+      n->val.i = p->v.i;
+    }
+    break;
+    case TYPE_CHAR:
+    {
+      n->val.c = p->v.c;
+    }
+    break;
+    case TYPE_BOOLEAN:
+    {
+      n->val.b = p->v.b;
+    }
+    break;
+    case TYPE_REAL:
+    {
+      n->val.f = p->v.f;
+    }
+    break;
+    case TYPE_STRING:
+    {
+      n->val.s = p->v.i;
+    }
+    break;
+  }
+}  
+
 void node_process(Node node)
 {
   /* 流程控制相关 */
@@ -133,10 +165,41 @@ void node_process(Node node)
   {
     node_process(node->kids[0]);
 
-    if((node->kids[0]->val.i == 0 && node->u.cond.true_or_false == false) || 
-      (node->kids[0]->val.i != 0 && node->u.cond.true_or_false == true))
+    switch(node->kids[0]->type->type_id)
     {
-      jump_to_label(g_cp, node->u.cond.label);
+    case TYPE_INTEGER:
+    {
+      if((node->kids[0]->val.i == 0 && node->u.cond.true_or_false == false) ||
+      (node->kids[0]->val.i != 0 && node->u.cond.true_or_false == true))
+      {
+        jump_to_label(g_cp, node->u.cond.label);
+      }
+    }
+    break;
+    case TYPE_CHAR:
+    {
+      printf("COND expression can not be char\n");
+    }
+    break;
+    case TYPE_BOOLEAN:
+    {
+      if((node->kids[0]->val.b == false && node->u.cond.true_or_false == false) ||
+      (node->kids[0]->val.b == true && node->u.cond.true_or_false == true))
+      {
+        jump_to_label(g_cp, node->u.cond.label);
+      }
+    }
+    break;
+    case TYPE_REAL:
+    {
+      printf("COND expression can not be real\n");
+    }
+    break;
+    case TYPE_STRING:
+    {
+      printf("COND expression can not be string\n");
+    }
+    break;
     }
   }
   break;
@@ -301,7 +364,26 @@ void node_process(Node node)
     break;
     case ADDRG:
     {
+      Symbol p;
 
+      if(top_symtab_stack()->level == 0)
+      {
+        node->val = node->syms[0]->v;
+      }
+      else
+      {
+        p = node->syms[0];
+
+        /* 参数局部类型，从栈取值 */
+        if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
+        {
+          node->val.i = load_arg(p);
+        }
+        else {
+          /* 普通局部变量，从栈取值 */
+          load_local(node, p);
+        }
+      }
     }
     break;
     case LOAD:
@@ -335,7 +417,7 @@ void node_process(Node node)
         }
         else {
           /* 普通局部变量，从栈取值 */
-          node->val.i = load_local(p);
+          load_local(node, p);
         }
       }
     }
@@ -391,7 +473,7 @@ void node_process(Node node)
         else
         {
           /* 局部变量赋值 */
-          assign_local(p, expression_val);
+          assign_local(node->kids[1], p);
         }
       }
     }
@@ -470,11 +552,12 @@ void node_process(Node node)
       /*  */
       if(top_symtab_stack()->level == 0)
       {
+        p->v.i ++;
         assign_or_load_val(node, p);
       }
       else
       {
-        assign_local(p, load_local(p) + 1);
+        assign_local(node, p);
       }
     }
     break;
@@ -496,7 +579,7 @@ void node_process(Node node)
       }
       else
       {
-        assign_local(p, load_local(p) - 1);
+        assign_local(node, p);
       }
     }
     break;

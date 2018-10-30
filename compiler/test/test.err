@@ -1,0 +1,32 @@
+
+Error at line 39:
+			write('x=')
+			           ^ : type miss match. 
+
+Error at line 65:
+		write('i = ')
+		             ^ : type miss match. 
+
+Error at line 69:
+		write('i = ')
+		             ^ : type miss match. 
+
+Error at line 80:
+		if (i > 0) then writeln('i > 0')
+		                                ^ : type miss match. 
+
+Error at line 81:
+		else if (i = 0) then writeln('i = 0')
+		                                     ^ : type miss match. 
+
+Error at line 82:
+		else writeln('i < 0')
+		                     ^ : type miss match. 
+
+Error at line 86:
+		write('t = ')
+		             ^ : type miss match. 
+
+Error at line 87:
+		writeln(t)
+		          ^ : type miss match. 

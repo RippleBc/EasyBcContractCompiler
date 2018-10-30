@@ -107,35 +107,3 @@ void arithmetical_operate(Node con)
     break;
   }
 }
-
-void assign_or_load_val(Node n, Symbol p)
-{
-  switch(p->type->type_id)
-  {
-    case TYPE_INTEGER:
-    {
-      n->val.i = p->v.i;
-    }
-    break;
-    case TYPE_CHAR:
-    {
-      n->val.c = p->v.c;
-    }
-    break;
-    case TYPE_BOOLEAN:
-    {
-      n->val.b = p->v.b;
-    }
-    break;
-    case TYPE_REAL:
-    {
-      n->val.f = p->v.f;
-    }
-    break;
-    case TYPE_STRING:
-    {
-      n->val.s = p->v.i;
-    }
-    break;
-  }
-}

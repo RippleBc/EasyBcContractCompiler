@@ -36,13 +36,13 @@ void print_result(char *);
 extern union header *arena[LASTARENA];
 
 Interface x86_linux_interface = {
-    {1, 4},     /* charmetric */
-    {2, 4},     /* shortmetric */
-    {4, 4},     /* intmetric */
-    {4, 4},     /* floatmetric */
-    {8, 8},     /* doublemetric */
-    {4, 4},     /* pointermetric */
-    {4, 4},     /* structmetric */
+    {1, 1},     /* charmetric */
+    {1, 1},     /* shortmetric */
+    {1, 1},     /* intmetric */
+    {1, 1},     /* floatmetric */
+    {1, 1},     /* doublemetric */
+    {1, 1},     /* pointermetric */
+    {1, 1},     /* structmetric */
 };
 
 Interface *IR = &x86_linux_interface;

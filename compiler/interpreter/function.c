@@ -57,7 +57,7 @@ int load_return_val(Symbol p)
 
 /*  */
 int local_deep = STACK_DEEP;
-int local_stack[STACK_DEEP];
+value local_stack[STACK_DEEP];
 
 int push_local_stack(Symtab tab)
 {
@@ -74,17 +74,16 @@ void pop_local_stack(Symtab tab)
   local_deep += tab->local_size;
 }
 
-void assign_local(Symbol p, int val)
+void assign_local(Node n, Symbol p)
 {
-  /*  */
-  local_stack[local_deep + p->offset - get_symbol_align_size(p)] = val;
+  local_stack[local_deep + p->offset - get_symbol_align_size(p)] = n->val;
   // printf("assign_local %s offset:%d val:%d\n", p->name, local_deep + p->offset - get_symbol_align_size(p), local_stack[local_deep + p->offset - get_symbol_align_size(p)]);
 }
 
-int load_local(Symbol p)
+void load_local(Node n, Symbol p)
 {
   // printf("load_local %s offset:%d val:%d\n", p->name, local_deep + p->offset - get_symbol_align_size(p), local_stack[local_deep + p->offset - get_symbol_align_size(p)]);
-  return local_stack[local_deep + p->offset - get_symbol_align_size(p)];
+  n->val = local_stack[local_deep + p->offset - get_symbol_align_size(p)];
 }
 
 

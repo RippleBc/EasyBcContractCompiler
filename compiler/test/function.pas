@@ -7,13 +7,14 @@ program helloworld;
 			sum := 1;
 			for k:=2 to x div 2 do
 			begin
+			writeln(k);
 			if x mod k = 0 then 
 					begin
 							sum := sum + k;
 					end;
 			end;
 			writeln(sum);
-			testFunc := x + y; 
+			testFunc := x + y;
 		end;
 	function testRecurveFunc(x,y:integer):integer;
 		var
