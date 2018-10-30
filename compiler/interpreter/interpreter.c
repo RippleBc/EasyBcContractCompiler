@@ -192,6 +192,7 @@ void node_process(Node node)
         case pWRITELN:
         {
           /*  */
+
           printf("result: %d\n", node->kids[0]->val.i);
         }
         break;
@@ -241,7 +242,7 @@ void node_process(Node node)
           j++;
           if(i == j)
           {
-            assign_arg(tmpNode, sym);
+            assign_arg(tmpNode, sym, NULL);
             break;
           }
         }
@@ -344,11 +345,11 @@ void node_process(Node node)
         /* 参数局部类型，从栈取值 */
         if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
         {
-          load_arg(node, p);
+          load_arg(node, p, NULL);
         }
         else {
           /* 普通局部变量，从栈取值 */
-          load_local(node, p);
+          load_local(node, p, NULL);
         }
       }
     }
@@ -356,13 +357,14 @@ void node_process(Node node)
     case LOAD:
     {
       Symbol p;
-
+      Symbol q = NULL;
       if(node->kids[0])
       {
         /* 地址节点 */
         node_process(node->kids[0]);
         /* syms[0]表示数组或者记录，syms[1]表示数组成员或者属性，node->kids[0]表示ARRAY或者FIELD节点 */
         p = node->kids[0]->syms[1];
+        q = node->kids[0]->syms[0];
       }
       else
       {
@@ -380,11 +382,11 @@ void node_process(Node node)
         /* 参数局部类型，从栈取值 */
         if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
         {
-          load_arg(node, p);
+          load_arg(node, p, q);
         }
         else {
           /* 普通局部变量，从栈取值 */
-          load_local(node, p);
+          load_local(node, p, q);
         }
       }
     }
@@ -392,7 +394,8 @@ void node_process(Node node)
     case ASGN:
     {
       Symbol p;
-      Symbol q;
+      Symbol q = NULL;
+
       if(node->kids[0])
       {
         /* 地址节点 */
@@ -403,6 +406,7 @@ void node_process(Node node)
       {
         /* syms[0]表示数组或者记录，syms[1]表示数组成员或者属性，node->kids[0]表示ARRAY或者FIELD节点 */
         p = node->kids[0]->syms[1];
+        q = node->kids[0]->syms[0];
       }
       else
       {
@@ -423,7 +427,7 @@ void node_process(Node node)
         if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
         {
           /* 参数赋值 */
-          assign_arg(node->kids[1], p);
+          assign_arg(node->kids[1], p, q);
         }
         else if(p->defn == DEF_FUNCT) {
           /* 函数返回值赋值 */
@@ -437,7 +441,7 @@ void node_process(Node node)
         else
         {
           /* 局部变量赋值 */
-          assign_local(node->kids[1], p);
+          assign_local(node->kids[1], p, q);
         }
       }
     }
@@ -521,7 +525,7 @@ void node_process(Node node)
       }
       else
       {
-        assign_local(node, p);
+        assign_local(node, p, NULL);
       }
     }
     break;

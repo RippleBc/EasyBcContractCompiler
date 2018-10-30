@@ -74,16 +74,28 @@ void pop_local_stack(Symtab tab)
   local_deep += tab->local_size;
 }
 
-void assign_local(Node n, Symbol p)
+void assign_local(Node n, Symbol p, Symbol q)
 {
-  local_stack[local_deep + p->offset - get_symbol_align_size(p)] = n->val;
+  int baseOffset = 0;
+  if(q != NULL)
+  {
+    baseOffset = q->offset;
+  }
+
+  local_stack[local_deep + baseOffset + p->offset - get_symbol_align_size(p)] = n->val; 
   // printf("assign_local %s offset:%d val:%d\n", p->name, local_deep + p->offset - get_symbol_align_size(p), local_stack[local_deep + p->offset - get_symbol_align_size(p)]);
 }
 
-void load_local(Node n, Symbol p)
+void load_local(Node n, Symbol p, Symbol q)
 {
+  int baseOffset = 0;
+  if(q != NULL)
+  {
+    baseOffset = q->offset;
+  }
+
   // printf("load_local %s offset:%d val:%d\n", p->name, local_deep + p->offset - get_symbol_align_size(p), local_stack[local_deep + p->offset - get_symbol_align_size(p)]);
-  n->val = local_stack[local_deep + p->offset - get_symbol_align_size(p)];
+  n->val = local_stack[local_deep + baseOffset + p->offset - get_symbol_align_size(p)];
 }
 
 
@@ -106,16 +118,27 @@ void pop_args_stack(Symtab tab)
   args_deep += tab->args_size;
 }
 
-void assign_arg(Node n, Symbol p)
+void assign_arg(Node n, Symbol p, Symbol q)
 {
-  /*  */
-  args_stack[args_deep + p->offset - get_symbol_align_size(p)] = n->val;
+  int baseOffset = 0;
+  if(q != NULL)
+  {
+    baseOffset = q->offset;
+  }
+
+  args_stack[args_deep + baseOffset + p->offset - get_symbol_align_size(p)] = n->val;
   // printf("assign_arg %s offset:%d val:%d\n", p->name, args_deep + p->offset - get_symbol_align_size(p), args_stack[args_deep + p->offset - get_symbol_align_size(p)]);
 }
 
 
-void load_arg(Node n, Symbol p)
+void load_arg(Node n, Symbol p, Symbol q)
 {
+  int baseOffset = 0;
+  if(q != NULL)
+  {
+    baseOffset = q->offset;
+  }
+
   // printf("load_arg %s offset:%d val:%d\n", p->name, args_deep + p->offset - get_symbol_align_size(p), args_stack[args_deep + p->offset - get_symbol_align_size(p)]);
-  n->val = args_stack[args_deep + p->offset - get_symbol_align_size(p)];
+  n->val = args_stack[args_deep + baseOffset+ p->offset - get_symbol_align_size(p)];
 }
