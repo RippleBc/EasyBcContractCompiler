@@ -114,38 +114,6 @@ void jump_to_label(List l, Symbol label)
   }
 }
 
-void assign_or_load_val(Node n, Symbol p)
-{
-  switch(p->type->type_id)
-  {
-    case TYPE_INTEGER:
-    {
-      n->val.i = p->v.i;
-    }
-    break;
-    case TYPE_CHAR:
-    {
-      n->val.c = p->v.c;
-    }
-    break;
-    case TYPE_BOOLEAN:
-    {
-      n->val.b = p->v.b;
-    }
-    break;
-    case TYPE_REAL:
-    {
-      n->val.f = p->v.f;
-    }
-    break;
-    case TYPE_STRING:
-    {
-      n->val.s = p->v.i;
-    }
-    break;
-  }
-}  
-
 void node_process(Node node)
 {
   /* 流程控制相关 */
@@ -293,8 +261,7 @@ void node_process(Node node)
       node_process(node->kids[0]);
     }
 
-    /* 参数赋值 */
-    node->val.i = node->kids[0]->val.i;
+    node->val = node->kids[0]->val;
 
     /* 计算其余参数的值 */
     if(node->kids[1] != NULL)
@@ -312,7 +279,7 @@ void node_process(Node node)
     }
 
     /* 参数赋值 */
-    node->val.i = node->kids[0]->val.i;
+    node->val = node->kids[0]->val;
 
     /* 计算其余参数的值 */
     if(node->kids[1] != NULL)
@@ -328,7 +295,7 @@ void node_process(Node node)
   {
     case CNST:
     {
-      node->val.i = node->syms[0]->v.i;
+      node->val = node->syms[0]->v;
     }
     break;
     case FIELD:
@@ -406,7 +373,7 @@ void node_process(Node node)
       if(top_symtab_stack()->level == 0)
       {
         /* 使用变量符号进行赋值 */
-        node->val.i = p->v.i;
+        node->val = p->v;
       }
       else
       {
@@ -449,7 +416,7 @@ void node_process(Node node)
       if(top_symtab_stack()->level == 0)
       {
         /* 变量符号直接赋值 */
-        p->v.i = node->kids[1]->val.i;
+        p->v = node->kids[1]->val;
       }
       else
       {
@@ -536,28 +503,6 @@ void node_process(Node node)
       arithmetical_operate(node);
     }
     case INCR:
-    {
-      Symbol p;
-
-      /*  */
-      node_process(node->kids[0]);
-
-      arithmetical_operate(node);
-
-      p = node->kids[0]->syms[0];
-
-      /*  */
-      if(top_symtab_stack()->level == 0)
-      {
-        p->v.i ++;
-        assign_or_load_val(node, p);
-      }
-      else
-      {
-        assign_local(node, p);
-      }
-    }
-    break;
     case DECR:
     {
       Symbol p;
@@ -572,7 +517,7 @@ void node_process(Node node)
       /*  */
       if(top_symtab_stack()->level == 0)
       {
-        assign_or_load_val(node, p);
+        p->v = node->val;
       }
       else
       {
