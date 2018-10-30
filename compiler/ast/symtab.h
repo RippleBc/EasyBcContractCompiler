@@ -129,7 +129,6 @@ symtab *find_sys_routine(int);
 symtab *pop_symtab_stack();
 symtab *top_symtab_stack();
 symbol *find_symbol(symtab *, char *);
-symbol *find_element(symtab *, char *);
 symbol *find_field(symbol *, char *);
 symbol *find_local_symbol(symtab *, char *);
 symbol *new_symbol(char *, int , int);

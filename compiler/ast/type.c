@@ -179,7 +179,6 @@ type *new_enum_type(char *name)
 {
     type *pt;
 
-
     /* pt = (type *)malloc(sizeof(type)); */
     NEW0(pt, PERM);
 

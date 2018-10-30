@@ -558,25 +558,6 @@ symtab *find_sys_routine(int routine_id)
     return NULL;
 }
 
-/* 从类型符号表中寻找用户自定义类型对应的符号（用于enum、record等） */
-symbol *find_element(symtab *tab, char *name)
-{
-    symbol *p;
-    symtab *ptab = tab;
-    type *pt;
-    while(ptab)
-    {
-        /* 遍历用户自定义类型 */
-        for(pt = ptab->type_link; pt; pt = pt->next)
-            /* 遍历自定义类型中的类型项（比如enum） */
-            for(p = pt->first; p; p = p->next)
-                if(is_symbol(p, name))
-                    return p;
-        ptab = ptab->parent;
-    }
-    return NULL;
-}
-
 /* 从类型符号表中寻找RECORD中对应的field */
 symbol *find_field(symbol *p, char *name)
 {

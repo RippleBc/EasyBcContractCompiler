@@ -625,7 +625,7 @@ simple_type_decl
 {
 	
 	/* 符号（枚举） */
-	p = find_element(top_symtab_stack(), $1);
+	p = find_symbol(top_symtab_stack(), $1);
 	if(!p){
 		parse_error("Undeclared identifier", $1);
 		install_temporary_symbol($1, DEF_ELEMENT, TYPE_INTEGER);
@@ -635,7 +635,7 @@ simple_type_decl
 	}
 	
 	/* 符号（枚举） */
-	q = find_element(top_symtab_stack(), $3);
+	q = find_symbol(top_symtab_stack(), $3);
 	if(!q){
 		parse_error("Undeclared identifier", $3);
 		install_temporary_symbol($3, DEF_ELEMENT, TYPE_INTEGER);
@@ -1681,7 +1681,7 @@ factor
 		parse_error("Undeclard identificr", $1);
 		p = install_temporary_symbol($1, DEF_VAR, TYPE_INTEGER);
 	}
-	
+
 	/* 取值AST节点 */
 	$$ = id_factor_tree(NULL, p);
 }

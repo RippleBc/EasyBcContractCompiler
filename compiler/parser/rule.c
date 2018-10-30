@@ -2157,7 +2157,7 @@ yyreduce:
     {
 	
 	/* 符号（枚举） */
-	p = find_element(top_symtab_stack(), (yyvsp[-2].p_char));
+	p = find_symbol(top_symtab_stack(), (yyvsp[-2].p_char));
 	if(!p){
 		parse_error("Undeclared identifier", (yyvsp[-2].p_char));
 		install_temporary_symbol((yyvsp[-2].p_char), DEF_ELEMENT, TYPE_INTEGER);
@@ -2167,7 +2167,7 @@ yyreduce:
 	}
 	
 	/* 符号（枚举） */
-	q = find_element(top_symtab_stack(), (yyvsp[0].p_char));
+	q = find_symbol(top_symtab_stack(), (yyvsp[0].p_char));
 	if(!q){
 		parse_error("Undeclared identifier", (yyvsp[0].p_char));
 		install_temporary_symbol((yyvsp[0].p_char), DEF_ELEMENT, TYPE_INTEGER);
@@ -3520,7 +3520,7 @@ yyreduce:
 		parse_error("Undeclard identificr", (yyvsp[0].p_char));
 		p = install_temporary_symbol((yyvsp[0].p_char), DEF_VAR, TYPE_INTEGER);
 	}
-	
+
 	/* 取值AST节点 */
 	(yyval.p_tree) = id_factor_tree(NULL, p);
 }
