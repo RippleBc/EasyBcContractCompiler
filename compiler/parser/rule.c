@@ -2228,7 +2228,7 @@ yyreduce:
 			p->type = find_type_by_id((yyvsp[-1].p_type)->type_id);
 		}
 
-		p->type_link = init_type_link((yyvsp[-1].p_type));
+		p->type_link = (yyvsp[-1].p_type);
 
 		/* 定义符号大类 */
 		p->defn = DEF_VAR;

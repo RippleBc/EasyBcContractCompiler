@@ -331,29 +331,22 @@ void node_process(Node node)
     break;
     case ARRAY:
     {
-      Symbol p;
+      /* 数组下标 */
+      node_process(node->kids[0]);
 
-      char ele_name[NAME_LEN];
+      int index = node->kids[0]->val.i;
 
-      /* 遍历数组元素 */
-      for(p = node->syms[0]->type_link->first; p != NULL; p = p->next)
-      {
-        /* 数组下标 */
-        node_process(node->kids[0]);
+      int startIndex = node->syms[0]->type_link->first->v.i;
 
-        /* 对应下标的元素 */
-        snprintf(ele_name, sizeof(ele_name), "%d", node->kids[0]->val.i);
-        if(is_symbol(p, ele_name))
-        {
-          node->syms[1] = p;
-          break;
-        }
-      }
-      if(p == NULL)
+      if(index < startIndex || index > startIndex + node->syms[0]->type_link->num_ele - 1)
       {
         parse_error("array index out of bound", "");
         return;
       }
+
+      Symbol p = clone_symbol(node->syms[0]->type_link->last);
+      p->offset = (index - startIndex) * get_symbol_align_size(p);
+      node->syms[1] = p;
     }
     break;
     case ADDRG:

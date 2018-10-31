@@ -79,20 +79,19 @@ void assign_local(Node n, Symbol p, Symbol q)
   int baseOffset = 0;
   if(p->type->type_id == TYPE_ARRAY)
   {
-    printf("assign_local array assign %s string %s\n", p->name, n->val.s);
     baseOffset = p->offset;
 
-    Symbol sp = p->type->first;
-    
+    int eleOffset = get_symbol_align_size(p->type_link->last);
+
     int i;
-    for(i = 0; i < strlen(n->val.s); i++)
+    for(i = 1; i < strlen(n->val.s) - 1; i++)
     {
-      if(sp == NULL)
+      if(i > p->type_link->num_ele)
       {
         printf("assign_local array out of index %s\n", p->name);
         return;
       }
-      local_stack[local_deep + baseOffset + sp->offset].c = n->val.s[i]; 
+      local_stack[local_deep + baseOffset + (i - 1) * eleOffset].c = n->val.s[i]; 
     }
   }
   else

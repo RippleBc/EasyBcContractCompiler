@@ -681,7 +681,7 @@ var_decl
 			p->type = find_type_by_id($3->type_id);
 		}
 
-		p->type_link = init_type_link($3);
+		p->type_link = $3;
 
 		/* 定义符号大类 */
 		p->defn = DEF_VAR;
