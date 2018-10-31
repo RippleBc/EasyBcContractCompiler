@@ -235,6 +235,9 @@ program
 		gen_dag(&ast_forest, &dag_forest);
 
 		/*  */
+		list_clear(&ast_forest);
+
+		/*  */
 		interpret(&routine_forest, &dag_forest);
 	}
 
@@ -721,6 +724,9 @@ function_decl
 		gen_dag(&ast_forest, &dag_forest);
 
 		/*  */
+		list_clear(&ast_forest);
+
+		/*  */
 		list_append(&routine_forest, dag_forest.link);
 	}
 
@@ -797,6 +803,8 @@ procedure_decl
 		list_append(&ast_forest, t);
 
 		gen_dag(&ast_forest, &dag_forest);
+
+		list_clear(&ast_forest);
 
 		list_append(&routine_forest, dag_forest.link);
 	}

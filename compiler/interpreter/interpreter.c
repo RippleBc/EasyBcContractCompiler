@@ -79,6 +79,7 @@ List find_routine_forest(Symtab ptab)
       /*  */
       if(n->symtab == ptab)
       {
+        // printf("find routine %s\n", ptab->name);
         return cpTmp2;
       }
     }
@@ -86,6 +87,7 @@ List find_routine_forest(Symtab ptab)
 
   if(cpTmp2 == NULL)
   {
+    parse_error("routine not exist", ptab->name);
     return NULL;
   }
 }
@@ -109,13 +111,16 @@ void jump_to_label(List l, Symbol label)
 
   if(i < 0)
   {
-    printf("label is not exist %s\n", label->name);
+    parse_error("label is not exist", label->name);
     g_cp = NULL;
   }
 }
 
 void node_process(Node node)
 {
+
+  // printf("node_process %s\n", get_op_name(generic(node->op)));
+
   /* 流程控制相关 */
   switch (generic(node->op))
   {
@@ -562,7 +567,7 @@ void node_process(Node node)
   {
     case HEADER: /* 表示过程以及函数定义的开始 */  
     {
-
+      // printf("enter function %s\n", node->symtab->name);
     }
     break;
     case TAIL: /* 表示过程以及函数定义的结束 */
