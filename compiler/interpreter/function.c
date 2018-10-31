@@ -77,13 +77,35 @@ void pop_local_stack(Symtab tab)
 void assign_local(Node n, Symbol p, Symbol q)
 {
   int baseOffset = 0;
-  if(q != NULL)
+  if(p->type->type_id == TYPE_ARRAY)
   {
-    baseOffset = q->offset;
-  }
+    printf("assign_local array assign %s string %s\n", p->name, n->val.s);
+    baseOffset = p->offset;
 
-  local_stack[local_deep + baseOffset + p->offset] = n->val; 
-  // printf("assign_local %s offset:%d val:%d\n", p->name, local_deep + baseOffset + p->offset, local_stack[local_deep + baseOffset + p->offset].i);
+    Symbol sp = p->type->first;
+    
+    int i;
+    for(i = 0; i < strlen(n->val.s); i++)
+    {
+      if(sp == NULL)
+      {
+        printf("assign_local array out of index %s\n", p->name);
+        return;
+      }
+      local_stack[local_deep + baseOffset + sp->offset].c = n->val.s[i]; 
+    }
+  }
+  else
+  {
+    if(q != NULL)
+    {
+      baseOffset = q->offset;
+    }
+
+    local_stack[local_deep + baseOffset + p->offset] = n->val; 
+    // printf("assign_local %s offset:%d val:%d\n", p->name, local_deep + baseOffset + p->offset, local_stack[local_deep + baseOffset + p->offset].i);
+  }
+  
 }
 
 void load_local(Node n, Symbol p, Symbol q)
@@ -121,13 +143,35 @@ void pop_args_stack(Symtab tab)
 void assign_arg(Node n, Symbol p, Symbol q)
 {
   int baseOffset = 0;
-  if(q != NULL)
-  {
-    baseOffset = q->offset;
-  }
 
-  args_stack[args_deep + baseOffset + p->offset] = n->val;
-  // printf("assign_arg %s offset:%d val:%d\n", p->name, args_deep + baseOffset + p->offset, args_stack[args_deep + baseOffset + p->offset].i);
+  if(p->type->type_id == TYPE_ARRAY)
+  {
+    printf("assign_arg array assign %s string %s\n", p->name, n->val.s);
+    baseOffset = p->offset;
+
+    Symbol sp = p->type->first;
+    
+    int i;
+    for(i = 0; i < strlen(n->val.s); i++)
+    {
+      if(sp == NULL)
+      {
+        printf("assign_arg array out of index %s\n", p->name);
+        return;
+      }
+      local_stack[local_deep + baseOffset + sp->offset].c = n->val.s[i]; 
+    }
+  }
+  else
+  {
+    if(q != NULL)
+    {
+      baseOffset = q->offset;
+    }
+
+    args_stack[args_deep + baseOffset + p->offset] = n->val;
+    // printf("assign_arg %s offset:%d val:%d\n", p->name, args_deep + baseOffset + p->offset, args_stack[args_deep + baseOffset + p->offset].i);
+  }
 }
 
 
