@@ -62,7 +62,6 @@ void interpret(List routine_forest, List dag)
 
     if(g_cp == NULL)
     {
-      printf("*********************ERROR*********************");
       break;
     }
   }
@@ -147,7 +146,7 @@ void node_process(Node node)
     break;
     case TYPE_CHAR:
     {
-      printf("COND expression can not be char\n");
+      parse_error("COND expression can not be char", "");
     }
     break;
     case TYPE_BOOLEAN:
@@ -161,12 +160,12 @@ void node_process(Node node)
     break;
     case TYPE_REAL:
     {
-      printf("COND expression can not be real\n");
+      parse_error("COND expression can not be real", "");
     }
     break;
     case TYPE_STRING:
     {
-      printf("COND expression can not be string\n");
+      parse_error("COND expression can not be string", "");
     }
     break;
     }
@@ -461,7 +460,7 @@ void node_process(Node node)
         }
         else if(p->defn == DEF_PROC)
         {
-          printf("proc can not have return val\n", p->name);
+          parse_error("proc can not have return val", p->name);
           g_cp = NULL;
         }
         else

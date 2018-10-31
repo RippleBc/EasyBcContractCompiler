@@ -20,7 +20,7 @@ void assign_global(Node n, Symbol p, Symbol q)
     {
       if(i > p->type_link->num_ele)
       {
-        printf("assign_global array out of index %s\n", p->name);
+        parse_error("assign_global array out of index", p->name);
         return;
       }
       global_queue[baseOffset + (i - 1) * eleOffset].c = n->val.s[i]; 

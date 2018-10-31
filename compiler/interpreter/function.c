@@ -88,7 +88,7 @@ void assign_local(Node n, Symbol p, Symbol q)
     {
       if(i > p->type_link->num_ele)
       {
-        printf("assign_local array out of index %s\n", p->name);
+        parse_error("assign_local array out of index", p->name);
         return;
       }
       local_stack[local_deep + baseOffset + (i - 1) * eleOffset].c = n->val.s[i]; 
@@ -145,7 +145,6 @@ void assign_arg(Node n, Symbol p, Symbol q)
 
   if(p->type->type_id == TYPE_ARRAY)
   {
-    printf("assign_arg array assign %s string %s\n", p->name, n->val.s);
     baseOffset = p->offset;
 
     Symbol sp = p->type->first;
@@ -155,7 +154,7 @@ void assign_arg(Node n, Symbol p, Symbol q)
     {
       if(sp == NULL)
       {
-        printf("assign_arg array out of index %s\n", p->name);
+        parse_error("assign_arg array out of index", p->name);
         return;
       }
       local_stack[local_deep + baseOffset + sp->offset].c = n->val.s[i]; 

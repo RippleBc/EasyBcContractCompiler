@@ -101,7 +101,7 @@ void arithmetical_operate(Node con)
     real_single_xx(NEG, -);
     default:
     {
-        printf("compute error\n");
+        parse_error("compute error", "");
         assert(0);
     }
     break;
