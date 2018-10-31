@@ -1,6 +1,7 @@
 program helloworld;
 	type
 		arr = array[1..50] of integer;
+		text = array[1..50] of char;
 		date = record
 			year:1900..1999;
 			month:1..12;
@@ -13,7 +14,7 @@ program helloworld;
 		inta, intb, intc: integer;
 		inta1, inta2: real;
 		inta3: char;
-
+		inta4: text;
 		intd : arr;
 		inte : date;
 	begin
@@ -37,6 +38,10 @@ program helloworld;
 
 		inta3 := 'a';
 		writeln(inta3);
+		writeln(1234567890);
+
+		inta4 := 'abcdefg';
+		writeln(inta4[2]);
 		writeln(1234567890);
 
 		if(2 > 1) then

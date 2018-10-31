@@ -956,30 +956,31 @@ assign_stmt
 	p = find_symbol(top_symtab_stack(), $1);
 	if (p == NULL)
 	{
-		parse_error("Undefined identifier", $1);
-		p = install_temporary_symbol($1, DEF_VAR, TYPE_INTEGER);
-	}
-
-	/* 检查赋值是否合法 */
-	if(p->type->type_id == TYPE_ARRAY || p->type->type_id == TYPE_RECORD)
-	{
-		parse_error("lvalue expected", "");
-	}
-
-	if (p)
-	{
-		/* 类型检查 */
-		if(p->type->type_id != $3->result_type->type_id)
-		{
-			parse_error("type mismatch", "");
-			return 0;
-		}
-	}
-	else
-	{
 		parse_error("undeclared identifier.", $1);
 		install_temporary_symbol($1, DEF_VAR, $3->result_type->type_id);
 	}
+
+	/* 检查赋值是否合法 */
+	if(p->type->type_id == TYPE_RECORD)
+	{
+		parse_error("lvalue expected", "");
+	}
+	if(p->type->type_id == TYPE_ARRAY)
+	{
+		if($3->result_type->type_id != TYPE_STRING)
+		{
+			parse_error("lvalue expected", "");
+		}
+	}
+
+	/* 类型检查 */
+	if((p->type->type_id != $3->result_type->type_id) &&
+	(p->type->type_id != TYPE_ARRAY || p->type->last->type->type_id != TYPE_CHAR || $3->result_type->type_id != TYPE_STRING))
+	{
+		parse_error("type mismatch", "");
+		return 0;  
+	}
+
 
 	/* 地址AST树 */
 	t = address_tree(p);
