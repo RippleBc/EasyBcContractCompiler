@@ -254,10 +254,10 @@ void node_process(Node node)
       push_args_stack(node->symtab);
 
       /* 实参赋值 */
-      Symbol sym;
+      Symbol p;
       Node tmpNode;
       int i = 0, j = 0;;
-      for(sym = node->symtab->args; sym != NULL; sym = sym->next)
+      for(p = node->symtab->args; p != NULL; p = p->next)
       {
         i++;
         j = 0;
@@ -266,7 +266,7 @@ void node_process(Node node)
           j++;
           if(i == j)
           {
-            assign_arg(tmpNode, sym, NULL);
+            assign_arg(tmpNode, p, NULL);
             break;
           }
         }
@@ -405,7 +405,8 @@ void node_process(Node node)
           node->val = p->v;
         }
         /* 参数局部类型，从栈取值 */
-        else if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
+        else if((q != NULL && (q->defn == DEF_VALPARA || q->defn == DEF_VARPARA)) || 
+          p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
         {
           load_arg(node, p, q);
         }

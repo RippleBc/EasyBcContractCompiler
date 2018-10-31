@@ -142,22 +142,22 @@ void pop_args_stack(Symtab tab)
 void assign_arg(Node n, Symbol p, Symbol q)
 {
   int baseOffset = 0;
-
   if(p->type->type_id == TYPE_ARRAY)
   {
     baseOffset = p->offset;
 
-    Symbol sp = p->type->first;
-    
+    int eleOffset = get_symbol_align_size(p->type_link->last);
+
     int i;
-    for(i = 0; i < strlen(n->val.s); i++)
+    for(i = 1; i < strlen(n->val.s) - 1; i++)
     {
-      if(sp == NULL)
+      if(i > p->type_link->num_ele)
       {
-        parse_error("assign_arg array out of index", p->name);
+        parse_error("assign_local array out of index", p->name);
         return;
       }
-      local_stack[local_deep + baseOffset + sp->offset].c = n->val.s[i]; 
+      args_stack[args_deep + baseOffset + (i - 1) * eleOffset].c = n->val.s[i];
+      // printf("assign_arg %s %d %c\n", p->name, args_deep + baseOffset + (i - 1) * eleOffset, args_stack[args_deep + baseOffset + (i - 1) * eleOffset].c);
     }
   }
   else

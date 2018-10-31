@@ -41,7 +41,7 @@ Tree conversion_tree(Symbol source, Type target)
     case TYPE_REAL:
         t = new_tree(CVF, target, NULL, NULL);
         break;
-    case TYPE_POINTER:
+     case TYPE_POINTER:
         t = new_tree(CVP, target, NULL, NULL);
         break;
     case TYPE_BOOLEAN:
@@ -108,7 +108,8 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
     Tree t, right;
 
     /* 检查arg类型是否与expr类型相同 */
-    if (arg != NULL && arg->type->type_id != expr->result_type->type_id)
+    if (arg != NULL && arg->type->type_id != expr->result_type->type_id && 
+        (arg->type->type_id != TYPE_ARRAY || arg->type->last->type->type_id != TYPE_CHAR || expr->result_type->type_id != TYPE_STRING))
     {
         /* do conversions, left for excises. */
         parse_error("type miss match.", "");

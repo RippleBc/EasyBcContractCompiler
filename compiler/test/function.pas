@@ -1,5 +1,14 @@
 program helloworld;
+	type text = array[1..50] of char;
 	var inta, intb: integer;
+	function testMixedArg(x:integer;y:text):integer;
+	var inta : integer;
+	begin
+		inta := 1;
+		writeln(inta);
+		writeln(x);
+		writeln(y[3]);
+	end;
 	function testMixedType(x,y:integer):integer;
 		type
 			arr = array[1..50] of integer;
@@ -62,6 +71,8 @@ program helloworld;
 			testRecurveFunc := x + y;
 		end;
 	begin
+		testMixedArg(10, 'abcdefg');
+		writeln(1111111111);
 		testMixedType(10, 1);
 		writeln(1111111111);
 		testFunc(10, 1);
