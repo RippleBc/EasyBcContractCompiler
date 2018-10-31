@@ -2347,7 +2347,7 @@ KEYENTRY Keytable[] = {
 {"while",	kWHILE,		KEYWORD, 0, 0 },
 {"with",	kWITH, 		KEYWORD, 0, 0 },
 {"write",	SYS_PROC,	pWRITE, 0, TYPE_INTEGER },
-{"writeln",	SYS_PROC,	pWRITELN, 0, TYPE_INTEGER },
+{"writeln",	SYS_PROC,	pWRITELN, 0, 0 },
 {"----",	LAST_ENTRY,	KEYWORD, 0, 0 },
 };
 

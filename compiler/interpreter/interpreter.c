@@ -192,9 +192,34 @@ void node_process(Node node)
       {
         case pWRITELN:
         {
-          /*  */
-
-          printf("result: %d\n", node->kids[0]->val.i);
+          switch(node->kids[0]->type->type_id)
+          {
+          case TYPE_INTEGER:
+          {
+            printf("result: %d\n", node->kids[0]->val.i);
+          }
+          break;
+          case TYPE_CHAR:
+          {
+            printf("result: %c\n", node->kids[0]->val.c);
+          }
+          break;
+          case TYPE_BOOLEAN:
+          {
+            printf("result: %d\n", node->kids[0]->val.i);
+          }
+          break;
+          case TYPE_REAL:
+          {
+            printf("result: %f\n", node->kids[0]->val.f);
+          }
+          break;
+          case TYPE_STRING:
+          {
+            printf("result: %s\n", node->kids[0]->val.s);
+          }
+          break;
+          }
         }
         break;
       }
