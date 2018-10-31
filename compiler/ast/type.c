@@ -564,9 +564,13 @@ int get_type_size(type *pt)
     switch(pt->type_id)
     {
     case TYPE_ARRAY:
+    {
         return pt->num_ele * get_symbol_align_size(pt->first);
+    } 
     case TYPE_RECORD:
+    {
         return pt->size;
+    }  
     }
     return 0;
 }

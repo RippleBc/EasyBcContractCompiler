@@ -15,7 +15,6 @@ program helloworld;
 		inte : date;
 	begin
 		intd[1] := 10;
-		writeln(2222);
 		intd[2] := 20;
 		intd[3] := 30;
 		intd[4] := 40;

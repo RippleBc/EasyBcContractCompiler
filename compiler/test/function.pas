@@ -51,10 +51,7 @@ program helloworld;
 			testFunc := x + y;
 		end;
 	function testRecurveFunc(x,y:integer):integer;
-		var
-			sum : integer;
 		begin
-			sum := x + y;
 			if(x > 0) then
 			begin
 				writeln(x);

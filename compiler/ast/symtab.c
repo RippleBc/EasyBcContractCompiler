@@ -252,17 +252,16 @@ void add_local_to_table(symtab *tab, symbol *sym)
     else
         sprintf(sym->rname, "v%c_%03d", sym->name[0], new_index(var));
 
-    if(tab->level && 
-        ((tab->defn == DEF_FUNCT && sym->defn != DEF_FUNCT) 
-        || (tab->defn == DEF_PROC && sym->defn != DEF_PROC)))
+    /*  */
+    if(sym->defn != DEF_FUNCT && sym->defn != DEF_PROC)
     {
         var_size = get_symbol_align_size(sym);
         /* symtab为函数，记录局部变量在symtab中偏移量 */
-        sym->offset = tab->local_size + var_size;
+        sym->offset = tab->local_size;
         /* 计算symtab中局部变量所占用的空间 */
         tab->local_size += var_size;
     }
-
+    // printf("add_local_to_table name %s offset %d\n", sym->name, sym->offset);
     /* 添加sym到局部变量链表中，从头部插入 */
     sym->next = tab->locals;
     tab->locals = sym;
@@ -286,11 +285,13 @@ void add_args_to_table(symtab *tab, symbol *sym)
 
     /* 计算rname，形式为aN_000、aN_001 */
     sprintf(sym->rname, "a%c_%03d", sym->name[0], new_index(arg));
+
     /* 计算symtab中参数所占用的空间 */
     var_size = get_symbol_align_size(sym);
-    tab->args_size += var_size;
+
     /* 计算局部变量在symtab中的偏移量 */
-    sym->offset = var_size;
+    sym->offset = tab->args_size;
+    tab->args_size += var_size;
     
     /* 重新计算其他参数在symtab中的偏移量 */
     for(p = tab->args->next; p; p = p->next)
@@ -497,7 +498,10 @@ int get_symbol_align_size(symbol *sym)
         /* 用户自定义类型，需要从_type_链表中寻找 */
         return get_type_size(sym->type_link);
     case TYPE_UNKNOWN:
+    {
+        printf("TYPE_UNKNOWN %s\n", sym->name);
         internal_error("Unknown type.");
+    }
         break;
     default:
         break;

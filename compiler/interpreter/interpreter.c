@@ -117,9 +117,6 @@ void jump_to_label(List l, Symbol label)
 
 void node_process(Node node)
 {
-
-  printf("node process %s\n", get_op_name(generic(node->op)));
-
   /* 流程控制相关 */
   switch (generic(node->op))
   {
@@ -299,9 +296,7 @@ void node_process(Node node)
   {
     case CNST:
     {
-      printf("CNST begin\n");
       node->val = node->syms[0]->v;
-      printf("CNST end\n");
     }
     break;
     case FIELD:
@@ -311,7 +306,6 @@ void node_process(Node node)
     break;
     case ARRAY:
     {
-      printf("ARRAY begin\n");
       Symbol p;
 
       char ele_name[NAME_LEN];
@@ -335,7 +329,6 @@ void node_process(Node node)
         parse_error("array index out of bound", "");
         return;
       }
-      printf("ARRAY end\n");
     }
     break;
     case ADDRG:
@@ -379,7 +372,14 @@ void node_process(Node node)
       /* 全局变量 */
       if(top_symtab_stack()->level == 0)
       {
-        load_global(node, p, q);
+        if(p->defn == DEF_ENUM_ELEMENT)
+        {
+          node->val = p->v;
+        }
+        else
+        {
+          load_global(node, p, q);
+        }
       }
       else
       {
@@ -401,7 +401,6 @@ void node_process(Node node)
     break;
     case ASGN:
     {
-      printf("ASGN begin\n");
       Symbol p;
       Symbol q = NULL;
 
@@ -453,7 +452,6 @@ void node_process(Node node)
           assign_local(node->kids[1], p, q);
         }
       }
-      printf("ASGN end\n");
     }
     break;
   }
