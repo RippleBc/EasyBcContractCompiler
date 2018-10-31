@@ -139,7 +139,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 98 "parser/spl.y" /* yacc.c:1909  */
+#line 97 "parser/spl.y" /* yacc.c:1909  */
 
 	char 		p_char[NAME_LEN];
 	int 		num;

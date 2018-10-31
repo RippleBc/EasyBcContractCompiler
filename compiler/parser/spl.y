@@ -64,7 +64,6 @@ void push_call_stack(symtab *p);
 struct list routine_forest;
 /*  */
 struct list ast_forest;
-struct list para_list;				/* for parameter list. */
 List  case_list = NULL;       /* CASE结构使用 */
 struct list dag_forest;				/* for dags. */
 Tree args; /* 参数AST树 */
@@ -276,7 +275,6 @@ sub_program
 {
 	main_env.u.main.tab = Global_symtab;
 	list_clear(&ast_forest);
-	list_clear(&para_list);
 	/* 将全局符号表压入符号表栈中 */
 	push_symtab_stack(Global_symtab);
 }
@@ -737,9 +735,6 @@ function_head
 	/* 清空AST森林 */
 	list_clear(&ast_forest);
 
-	/* 清空参数列表 */
-	list_clear(&para_list);
-
 	/* 创建符号表 */
 	ptab = new_symtab(top_symtab_stack());
 
@@ -782,8 +777,6 @@ yNAME parameters oCOLON simple_type_decl
 	Tree header;
 	/* 头部AST节点 */
 	header = new_tree(HEADER, ptab->type, NULL, NULL);
-	/* 头部AST节点的参数链表 */
-	header->u.header.para = &para_list;
 	/* 头部AST节点对应的符号表 */
 	header->u.header.symtab = ptab;
 	/* 放入AST森林 */
@@ -816,8 +809,6 @@ procedure_head
 {
 	list_clear(&ast_forest);
 
-	list_clear(&para_list);
-
 	ptab = new_symtab(top_symtab_stack());
 
 	add_routine_to_table(top_symtab_stack(), ptab);
@@ -837,7 +828,6 @@ yNAME parameters
 
 	Tree header;
 	header = new_tree(HEADER, find_type_by_id(TYPE_VOID), NULL, NULL);
-	header->u.header.para = &para_list;
 	list_append(&ast_forest, header);
 }
 ;
@@ -880,9 +870,6 @@ para_type_list
 
 		/* 放入符号表中 */
 		add_symbol_to_table(ptab, q);
-
-		/* 放入形参链表 */
-		list_append(&para_list, q);
 	}
 }
 |var_para_list oCOLON simple_type_decl
@@ -905,9 +892,6 @@ para_type_list
 
 		/* 放入符号表中 */
 		add_symbol_to_table(ptab, q);
-
-		/* 放入形参链表 */
-		list_append(&para_list, q);
 	}
 }
 ;
@@ -1898,7 +1882,6 @@ symbol* top_term_stack()
 int parser_init()
 {
 	memset(&ast_forest, 0, sizeof(ast_forest));
-	memset(&para_list, 0, sizeof(para_list));
 	memset(&case_list, 0, sizeof(case_list));
 	if_label_count = repeat_label_count = 
 		do_label_count = while_label_count = 
