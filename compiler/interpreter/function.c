@@ -83,7 +83,7 @@ void assign_local(Node n, Symbol p, Symbol q)
   }
 
   local_stack[local_deep + baseOffset + p->offset] = n->val; 
-  // printf("assign_local %s offset:%d val:%d\n", p->name, local_deep + p->offset - get_symbol_align_size(p), local_stack[local_deep + p->offset - get_symbol_align_size(p)]);
+  // printf("assign_local %s offset:%d val:%d\n", p->name, local_deep + baseOffset + p->offset, local_stack[local_deep + baseOffset + p->offset].i);
 }
 
 void load_local(Node n, Symbol p, Symbol q)
@@ -94,7 +94,7 @@ void load_local(Node n, Symbol p, Symbol q)
     baseOffset = q->offset;
   }
 
-  // printf("load_local %s offset:%d val:%d\n", p->name, local_deep + p->offset - get_symbol_align_size(p), local_stack[local_deep + p->offset - get_symbol_align_size(p)]);
+  // printf("load_local %s offset:%d val:%d\n", p->name, local_deep + baseOffset + p->offset, local_stack[local_deep + baseOffset + p->offset].i);
   n->val = local_stack[local_deep + baseOffset + p->offset];
 }
 
@@ -127,7 +127,7 @@ void assign_arg(Node n, Symbol p, Symbol q)
   }
 
   args_stack[args_deep + baseOffset + p->offset] = n->val;
-  // printf("assign_arg %s offset:%d val:%d\n", p->name, args_deep + p->offset - get_symbol_align_size(p), args_stack[args_deep + p->offset - get_symbol_align_size(p)]);
+  // printf("assign_arg %s offset:%d val:%d\n", p->name, args_deep + baseOffset + p->offset, args_stack[args_deep + baseOffset + p->offset].i);
 }
 
 
@@ -139,6 +139,6 @@ void load_arg(Node n, Symbol p, Symbol q)
     baseOffset = q->offset;
   }
 
-  // printf("load_arg %s offset:%d val:%d\n", p->name, args_deep + p->offset - get_symbol_align_size(p), args_stack[args_deep + p->offset - get_symbol_align_size(p)]);
+  // printf("load_arg %s offset:%d val:%d\n", p->name, args_deep + baseOffset + p->offset, args_stack[args_deep + baseOffset + p->offset].i);
   n->val = args_stack[args_deep + baseOffset + p->offset];
 }

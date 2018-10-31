@@ -261,7 +261,7 @@ void add_local_to_table(symtab *tab, symbol *sym)
         /* 计算symtab中局部变量所占用的空间 */
         tab->local_size += var_size;
     }
-    // printf("add_local_to_table name %s offset %d\n", sym->name, sym->offset);
+
     /* 添加sym到局部变量链表中，从头部插入 */
     sym->next = tab->locals;
     tab->locals = sym;
@@ -273,15 +273,9 @@ void add_local_to_table(symtab *tab, symbol *sym)
 
 void add_args_to_table(symtab *tab, symbol *sym)
 {
-    symbol *p;
     int var_size;
     if(!tab || !sym)
         return;
-
-    /* 添加sym到局部参数链表中，从头部插入 */
-    sym->next = tab->args;
-    tab->args = sym;
-    sym->tab = tab;
 
     /* 计算rname，形式为aN_000、aN_001 */
     sprintf(sym->rname, "a%c_%03d", sym->name[0], new_index(arg));
@@ -292,10 +286,11 @@ void add_args_to_table(symtab *tab, symbol *sym)
     /* 计算局部变量在symtab中的偏移量 */
     sym->offset = tab->args_size;
     tab->args_size += var_size;
-    
-    /* 重新计算其他参数在symtab中的偏移量 */
-    for(p = tab->args->next; p; p = p->next)
-        p->offset += var_size;
+
+    /* 添加sym到局部参数链表中，从头部插入 */
+    sym->next = tab->args;
+    tab->args = sym;
+    sym->tab = tab;
 
     /* 将局部参数插入局部符号表中 */
     add_var_to_localtab(tab, sym);
