@@ -2,11 +2,15 @@ program helloworld;
 	type text = array[1..50] of char;
 	var inta, intb: integer;
 	function testInsideFunc(x,y:integer):integer;
-		var inta,intb : integer;
-		
+		/*var inta,intb : integer;
+		function hello(x,y:integer):integer;
+		begin
+			writeln(x);
+			writeln(y);
+		end;*/
 	begin
 		writeln(x);
-		
+		/*hello(9, 2);*/
 		writeln(y);
 	end;
 

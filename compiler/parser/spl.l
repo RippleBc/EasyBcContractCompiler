@@ -40,6 +40,7 @@ dec		[0-9]
 hex		[0-9a-fA-F]
 oct		[0-7]
 
+%s comment
 %%
 "{" {
 	int c;
@@ -376,10 +377,26 @@ oct		[0-7]
 	return id_or_keyword(yytext);
 }
 
-"\n" {
+<*>"\n" {
 	line_no++;
 	line_pos = 0;
 	line_buf[line_pos] = 0;
+}
+
+"/*" {
+	BEGIN(comment);
+}
+
+<comment>[^*\n]* {
+	/* eat anything that's not a '*' */
+}
+
+<comment>"*"+[^*/\n]* {
+	/* eat up '*'s not followed by '/'s */
+}
+
+<comment>"*"+"/" {
+	BEGIN(INITIAL);
 }
 
 . {

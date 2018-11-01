@@ -3,7 +3,6 @@
 /* x为DAG节点或者AST节点 */
 List list_append(List list, void *x)
 {
-
     List new;
 
     /* 给指针在permanent区域分配内存 */

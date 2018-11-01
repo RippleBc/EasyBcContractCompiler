@@ -698,7 +698,7 @@ var_decl
 ;
 
 routine_part
-:%empty {}
+:%empty
 |routine_part function_decl { }
 |routine_part procedure_decl { }
 |function_decl {}

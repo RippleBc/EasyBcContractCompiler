@@ -44,6 +44,7 @@ program helloworld;
 		writeln(inta4[1]);
 		writeln(1234567890);
 
+		/* writeln(9876543210); */
 		if(2 > 1) then
 		begin
 			writeln(1);

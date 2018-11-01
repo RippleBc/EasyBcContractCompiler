@@ -1,7 +1,7 @@
 FLEX=flex
 FLEXFLAGS=-o
 BISON=bison
-BISONFLAGS=-d -o
+BISONFLAGS=--verbose --graph -d -o
 CC=gcc
 CFLAGS=-g -Wall
 
