@@ -40,7 +40,7 @@ dec		[0-9]
 hex		[0-9a-fA-F]
 oct		[0-7]
 
-%s comment
+%s star_slash_comment slash_slash_comment
 %%
 "{" {
 	int c;
@@ -373,29 +373,43 @@ oct		[0-7]
 	DUMP_SOURCE
 
 	strncpy(yylval.p_char, yytext, NAME_LEN);
-
 	return id_or_keyword(yytext);
 }
 
-<*>"\n" {
+<INITIAL,star_slash_comment>"\n" {
 	line_no++;
 	line_pos = 0;
 	line_buf[line_pos] = 0;
 }
 
 "/*" {
-	BEGIN(comment);
+	BEGIN(star_slash_comment);
 }
 
-<comment>[^*\n]* {
+<star_slash_comment>[^*]* {
 	/* eat anything that's not a '*' */
 }
 
-<comment>"*"+[^*/\n]* {
-	/* eat up '*'s not followed by '/'s */
+<star_slash_comment>"*"+[^/]* {
+	/* eat up '*' not followed by '/'s */
 }
 
-<comment>"*"+"/" {
+<star_slash_comment>"*/" {
+	BEGIN(INITIAL);
+}
+
+"//" {
+	BEGIN(slash_slash_comment);
+}
+
+<slash_slash_comment>(^\n)* {
+	/* eat anything that's not a '//' */
+}
+
+<slash_slash_comment>"\n" {
+	line_no++;
+	line_pos = 0;
+	line_buf[line_pos] = 0;
 	BEGIN(INITIAL);
 }
 
