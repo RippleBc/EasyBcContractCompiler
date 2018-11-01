@@ -402,7 +402,7 @@ oct		[0-7]
 	BEGIN(slash_slash_comment);
 }
 
-<slash_slash_comment>(^\n)* {
+<slash_slash_comment>[^\n]* {
 	/* eat anything that's not a '//' */
 }
 
