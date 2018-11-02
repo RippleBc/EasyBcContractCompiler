@@ -3,14 +3,14 @@ program helloworld;
 	var inta, intb: integer;
 	function testInsideFunc(x,y:integer):integer;
 		var inta,intb : integer;
-		// function hello(x,y:integer):integer;
-		// begin
-		// 	writeln(x);
-		// 	writeln(y);
-		// end;
+		function hello(x,y:integer):integer;
+		begin
+			writeln(x);
+			writeln(y);
+		end;
 	begin
 		writeln(x);
-		// hello(9, 2);
+		hello(9, 2);
 		writeln(y);
 	end;
 
