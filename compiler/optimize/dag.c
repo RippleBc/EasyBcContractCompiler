@@ -380,6 +380,9 @@ int gen_dag(List ast_forest, List dag_forest)
     /* clean temporary memory. */
     deallocate(STMT);
 
+    /* 将全局符号表压入符号表栈中 */
+    pop_symtab_stack();
+
     return dag_count;
 }
 
