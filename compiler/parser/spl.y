@@ -50,6 +50,11 @@ symtab *top_call_stack();
 symtab *pop_call_stack();
 void push_call_stack(symtab *p);
 
+/*  */
+List top_ast_forest_stack();
+List pop_ast_forest_stack();
+void push_ast_forest_stack(List l);
+
 /* CASE结构使用 */
 List case_list = NULL;  
 
@@ -229,8 +234,7 @@ program
 		/* generate dag forest. */
 		gen_dag(ast_forest, &dag_forest);
 
-		/*  */
-		list_clear(ast_forest);
+		pop_ast_forest_stack();
 
 		/*  */
 		interpret(&routine_forest, &dag_forest);
@@ -268,6 +272,7 @@ program_head
 
 	/*  */
 	NEW0(ast_forest, FUNC);
+	push_ast_forest_stack(ast_forest);
 }
 |error oSEMI
 ;
@@ -276,7 +281,6 @@ sub_program
 :routine_head
 {
 	main_env.u.main.tab = Global_symtab;
-	list_clear(ast_forest);
 }
 routine_body {}
 ;
@@ -721,7 +725,7 @@ function_decl
 		gen_dag(ast_forest, &dag_forest);
 
 		/*  */
-		list_clear(ast_forest);
+		pop_ast_forest_stack();
 
 		/*  */
 		list_append(&routine_forest, dag_forest.link);
@@ -736,7 +740,8 @@ function_head
 :kFUNCTION
 {
 	/* 清空AST森林 */
-	list_clear(ast_forest);
+	NEW0(ast_forest, FUNC);
+	push_ast_forest_stack(ast_forest);
 
 	/* 创建符号表 */
 	ptab = new_symtab(top_symtab_stack());
@@ -801,7 +806,7 @@ procedure_decl
 
 		gen_dag(ast_forest, &dag_forest);
 
-		list_clear(ast_forest);
+		pop_ast_forest_stack();;
 
 		list_append(&routine_forest, dag_forest.link);
 	}
@@ -812,7 +817,8 @@ procedure_decl
 procedure_head
 :kPROCEDURE
 {
-	list_clear(ast_forest);
+	NEW0(ast_forest, FUNC);
+	push_ast_forest_stack(ast_forest);
 
 	ptab = new_symtab(top_symtab_stack());
 
