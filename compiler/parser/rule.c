@@ -4166,15 +4166,45 @@ symtab *pop_call_stack()
     call_tos++;
     if (call_tos == MAX_CALL_LEVEL)
         internal_error("call stack underflow.");
-    rtn = call_stk[call_tos];
+
     return call_stk[call_tos];
 }
 
 void push_call_stack(symtab *p)
 {
     call_stk[call_tos] = p;
-    rtn = p;
+
     call_tos--;
     if (call_tos == -1)
         internal_error("call stack overflow.");
+}
+
+
+static List ast_forest_stk[MAX_CALL_LEVEL];
+
+static int ast_forest_tos = MAX_CALL_LEVEL - 1;
+
+List top_ast_forest_stack( )
+{
+    return ast_forest_stk[ast_forest_tos + 1];
+}
+
+List pop_ast_forest_stack()
+{
+    ast_forest_tos++;
+
+    if (ast_forest_tos == MAX_CALL_LEVEL)
+        internal_error("ast forest stack underflow.");
+
+    return ast_forest_stk[ast_forest_tos];
+}
+
+void push_ast_forest_stack(List l)
+{
+    ast_forest_stk[ast_forest_tos] = l;
+
+    ast_forest_tos--;
+
+    if (ast_forest_tos == -1)
+        internal_error("ast forest stack overflow.");
 }
