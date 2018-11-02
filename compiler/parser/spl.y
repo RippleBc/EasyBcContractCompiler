@@ -60,7 +60,7 @@ Symbol arg = NULL;
 /*  */
 struct list routine_forest;
 /*  */
-struct list ast_forest;
+struct list *ast_forest;
 /*  */
 struct list dag_forest;
 
@@ -224,13 +224,13 @@ program
 		t->u.generic.symtab = top_symtab_stack();
 		
 		/* 将AST节点挂到ast_forest后面 */
-		list_append(&ast_forest, t);
+		list_append(ast_forest, t);
 
 		/* generate dag forest. */
-		gen_dag(&ast_forest, &dag_forest);
+		gen_dag(ast_forest, &dag_forest);
 
 		/*  */
-		list_clear(&ast_forest);
+		list_clear(ast_forest);
 
 		/*  */
 		interpret(&routine_forest, &dag_forest);
@@ -264,6 +264,9 @@ program_head
 	Global_symtab->defn = DEF_PROG;
 	/*  */
 	global_env.u.program.tab = Global_symtab;
+
+	/*  */
+	NEW0(ast_forest, FUNC);
 }
 |error oSEMI
 ;
@@ -272,7 +275,7 @@ sub_program
 :routine_head
 {
 	main_env.u.main.tab = Global_symtab;
-	list_clear(&ast_forest);
+	list_clear(ast_forest);
 	/* 将全局符号表压入符号表栈中 */
 	push_symtab_stack(Global_symtab);
 }
@@ -713,13 +716,13 @@ function_decl
 		/* 对应的符号表 */
 		t->u.generic.symtab = top_symtab_stack();
 		/* 放入AST森林 */
-		list_append(&ast_forest, t);
+		list_append(ast_forest, t);
 
 		/* 生成AST森林 */
-		gen_dag(&ast_forest, &dag_forest);
+		gen_dag(ast_forest, &dag_forest);
 
 		/*  */
-		list_clear(&ast_forest);
+		list_clear(ast_forest);
 
 		/*  */
 		list_append(&routine_forest, dag_forest.link);
@@ -734,7 +737,7 @@ function_head
 :kFUNCTION
 {
 	/* 清空AST森林 */
-	list_clear(&ast_forest);
+	list_clear(ast_forest);
 
 	/* 创建符号表 */
 	ptab = new_symtab(top_symtab_stack());
@@ -781,7 +784,7 @@ yNAME parameters oCOLON simple_type_decl
 	/* 头部AST节点对应的符号表 */
 	header->u.generic.symtab = ptab;
 	/* 放入AST森林 */
-	list_append(&ast_forest, header);
+	list_append(ast_forest, header);
 }
 ;
 
@@ -795,11 +798,11 @@ procedure_decl
 
 		t = new_tree(TAIL, NULL, NULL, NULL);
 		t->u.generic.symtab = top_symtab_stack();
-		list_append(&ast_forest, t);
+		list_append(ast_forest, t);
 
-		gen_dag(&ast_forest, &dag_forest);
+		gen_dag(ast_forest, &dag_forest);
 
-		list_clear(&ast_forest);
+		list_clear(ast_forest);
 
 		list_append(&routine_forest, dag_forest.link);
 	}
@@ -810,7 +813,7 @@ procedure_decl
 procedure_head
 :kPROCEDURE
 {
-	list_clear(&ast_forest);
+	list_clear(ast_forest);
 
 	ptab = new_symtab(top_symtab_stack());
 
@@ -831,7 +834,7 @@ yNAME parameters
 
 	Tree header;
 	header = new_tree(HEADER, find_type_by_id(TYPE_VOID), NULL, NULL);
-	list_append(&ast_forest, header);
+	list_append(ast_forest, header);
 }
 ;
 
@@ -974,7 +977,7 @@ assign_stmt
 	/* 赋值AST树 */
 	$$ = assign_tree(t, $3);
 	/* 放入AST森林 */
-	list_append(&ast_forest, $$);
+	list_append(ast_forest, $$);
 }
 |yNAME oLB
 {
@@ -1013,7 +1016,7 @@ oASSIGN expression
 	$$ = assign_tree(t, $8);
 
 	/* 放入AST森林 */
-	list_append(&ast_forest, $$);
+	list_append(ast_forest, $$);
 }
 |yNAME oDOT yNAME
 {
@@ -1045,7 +1048,7 @@ oASSIGN expression
 	$$ = assign_tree(t, $6);
 
 	/* 放入AST森林 */
-	list_append(&ast_forest, $$);
+	list_append(ast_forest, $$);
 }
 ;
 
@@ -1070,7 +1073,7 @@ oLP args_list oRP
 	$$ = call_tree(top_call_stack(), args);
 
 	/* 放入AST森林 */
-	list_append(&ast_forest, $$);
+	list_append(ast_forest, $$);
 
 	pop_call_stack();
 }
@@ -1080,13 +1083,13 @@ oLP args_list oRP
 	$$ = sys_tree($1->attr, NULL);
 
 	/* 放入AST森林 */
-	list_append(&ast_forest, $$);
+	list_append(ast_forest, $$);
 }
 |SYS_PROC
 {
 	$$ = sys_tree($1->attr, NULL);
 
-	list_append(&ast_forest, $$);
+	list_append(ast_forest, $$);
 }
 |SYS_FUNCT 
 {
@@ -1101,7 +1104,7 @@ oLP args_list oRP
 	$$ = sys_tree($1->attr, args);
 
 	/* 放入AST森林 */
-	list_append(&ast_forest, $$);
+	list_append(ast_forest, $$);
 
 	pop_call_stack();
 }
@@ -1116,7 +1119,7 @@ oLP args_list oRP
 	$$ = sys_tree($1->attr, args);
 
 	/* 放入AST森林 */
-	list_append(&ast_forest, $$);
+	list_append(ast_forest, $$);
 
 	pop_call_stack();
 }
@@ -1148,7 +1151,7 @@ oLP args_list oRP
 	$$ = sys_tree(pREAD, t);
 
 	/* 放入AST森林 */
-	list_append(&ast_forest, $$);
+	list_append(ast_forest, $$);
 }
 ;
 
@@ -1159,7 +1162,7 @@ compound_stmt
 	t = new_tree(BLOCKBEG, NULL, NULL, NULL);
 
 	/* 放入AST森林 */
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 }
 stmt_list
 kEND
@@ -1168,7 +1171,7 @@ kEND
 	t = new_tree(BLOCKEND, NULL, NULL, NULL);
 
 	/* 放入AST森林 */
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 }
 ;
 
@@ -1186,7 +1189,7 @@ expression kTHEN
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 条件跳转AST节点（条件为假时跳转到ELSE标签的入口） */
 	t = cond_jump_tree($3, false, new_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 }
 stmt
 {
@@ -1205,11 +1208,11 @@ stmt
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 条件跳转AST节点（IF子句执行完毕后，跳转到IF结构的出口） */
 	t = jump_tree(exit_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 
 	/* 获取标签AST节点（ELSE子句的入口） */
 	t = pop_ast_stack();
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 }
 else_clause
 {
@@ -1219,7 +1222,7 @@ else_clause
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 标签AST节点（IF结构出口） */
 	t = label_tree(exit_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 	pop_lbl_stack();
 }
 |kIF error 
@@ -1248,7 +1251,7 @@ repeat_stmt
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 标签AST节点（REPEAT结构的入口） */
 	t = label_tree(new_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 }
 stmt kUNTIL expression
 {
@@ -1258,7 +1261,7 @@ stmt kUNTIL expression
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 条件跳转AST节点（条件为真时，跳转到REPEAT结构的入口） */
 	t = cond_jump_tree($5, false, new_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 
 	pop_lbl_stack();
 }
@@ -1275,7 +1278,7 @@ while_stmt
 	/* 标签AST节点（WHILE结构的入口） */
 	t = label_tree(test_label);
 
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 }
 expression kDO
 {
@@ -1286,7 +1289,7 @@ expression kDO
 	/* 条件跳转AST节点（条件为假时，跳转到WHILE结构的出口） */
 	t = cond_jump_tree($3, false, exit_label);
 
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 }
 stmt
 {
@@ -1304,11 +1307,11 @@ stmt
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 跳转AST节点（跳转到WHILE结构的入口） */
 	t = jump_tree(test_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 
 	/* 获取标签AST节点（WHILE结构的出口） */
 	t = pop_ast_stack();
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 	pop_lbl_stack();
 }
 ;
@@ -1337,7 +1340,7 @@ for_stmt
 	/* 保存地址AST节点（FOR中条件判断相关的变量） */
 	push_ast_stack(t);
 	/* 赋值AST节点 */
-	list_append(&ast_forest, assign_tree(t, $4));
+	list_append(ast_forest, assign_tree(t, $4));
 
 	push_lbl_stack(for_label_count++);
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "for_test_%d", for_label_count - 1);
@@ -1346,7 +1349,7 @@ for_stmt
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 标签AST节点（FOR结构的入口） */
 	t = label_tree(test_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 }
 direction expression kDO
 {
@@ -1371,7 +1374,7 @@ direction expression kDO
 
 	/* 条件跳转AST节点（条件为假时，跳转到FOR结构的出口） */
 	t = cond_jump_tree(t, false, exit_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 }
 stmt
 {
@@ -1387,7 +1390,7 @@ stmt
 	{
 		t = decr_one_tree(t);
 	}
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "for_test_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -1395,7 +1398,7 @@ stmt
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 跳转AST节点（跳转到FOR结构的入口） */
 	t = jump_tree(test_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "for_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -1404,7 +1407,7 @@ stmt
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 标签AST符号（FOR结构的出口） */
 	t = label_tree(exit_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 
 	pop_lbl_stack();
 }
@@ -1431,7 +1434,7 @@ case_stmt
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 跳转AST节点（条件测试的入口） */
 	t = jump_tree(test_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 
 	/* 在STMT区域为case_list分配内存 */
 	NEW0(case_list, STMT);
@@ -1447,7 +1450,7 @@ expression kOF case_expr_list
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 标签AST节点（条件测试的入口） */
 	t = label_tree(test_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 	case_list = pop_case_ast_stack();
 
 	/* 将CASE子句从链表结构转化为数组结构 */
@@ -1464,7 +1467,7 @@ expression kOF case_expr_list
 		t = compare_expr_tree(EQ, $3, cases[i + 1]);
 		/* 条件跳转AST节点（条件为真时跳转到指定的CASE子句） */
 		t = cond_jump_tree(t, true, new_label);
-		list_append(&ast_forest, t);
+		list_append(ast_forest, t);
 	}
 
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_exit_%d", top_lbl_stack());
@@ -1473,7 +1476,7 @@ expression kOF case_expr_list
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 标签AST节点（CASE结构的出口） */
 	t = label_tree(exit_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 	pop_lbl_stack();
 }
 kEND
@@ -1496,7 +1499,7 @@ case_expr
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 标签AST节点（CASE子句的入口） */
 	t = label_tree(new_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 
 	/* 获取CASE子句链表 */
 	case_list = top_case_ast_stack();
@@ -1516,7 +1519,7 @@ oCOLON stmt
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 跳转AST节点（CASE结构的出口） */
 	t = jump_tree(exit_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 }
 oSEMI
 |yNAME
@@ -1540,7 +1543,7 @@ oSEMI
 
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	t = label_tree(new_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 
 	case_list = top_case_ast_stack();
 	list_append(case_list, t);
@@ -1554,7 +1557,7 @@ oCOLON stmt
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	t = jump_tree(exit_label);
-	list_append(&ast_forest, t);
+	list_append(ast_forest, t);
 }
 oSEMI
 ;
@@ -1884,7 +1887,6 @@ symbol* top_term_stack()
 /* 初始化语法解析器 */
 int parser_init()
 {
-	memset(&ast_forest, 0, sizeof(ast_forest));
 	memset(&case_list, 0, sizeof(case_list));
 	if_label_count = repeat_label_count = 
 		do_label_count = while_label_count = 
