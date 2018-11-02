@@ -78,14 +78,6 @@ KEYENTRY;
 /* memory allocation arenas. */
 enum { PERM=0, FUNC, STMT, TREE, DAG, LASTARENA };
 
-/* position of file. */
-typedef struct coord
-{
-    char *file;
-    unsigned x, y;
-}
-Coordinate;
-
 void *allocate(unsigned long n, unsigned a);
 
 /* memory allocation */
@@ -114,14 +106,6 @@ enum {
     TYPE_DOUBLE = 12,
     TYPE_FUNCTION = 13,
     TYPE_LONG = 14
-};
-
-enum {
-    F=TYPE_REAL,
-    I=TYPE_INTEGER,
-    P=TYPE_POINTER,
-    V=TYPE_VOID,
-    B=TYPE_RECORD
 };
 
 /* for operations. */
@@ -186,18 +170,12 @@ extern Env main_env; /* 主程序 */
 /* target interface */
 #include "config.h"
 
-/* 类型度量 */
+/*  */
 typedef struct metrics
 {
     unsigned char size, align; /* 大小，对其方式 */
 }
 Metrics;
-
-typedef struct blockcontext
-{
-    unsigned char size;
-}
-BlockContext;
 
 typedef struct interface
     {
@@ -212,14 +190,6 @@ typedef struct interface
     }
 Interface;
 
-typedef struct binding
-{
-    char *name;
-    Interface *ir;
-}
-Binding;
-
-extern Binding bindings[];
 extern Interface *IR;
 
 int get_keytable_size();
