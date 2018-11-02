@@ -13,10 +13,6 @@
 
 #define FILE_NAME_LEN	(64)
 
-#ifdef WIN32
-#define YY_NO_UNISTD_H
-#endif
-
 #define MAX_LINE_LENGTH		(20480) /* 词法分析错误追踪时，可以追踪的行的最长字符个数 */
 #define STACK_SEG_SIZE		(2048)
 
