@@ -131,7 +131,6 @@ int list_length(List list);
 void **list_ltov(List list, unsigned arena);
 void list_clear(List list);
 
-
 typedef struct
 {
     union {
@@ -163,13 +162,13 @@ extern Env main_env; /* 主程序 */
 /* nodes and dags. */
 #include "./optimize/dag.h"
 
-/* target interface */
+/*  */
 #include "config.h"
 
 /*  */
 typedef struct metrics
 {
-    unsigned char size, align; /* 大小，对其方式 */
+    unsigned char size, align; /*  */
 }
 Metrics;
 

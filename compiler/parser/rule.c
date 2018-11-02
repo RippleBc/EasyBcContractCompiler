@@ -1696,7 +1696,7 @@ yyreduce:
 	push_symtab_stack(Global_symtab);
 
 	/*  */
-	NEW0(ast_forest, FUNC);
+	NEW0(ast_forest, TREE);
 	push_ast_forest_stack(ast_forest);
 }
 #line 1703 "parser/rule.c" /* yacc.c:1646  */
@@ -2304,8 +2304,8 @@ yyreduce:
   case 54:
 #line 741 "parser/spl.y" /* yacc.c:1646  */
     {
-	/* 清空AST森林 */
-	NEW0(ast_forest, FUNC);
+	/* AST森林 */
+	NEW0(ast_forest, TREE);
 	push_ast_forest_stack(ast_forest);
 
 	/* 创建符号表 */
@@ -2388,7 +2388,7 @@ yyreduce:
   case 57:
 #line 819 "parser/spl.y" /* yacc.c:1646  */
     {
-	NEW0(ast_forest, FUNC);
+	NEW0(ast_forest, TREE);
 	push_ast_forest_stack(ast_forest);
 
 	ptab = new_symtab(top_symtab_stack());

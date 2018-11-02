@@ -271,7 +271,7 @@ program_head
 	push_symtab_stack(Global_symtab);
 
 	/*  */
-	NEW0(ast_forest, FUNC);
+	NEW0(ast_forest, TREE);
 	push_ast_forest_stack(ast_forest);
 }
 |error oSEMI
@@ -739,8 +739,8 @@ function_decl
 function_head
 :kFUNCTION
 {
-	/* 清空AST森林 */
-	NEW0(ast_forest, FUNC);
+	/* AST森林 */
+	NEW0(ast_forest, TREE);
 	push_ast_forest_stack(ast_forest);
 
 	/* 创建符号表 */
@@ -817,7 +817,7 @@ procedure_decl
 procedure_head
 :kPROCEDURE
 {
-	NEW0(ast_forest, FUNC);
+	NEW0(ast_forest, TREE);
 	push_ast_forest_stack(ast_forest);
 
 	ptab = new_symtab(top_symtab_stack());
