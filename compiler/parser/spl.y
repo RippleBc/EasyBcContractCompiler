@@ -67,7 +67,7 @@ struct list routine_forest;
 /*  */
 struct list *ast_forest;
 /*  */
-struct list dag_forest;
+struct list *dag_forest;
 
 Symbol	new_label = NULL;
 Symbol	test_label = NULL;
@@ -219,8 +219,7 @@ program
 
 	if (!err_occur())
 	{
-		/* 清空dag_forest */
-		list_clear(&dag_forest);
+		NEW0(dag_forest, DAG);
 
 		/* 该树节点的操作类型为TAIL，表示该树节点实现的是程序结束的操作。 */
 		t = new_tree(TAIL, NULL, NULL, NULL);
@@ -232,12 +231,13 @@ program
 		list_append(top_ast_forest_stack(), t);
 
 		/* generate dag forest. */
-		gen_dag(top_ast_forest_stack(), &dag_forest);
+		gen_dag(top_ast_forest_stack(), dag_forest);
 
 		pop_ast_forest_stack();
 
 		/*  */
-		interpret(&routine_forest, &dag_forest);
+		interpret(&routine_forest, dag_forest->link);
+
 	}
 
 	return 0;
@@ -711,8 +711,7 @@ function_decl
 {
 	if (!err_occur())
 	{
-		/* 清楚DAG森林 */
-		list_clear(&dag_forest);
+		NEW0(dag_forest, DAG);
 
 		/* 终点AST节点 */
 		t = new_tree(TAIL, NULL, NULL, NULL);
@@ -722,13 +721,13 @@ function_decl
 		list_append(top_ast_forest_stack(), t);
 
 		/* 生成AST森林 */
-		gen_dag(top_ast_forest_stack(), &dag_forest);
+		gen_dag(top_ast_forest_stack(), dag_forest);
 
 		/*  */
 		pop_ast_forest_stack();
 
 		/*  */
-		list_append(&routine_forest, dag_forest.link);
+		list_append(&routine_forest, dag_forest->link);
 	}
 
 	/* 弹出函数对应的符号表 */
@@ -798,17 +797,17 @@ procedure_decl
 
 	if (!err_occur())
 	{
-		list_clear(&dag_forest);
+		NEW0(dag_forest, DAG);
 
 		t = new_tree(TAIL, NULL, NULL, NULL);
 		t->u.generic.symtab = top_symtab_stack();
 		list_append(top_ast_forest_stack(), t);
 
-		gen_dag(top_ast_forest_stack(), &dag_forest);
-
+		gen_dag(top_ast_forest_stack(), dag_forest);
+  
 		pop_ast_forest_stack();;
 
-		list_append(&routine_forest, dag_forest.link);
+		list_append(&routine_forest, dag_forest->link);
 	}
 	pop_symtab_stack();
 }
