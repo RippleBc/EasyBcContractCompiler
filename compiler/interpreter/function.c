@@ -84,14 +84,14 @@ void assign_local(Node n, Symbol p, Symbol q)
     int eleOffset = get_symbol_align_size(p->type_link->last);
 
     int i;
-    for(i = 1; i < strlen(n->val.s) - 1; i++)
+    for(i = 0; i < strlen(n->val.s); i++)
     {
-      if(i > p->type_link->num_ele)
+      if(i > p->type_link->num_ele - 1)
       {
         parse_error("assign_local array out of index", p->name);
         return;
       }
-      local_stack[local_deep + baseOffset + (i - 1) * eleOffset].c = n->val.s[i]; 
+      local_stack[local_deep + baseOffset + i * eleOffset].c = n->val.s[i]; 
     }
   }
   else
@@ -149,14 +149,14 @@ void assign_arg(Node n, Symbol p, Symbol q)
     int eleOffset = get_symbol_align_size(p->type_link->last);
 
     int i;
-    for(i = 1; i < strlen(n->val.s) - 1; i++)
+    for(i = 0; i < strlen(n->val.s); i++)
     {
-      if(i > p->type_link->num_ele)
+      if(i > p->type_link->num_ele - 1)
       {
         parse_error("assign_local array out of index", p->name);
         return;
       }
-      args_stack[args_deep + baseOffset + (i - 1) * eleOffset].c = n->val.s[i];
+      args_stack[args_deep + baseOffset + i * eleOffset].c = n->val.s[i];
       // printf("assign_arg %s %d %c\n", p->name, args_deep + baseOffset + (i - 1) * eleOffset, args_stack[args_deep + baseOffset + (i - 1) * eleOffset].c);
     }
   }

@@ -41,7 +41,7 @@ program helloworld;
 		writeln(1234567890);
 
 		inta4 := 'abcdefg';
-		writeln(inta4[1]);
+		writeln(inta4[3]);
 		writeln(1234567890);
 
 		/* writeln(9876543210); */
