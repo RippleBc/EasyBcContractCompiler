@@ -75,22 +75,20 @@
 #include "../ast/tree.h"
 
 extern char *yytext; /* flex用于记录匹配到的字符串 */
-symtab *ptab; /* 符号表表头 */
+Symtab rtn = NULL; /* 表示system routine */
+symtab *ptab;
 symbol *p, *q;
-tree   *t;
 type *pt, *qt;
-int temp;
+Tree t;
+
+Env global_env;
+Env main_env;
 
 /* 记录term上下文 */
 symbol* pop_term_stack();
 symbol* top_term_stack();
 void push_term_stack(symbol * p);
 
-Env global_env;
-Env main_env;
-
-Symtab	rtn = NULL; /* 表示system routine */
-Symbol	arg = NULL;
 
 /* 记录AST上下文 */
 Tree pop_ast_stack();
@@ -117,15 +115,20 @@ symtab *top_call_stack();
 symtab *pop_call_stack();
 void push_call_stack(symtab *p);
 
+/* CASE结构使用 */
+List case_list = NULL;  
+
+/* 参数AST树 */
+Tree args;
+Symbol arg = NULL;
+
 /*  */
 struct list routine_forest;
 /*  */
 struct list ast_forest;
-List  case_list = NULL;       /* CASE结构使用 */
-struct list dag_forest;				/* for dags. */
-Tree args; /* 参数AST树 */
-Tree now_function; /* 当前函数的AST树 */
-Tree t;
+/*  */
+struct list dag_forest;
+
 Symbol	new_label = NULL;
 Symbol	test_label = NULL;
 Symbol  exit_label = NULL;
@@ -150,7 +153,7 @@ void trap_in_debug();
 #endif
 
 
-#line 154 "parser/rule.c" /* yacc.c:339  */
+#line 157 "parser/rule.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -279,7 +282,7 @@ extern int yydebug;
 
 union YYSTYPE
 {
-#line 89 "parser/spl.y" /* yacc.c:355  */
+#line 92 "parser/spl.y" /* yacc.c:355  */
 
 	char 		p_char[NAME_LEN];
 	int 		num;
@@ -289,7 +292,7 @@ union YYSTYPE
 	KEYENTRY	*p_lex; /* 关键字 */
 	Tree 		p_tree;
 
-#line 293 "parser/rule.c" /* yacc.c:355  */
+#line 296 "parser/rule.c" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -306,7 +309,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 310 "parser/rule.c" /* yacc.c:358  */
+#line 313 "parser/rule.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -612,22 +615,22 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   207,   207,   241,   254,   265,   270,   269,   280,   297,
-     303,   304,   308,   312,   316,   317,   321,   328,   338,   348,
-     357,   365,   374,   411,   412,   416,   417,   421,   443,   444,
-     445,   449,   457,   465,   475,   482,   504,   514,   527,   538,
-     563,   589,   617,   650,   651,   655,   656,   660,   693,   694,
-     695,   696,   697,   701,   732,   731,   786,   809,   808,   836,
-     837,   847,   848,   852,   875,   900,   907,   914,   918,   919,
-     920,   925,   926,   927,   928,   929,   930,   931,   932,   933,
-     937,   977,   996,   976,  1016,  1015,  1051,  1050,  1074,  1082,
-    1089,  1088,  1106,  1105,  1120,  1154,  1153,  1174,  1179,  1189,
-    1173,  1223,  1227,  1222,  1234,  1235,  1240,  1239,  1266,  1278,
-    1265,  1315,  1349,  1314,  1411,  1415,  1423,  1440,  1422,  1480,
-    1481,  1486,  1509,  1485,  1520,  1549,  1519,  1560,  1565,  1570,
-    1575,  1580,  1585,  1590,  1597,  1602,  1607,  1612,  1619,  1624,
-    1629,  1634,  1639,  1644,  1651,  1674,  1673,  1691,  1699,  1698,
-    1711,  1740,  1745,  1750,  1756,  1755,  1778,  1806,  1811,  1825
+       0,   210,   210,   244,   257,   268,   273,   272,   283,   300,
+     306,   307,   311,   315,   319,   320,   324,   331,   341,   351,
+     360,   368,   377,   414,   415,   419,   420,   424,   446,   447,
+     448,   452,   460,   468,   478,   485,   507,   517,   530,   541,
+     566,   592,   620,   653,   654,   658,   659,   663,   696,   697,
+     698,   699,   700,   704,   735,   734,   789,   812,   811,   839,
+     840,   850,   851,   855,   878,   903,   910,   917,   921,   922,
+     923,   928,   929,   930,   931,   932,   933,   934,   935,   936,
+     940,   980,   999,   979,  1019,  1018,  1054,  1053,  1077,  1085,
+    1092,  1091,  1109,  1108,  1123,  1157,  1156,  1177,  1182,  1192,
+    1176,  1226,  1230,  1225,  1237,  1238,  1243,  1242,  1269,  1281,
+    1268,  1318,  1352,  1317,  1414,  1418,  1426,  1443,  1425,  1483,
+    1484,  1489,  1512,  1488,  1523,  1552,  1522,  1563,  1568,  1573,
+    1578,  1583,  1588,  1593,  1600,  1605,  1610,  1615,  1622,  1627,
+    1632,  1637,  1642,  1647,  1654,  1677,  1676,  1694,  1702,  1701,
+    1714,  1743,  1748,  1753,  1759,  1758,  1781,  1809,  1814,  1828
 };
 #endif
 
@@ -1626,7 +1629,7 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 208 "parser/spl.y" /* yacc.c:1646  */
+#line 211 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 弹出无效的symtab */
 	pop_symtab_stack();
@@ -1657,11 +1660,11 @@ yyreduce:
 
 	return 0;
 }
-#line 1661 "parser/rule.c" /* yacc.c:1646  */
+#line 1664 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 242 "parser/spl.y" /* yacc.c:1646  */
+#line 245 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 初始化解析器 */
 	parser_init();
@@ -1672,11 +1675,11 @@ yyreduce:
 	/* 将全局符号表压入符号表栈中 */
 	push_symtab_stack(Global_symtab);
 }
-#line 1676 "parser/rule.c" /* yacc.c:1646  */
+#line 1679 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 255 "parser/spl.y" /* yacc.c:1646  */
+#line 258 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 初始化全局符号表的名称 */
 	strcpy(Global_symtab->name, (yyvsp[-1].p_char));
@@ -1687,28 +1690,28 @@ yyreduce:
 	/*  */
 	global_env.u.program.tab = Global_symtab;
 }
-#line 1691 "parser/rule.c" /* yacc.c:1646  */
+#line 1694 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 270 "parser/spl.y" /* yacc.c:1646  */
+#line 273 "parser/spl.y" /* yacc.c:1646  */
     {
 	main_env.u.main.tab = Global_symtab;
 	list_clear(&ast_forest);
 	/* 将全局符号表压入符号表栈中 */
 	push_symtab_stack(Global_symtab);
 }
-#line 1702 "parser/rule.c" /* yacc.c:1646  */
+#line 1705 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 276 "parser/spl.y" /* yacc.c:1646  */
+#line 279 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 1708 "parser/rule.c" /* yacc.c:1646  */
+#line 1711 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 281 "parser/spl.y" /* yacc.c:1646  */
+#line 284 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 匹配 oCOMMA yNAME */
 	p = new_symbol((yyvsp[0].p_char), DEF_UNKNOWN, TYPE_UNKNOWN);
@@ -1725,73 +1728,73 @@ yyreduce:
 	/* 永远指向头部 */
 	(yyval.p_symbol) = (yyvsp[-2].p_symbol);
 }
-#line 1729 "parser/rule.c" /* yacc.c:1646  */
+#line 1732 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 298 "parser/spl.y" /* yacc.c:1646  */
+#line 301 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 匹配 yNAME */
 	p = new_symbol((yyvsp[0].p_char), DEF_UNKNOWN, TYPE_UNKNOWN);
 	(yyval.p_symbol) = p;
 }
-#line 1739 "parser/rule.c" /* yacc.c:1646  */
+#line 1742 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 303 "parser/spl.y" /* yacc.c:1646  */
+#line 306 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 1745 "parser/rule.c" /* yacc.c:1646  */
+#line 1748 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 304 "parser/spl.y" /* yacc.c:1646  */
+#line 307 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 1751 "parser/rule.c" /* yacc.c:1646  */
+#line 1754 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 312 "parser/spl.y" /* yacc.c:1646  */
+#line 315 "parser/spl.y" /* yacc.c:1646  */
     {/* 依次定义常量、自定义类型、变量以及自定义函数和过程（函数和过程不分先后顺序） */}
-#line 1757 "parser/rule.c" /* yacc.c:1646  */
+#line 1760 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 316 "parser/spl.y" /* yacc.c:1646  */
+#line 319 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 1763 "parser/rule.c" /* yacc.c:1646  */
+#line 1766 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 317 "parser/spl.y" /* yacc.c:1646  */
+#line 320 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 1769 "parser/rule.c" /* yacc.c:1646  */
+#line 1772 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 322 "parser/spl.y" /* yacc.c:1646  */
+#line 325 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 命名 */
 	strncpy((yyvsp[-1].p_symbol)->name, (yyvsp[-3].p_char), NAME_LEN);
 	/* 放入符号表 */
 	add_symbol_to_table(top_symtab_stack(), (yyvsp[-1].p_symbol));
 }
-#line 1780 "parser/rule.c" /* yacc.c:1646  */
+#line 1783 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 329 "parser/spl.y" /* yacc.c:1646  */
+#line 332 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 命名 */
 	strncpy((yyvsp[-1].p_symbol)->name, (yyvsp[-3].p_char), NAME_LEN);
 	/* 放入符号表 */
 	add_symbol_to_table(top_symtab_stack(), (yyvsp[-1].p_symbol));
 }
-#line 1791 "parser/rule.c" /* yacc.c:1646  */
+#line 1794 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 339 "parser/spl.y" /* yacc.c:1646  */
+#line 342 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 符号 */
 	p = new_symbol("$$$", DEF_CONST, TYPE_INTEGER);
@@ -1801,11 +1804,11 @@ yyreduce:
 
 	(yyval.p_symbol) = p;
 }
-#line 1805 "parser/rule.c" /* yacc.c:1646  */
+#line 1808 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 349 "parser/spl.y" /* yacc.c:1646  */
+#line 352 "parser/spl.y" /* yacc.c:1646  */
     {
 	p = new_symbol("$$$",DEF_CONST, TYPE_REAL);
 
@@ -1814,11 +1817,11 @@ yyreduce:
 
 	(yyval.p_symbol) = p;
 }
-#line 1818 "parser/rule.c" /* yacc.c:1646  */
+#line 1821 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 358 "parser/spl.y" /* yacc.c:1646  */
+#line 361 "parser/spl.y" /* yacc.c:1646  */
     {
 	p = new_symbol("$$$", DEF_CONST, TYPE_CHAR);
 
@@ -1826,11 +1829,11 @@ yyreduce:
 
 	(yyval.p_symbol) = p;
 }
-#line 1830 "parser/rule.c" /* yacc.c:1646  */
+#line 1833 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 366 "parser/spl.y" /* yacc.c:1646  */
+#line 369 "parser/spl.y" /* yacc.c:1646  */
     {
 	p = new_symbol("$$$", DEF_CONST,
 		TYPE_STRING);
@@ -1839,11 +1842,11 @@ yyreduce:
 
 	(yyval.p_symbol) = p;
 }
-#line 1843 "parser/rule.c" /* yacc.c:1646  */
+#line 1846 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 375 "parser/spl.y" /* yacc.c:1646  */
+#line 378 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 系统常量符号 */
 	p = new_symbol("$$$", DEF_CONST, TYPE_UNKNOWN);
@@ -1877,35 +1880,35 @@ yyreduce:
 
 	(yyval.p_symbol) = p;
 }
-#line 1881 "parser/rule.c" /* yacc.c:1646  */
+#line 1884 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 411 "parser/spl.y" /* yacc.c:1646  */
+#line 414 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 1887 "parser/rule.c" /* yacc.c:1646  */
+#line 1890 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 412 "parser/spl.y" /* yacc.c:1646  */
+#line 415 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 1893 "parser/rule.c" /* yacc.c:1646  */
+#line 1896 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 416 "parser/spl.y" /* yacc.c:1646  */
+#line 419 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 1899 "parser/rule.c" /* yacc.c:1646  */
+#line 1902 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 417 "parser/spl.y" /* yacc.c:1646  */
+#line 420 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 1905 "parser/rule.c" /* yacc.c:1646  */
+#line 1908 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 422 "parser/spl.y" /* yacc.c:1646  */
+#line 425 "parser/spl.y" /* yacc.c:1646  */
     {
 	if((yyvsp[-1].p_type)->name[0] == '$')
 	{
@@ -1924,47 +1927,47 @@ yyreduce:
 		add_type_to_table(top_symtab_stack(), (yyval.p_type));
 	}
 }
-#line 1928 "parser/rule.c" /* yacc.c:1646  */
+#line 1931 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 443 "parser/spl.y" /* yacc.c:1646  */
+#line 446 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 1934 "parser/rule.c" /* yacc.c:1646  */
+#line 1937 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 444 "parser/spl.y" /* yacc.c:1646  */
+#line 447 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 1940 "parser/rule.c" /* yacc.c:1646  */
+#line 1943 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 445 "parser/spl.y" /* yacc.c:1646  */
+#line 448 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 1946 "parser/rule.c" /* yacc.c:1646  */
+#line 1949 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 450 "parser/spl.y" /* yacc.c:1646  */
+#line 453 "parser/spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_type) = new_array_type("$$$", (yyvsp[-3].p_type), (yyvsp[0].p_type));
 	add_type_to_table(top_symtab_stack(), (yyval.p_type));
 }
-#line 1955 "parser/rule.c" /* yacc.c:1646  */
+#line 1958 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 458 "parser/spl.y" /* yacc.c:1646  */
+#line 461 "parser/spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_type) = new_record_type("$$$", (yyvsp[-1].p_symbol));
  	add_type_to_table(top_symtab_stack(), (yyval.p_type));
 }
-#line 1964 "parser/rule.c" /* yacc.c:1646  */
+#line 1967 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 466 "parser/spl.y" /* yacc.c:1646  */
+#line 469 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 指向属性符号链表的末尾 */
 	for(p = (yyvsp[-1].p_symbol); p->next; p = p->next);
@@ -1974,19 +1977,19 @@ yyreduce:
 
 	(yyval.p_symbol) = (yyvsp[-1].p_symbol);
 }
-#line 1978 "parser/rule.c" /* yacc.c:1646  */
+#line 1981 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 476 "parser/spl.y" /* yacc.c:1646  */
+#line 479 "parser/spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_symbol) = (yyvsp[0].p_symbol);
 }
-#line 1986 "parser/rule.c" /* yacc.c:1646  */
+#line 1989 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 483 "parser/spl.y" /* yacc.c:1646  */
+#line 486 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 遍历名称符号表 */
 	for(p = (yyvsp[-3].p_symbol); p; p = p->next) {
@@ -2005,11 +2008,11 @@ yyreduce:
 	}
 	(yyval.p_symbol) = (yyvsp[-3].p_symbol);
 }
-#line 2009 "parser/rule.c" /* yacc.c:1646  */
+#line 2012 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 505 "parser/spl.y" /* yacc.c:1646  */
+#line 508 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* char，integer，boolean，real */
 	pt = find_type_by_name((yyvsp[0].p_char));
@@ -2019,11 +2022,11 @@ yyreduce:
 
 	(yyval.p_type) = pt;
 }
-#line 2023 "parser/rule.c" /* yacc.c:1646  */
+#line 2026 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 515 "parser/spl.y" /* yacc.c:1646  */
+#line 518 "parser/spl.y" /* yacc.c:1646  */
     {
   /* 用户自定义类型 */
 	pt = find_type_by_name((yyvsp[0].p_char));
@@ -2036,11 +2039,11 @@ yyreduce:
 
 	(yyval.p_type) = pt;
 }
-#line 2040 "parser/rule.c" /* yacc.c:1646  */
+#line 2043 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 528 "parser/spl.y" /* yacc.c:1646  */
+#line 531 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 枚举类型 */
 	(yyval.p_type) = new_enum_type("$$$");
@@ -2051,11 +2054,11 @@ yyreduce:
 	/* 枚举类型放入符号表 */
 	add_type_to_table(top_symtab_stack(), (yyval.p_type));
 }
-#line 2055 "parser/rule.c" /* yacc.c:1646  */
+#line 2058 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 539 "parser/spl.y" /* yacc.c:1646  */
+#line 542 "parser/spl.y" /* yacc.c:1646  */
     {
   /* 子范围类型的前后常量类型必须一致 */
 	if((yyvsp[-2].p_symbol)->type->type_id != (yyvsp[0].p_symbol)->type->type_id)
@@ -2080,11 +2083,11 @@ yyreduce:
 	else
 		parse_error("invalid element type of subrange","");
 }
-#line 2084 "parser/rule.c" /* yacc.c:1646  */
+#line 2087 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 564 "parser/spl.y" /* yacc.c:1646  */
+#line 567 "parser/spl.y" /* yacc.c:1646  */
     {
 	if((yyvsp[-2].p_symbol)->type->type_id != (yyvsp[0].p_symbol)->type->type_id){
 		parse_error("type mismatch","");
@@ -2110,11 +2113,11 @@ yyreduce:
 	else
    		parse_error("invalid element type of subrange", "");
 }
-#line 2114 "parser/rule.c" /* yacc.c:1646  */
+#line 2117 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 590 "parser/spl.y" /* yacc.c:1646  */
+#line 593 "parser/spl.y" /* yacc.c:1646  */
     {
 	if((yyvsp[-3].p_symbol)->type->type_id != (yyvsp[0].p_symbol)->type->type_id) {
 		parse_error("type mismatch", "");
@@ -2142,11 +2145,11 @@ yyreduce:
 	else
 		parse_error("invalid element type of subrange", "");
 }
-#line 2146 "parser/rule.c" /* yacc.c:1646  */
+#line 2149 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 618 "parser/spl.y" /* yacc.c:1646  */
+#line 621 "parser/spl.y" /* yacc.c:1646  */
     {
 	
 	/* 符号（枚举） */
@@ -2176,35 +2179,35 @@ yyreduce:
 	/* 子范围类型的上下界 */
 	set_subrange_bound((yyval.p_type), p->v.i, q->v.i);
 }
-#line 2180 "parser/rule.c" /* yacc.c:1646  */
+#line 2183 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 650 "parser/spl.y" /* yacc.c:1646  */
+#line 653 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2186 "parser/rule.c" /* yacc.c:1646  */
+#line 2189 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 651 "parser/spl.y" /* yacc.c:1646  */
+#line 654 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2192 "parser/rule.c" /* yacc.c:1646  */
+#line 2195 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 655 "parser/spl.y" /* yacc.c:1646  */
+#line 658 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2198 "parser/rule.c" /* yacc.c:1646  */
+#line 2201 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 656 "parser/spl.y" /* yacc.c:1646  */
+#line 659 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2204 "parser/rule.c" /* yacc.c:1646  */
+#line 2207 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 661 "parser/spl.y" /* yacc.c:1646  */
+#line 664 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 对应的符号表 */
 	ptab = top_symtab_stack();
@@ -2234,35 +2237,35 @@ yyreduce:
 		add_symbol_to_table(ptab, q);
 	}
 }
-#line 2238 "parser/rule.c" /* yacc.c:1646  */
+#line 2241 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 694 "parser/spl.y" /* yacc.c:1646  */
+#line 697 "parser/spl.y" /* yacc.c:1646  */
     { }
-#line 2244 "parser/rule.c" /* yacc.c:1646  */
+#line 2247 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 695 "parser/spl.y" /* yacc.c:1646  */
+#line 698 "parser/spl.y" /* yacc.c:1646  */
     { }
-#line 2250 "parser/rule.c" /* yacc.c:1646  */
+#line 2253 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 696 "parser/spl.y" /* yacc.c:1646  */
+#line 699 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2256 "parser/rule.c" /* yacc.c:1646  */
+#line 2259 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 697 "parser/spl.y" /* yacc.c:1646  */
+#line 700 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2262 "parser/rule.c" /* yacc.c:1646  */
+#line 2265 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 702 "parser/spl.y" /* yacc.c:1646  */
+#line 705 "parser/spl.y" /* yacc.c:1646  */
     {
 	if (!err_occur())
 	{
@@ -2289,11 +2292,11 @@ yyreduce:
 	/* 弹出函数对应的符号表 */
 	pop_symtab_stack();
 }
-#line 2293 "parser/rule.c" /* yacc.c:1646  */
+#line 2296 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 732 "parser/spl.y" /* yacc.c:1646  */
+#line 735 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 清空AST森林 */
 	list_clear(&ast_forest);
@@ -2307,11 +2310,11 @@ yyreduce:
 	/* 符号表压栈 */
 	push_symtab_stack(ptab);
 }
-#line 2311 "parser/rule.c" /* yacc.c:1646  */
+#line 2314 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 746 "parser/spl.y" /* yacc.c:1646  */
+#line 749 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 对应的符号表 */
 	ptab = top_symtab_stack();
@@ -2349,11 +2352,11 @@ yyreduce:
 	/* 放入AST森林 */
 	list_append(&ast_forest, header);
 }
-#line 2353 "parser/rule.c" /* yacc.c:1646  */
+#line 2356 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 787 "parser/spl.y" /* yacc.c:1646  */
+#line 790 "parser/spl.y" /* yacc.c:1646  */
     {
 
 	if (!err_occur())
@@ -2372,11 +2375,11 @@ yyreduce:
 	}
 	pop_symtab_stack();
 }
-#line 2376 "parser/rule.c" /* yacc.c:1646  */
+#line 2379 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 809 "parser/spl.y" /* yacc.c:1646  */
+#line 812 "parser/spl.y" /* yacc.c:1646  */
     {
 	list_clear(&ast_forest);
 
@@ -2386,11 +2389,11 @@ yyreduce:
 
 	push_symtab_stack(ptab);
 }
-#line 2390 "parser/rule.c" /* yacc.c:1646  */
+#line 2393 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 819 "parser/spl.y" /* yacc.c:1646  */
+#line 822 "parser/spl.y" /* yacc.c:1646  */
     {
 	ptab = top_symtab_stack();
 	strncpy(ptab->name, (yyvsp[-1].p_char), NAME_LEN);
@@ -2405,40 +2408,40 @@ yyreduce:
 	header = new_tree(HEADER, find_type_by_id(TYPE_VOID), NULL, NULL);
 	list_append(&ast_forest, header);
 }
-#line 2409 "parser/rule.c" /* yacc.c:1646  */
+#line 2412 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 836 "parser/spl.y" /* yacc.c:1646  */
+#line 839 "parser/spl.y" /* yacc.c:1646  */
     {/* 参数部分可以为空 */}
-#line 2415 "parser/rule.c" /* yacc.c:1646  */
+#line 2418 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 838 "parser/spl.y" /* yacc.c:1646  */
+#line 841 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 对应的符号表 */
 	ptab = top_symtab_stack();
 	/* 符号表大小 */
 	ptab->local_size = 0;
 }
-#line 2426 "parser/rule.c" /* yacc.c:1646  */
+#line 2429 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 847 "parser/spl.y" /* yacc.c:1646  */
+#line 850 "parser/spl.y" /* yacc.c:1646  */
     {/* 不同类型的参数之间使用符号';'进行分割 */}
-#line 2432 "parser/rule.c" /* yacc.c:1646  */
+#line 2435 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 848 "parser/spl.y" /* yacc.c:1646  */
+#line 851 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2438 "parser/rule.c" /* yacc.c:1646  */
+#line 2441 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 853 "parser/spl.y" /* yacc.c:1646  */
+#line 856 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 对应的符号表 */
 	ptab = top_symtab_stack();
@@ -2461,11 +2464,11 @@ yyreduce:
 		add_symbol_to_table(ptab, q);
 	}
 }
-#line 2465 "parser/rule.c" /* yacc.c:1646  */
+#line 2468 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 876 "parser/spl.y" /* yacc.c:1646  */
+#line 879 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 对应的符号表 */
 	ptab = top_symtab_stack();
@@ -2487,105 +2490,105 @@ yyreduce:
 		add_symbol_to_table(ptab, q);
 	}
 }
-#line 2491 "parser/rule.c" /* yacc.c:1646  */
+#line 2494 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 901 "parser/spl.y" /* yacc.c:1646  */
+#line 904 "parser/spl.y" /* yacc.c:1646  */
     { 
 	(yyval.p_symbol) = (yyvsp[0].p_symbol);
 }
-#line 2499 "parser/rule.c" /* yacc.c:1646  */
+#line 2502 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 908 "parser/spl.y" /* yacc.c:1646  */
+#line 911 "parser/spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_symbol) = (yyvsp[0].p_symbol);
 }
-#line 2507 "parser/rule.c" /* yacc.c:1646  */
+#line 2510 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 914 "parser/spl.y" /* yacc.c:1646  */
+#line 917 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2513 "parser/rule.c" /* yacc.c:1646  */
+#line 2516 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 918 "parser/spl.y" /* yacc.c:1646  */
+#line 921 "parser/spl.y" /* yacc.c:1646  */
     {/* 可以是空函数 */}
-#line 2519 "parser/rule.c" /* yacc.c:1646  */
+#line 2522 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 919 "parser/spl.y" /* yacc.c:1646  */
+#line 922 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2525 "parser/rule.c" /* yacc.c:1646  */
+#line 2528 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 920 "parser/spl.y" /* yacc.c:1646  */
+#line 923 "parser/spl.y" /* yacc.c:1646  */
     {/* 错误处理 */}
-#line 2531 "parser/rule.c" /* yacc.c:1646  */
+#line 2534 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 925 "parser/spl.y" /* yacc.c:1646  */
+#line 928 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2537 "parser/rule.c" /* yacc.c:1646  */
+#line 2540 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 926 "parser/spl.y" /* yacc.c:1646  */
+#line 929 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2543 "parser/rule.c" /* yacc.c:1646  */
+#line 2546 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 927 "parser/spl.y" /* yacc.c:1646  */
+#line 930 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2549 "parser/rule.c" /* yacc.c:1646  */
+#line 2552 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 928 "parser/spl.y" /* yacc.c:1646  */
+#line 931 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2555 "parser/rule.c" /* yacc.c:1646  */
+#line 2558 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 929 "parser/spl.y" /* yacc.c:1646  */
+#line 932 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2561 "parser/rule.c" /* yacc.c:1646  */
+#line 2564 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 930 "parser/spl.y" /* yacc.c:1646  */
+#line 933 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2567 "parser/rule.c" /* yacc.c:1646  */
+#line 2570 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 931 "parser/spl.y" /* yacc.c:1646  */
+#line 934 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2573 "parser/rule.c" /* yacc.c:1646  */
+#line 2576 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 932 "parser/spl.y" /* yacc.c:1646  */
+#line 935 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2579 "parser/rule.c" /* yacc.c:1646  */
+#line 2582 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 933 "parser/spl.y" /* yacc.c:1646  */
+#line 936 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2585 "parser/rule.c" /* yacc.c:1646  */
+#line 2588 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 938 "parser/spl.y" /* yacc.c:1646  */
+#line 941 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 对应的符号 */
 	p = find_symbol(top_symtab_stack(), (yyvsp[-2].p_char));
@@ -2624,11 +2627,11 @@ yyreduce:
 	/* 放入AST森林 */
 	list_append(&ast_forest, (yyval.p_tree));
 }
-#line 2628 "parser/rule.c" /* yacc.c:1646  */
+#line 2631 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 977 "parser/spl.y" /* yacc.c:1646  */
+#line 980 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 对应的符号 */
 	p = find_symbol(top_symtab_stack(), (yyvsp[-1].p_char));
@@ -2647,11 +2650,11 @@ yyreduce:
 	
 	push_term_stack(p);
 }
-#line 2651 "parser/rule.c" /* yacc.c:1646  */
+#line 2654 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 996 "parser/spl.y" /* yacc.c:1646  */
+#line 999 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 获取符号 */
 	p = top_term_stack();
@@ -2661,11 +2664,11 @@ yyreduce:
 
 	push_ast_stack(t);
 }
-#line 2665 "parser/rule.c" /* yacc.c:1646  */
+#line 2668 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 1006 "parser/spl.y" /* yacc.c:1646  */
+#line 1009 "parser/spl.y" /* yacc.c:1646  */
     {
 	t = pop_ast_stack();
 
@@ -2675,11 +2678,11 @@ yyreduce:
 	/* 放入AST森林 */
 	list_append(&ast_forest, (yyval.p_tree));
 }
-#line 2679 "parser/rule.c" /* yacc.c:1646  */
+#line 2682 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 1016 "parser/spl.y" /* yacc.c:1646  */
+#line 1019 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 对应的符号 */
 	p = find_symbol(top_symtab_stack(), (yyvsp[-2].p_char));
@@ -2701,11 +2704,11 @@ yyreduce:
 
 	push_ast_stack(t);
 }
-#line 2705 "parser/rule.c" /* yacc.c:1646  */
+#line 2708 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 1038 "parser/spl.y" /* yacc.c:1646  */
+#line 1041 "parser/spl.y" /* yacc.c:1646  */
     {
 	t = pop_ast_stack();
 
@@ -2715,11 +2718,11 @@ yyreduce:
 	/* 放入AST森林 */
 	list_append(&ast_forest, (yyval.p_tree));
 }
-#line 2719 "parser/rule.c" /* yacc.c:1646  */
+#line 2722 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 1051 "parser/spl.y" /* yacc.c:1646  */
+#line 1054 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 寻找自定义函数或者过程 */
 	if((ptab = find_routine(top_symtab_stack(), (yyvsp[0].p_char))))
@@ -2733,11 +2736,11 @@ yyreduce:
 		return  0;
 	}
 }
-#line 2737 "parser/rule.c" /* yacc.c:1646  */
+#line 2740 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 1065 "parser/spl.y" /* yacc.c:1646  */
+#line 1068 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 函数或过程调用AST节点 */
 	(yyval.p_tree) = call_tree(top_call_stack(), args);
@@ -2747,11 +2750,11 @@ yyreduce:
 
 	pop_call_stack();
 }
-#line 2751 "parser/rule.c" /* yacc.c:1646  */
+#line 2754 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 1075 "parser/spl.y" /* yacc.c:1646  */
+#line 1078 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 系统函数或者系统过程调用AST节点 */
 	(yyval.p_tree) = sys_tree((yyvsp[0].p_lex)->attr, NULL);
@@ -2759,32 +2762,32 @@ yyreduce:
 	/* 放入AST森林 */
 	list_append(&ast_forest, (yyval.p_tree));
 }
-#line 2763 "parser/rule.c" /* yacc.c:1646  */
+#line 2766 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 1083 "parser/spl.y" /* yacc.c:1646  */
+#line 1086 "parser/spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_tree) = sys_tree((yyvsp[0].p_lex)->attr, NULL);
 
 	list_append(&ast_forest, (yyval.p_tree));
 }
-#line 2773 "parser/rule.c" /* yacc.c:1646  */
+#line 2776 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 1089 "parser/spl.y" /* yacc.c:1646  */
+#line 1092 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 对应的系统函数或者系统过程的符号表 */
 	rtn = find_sys_routine((yyvsp[0].p_lex)->attr);
 
 	push_call_stack(rtn);
 }
-#line 2784 "parser/rule.c" /* yacc.c:1646  */
+#line 2787 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 1096 "parser/spl.y" /* yacc.c:1646  */
+#line 1099 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 系统函数或者系统过程调用AST节点 */
 	(yyval.p_tree) = sys_tree((yyvsp[-4].p_lex)->attr, args);
@@ -2794,21 +2797,21 @@ yyreduce:
 
 	pop_call_stack();
 }
-#line 2798 "parser/rule.c" /* yacc.c:1646  */
+#line 2801 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 1106 "parser/spl.y" /* yacc.c:1646  */
+#line 1109 "parser/spl.y" /* yacc.c:1646  */
     {
 	rtn = find_sys_routine((yyvsp[0].p_lex)->attr);
 
 	push_call_stack(rtn);
 }
-#line 2808 "parser/rule.c" /* yacc.c:1646  */
+#line 2811 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 1112 "parser/spl.y" /* yacc.c:1646  */
+#line 1115 "parser/spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_tree) = sys_tree((yyvsp[-4].p_lex)->attr, args);
 
@@ -2817,11 +2820,11 @@ yyreduce:
 
 	pop_call_stack();
 }
-#line 2821 "parser/rule.c" /* yacc.c:1646  */
+#line 2824 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 1121 "parser/spl.y" /* yacc.c:1646  */
+#line 1124 "parser/spl.y" /* yacc.c:1646  */
     {
 	if((yyvsp[-1].p_tree) == NULL){
 		parse_error("too few parameters in call to", "read");
@@ -2851,11 +2854,11 @@ yyreduce:
 	/* 放入AST森林 */
 	list_append(&ast_forest, (yyval.p_tree));
 }
-#line 2855 "parser/rule.c" /* yacc.c:1646  */
+#line 2858 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 1154 "parser/spl.y" /* yacc.c:1646  */
+#line 1157 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 开始块AST节点 */
 	t = new_tree(BLOCKBEG, NULL, NULL, NULL);
@@ -2863,11 +2866,11 @@ yyreduce:
 	/* 放入AST森林 */
 	list_append(&ast_forest, t);
 }
-#line 2867 "parser/rule.c" /* yacc.c:1646  */
+#line 2870 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 96:
-#line 1163 "parser/spl.y" /* yacc.c:1646  */
+#line 1166 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 结束块AST节点 */
 	t = new_tree(BLOCKEND, NULL, NULL, NULL);
@@ -2875,20 +2878,20 @@ yyreduce:
 	/* 放入AST森林 */
 	list_append(&ast_forest, t);
 }
-#line 2879 "parser/rule.c" /* yacc.c:1646  */
+#line 2882 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 97:
-#line 1174 "parser/spl.y" /* yacc.c:1646  */
+#line 1177 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 记录标签层级 */
 	push_lbl_stack(if_label_count++);
 }
-#line 2888 "parser/rule.c" /* yacc.c:1646  */
+#line 2891 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 1179 "parser/spl.y" /* yacc.c:1646  */
+#line 1182 "parser/spl.y" /* yacc.c:1646  */
     {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_false_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -2898,11 +2901,11 @@ yyreduce:
 	t = cond_jump_tree((yyvsp[-1].p_tree), false, new_label);
 	list_append(&ast_forest, t);
 }
-#line 2902 "parser/rule.c" /* yacc.c:1646  */
+#line 2905 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 99:
-#line 1189 "parser/spl.y" /* yacc.c:1646  */
+#line 1192 "parser/spl.y" /* yacc.c:1646  */
     {
   /* 初始化符号（ELSE子句的入口） */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_false_%d", top_lbl_stack());
@@ -2925,11 +2928,11 @@ yyreduce:
 	t = pop_ast_stack();
 	list_append(&ast_forest, t);
 }
-#line 2929 "parser/rule.c" /* yacc.c:1646  */
+#line 2932 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 100:
-#line 1212 "parser/spl.y" /* yacc.c:1646  */
+#line 1215 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 初始化符号（IF结构出口） */
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_exit_%d", top_lbl_stack());
@@ -2940,39 +2943,39 @@ yyreduce:
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
 }
-#line 2944 "parser/rule.c" /* yacc.c:1646  */
+#line 2947 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 101:
-#line 1223 "parser/spl.y" /* yacc.c:1646  */
+#line 1226 "parser/spl.y" /* yacc.c:1646  */
     {
 	printf("expression expected.\n");
 }
-#line 2952 "parser/rule.c" /* yacc.c:1646  */
+#line 2955 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 102:
-#line 1227 "parser/spl.y" /* yacc.c:1646  */
+#line 1230 "parser/spl.y" /* yacc.c:1646  */
     {
 	printf("then matched.\n");
 }
-#line 2960 "parser/rule.c" /* yacc.c:1646  */
+#line 2963 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 104:
-#line 1234 "parser/spl.y" /* yacc.c:1646  */
+#line 1237 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2966 "parser/rule.c" /* yacc.c:1646  */
+#line 2969 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 105:
-#line 1235 "parser/spl.y" /* yacc.c:1646  */
+#line 1238 "parser/spl.y" /* yacc.c:1646  */
     {}
-#line 2972 "parser/rule.c" /* yacc.c:1646  */
+#line 2975 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 106:
-#line 1240 "parser/spl.y" /* yacc.c:1646  */
+#line 1243 "parser/spl.y" /* yacc.c:1646  */
     {
 	push_lbl_stack(repeat_label_count++);
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "repeat_%d", repeat_label_count - 1);
@@ -2983,11 +2986,11 @@ yyreduce:
 	t = label_tree(new_label);
 	list_append(&ast_forest, t);
 }
-#line 2987 "parser/rule.c" /* yacc.c:1646  */
+#line 2990 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 107:
-#line 1251 "parser/spl.y" /* yacc.c:1646  */
+#line 1254 "parser/spl.y" /* yacc.c:1646  */
     {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "repeat_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -2999,11 +3002,11 @@ yyreduce:
 
 	pop_lbl_stack();
 }
-#line 3003 "parser/rule.c" /* yacc.c:1646  */
+#line 3006 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 108:
-#line 1266 "parser/spl.y" /* yacc.c:1646  */
+#line 1269 "parser/spl.y" /* yacc.c:1646  */
     {
 	push_lbl_stack(while_label_count++);
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_test_%d", while_label_count - 1);
@@ -3015,11 +3018,11 @@ yyreduce:
 
 	list_append(&ast_forest, t);
 }
-#line 3019 "parser/rule.c" /* yacc.c:1646  */
+#line 3022 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 109:
-#line 1278 "parser/spl.y" /* yacc.c:1646  */
+#line 1281 "parser/spl.y" /* yacc.c:1646  */
     {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -3030,11 +3033,11 @@ yyreduce:
 
 	list_append(&ast_forest, t);
 }
-#line 3034 "parser/rule.c" /* yacc.c:1646  */
+#line 3037 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 110:
-#line 1289 "parser/spl.y" /* yacc.c:1646  */
+#line 1292 "parser/spl.y" /* yacc.c:1646  */
     {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -3057,11 +3060,11 @@ yyreduce:
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
 }
-#line 3061 "parser/rule.c" /* yacc.c:1646  */
+#line 3064 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 111:
-#line 1315 "parser/spl.y" /* yacc.c:1646  */
+#line 1318 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 变量对应的符号 */
 	p = find_symbol(top_symtab_stack(), (yyvsp[-2].p_char));
@@ -3095,11 +3098,11 @@ yyreduce:
 	t = label_tree(test_label);
 	list_append(&ast_forest, t);
 }
-#line 3099 "parser/rule.c" /* yacc.c:1646  */
+#line 3102 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 112:
-#line 1349 "parser/spl.y" /* yacc.c:1646  */
+#line 1352 "parser/spl.y" /* yacc.c:1646  */
     {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "for_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -3124,11 +3127,11 @@ yyreduce:
 	t = cond_jump_tree(t, false, exit_label);
 	list_append(&ast_forest, t);
 }
-#line 3128 "parser/rule.c" /* yacc.c:1646  */
+#line 3131 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 113:
-#line 1374 "parser/spl.y" /* yacc.c:1646  */
+#line 1377 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 获取地址AST节点（FOR中条件判断相关的变量） */
 	t = pop_ast_stack();
@@ -3163,27 +3166,27 @@ yyreduce:
 
 	pop_lbl_stack();
 }
-#line 3167 "parser/rule.c" /* yacc.c:1646  */
+#line 3170 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 114:
-#line 1412 "parser/spl.y" /* yacc.c:1646  */
+#line 1415 "parser/spl.y" /* yacc.c:1646  */
     {
 	(yyval.num) = kTO;
 }
-#line 3175 "parser/rule.c" /* yacc.c:1646  */
+#line 3178 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 115:
-#line 1416 "parser/spl.y" /* yacc.c:1646  */
+#line 1419 "parser/spl.y" /* yacc.c:1646  */
     {
 	(yyval.num) = kDOWNTO;
 }
-#line 3183 "parser/rule.c" /* yacc.c:1646  */
+#line 3186 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 116:
-#line 1423 "parser/spl.y" /* yacc.c:1646  */
+#line 1426 "parser/spl.y" /* yacc.c:1646  */
     {
 	push_lbl_stack(switch_label_count++);
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_test_%d", switch_label_count - 1);
@@ -3200,11 +3203,11 @@ yyreduce:
 	case_label_count = 0;
 	push_case_stack(case_label_count++);
 }
-#line 3204 "parser/rule.c" /* yacc.c:1646  */
+#line 3207 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 117:
-#line 1440 "parser/spl.y" /* yacc.c:1646  */
+#line 1443 "parser/spl.y" /* yacc.c:1646  */
     {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_test_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -3241,11 +3244,11 @@ yyreduce:
 	list_append(&ast_forest, t);
 	pop_lbl_stack();
 }
-#line 3245 "parser/rule.c" /* yacc.c:1646  */
+#line 3248 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 121:
-#line 1486 "parser/spl.y" /* yacc.c:1646  */
+#line 1489 "parser/spl.y" /* yacc.c:1646  */
     {
 	case_label_count = pop_case_stack();
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "case_%d_%d", top_lbl_stack(), case_label_count++);
@@ -3268,11 +3271,11 @@ yyreduce:
 	/* 将常数AST节点（CASE子句判断条件）放入CASE子句链表 */
 	list_append(case_list, t);
 }
-#line 3272 "parser/rule.c" /* yacc.c:1646  */
+#line 3275 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 122:
-#line 1509 "parser/spl.y" /* yacc.c:1646  */
+#line 1512 "parser/spl.y" /* yacc.c:1646  */
     {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -3282,11 +3285,11 @@ yyreduce:
 	t = jump_tree(exit_label);
 	list_append(&ast_forest, t);
 }
-#line 3286 "parser/rule.c" /* yacc.c:1646  */
+#line 3289 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 124:
-#line 1520 "parser/spl.y" /* yacc.c:1646  */
+#line 1523 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 变量对应的符号 */
 	p = find_symbol(top_symtab_stack(),(yyvsp[0].p_char));
@@ -3315,11 +3318,11 @@ yyreduce:
 	t = id_factor_tree(NULL, p);
 	list_append(case_list, t);
 }
-#line 3319 "parser/rule.c" /* yacc.c:1646  */
+#line 3322 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 125:
-#line 1549 "parser/spl.y" /* yacc.c:1646  */
+#line 1552 "parser/spl.y" /* yacc.c:1646  */
     {
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -3327,161 +3330,161 @@ yyreduce:
 	t = jump_tree(exit_label);
 	list_append(&ast_forest, t);
 }
-#line 3331 "parser/rule.c" /* yacc.c:1646  */
+#line 3334 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 127:
-#line 1561 "parser/spl.y" /* yacc.c:1646  */
+#line 1564 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 比较运算AST树（>=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
 	(yyval.p_tree) = compare_expr_tree(GE, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3340 "parser/rule.c" /* yacc.c:1646  */
+#line 3343 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 128:
-#line 1566 "parser/spl.y" /* yacc.c:1646  */
+#line 1569 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 比较运算AST树（>） */
 	(yyval.p_tree) = compare_expr_tree(GT, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3349 "parser/rule.c" /* yacc.c:1646  */
+#line 3352 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 129:
-#line 1571 "parser/spl.y" /* yacc.c:1646  */
+#line 1574 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 比较运算AST树（<=） */
 	(yyval.p_tree) = compare_expr_tree(LE, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3358 "parser/rule.c" /* yacc.c:1646  */
+#line 3361 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 130:
-#line 1576 "parser/spl.y" /* yacc.c:1646  */
+#line 1579 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 比较运算AST树（<） */
 	(yyval.p_tree) = compare_expr_tree(LT, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3367 "parser/rule.c" /* yacc.c:1646  */
+#line 3370 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 131:
-#line 1581 "parser/spl.y" /* yacc.c:1646  */
+#line 1584 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 比较运算AST树（=） */
 	(yyval.p_tree) = compare_expr_tree(EQ, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3376 "parser/rule.c" /* yacc.c:1646  */
+#line 3379 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 132:
-#line 1586 "parser/spl.y" /* yacc.c:1646  */
+#line 1589 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 比较运算AST树（<>，不相等） */
 	(yyval.p_tree) = compare_expr_tree(NE, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3385 "parser/rule.c" /* yacc.c:1646  */
+#line 3388 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 133:
-#line 1591 "parser/spl.y" /* yacc.c:1646  */
+#line 1594 "parser/spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_tree) = (yyvsp[0].p_tree);
 }
-#line 3393 "parser/rule.c" /* yacc.c:1646  */
+#line 3396 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 134:
-#line 1598 "parser/spl.y" /* yacc.c:1646  */
+#line 1601 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（+），由于优先级问题，放在expr表达式中（expr表达式中的运算优先级比term中的要低），仅支持左结合 */
 	(yyval.p_tree) = binary_expr_tree(ADD, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3402 "parser/rule.c" /* yacc.c:1646  */
+#line 3405 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 135:
-#line 1603 "parser/spl.y" /* yacc.c:1646  */
+#line 1606 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（-） */
 	(yyval.p_tree) = binary_expr_tree(SUB, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3411 "parser/rule.c" /* yacc.c:1646  */
+#line 3414 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 136:
-#line 1608 "parser/spl.y" /* yacc.c:1646  */
+#line 1611 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（or）  */
 	(yyval.p_tree) = binary_expr_tree(OR, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3420 "parser/rule.c" /* yacc.c:1646  */
+#line 3423 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 137:
-#line 1613 "parser/spl.y" /* yacc.c:1646  */
+#line 1616 "parser/spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_tree) = (yyvsp[0].p_tree);
 }
-#line 3428 "parser/rule.c" /* yacc.c:1646  */
+#line 3431 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 138:
-#line 1620 "parser/spl.y" /* yacc.c:1646  */
+#line 1623 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（*），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
 	(yyval.p_tree) = binary_expr_tree(MUL, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3437 "parser/rule.c" /* yacc.c:1646  */
+#line 3440 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 139:
-#line 1625 "parser/spl.y" /* yacc.c:1646  */
+#line 1628 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（/） */
 	(yyval.p_tree) = binary_expr_tree(DIV, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3446 "parser/rule.c" /* yacc.c:1646  */
+#line 3449 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 140:
-#line 1630 "parser/spl.y" /* yacc.c:1646  */
+#line 1633 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（div） */
 	(yyval.p_tree) = binary_expr_tree(DIV, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3455 "parser/rule.c" /* yacc.c:1646  */
+#line 3458 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 141:
-#line 1635 "parser/spl.y" /* yacc.c:1646  */
+#line 1638 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（mod） */
 	(yyval.p_tree) = binary_expr_tree(MOD, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3464 "parser/rule.c" /* yacc.c:1646  */
+#line 3467 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 142:
-#line 1640 "parser/spl.y" /* yacc.c:1646  */
+#line 1643 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 二元运算AST树（and） */
 	(yyval.p_tree) = binary_expr_tree(AND, (yyvsp[-2].p_tree), (yyvsp[0].p_tree));
 }
-#line 3473 "parser/rule.c" /* yacc.c:1646  */
+#line 3476 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 143:
-#line 1645 "parser/spl.y" /* yacc.c:1646  */
+#line 1648 "parser/spl.y" /* yacc.c:1646  */
     {
 	(yyval.p_tree) = (yyvsp[0].p_tree);
 }
-#line 3481 "parser/rule.c" /* yacc.c:1646  */
+#line 3484 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 144:
-#line 1652 "parser/spl.y" /* yacc.c:1646  */
+#line 1655 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 对应的符号 */
 	p = find_symbol(top_symtab_stack(), (yyvsp[0].p_char));
@@ -3503,11 +3506,11 @@ yyreduce:
 	/* 取值AST节点 */
 	(yyval.p_tree) = id_factor_tree(NULL, p);
 }
-#line 3507 "parser/rule.c" /* yacc.c:1646  */
+#line 3510 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 145:
-#line 1674 "parser/spl.y" /* yacc.c:1646  */
+#line 1677 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 寻找自定义函数或者过程 */
 	if((ptab = find_routine(top_symtab_stack(), (yyvsp[0].p_char))))
@@ -3518,42 +3521,42 @@ yyreduce:
 		return  0;
 	}
 }
-#line 3522 "parser/rule.c" /* yacc.c:1646  */
+#line 3525 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 146:
-#line 1685 "parser/spl.y" /* yacc.c:1646  */
+#line 1688 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 自定义函数或者过程调用AST节点 */
 	(yyval.p_tree) = call_tree(top_call_stack(), args);
 
 	pop_call_stack();
 }
-#line 3533 "parser/rule.c" /* yacc.c:1646  */
+#line 3536 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 147:
-#line 1692 "parser/spl.y" /* yacc.c:1646  */
+#line 1695 "parser/spl.y" /* yacc.c:1646  */
     {
 	ptab = find_sys_routine((yyvsp[0].p_lex)->attr);
 
 	/* 系统函数或者过程调用AST节点 */
 	(yyval.p_tree) = sys_tree((yyvsp[0].p_lex)->attr, NULL);
 }
-#line 3544 "parser/rule.c" /* yacc.c:1646  */
+#line 3547 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 148:
-#line 1699 "parser/spl.y" /* yacc.c:1646  */
+#line 1702 "parser/spl.y" /* yacc.c:1646  */
     {
 	ptab = find_sys_routine((yyvsp[0].p_lex)->attr);
 	push_call_stack(ptab);
 }
-#line 3553 "parser/rule.c" /* yacc.c:1646  */
+#line 3556 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 149:
-#line 1704 "parser/spl.y" /* yacc.c:1646  */
+#line 1707 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 获取当前需要调用的函数或者过程对应的符号表 */
 	ptab = top_call_stack();
@@ -3561,11 +3564,11 @@ yyreduce:
 	/* 系统函数或者过程调用（有参调用） */
 	(yyval.p_tree) = sys_tree((yyvsp[-4].p_lex)->attr, args);
 }
-#line 3565 "parser/rule.c" /* yacc.c:1646  */
+#line 3568 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 150:
-#line 1712 "parser/spl.y" /* yacc.c:1646  */
+#line 1715 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 常量（term中const_value由于只在表达式中使用一次，不需要对name字段进行命名），比如表达式 1+2+3 中的 1 */
 	switch((yyvsp[0].p_symbol)->type->type_id){
@@ -3594,38 +3597,38 @@ yyreduce:
 	/* 常量AST树 */
 	(yyval.p_tree) = const_tree((yyvsp[0].p_symbol));
 }
-#line 3598 "parser/rule.c" /* yacc.c:1646  */
+#line 3601 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 151:
-#line 1741 "parser/spl.y" /* yacc.c:1646  */
+#line 1744 "parser/spl.y" /* yacc.c:1646  */
     {
  	/* AST树（提高expression的优先级） */
 	(yyval.p_tree) = (yyvsp[-1].p_tree);
 }
-#line 3607 "parser/rule.c" /* yacc.c:1646  */
+#line 3610 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 152:
-#line 1746 "parser/spl.y" /* yacc.c:1646  */
+#line 1749 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 一元操作符（not） */
 	(yyval.p_tree) = not_tree((yyvsp[0].p_tree));
 }
-#line 3616 "parser/rule.c" /* yacc.c:1646  */
+#line 3619 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 153:
-#line 1751 "parser/spl.y" /* yacc.c:1646  */
+#line 1754 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 一元操作符（-） */
 	(yyval.p_tree) = neg_tree((yyvsp[0].p_tree));
 }
-#line 3625 "parser/rule.c" /* yacc.c:1646  */
+#line 3628 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 154:
-#line 1756 "parser/spl.y" /* yacc.c:1646  */
+#line 1759 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 寻找对应的符号 */
 	p = find_symbol(top_symtab_stack(), (yyvsp[-1].p_char));
@@ -3639,11 +3642,11 @@ yyreduce:
 	/* 数组符号入栈（保存上下文） */
 	push_term_stack(p);
 }
-#line 3643 "parser/rule.c" /* yacc.c:1646  */
+#line 3646 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 155:
-#line 1770 "parser/spl.y" /* yacc.c:1646  */
+#line 1773 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 数组符号出栈（获取上下文） */
 	p = pop_term_stack(p);
@@ -3652,11 +3655,11 @@ yyreduce:
 	/* 数组取值AST树 */
 	(yyval.p_tree) = id_factor_tree(t, NULL);
 }
-#line 3656 "parser/rule.c" /* yacc.c:1646  */
+#line 3659 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 156:
-#line 1779 "parser/spl.y" /* yacc.c:1646  */
+#line 1782 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 寻找对应的符号 */
 	p = find_symbol(top_symtab_stack(), (yyvsp[-2].p_char));
@@ -3681,20 +3684,20 @@ yyreduce:
 	/* field取值AST树 */
 	(yyval.p_tree) = id_factor_tree(t, NULL);
 }
-#line 3685 "parser/rule.c" /* yacc.c:1646  */
+#line 3688 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 157:
-#line 1807 "parser/spl.y" /* yacc.c:1646  */
+#line 1810 "parser/spl.y" /* yacc.c:1646  */
     {
 	/**/
 	args = NULL; 
 }
-#line 3694 "parser/rule.c" /* yacc.c:1646  */
+#line 3697 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 158:
-#line 1812 "parser/spl.y" /* yacc.c:1646  */
+#line 1815 "parser/spl.y" /* yacc.c:1646  */
     {
 	/* 获取函数或者过程调用上下文 */
 	rtn = top_call_stack();
@@ -3708,11 +3711,11 @@ yyreduce:
 	/* 将参数放入参数AST树中 */
 	args = arg_tree(args, rtn, arg, (yyvsp[0].p_tree)); 
 }
-#line 3712 "parser/rule.c" /* yacc.c:1646  */
+#line 3715 "parser/rule.c" /* yacc.c:1646  */
     break;
 
   case 159:
-#line 1826 "parser/spl.y" /* yacc.c:1646  */
+#line 1829 "parser/spl.y" /* yacc.c:1646  */
     {
 	args = NULL;
 
@@ -3731,11 +3734,11 @@ yyreduce:
 	/* 初始化参数AST树 */
 	args = arg_tree(args, rtn, arg, (yyvsp[0].p_tree));
 }
-#line 3735 "parser/rule.c" /* yacc.c:1646  */
+#line 3738 "parser/rule.c" /* yacc.c:1646  */
     break;
 
 
-#line 3739 "parser/rule.c" /* yacc.c:1646  */
+#line 3742 "parser/rule.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3963,7 +3966,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1846 "parser/spl.y" /* yacc.c:1906  */
+#line 1849 "parser/spl.y" /* yacc.c:1906  */
 
 
 #define MAX_TERM  64

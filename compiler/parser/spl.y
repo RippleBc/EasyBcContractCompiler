@@ -10,22 +10,20 @@
 #include "../ast/tree.h"
 
 extern char *yytext; /* flex用于记录匹配到的字符串 */
-symtab *ptab; /* 符号表表头 */
+Symtab rtn = NULL; /* 表示system routine */
+symtab *ptab;
 symbol *p, *q;
-tree   *t;
 type *pt, *qt;
-int temp;
+Tree t;
+
+Env global_env;
+Env main_env;
 
 /* 记录term上下文 */
 symbol* pop_term_stack();
 symbol* top_term_stack();
 void push_term_stack(symbol * p);
 
-Env global_env;
-Env main_env;
-
-Symtab	rtn = NULL; /* 表示system routine */
-Symbol	arg = NULL;
 
 /* 记录AST上下文 */
 Tree pop_ast_stack();
@@ -52,15 +50,20 @@ symtab *top_call_stack();
 symtab *pop_call_stack();
 void push_call_stack(symtab *p);
 
+/* CASE结构使用 */
+List case_list = NULL;  
+
+/* 参数AST树 */
+Tree args;
+Symbol arg = NULL;
+
 /*  */
 struct list routine_forest;
 /*  */
 struct list ast_forest;
-List  case_list = NULL;       /* CASE结构使用 */
-struct list dag_forest;				/* for dags. */
-Tree args; /* 参数AST树 */
-Tree now_function; /* 当前函数的AST树 */
-Tree t;
+/*  */
+struct list dag_forest;
+
 Symbol	new_label = NULL;
 Symbol	test_label = NULL;
 Symbol  exit_label = NULL;
