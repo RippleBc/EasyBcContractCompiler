@@ -10,9 +10,11 @@ union _value_ {
     int i;
     float f;
     boolean b;
+
     long l;
     unsigned long u;
     long double d;
+    
     void *p;
     void (*g)(void);
 };
