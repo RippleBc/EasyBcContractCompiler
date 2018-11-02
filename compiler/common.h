@@ -32,8 +32,8 @@
 #define DEF_VAR				(2)
 #define DEF_TYPE			(3)
 #define DEF_FIELD			(4)
-#define DEF_VALPARA			(5) /* value */
-#define DEF_VARPARA			(6) /* variable */
+#define DEF_VALPARA			(5)
+#define DEF_VARPARA			(6)
 #define DEF_PROC			(7)
 #define DEF_FUNCT			(8)
 #define DEF_PROG			(9)
