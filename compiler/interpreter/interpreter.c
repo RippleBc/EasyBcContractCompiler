@@ -573,16 +573,16 @@ void node_process(Node node)
     case TAIL: /* 表示过程以及函数定义的结束 */
     {
       /*  */
-      pop_symtab_stack();
+      Symbol sp = pop_symtab_stack();
 
       /*  */
       g_cp = pop_return_position_stack();
 
       /*  */
-      pop_local_stack();
+      pop_local_stack(sp);
 
       /*  */
-      pop_args_stack();
+      pop_args_stack(sp);
     }
     break;
     case BLOCKBEG:
