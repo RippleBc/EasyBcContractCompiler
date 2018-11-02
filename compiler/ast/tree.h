@@ -68,13 +68,6 @@ typedef struct _tree
         }
         field;
 
-        struct
-        {
-            List para;					/* parameter list. */
-            Symtab symtab;				/* symtab of the function/routine */
-        }
-        header; /* 函数头，需要提供参数列表以及对应的symtab */
-
        
         struct
         {
