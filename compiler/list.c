@@ -6,7 +6,7 @@ List list_append(List list, void *x)
     List new;
 
     /* 给指针在permanent区域分配内存 */
-    NEW(new, PERM);
+    NEW0(new, PERM);
 
     /* 节点初始化 */
     new->link = NULL;

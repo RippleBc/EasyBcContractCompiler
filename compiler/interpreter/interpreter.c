@@ -10,6 +10,9 @@ List g_routine_forest;
 /*  */
 void interpret(List routine_forest, List dag)
 {
+
+  printf("begin to interpret\n");
+
   g_routine_forest = routine_forest;
 
   Node n;
@@ -20,7 +23,7 @@ void interpret(List routine_forest, List dag)
   push_symtab_stack(Global_symtab);
 
   /*  */
-  NEW(label_queue, PERM);
+  NEW0(label_queue, PERM);
   label_queue->label_node_index = 0;
 
   for(g_cp = dag->link; g_cp != NULL; g_cp = g_cp->link)
@@ -38,7 +41,7 @@ void interpret(List routine_forest, List dag)
   List cpTmp;
   for(g_cp = g_routine_forest->link; g_cp != NULL; g_cp = g_cp->link)
   {
-    NEW(label_queue, PERM);
+    NEW0(label_queue, PERM);
     label_queue->label_node_index = 0;
     /*  */
     for(cpTmp = (List)(g_cp->x); cpTmp != NULL; cpTmp = cpTmp->link)

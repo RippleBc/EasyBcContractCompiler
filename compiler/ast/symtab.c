@@ -20,7 +20,7 @@ int routine_id;
 int symtab_tos = SYMTAB_STACK_SIZE - 1;
 symtab *symtab_stack[SYMTAB_STACK_SIZE]; /* 保存上下文（符号表） */
 
-symtab *Global_symtab; /* 全局符号表 */
+symtab *Global_symtab = NULL; /* 全局符号表 */
 symtab *System_symtab[MAX_SYS_ROUTINE]; /* 系统符号表 */
 
 extern int Keytable_size;
@@ -510,6 +510,7 @@ symtab *pop_symtab_stack()
         internal_error("Symtab stack underflow.");
     return symtab_stack[++symtab_tos];
 }
+
 void push_symtab_stack (symtab *tab)
 {
     if(symtab_tos == -1)

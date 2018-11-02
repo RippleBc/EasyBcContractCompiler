@@ -249,8 +249,6 @@ first_act_at_prog
 	make_global_symtab();
 	/* 创建系统符号表 */
 	make_system_symtab();
-	/* 将全局符号表压入符号表栈中 */
-	push_symtab_stack(Global_symtab);
 };
 
 program_head
@@ -265,6 +263,9 @@ program_head
 	/*  */
 	global_env.u.program.tab = Global_symtab;
 
+	/* 将全局符号表压入符号表栈中 */
+	push_symtab_stack(Global_symtab);
+
 	/*  */
 	NEW0(ast_forest, FUNC);
 }
@@ -276,8 +277,6 @@ sub_program
 {
 	main_env.u.main.tab = Global_symtab;
 	list_clear(ast_forest);
-	/* 将全局符号表压入符号表栈中 */
-	push_symtab_stack(Global_symtab);
 }
 routine_body {}
 ;

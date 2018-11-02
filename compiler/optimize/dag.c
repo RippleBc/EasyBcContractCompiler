@@ -313,8 +313,6 @@ Node travel(Tree tp)
         l = travel(tp->kids[0]);
         r = travel(tp->kids[1]);
         p = node(op, l, r, NULL);
-
-        /* 常量合并 */
         const_folding(p);
         break;
     }
@@ -349,6 +347,9 @@ Node travel(Tree tp)
 
 int gen_dag(List ast_forest, List dag_forest)
 {
+    /* 将全局符号表压入符号表栈中 */
+    push_symtab_stack(Global_symtab);
+
     int n, i, dag_count;
     Tree *forest;
 
@@ -366,7 +367,6 @@ int gen_dag(List ast_forest, List dag_forest)
     for (i = 0, dag_count = 0; i < n ; i++)
     {
         Tree ast = forest[i];
-
         /* 生成DAG节点 */
         Node dag = travel(ast);
         if (dag)
