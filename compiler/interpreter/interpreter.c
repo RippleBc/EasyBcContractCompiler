@@ -80,9 +80,8 @@ List find_routine_forest(Symtab ptab)
     {
       n = (Node)(cpTmp2->x);
       /*  */
-      if(n->symtab == ptab)
+      if(n->symtab == ptab && generic(n->op) == HEADER)
       {
-        // printf("find routine %s\n", ptab->name);
         return cpTmp2;
       }
     }
