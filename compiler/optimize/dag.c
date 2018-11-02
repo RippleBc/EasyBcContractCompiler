@@ -322,9 +322,6 @@ Node travel(Tree tp)
     switch (generic(tp->op))
     {
     case HEADER:
-        p = new_node(tp->op, NULL, NULL, NULL);
-        p->symtab = tp->u.header.symtab;
-        break;
     case TAIL:
         p = new_node(tp->op, NULL, NULL, NULL);
         p->symtab = tp->u.generic.symtab;

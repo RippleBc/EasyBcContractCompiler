@@ -2353,7 +2353,7 @@ yyreduce:
 	/* 头部AST节点 */
 	header = new_tree(HEADER, ptab->type, NULL, NULL);
 	/* 头部AST节点对应的符号表 */
-	header->u.header.symtab = ptab;
+	header->u.generic.symtab = ptab;
 	/* 放入AST森林 */
 	list_append(&ast_forest, header);
 }
