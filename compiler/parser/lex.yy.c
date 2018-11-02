@@ -669,8 +669,9 @@ static int id_or_keyword(char *lex);
 							memmove(line_buf + line_pos, yytext, strlen(yytext) + 1); \
 						line_pos += strlen(yytext);
 
+static char tmp[NAME_LEN];
 
-#line 674 "parser/lex.yy.c"
+#line 675 "parser/lex.yy.c"
 
 #define INITIAL 0
 #define star_slash_comment 1
@@ -890,9 +891,9 @@ YY_DECL
 		}
 
 	{
-#line 44 "parser/spl.l"
+#line 45 "parser/spl.l"
 
-#line 896 "parser/lex.yy.c"
+#line 897 "parser/lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -951,7 +952,7 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 45 "parser/spl.l"
+#line 46 "parser/spl.l"
 {
 	int c;
 	
@@ -974,7 +975,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 65 "parser/spl.l"
+#line 66 "parser/spl.l"
 {
 	DUMP_SOURCE
 
@@ -990,7 +991,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 78 "parser/spl.l"
+#line 79 "parser/spl.l"
 {
 	DUMP_SOURCE
 
@@ -1006,7 +1007,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 91 "parser/spl.l"
+#line 92 "parser/spl.l"
 {
 	DUMP_SOURCE
 
@@ -1022,7 +1023,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 104 "parser/spl.l"
+#line 105 "parser/spl.l"
 {
 	/* 1.1E+1 or 1.1E-1*/
 	DUMP_SOURCE
@@ -1045,7 +1046,7 @@ YY_RULE_SETUP
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 123 "parser/spl.l"
+#line 124 "parser/spl.l"
 {
 	/* Note that inside of a character class, all regular expression operators lose their special meaning 
 	 except escape '\' and the character class operators, '-', '[', ']', and, at the beginning of the class '^'.
@@ -1065,11 +1066,18 @@ YY_RULE_SETUP
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
-#line 139 "parser/spl.l"
+#line 140 "parser/spl.l"
 {
 	DUMP_SOURCE
 
-	strncpy(yylval.p_char, yytext, NAME_LEN);
+	int i;
+	for(i = 1; i < strlen(yytext) - 1; i++)
+	{
+		tmp[i - 1] = yytext[i];
+	}
+	tmp[i - 1] = '\0';
+
+	strncpy(yylval.p_char, tmp, NAME_LEN);
 
 	if (dump_token)
 	{
@@ -1080,7 +1088,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 151 "parser/spl.l"
+#line 159 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 
@@ -1093,7 +1101,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 161 "parser/spl.l"
+#line 169 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 
@@ -1106,7 +1114,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 172 "parser/spl.l"
+#line 180 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1119,7 +1127,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 182 "parser/spl.l"
+#line 190 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1132,7 +1140,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 192 "parser/spl.l"
+#line 200 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1145,7 +1153,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 202 "parser/spl.l"
+#line 210 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1158,7 +1166,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 212 "parser/spl.l"
+#line 220 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1171,7 +1179,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 222 "parser/spl.l"
+#line 230 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1184,7 +1192,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 232 "parser/spl.l"
+#line 240 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1197,7 +1205,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 242 "parser/spl.l"
+#line 250 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1210,7 +1218,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 252 "parser/spl.l"
+#line 260 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1223,7 +1231,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 262 "parser/spl.l"
+#line 270 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1236,7 +1244,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 272 "parser/spl.l"
+#line 280 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1249,7 +1257,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 282 "parser/spl.l"
+#line 290 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1262,7 +1270,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 292 "parser/spl.l"
+#line 300 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1275,7 +1283,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 302 "parser/spl.l"
+#line 310 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1288,7 +1296,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 312 "parser/spl.l"
+#line 320 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1301,7 +1309,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 322 "parser/spl.l"
+#line 330 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1314,7 +1322,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 332 "parser/spl.l"
+#line 340 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1327,7 +1335,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 342 "parser/spl.l"
+#line 350 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1340,7 +1348,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 352 "parser/spl.l"
+#line 360 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1353,7 +1361,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 362 "parser/spl.l"
+#line 370 "parser/spl.l"
 { 
 	DUMP_SOURCE 
 	
@@ -1366,7 +1374,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 372 "parser/spl.l"
+#line 380 "parser/spl.l"
 {
 	DUMP_SOURCE
 
@@ -1377,7 +1385,7 @@ YY_RULE_SETUP
 case 31:
 /* rule 31 can match eol */
 YY_RULE_SETUP
-#line 379 "parser/spl.l"
+#line 387 "parser/spl.l"
 {
 	line_no++;
 	line_pos = 0;
@@ -1386,7 +1394,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 385 "parser/spl.l"
+#line 393 "parser/spl.l"
 {
 	BEGIN(star_slash_comment);
 }
@@ -1394,7 +1402,7 @@ YY_RULE_SETUP
 case 33:
 /* rule 33 can match eol */
 YY_RULE_SETUP
-#line 389 "parser/spl.l"
+#line 397 "parser/spl.l"
 {
 	/* eat anything that's not a '*' */
 }
@@ -1402,28 +1410,28 @@ YY_RULE_SETUP
 case 34:
 /* rule 34 can match eol */
 YY_RULE_SETUP
-#line 393 "parser/spl.l"
+#line 401 "parser/spl.l"
 {
 	/* eat up '*' not followed by '/'s */
 }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 397 "parser/spl.l"
+#line 405 "parser/spl.l"
 {
 	BEGIN(INITIAL);
 }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 401 "parser/spl.l"
+#line 409 "parser/spl.l"
 {
 	BEGIN(slash_slash_comment);
 }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 405 "parser/spl.l"
+#line 413 "parser/spl.l"
 {
 	/* eat anything that's not a '//' */
 }
@@ -1431,7 +1439,7 @@ YY_RULE_SETUP
 case 38:
 /* rule 38 can match eol */
 YY_RULE_SETUP
-#line 409 "parser/spl.l"
+#line 417 "parser/spl.l"
 {
 	line_no++;
 	line_pos = 0;
@@ -1441,7 +1449,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 416 "parser/spl.l"
+#line 424 "parser/spl.l"
 {
 	/* 匹配除了换行符之外的所有字符 */
 	DUMP_SOURCE
@@ -1449,10 +1457,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 420 "parser/spl.l"
+#line 428 "parser/spl.l"
 ECHO;
 	YY_BREAK
-#line 1456 "parser/lex.yy.c"
+#line 1464 "parser/lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(star_slash_comment):
 case YY_STATE_EOF(slash_slash_comment):
@@ -2455,7 +2463,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 420 "parser/spl.l"
+#line 428 "parser/spl.l"
 
 
 

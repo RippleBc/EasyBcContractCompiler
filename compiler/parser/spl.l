@@ -32,6 +32,7 @@ static int id_or_keyword(char *lex);
 							memmove(line_buf + line_pos, yytext, strlen(yytext) + 1); \
 						line_pos += strlen(yytext);
 
+static char tmp[NAME_LEN];
 %}
 
 letter	[_a-zA-Z]
@@ -139,7 +140,14 @@ oct		[0-7]
 '([^']|\\')+' {
 	DUMP_SOURCE
 
-	strncpy(yylval.p_char, yytext, NAME_LEN);
+	int i;
+	for(i = 1; i < strlen(yytext) - 1; i++)
+	{
+		tmp[i - 1] = yytext[i];
+	}
+	tmp[i - 1] = '\0';
+
+	strncpy(yylval.p_char, tmp, NAME_LEN);
 
 	if (dump_token)
 	{

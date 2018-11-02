@@ -185,20 +185,19 @@ void node_process(Node node)
   {
   case SYS:
   {
-    if (node->kids[0] == NULL)
-    {
-      /* 没有参数 */
-    }
-    else {
-      /*  */
-      node_process(node->kids[0]);
+    Node np;
 
-      /* 有参数 */
-      switch (node->u.sys_id)
+    /*  */
+    node_process(node->kids[0]);
+
+    /* 有参数 */
+    switch (node->u.sys_id)
+    {
+      case pWRITELN:
       {
-        case pWRITELN:
+        for(np = node->kids[0]; np != NULL; np = np->kids[1])
         {
-          switch(node->kids[0]->type->type_id)
+          switch(np->type->type_id)
           {
           case TYPE_INTEGER:
           {
@@ -225,10 +224,26 @@ void node_process(Node node)
             printf("result: %s\n", node->kids[0]->val.s);
           }
           break;
+          case TYPE_ARRAY:
+          {
+            if(node->type->last->type->type_id == TYPE_CHAR)
+            {
+              printf("result: %s\n", node->kids[0]->val.s);
+            }
+            else
+            {
+              parse_error("wrong type", "");
+            }
+          }
+          break;
+          default:
+          {
+            parse_error("wrong type", "");
+          }
           }
         }
-        break;
       }
+      break;
     }
   }
   break;
@@ -569,7 +584,7 @@ void node_process(Node node)
   {
     case HEADER: /* 表示过程以及函数定义的开始 */  
     {
-      // printf("enter function %s\n", node->symtab->name);
+      
     }
     break;
     case TAIL: /* 表示过程以及函数定义的结束 */
