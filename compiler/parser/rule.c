@@ -1651,10 +1651,10 @@ yyreduce:
 		t->u.generic.symtab = top_symtab_stack();
 		
 		/* 将AST节点挂到ast_forest后面 */
-		list_append(ast_forest, t);
+		list_append(top_ast_forest_stack(), t);
 
 		/* generate dag forest. */
-		gen_dag(ast_forest, &dag_forest);
+		gen_dag(top_ast_forest_stack(), &dag_forest);
 
 		pop_ast_forest_stack();
 
@@ -2283,10 +2283,10 @@ yyreduce:
 		/* 对应的符号表 */
 		t->u.generic.symtab = top_symtab_stack();
 		/* 放入AST森林 */
-		list_append(ast_forest, t);
+		list_append(top_ast_forest_stack(), t);
 
 		/* 生成AST森林 */
-		gen_dag(ast_forest, &dag_forest);
+		gen_dag(top_ast_forest_stack(), &dag_forest);
 
 		/*  */
 		pop_ast_forest_stack();
@@ -2357,7 +2357,7 @@ yyreduce:
 	/* 头部AST节点对应的符号表 */
 	header->u.generic.symtab = ptab;
 	/* 放入AST森林 */
-	list_append(ast_forest, header);
+	list_append(top_ast_forest_stack(), header);
 }
 #line 2363 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -2372,9 +2372,9 @@ yyreduce:
 
 		t = new_tree(TAIL, NULL, NULL, NULL);
 		t->u.generic.symtab = top_symtab_stack();
-		list_append(ast_forest, t);
+		list_append(top_ast_forest_stack(), t);
 
-		gen_dag(ast_forest, &dag_forest);
+		gen_dag(top_ast_forest_stack(), &dag_forest);
 
 		pop_ast_forest_stack();;
 
@@ -2414,7 +2414,7 @@ yyreduce:
 
 	Tree header;
 	header = new_tree(HEADER, find_type_by_id(TYPE_VOID), NULL, NULL);
-	list_append(ast_forest, header);
+	list_append(top_ast_forest_stack(), header);
 }
 #line 2420 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -2633,7 +2633,7 @@ yyreduce:
 	/* 赋值AST树 */
 	(yyval.p_tree) = assign_tree(t, (yyvsp[0].p_tree));
 	/* 放入AST森林 */
-	list_append(ast_forest, (yyval.p_tree));
+	list_append(top_ast_forest_stack(), (yyval.p_tree));
 }
 #line 2639 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -2684,7 +2684,7 @@ yyreduce:
 	(yyval.p_tree) = assign_tree(t, (yyvsp[0].p_tree));
 
 	/* 放入AST森林 */
-	list_append(ast_forest, (yyval.p_tree));
+	list_append(top_ast_forest_stack(), (yyval.p_tree));
 }
 #line 2690 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -2724,7 +2724,7 @@ yyreduce:
 	(yyval.p_tree) = assign_tree(t, (yyvsp[0].p_tree));
 
 	/* 放入AST森林 */
-	list_append(ast_forest, (yyval.p_tree));
+	list_append(top_ast_forest_stack(), (yyval.p_tree));
 }
 #line 2730 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -2754,7 +2754,7 @@ yyreduce:
 	(yyval.p_tree) = call_tree(top_call_stack(), args);
 
 	/* 放入AST森林 */
-	list_append(ast_forest, (yyval.p_tree));
+	list_append(top_ast_forest_stack(), (yyval.p_tree));
 
 	pop_call_stack();
 }
@@ -2768,7 +2768,7 @@ yyreduce:
 	(yyval.p_tree) = sys_tree((yyvsp[0].p_lex)->attr, NULL);
 
 	/* 放入AST森林 */
-	list_append(ast_forest, (yyval.p_tree));
+	list_append(top_ast_forest_stack(), (yyval.p_tree));
 }
 #line 2774 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -2778,7 +2778,7 @@ yyreduce:
     {
 	(yyval.p_tree) = sys_tree((yyvsp[0].p_lex)->attr, NULL);
 
-	list_append(ast_forest, (yyval.p_tree));
+	list_append(top_ast_forest_stack(), (yyval.p_tree));
 }
 #line 2784 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -2801,7 +2801,7 @@ yyreduce:
 	(yyval.p_tree) = sys_tree((yyvsp[-4].p_lex)->attr, args);
 
 	/* 放入AST森林 */
-	list_append(ast_forest, (yyval.p_tree));
+	list_append(top_ast_forest_stack(), (yyval.p_tree));
 
 	pop_call_stack();
 }
@@ -2824,7 +2824,7 @@ yyreduce:
 	(yyval.p_tree) = sys_tree((yyvsp[-4].p_lex)->attr, args);
 
 	/* 放入AST森林 */
-	list_append(ast_forest, (yyval.p_tree));
+	list_append(top_ast_forest_stack(), (yyval.p_tree));
 
 	pop_call_stack();
 }
@@ -2860,7 +2860,7 @@ yyreduce:
 	(yyval.p_tree) = sys_tree(pREAD, t);
 
 	/* 放入AST森林 */
-	list_append(ast_forest, (yyval.p_tree));
+	list_append(top_ast_forest_stack(), (yyval.p_tree));
 }
 #line 2866 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -2872,7 +2872,7 @@ yyreduce:
 	t = new_tree(BLOCKBEG, NULL, NULL, NULL);
 
 	/* 放入AST森林 */
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 }
 #line 2878 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -2884,7 +2884,7 @@ yyreduce:
 	t = new_tree(BLOCKEND, NULL, NULL, NULL);
 
 	/* 放入AST森林 */
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 }
 #line 2890 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -2907,7 +2907,7 @@ yyreduce:
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 条件跳转AST节点（条件为假时跳转到ELSE标签的入口） */
 	t = cond_jump_tree((yyvsp[-1].p_tree), false, new_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 }
 #line 2913 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -2930,11 +2930,11 @@ yyreduce:
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 条件跳转AST节点（IF子句执行完毕后，跳转到IF结构的出口） */
 	t = jump_tree(exit_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 
 	/* 获取标签AST节点（ELSE子句的入口） */
 	t = pop_ast_stack();
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 }
 #line 2940 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -2948,7 +2948,7 @@ yyreduce:
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 标签AST节点（IF结构出口） */
 	t = label_tree(exit_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 	pop_lbl_stack();
 }
 #line 2955 "parser/rule.c" /* yacc.c:1646  */
@@ -2992,7 +2992,7 @@ yyreduce:
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 标签AST节点（REPEAT结构的入口） */
 	t = label_tree(new_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 }
 #line 2998 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -3006,7 +3006,7 @@ yyreduce:
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 条件跳转AST节点（条件为真时，跳转到REPEAT结构的入口） */
 	t = cond_jump_tree((yyvsp[0].p_tree), false, new_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 
 	pop_lbl_stack();
 }
@@ -3024,7 +3024,7 @@ yyreduce:
 	/* 标签AST节点（WHILE结构的入口） */
 	t = label_tree(test_label);
 
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 }
 #line 3030 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -3039,7 +3039,7 @@ yyreduce:
 	/* 条件跳转AST节点（条件为假时，跳转到WHILE结构的出口） */
 	t = cond_jump_tree((yyvsp[-1].p_tree), false, exit_label);
 
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 }
 #line 3045 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -3061,11 +3061,11 @@ yyreduce:
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 跳转AST节点（跳转到WHILE结构的入口） */
 	t = jump_tree(test_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 
 	/* 获取标签AST节点（WHILE结构的出口） */
 	t = pop_ast_stack();
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 	pop_lbl_stack();
 }
 #line 3072 "parser/rule.c" /* yacc.c:1646  */
@@ -3095,7 +3095,7 @@ yyreduce:
 	/* 保存地址AST节点（FOR中条件判断相关的变量） */
 	push_ast_stack(t);
 	/* 赋值AST节点 */
-	list_append(ast_forest, assign_tree(t, (yyvsp[0].p_tree)));
+	list_append(top_ast_forest_stack(), assign_tree(t, (yyvsp[0].p_tree)));
 
 	push_lbl_stack(for_label_count++);
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "for_test_%d", for_label_count - 1);
@@ -3104,7 +3104,7 @@ yyreduce:
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 标签AST节点（FOR结构的入口） */
 	t = label_tree(test_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 }
 #line 3110 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -3133,7 +3133,7 @@ yyreduce:
 
 	/* 条件跳转AST节点（条件为假时，跳转到FOR结构的出口） */
 	t = cond_jump_tree(t, false, exit_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 }
 #line 3139 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -3153,7 +3153,7 @@ yyreduce:
 	{
 		t = decr_one_tree(t);
 	}
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "for_test_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -3161,7 +3161,7 @@ yyreduce:
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 跳转AST节点（跳转到FOR结构的入口） */
 	t = jump_tree(test_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "for_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
@@ -3170,7 +3170,7 @@ yyreduce:
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 标签AST符号（FOR结构的出口） */
 	t = label_tree(exit_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 
 	pop_lbl_stack();
 }
@@ -3203,7 +3203,7 @@ yyreduce:
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 跳转AST节点（条件测试的入口） */
 	t = jump_tree(test_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 
 	/* 在STMT区域为case_list分配内存 */
 	NEW0(case_list, STMT);
@@ -3223,7 +3223,7 @@ yyreduce:
 	test_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 标签AST节点（条件测试的入口） */
 	t = label_tree(test_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 	case_list = pop_case_ast_stack();
 
 	/* 将CASE子句从链表结构转化为数组结构 */
@@ -3240,7 +3240,7 @@ yyreduce:
 		t = compare_expr_tree(EQ, (yyvsp[-2].p_tree), cases[i + 1]);
 		/* 条件跳转AST节点（条件为真时跳转到指定的CASE子句） */
 		t = cond_jump_tree(t, true, new_label);
-		list_append(ast_forest, t);
+		list_append(top_ast_forest_stack(), t);
 	}
 
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "switch_exit_%d", top_lbl_stack());
@@ -3249,7 +3249,7 @@ yyreduce:
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 标签AST节点（CASE结构的出口） */
 	t = label_tree(exit_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 	pop_lbl_stack();
 }
 #line 3256 "parser/rule.c" /* yacc.c:1646  */
@@ -3267,7 +3267,7 @@ yyreduce:
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 标签AST节点（CASE子句的入口） */
 	t = label_tree(new_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 
 	/* 获取CASE子句链表 */
 	case_list = top_case_ast_stack();
@@ -3291,7 +3291,7 @@ yyreduce:
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	/* 跳转AST节点（CASE结构的出口） */
 	t = jump_tree(exit_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 }
 #line 3297 "parser/rule.c" /* yacc.c:1646  */
     break;
@@ -3318,7 +3318,7 @@ yyreduce:
 
 	new_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	t = label_tree(new_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 
 	case_list = top_case_ast_stack();
 	list_append(case_list, t);
@@ -3336,7 +3336,7 @@ yyreduce:
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	exit_label = new_symbol(mini_buf, DEF_LABEL, TYPE_VOID);
 	t = jump_tree(exit_label);
-	list_append(ast_forest, t);
+	list_append(top_ast_forest_stack(), t);
 }
 #line 3342 "parser/rule.c" /* yacc.c:1646  */
     break;
