@@ -52,9 +52,12 @@ program helloworld;
 		stringa := 'abcdefgafadfafadfafasfadf';
 		writeln(stringa[5]);
 		writeln(1234567890);
-		
+
 		booleana := true;
 		readln(intd[1]);
+		readln(chara);
+		readln(booleana);
+		readln(reala2);
 		writeln(intd[1], chara, booleana, reala2, 'abdqrgadfq');
 	end
 .
