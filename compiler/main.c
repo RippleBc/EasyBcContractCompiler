@@ -31,11 +31,13 @@ int dump_dag = 0;
 int dump_asm = 0;
 int dump_token = 0;
 
+int g_is_big_endian;
+
 void print_result(char *);
 
 extern union header *arena[LASTARENA];
 
-Interface x86_linux_interface = {
+Interface x64_vm_interface = {
     {1, 1},     /* charmetric */
     {1, 1},     /* shortmetric */
     {1, 1},     /* intmetric */
@@ -45,7 +47,17 @@ Interface x86_linux_interface = {
     {1, 1},     /* structmetric */
 };
 
-Interface *IR = &x86_linux_interface;
+Interface *IR = &x64_vm_interface;
+ 
+union {
+    int number;
+    char s;
+} _host_byte_order_example_;
+ 
+boolean testBigEndin() {
+    _host_byte_order_example_.number = 0x01000002;
+    return (_host_byte_order_example_.s == 0x01);
+}
 
 void init_spl()
 {
@@ -120,6 +132,11 @@ int main(int argc, char **argv)
     int dargc;
     char **arg, **dargv;
 
+    if (testBigEndin()) {
+        g_is_big_endian = true;
+    } else {
+        g_is_big_endian = false;
+    }
 
     if (argc == 1)
     {
