@@ -29,20 +29,20 @@ program helloworld;
 		intb := 30;
 		intc := ((intb + inta) + 3 * (intb + inta)) / 4 + intd[2] * 2 + inte.month + intd[1];
 		writeln(intc);
-		writeln(1234567890);
+		writeln('###################');
 		
 		inta1 := 1.23;
 		inta2 := inta1 + 1.56;
 		writeln(inta2);
-		writeln(1234567890);
+		writeln('###################');
 
 		inta3 := 'a';
 		writeln(inta3);
-		writeln(1234567890);
+		writeln('###################');
 
 		inta4 := 'abcdefg';
 		writeln(inta4[3]);
-		writeln(1234567890);
+		writeln('###################');
 
 		/* writeln(9876543210); */
 		if(2 > 1) then
@@ -55,7 +55,7 @@ program helloworld;
 			else writeln(0);
 		end
 		else writeln(0);
-		writeln(1234567890);
+		writeln('###################');
 
 		inta := 1;
 		intb := 10;
@@ -65,7 +65,7 @@ program helloworld;
 			writeln(inta);
 		end
 		until (inta > intb);
-		writeln(1234567890);
+		writeln('###################');
 
 		intb := 10;
 		for inta := 1 to intb do
@@ -73,7 +73,7 @@ program helloworld;
 			writeln(inta);
 			inta := inta + 3;
 		end;
-		writeln(1234567890);
+		writeln('###################');
 
 		intb := 1;
 		while intb <= 10 do
@@ -81,7 +81,7 @@ program helloworld;
 			writeln(intb);
 			intb := intb + 1;
 		end;
-		writeln(1234567890);
+		writeln('###################');
 		
 		inta := 6;
 		intb := 3;
@@ -101,6 +101,6 @@ program helloworld;
 					4: writeln(4);
 				end;
 		end;
-		writeln(1234567890);
+		writeln('###################');
 	end
 .

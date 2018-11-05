@@ -31,20 +31,18 @@ int dump_dag = 0;
 int dump_asm = 0;
 int dump_token = 0;
 
-int g_is_big_endian;
-
 void print_result(char *);
 
 extern union header *arena[LASTARENA];
 
 Interface x64_vm_interface = {
-    {1, 1},     /* charmetric */
-    {1, 1},     /* shortmetric */
-    {1, 1},     /* intmetric */
-    {1, 1},     /* floatmetric */
-    {1, 1},     /* doublemetric */
-    {1, 1},     /* pointermetric */
-    {1, 1},     /* structmetric */
+    {1, 4},     /* charmetric */
+    {2, 4},     /* shortmetric */
+    {4, 4},     /* intmetric */
+    {4, 4},     /* floatmetric */
+    {4, 8},     /* doublemetric */
+    {4, 4},     /* pointermetric */
+    {4, 4},     /* structmetric */
 };
 
 Interface *IR = &x64_vm_interface;

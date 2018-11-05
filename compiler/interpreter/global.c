@@ -11,6 +11,8 @@ void assign_global(Node n, Symbol p, Symbol q)
   int baseOffset = 0;
   if(p->type->type_id == TYPE_ARRAY)
   {
+    value tmp;
+
     baseOffset = p->offset;
 
     int eleOffset = get_symbol_align_size(p->type_link->last);
@@ -23,7 +25,9 @@ void assign_global(Node n, Symbol p, Symbol q)
         parse_error("assign_global array out of index", p->name);
         return;
       }
-      global_queue[baseOffset + i * eleOffset].c = n->val.s[i]; 
+
+      tmp.c = n->val.s[i];
+      assign_with_byte_unit(TYPE_CHAR, &global_queue[baseOffset + i * eleOffset], &tmp);
     }
   }
   else
@@ -34,7 +38,7 @@ void assign_global(Node n, Symbol p, Symbol q)
       // printf("assign_global baseOffset %d\n", baseOffset);
     }
     
-    global_queue[baseOffset + p->offset] = n->val; 
+    assign_with_byte_unit(p->type->type_id, &global_queue[baseOffset + p->offset], &(n->val)); 
     // printf("assign_global ################## %d %s %d\n", baseOffset + p->offset, p->name, global_queue[baseOffset + p->offset].i);
   }
   
@@ -50,5 +54,5 @@ void load_global(Node n, Symbol p, Symbol q)
   }
   
   // printf("load_global ################## %d %s %d\n", baseOffset + p->offset, p->name, global_queue[baseOffset + p->offset].i);
-  n->val = global_queue[baseOffset + p->offset];
+  load_with_byte_unit(p->type->type_id, &global_queue[baseOffset + p->offset], &(n->val));
 }

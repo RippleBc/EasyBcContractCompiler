@@ -1,6 +1,7 @@
 program helloworld;
 	type text = array[1..50] of char;
 	var inta, intb: integer;
+			texta : text;
 	function testInsideFunc(x,y:integer):integer;
 		var inta,intb : integer;
 		function hello(x,y:integer):integer;
@@ -14,13 +15,14 @@ program helloworld;
 		writeln(y);
 	end;
 
-	function testMixedArg(x:integer;y:text):integer;
+	function testMixedArg(x:integer;y:text;z:char):integer;
 		var inta : integer;
 	begin
 		inta := 1;
 		writeln(inta);
 		writeln(x);
 		writeln(y[3]);
+		writeln(z);
 	end;
 
 	function testMixedType(x,y:integer):integer;
@@ -85,17 +87,20 @@ program helloworld;
 		testRecurveFunc := x + y;
 	end;
 	begin
+		inta := 100;
+		texta := 'abafqweradf';
+		writeln(texta[5]);
+		writeln('##################');
 		testInsideFunc(10, 1);
-		writeln(1111111111);
-		testMixedArg(10, 'abcdefg');
-		writeln(1111111111);
+		writeln('##################');
+		testMixedArg(10, 'abcdefg', 'd');
+		writeln('##################');
 		testMixedType(10, 1);
-		writeln(1111111111);
+		writeln('##################');
 		testFunc(10, 1);
-		writeln(1111111111);
+		writeln('##################');
 		testRecurveFunc(10, 1);
-		writeln(1111111111);
-		inta := 2;
+		writeln('##################');
 		writeln(inta);
 	end
 .

@@ -23,7 +23,7 @@
 #define SIZE_CHAR			(1) /* char类型变量占用1字节 */
 #define SIZE_INTEGER		(4) /* integer类型变量占用4字节 */
 #define SIZE_REAL			(4) /* real类型变量占用4字节 */
-#define SIZE_BOOLEAN		SIZE_INTEGER /* boolean类型变量占用4字节 */
+#define SIZE_BOOLEAN		SIZE_CHAR /* boolean类型变量占用1字节 */
 #define SIZE_POINTER		(4) /* pointer类型变量占用4字节 */
 
 /* 对应_symbol_结构体中的defn属性，表示symbol的类型 */
@@ -55,6 +55,9 @@ extern	FILE 	*codfp;
 extern	FILE	*datfp;
 /* 记录编译期间的错误信息 */
 extern  FILE 	*errfp;
+
+/*  */
+int g_is_big_endian;
 
 typedef struct
 {

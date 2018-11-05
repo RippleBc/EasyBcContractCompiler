@@ -449,9 +449,8 @@ int get_symbol_size(symbol *sym)
     case TYPE_INTEGER:
         return  IR->intmetric.size;
     case TYPE_CHAR:
-        return  IR->charmetric.size;
     case TYPE_BOOLEAN:
-        return  IR->intmetric.size;
+        return  IR->charmetric.size;
     case TYPE_REAL:
         return  IR->floatmetric.size;
     case TYPE_STRING:
@@ -478,9 +477,8 @@ int get_symbol_align_size(symbol *sym)
     case TYPE_INTEGER:
         return  IR->intmetric.align;
     case TYPE_CHAR:
-        return  IR->charmetric.align;
     case TYPE_BOOLEAN:
-        return  IR->intmetric.align;
+        return  IR->charmetric.align;
     case TYPE_REAL:
         return  IR->floatmetric.align;
     case TYPE_STRING:

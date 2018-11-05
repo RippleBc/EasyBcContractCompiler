@@ -27,7 +27,7 @@ List top_return_position_stack()
 
 /*  */
 int return_val_deep = STACK_DEEP;
-value return_val_stack[STACK_DEEP];
+unsigned char return_val_stack[STACK_DEEP];
 
 int push_return_val_stack(Symbol p)
 {
@@ -46,18 +46,18 @@ void pop_return_val_stack(Symbol p)
 
 void assign_return_val(Node n, Symbol p)
 {
-  return_val_stack[return_val_deep + p->offset - get_symbol_align_size(p)] = n->val;
+  assign_with_byte_unit(p->type->type_id, &return_val_stack[return_val_deep + p->offset], &(n->val));
 }
 
 
 void load_return_val(Node n, Symbol p)
 {
-  n->val = return_val_stack[return_val_deep + p->offset - get_symbol_align_size(p)];
+  load_with_byte_unit(p->type->type_id, &return_val_stack[return_val_deep + p->offset], &(n->val));
 }
 
 /*  */
 int local_deep = STACK_DEEP;
-value local_stack[STACK_DEEP];
+unsigned char local_stack[STACK_DEEP];
 
 int push_local_stack(Symtab tab)
 {
@@ -77,6 +77,8 @@ void pop_local_stack(Symtab tab)
 void assign_local(Node n, Symbol p, Symbol q)
 {
   int baseOffset = 0;
+  value tmp;
+
   if(p->type->type_id == TYPE_ARRAY)
   {
     baseOffset = p->offset;
@@ -91,7 +93,9 @@ void assign_local(Node n, Symbol p, Symbol q)
         parse_error("assign_local array out of index", p->name);
         return;
       }
-      local_stack[local_deep + baseOffset + i * eleOffset].c = n->val.s[i]; 
+
+      tmp.c = n->val.s[i];
+      assign_with_byte_unit(TYPE_CHAR, &local_stack[local_deep + baseOffset + i * eleOffset], &tmp); 
     }
   }
   else
@@ -101,7 +105,7 @@ void assign_local(Node n, Symbol p, Symbol q)
       baseOffset = q->offset;
     }
 
-    local_stack[local_deep + baseOffset + p->offset] = n->val; 
+    assign_with_byte_unit(p->type->type_id, &local_stack[local_deep + baseOffset + p->offset], &(n->val)); 
     // printf("assign_local %s offset:%d val:%d\n", p->name, local_deep + baseOffset + p->offset, local_stack[local_deep + baseOffset + p->offset].i);
   }
   
@@ -116,13 +120,13 @@ void load_local(Node n, Symbol p, Symbol q)
   }
 
   // printf("load_local %s offset:%d val:%d\n", p->name, local_deep + baseOffset + p->offset, local_stack[local_deep + baseOffset + p->offset].i);
-  n->val = local_stack[local_deep + baseOffset + p->offset];
+  load_with_byte_unit(p->type->type_id, &local_stack[local_deep + baseOffset + p->offset], &(n->val));
 }
 
 
 /*  */
 int args_deep = STACK_DEEP;
-value args_stack[STACK_DEEP];
+unsigned char args_stack[STACK_DEEP];
 
 int push_args_stack(Symtab tab)
 {
@@ -142,6 +146,8 @@ void pop_args_stack(Symtab tab)
 void assign_arg(Node n, Symbol p, Symbol q)
 {
   int baseOffset = 0;
+  value tmp;
+
   if(p->type->type_id == TYPE_ARRAY)
   {
     baseOffset = p->offset;
@@ -156,8 +162,9 @@ void assign_arg(Node n, Symbol p, Symbol q)
         parse_error("assign_local array out of index", p->name);
         return;
       }
-      args_stack[args_deep + baseOffset + i * eleOffset].c = n->val.s[i];
-      // printf("assign_arg %s %d %c\n", p->name, args_deep + baseOffset + (i - 1) * eleOffset, args_stack[args_deep + baseOffset + (i - 1) * eleOffset].c);
+
+      tmp.c = n->val.s[i];
+      assign_with_byte_unit(TYPE_CHAR, &args_stack[args_deep + baseOffset + i * eleOffset], &tmp);
     }
   }
   else
@@ -167,7 +174,7 @@ void assign_arg(Node n, Symbol p, Symbol q)
       baseOffset = q->offset;
     }
 
-    args_stack[args_deep + baseOffset + p->offset] = n->val;
+    assign_with_byte_unit(p->type->type_id, &args_stack[args_deep + baseOffset + p->offset], &(n->val));
     // printf("assign_arg %s offset:%d val:%d\n", p->name, args_deep + baseOffset + p->offset, args_stack[args_deep + baseOffset + p->offset].i);
   }
 }
@@ -182,5 +189,5 @@ void load_arg(Node n, Symbol p, Symbol q)
   }
 
   // printf("load_arg %s offset:%d val:%d\n", p->name, args_deep + baseOffset + p->offset, args_stack[args_deep + baseOffset + p->offset].i);
-  n->val = args_stack[args_deep + baseOffset + p->offset];
+  load_with_byte_unit(p->type->type_id, &args_stack[args_deep + baseOffset + p->offset], &(n->val));
 }
