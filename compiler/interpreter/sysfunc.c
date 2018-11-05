@@ -40,7 +40,6 @@ void read(Node node)
     }
     break;
   }
-  
 
   /*  */
   Symbol p, q;

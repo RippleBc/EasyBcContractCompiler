@@ -356,23 +356,7 @@ void node_process(Node node)
     break;
     case ADDRG:
     {
-      Symbol p = node->syms[0];
-      if(top_symtab_stack()->level == 0)
-      {
-        load_global(node, p, NULL);
-      }
-      else
-      {
-        /* 参数局部类型，从栈取值 */
-        if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
-        {
-          load_arg(node, p, NULL);
-        }
-        else {
-          /* 普通局部变量，从栈取值 */
-          load_local(node, p, NULL);
-        }
-      }
+
     }
     break;
     case LOAD:
@@ -546,9 +530,28 @@ void node_process(Node node)
       /*  */
       node_process(node->kids[0]);
 
-      arithmetical_operate(node);
+      /*  */
+      Node addr = node->kids[0];
+      p = addr->syms[0];
+      if(top_symtab_stack()->level == 0)
+      {
+        load_global(addr, p, NULL);
+      }
+      else
+      {
+        /* 参数局部类型，从栈取值 */
+        if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
+        {
+          load_arg(addr, p, NULL);
+        }
+        else {
+          /* 普通局部变量，从栈取值 */
+          load_local(addr, p, NULL);
+        }
+      }
 
-      p = node->kids[0]->syms[0];
+      /*  */
+      arithmetical_operate(node);
 
       /*  */
       if(top_symtab_stack()->level == 0)

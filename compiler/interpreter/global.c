@@ -33,7 +33,7 @@ void assign_global(Node n, Symbol p, Symbol q)
       baseOffset = q->offset;
       // printf("assign_global baseOffset %d\n", baseOffset);
     }
-
+    
     global_queue[baseOffset + p->offset] = n->val; 
     // printf("assign_global ################## %d %s %d\n", baseOffset + p->offset, p->name, global_queue[baseOffset + p->offset].i);
   }
