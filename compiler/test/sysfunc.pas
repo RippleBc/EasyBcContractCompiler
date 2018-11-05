@@ -17,6 +17,7 @@ program helloworld;
 		inta4: text;
 		intd : arr;
 		inte : date;
+		intf : boolean;
 	begin
 		intd[1] := 10;
 		intd[2] := 20;
@@ -48,7 +49,20 @@ program helloworld;
 		writeln(1.234);
 		writeln(1234567890);
 
-		readln(inta3);
+		// readln(intd[1]);
+		writeln(intd[1]);
+
+		// readln(inta3);
 		writeln(inta3);
+
+		intf := true;
+		// readln(intf);
+		writeln(intf);
+
+		// readln(inta2);
+		writeln(inta2);
+
+		// readln(inta3);
+		writeln('abdqrgadfq');
 	end
 .

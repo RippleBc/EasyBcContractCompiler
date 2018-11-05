@@ -77,18 +77,6 @@ void read(Node node)
       ASSIGN_VAL;
     }
     break;
-    case TYPE_ARRAY:
-    {
-      if(node->type->last->type->type_id == TYPE_CHAR)
-      {
-        ASSIGN_VAL;
-      }
-      else
-      {
-        parse_error("wrong type", "");
-      }
-    }
-    break;
     default:
     {
       parse_error("wrong type", "");
@@ -130,18 +118,6 @@ void write(Node node)
     case TYPE_STRING:
     {
       printf("result: %s\n", node->kids[0]->val.s);
-    }
-    break;
-    case TYPE_ARRAY:
-    {
-      if(node->type->last->type->type_id == TYPE_CHAR)
-      {
-        printf("result: %s\n", node->kids[0]->val.s);
-      }
-      else
-      {
-        parse_error("wrong type", "");
-      }
     }
     break;
     default:
