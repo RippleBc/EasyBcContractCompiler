@@ -1,6 +1,6 @@
 #include "../common.h"
 
-#define ASSIGN_VAL if(top_symtab_stack()->level == 0) \
+#define ASSIGN_VAL(np, p, q) if(top_symtab_stack()->level == 0) \
       { \
         assign_global(np, p, q); \
       } \
@@ -42,7 +42,7 @@ void read(Node node)
   }
 
   /*  */
-  Symbol p, q;
+  Symbol p = NULL, q = NULL;
   if(generic(np->op) == ARRAY || generic(np->op) == FIELD)
   {
     /* syms[0]表示数组或者记录，syms[1]表示数组成员或者属性，np->kids[0]表示ARRAY或者FIELD节点 */
@@ -54,30 +54,32 @@ void read(Node node)
     p = np->syms[0];
   }
 
+  printf("pread name %s, offset %d\n", p->name, p->offset);
+
   switch(np->type->type_id)
   {
   case TYPE_INTEGER:
   {
     np->val.i = atoi(str);
-    ASSIGN_VAL;
+    ASSIGN_VAL(np, p, q);
   }
   break;
   case TYPE_CHAR:
   {
     np->val.c = str[0];
-    ASSIGN_VAL;
+    ASSIGN_VAL(np, p, q);
   }
   break;
   case TYPE_BOOLEAN:
   {
     np->val.b = atoi(str);
-    ASSIGN_VAL;
+    ASSIGN_VAL(np, p, q);
   }
   break;
   case TYPE_REAL:
   {
     np->val.f = atof(str);
-    ASSIGN_VAL;
+    ASSIGN_VAL(np, p, q);
   }
   break;
   default:

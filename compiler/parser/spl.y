@@ -1143,6 +1143,7 @@ oLP args_list oRP
 		else
 		{
 			t = address_tree($3->u.generic.sym);
+			printf("pREAD symbol name %s, offset %d\n", t->u.generic.sym->name, t->u.generic.sym->offset);
 		}
 	}
 	else
