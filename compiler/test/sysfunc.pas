@@ -12,12 +12,12 @@ program helloworld;
 		age = 1..150;
 	var
 		inta, intb, intc: integer;
-		inta1, inta2: real;
-		inta3: char;
-		inta4: text;
+		reala1, reala2: real;
+		chara: char;
+		stringa: text;
 		intd : arr;
 		inte : date;
-		intf : boolean;
+		booleana : boolean;
 	begin
 		intd[1] := 10;
 		intd[2] := 20;
@@ -32,13 +32,13 @@ program helloworld;
 		writeln(intc);
 		writeln(1234567890);
 		
-		inta1 := 1.23;
-		inta2 := inta1 + 1.56;
-		writeln(inta2);
+		reala1 := 1.23;
+		reala2 := reala1 + 1.56;
+		writeln(reala2);
 		writeln(1234567890);
 
-		inta3 := 'a';
-		writeln(inta3);
+		chara := 'a';
+		writeln(chara);
 		writeln(1234567890);
 
 		writeln('abcdefg');
@@ -49,20 +49,12 @@ program helloworld;
 		writeln(1.234);
 		writeln(1234567890);
 
-		// readln(intd[1]);
-		writeln(intd[1]);
-
-		// readln(inta3);
-		writeln(inta3);
-
-		intf := true;
-		// readln(intf);
-		writeln(intf);
-
-		// readln(inta2);
-		writeln(inta2);
-
-		// readln(inta3);
-		writeln('abdqrgadfq');
+		stringa := 'abcdefgafadfafadfafasfadf';
+		writeln(stringa[5]);
+		writeln(1234567890);
+		
+		booleana := true;
+		readln(intd[1]);
+		writeln(intd[1], chara, booleana, reala2, 'abdqrgadfq');
 	end
 .

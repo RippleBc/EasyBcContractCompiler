@@ -193,7 +193,7 @@ void node_process(Node node)
     {
       case pREAD:
       {
-        
+        read(node);
       }
       break;
       case pWRITELN:

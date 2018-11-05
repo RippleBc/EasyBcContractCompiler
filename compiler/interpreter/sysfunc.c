@@ -55,25 +55,25 @@ void read(Node node)
     {
     case TYPE_INTEGER:
     {
-      node->val.i = atoi(str);
+      np->val.i = atoi(str);
       ASSIGN_VAL;
     }
     break;
     case TYPE_CHAR:
     {
-      node->val.c = str[0];
+      np->val.c = str[0];
       ASSIGN_VAL;
     }
     break;
     case TYPE_BOOLEAN:
     {
-      node->val.b = atoi(str);
+      np->val.b = atoi(str);
       ASSIGN_VAL;
     }
     break;
     case TYPE_REAL:
     {
-      node->val.f = atof(str);
+      np->val.f = atof(str);
       ASSIGN_VAL;
     }
     break;
@@ -97,27 +97,27 @@ void write(Node node)
     {
     case TYPE_INTEGER:
     {
-      printf("result: %d\n", node->kids[0]->val.i);
+      printf("result: %d\n", np->kids[0]->val.i);
     }
     break;
     case TYPE_CHAR:
     {
-      printf("result: %c\n", node->kids[0]->val.c);
+      printf("result: %c\n", np->kids[0]->val.c);
     }
     break;
     case TYPE_BOOLEAN:
     {
-      printf("result: %d\n", node->kids[0]->val.i);
+      printf("result: %d\n", np->kids[0]->val.i);
     }
     break;
     case TYPE_REAL:
     {
-      printf("result: %f\n", node->kids[0]->val.f);
+      printf("result: %f\n", np->kids[0]->val.f);
     }
     break;
     case TYPE_STRING:
     {
-      printf("result: %s\n", node->kids[0]->val.s);
+      printf("result: %s\n", np->kids[0]->val.s);
     }
     break;
     default:
