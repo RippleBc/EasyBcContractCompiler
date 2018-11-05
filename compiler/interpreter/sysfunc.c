@@ -54,7 +54,7 @@ void read(Node node)
     p = np->syms[0];
   }
 
-  switch(np->type->type_id)
+  switch(p->type->type_id)
   {
   case TYPE_INTEGER:
   {
@@ -90,10 +90,31 @@ void read(Node node)
 void write(Node node)
 {
 	Node np;
+  Node exp;
+  Symbol p = NULL;
 
 	for(np = node->kids[0]; np != NULL; np = np->kids[1])
-  {
-    switch(np->type->type_id)
+  {    
+    exp = np->kids[0];
+
+    if(generic(exp->op) == LOAD)
+    {
+      if(exp->kids[0])
+      {
+        /*  */
+        p = exp->kids[0]->syms[1];
+      }
+      else
+      {
+        p = exp->syms[0];
+      }
+    }
+    else
+    {
+      p = exp->syms[0];
+    }
+
+    switch(p->type->type_id)
     {
     case TYPE_INTEGER:
     {
