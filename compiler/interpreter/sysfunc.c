@@ -54,8 +54,6 @@ void read(Node node)
     p = np->syms[0];
   }
 
-  printf("pread name %s, offset %d\n", p->name, p->offset);
-
   switch(np->type->type_id)
   {
   case TYPE_INTEGER:

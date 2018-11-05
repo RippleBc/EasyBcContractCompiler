@@ -45,3 +45,7 @@ pre:
 clean:
 	rm -f debug/splc
 	rm -f $(OBJS_DIR)/*.o
+	rm -f parser/rule.dot parser/rule.output
+
+cleanall:clean
+	rm -f parser/rule.h parser/rule.c parser/lex.yy.c
