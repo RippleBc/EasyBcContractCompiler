@@ -309,6 +309,9 @@ void node_process(Node node)
     break;
     case ARRAY:
     {
+      Symbol p = NULL;
+      char eleName[NAME_LEN];
+
       /* 数组下标 */
       node_process(node->kids[0]);
 
@@ -322,8 +325,32 @@ void node_process(Node node)
         return;
       }
 
-      Symbol p = clone_symbol(node->syms[0]->type_link->last);
-      p->offset = (index - startIndex) * get_symbol_align_size(p);
+      p = node->syms[0]->type_link->last;
+      while(p != NULL)
+      {
+        snprintf(eleName, NAME_LEN, "%s_%d", node->syms[0]->name, index);
+
+        if(!strcmp(eleName, p->name))
+        {
+          break;
+        }
+        p = p->next;
+      }
+
+      if(p == NULL)
+      {
+        /*  */
+        p = clone_symbol(node->syms[0]->type_link->last);
+        p->offset = (index - startIndex) * get_symbol_align_size(p);
+
+        /*  */
+        snprintf(p->name, NAME_LEN, "%s_%d", node->syms[0]->name, index);
+
+        p->next = node->syms[0]->type_link->last;
+        node->syms[0]->type_link->last = p;
+      }
+      
+
       node->syms[1] = p;
     }
     break;
