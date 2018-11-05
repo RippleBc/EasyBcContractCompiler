@@ -118,27 +118,27 @@ void write(Node node)
     {
     case TYPE_INTEGER:
     {
-      printf("result: %d\n", np->kids[0]->val.i);
+      printf("result: %d\n", np->val.i);
     }
     break;
     case TYPE_CHAR:
     {
-      printf("result: %c\n", np->kids[0]->val.c);
+      printf("result: %c\n", np->val.c);
     }
     break;
     case TYPE_BOOLEAN:
     {
-      printf("result: %d\n", np->kids[0]->val.i);
+      printf("result: %d\n", np->val.i);
     }
     break;
     case TYPE_REAL:
     {
-      printf("result: %f\n", np->kids[0]->val.f);
+      printf("result: %f\n", np->val.f);
     }
     break;
     case TYPE_STRING:
     {
-      printf("result: %s\n", np->kids[0]->val.s);
+      printf("result: %s\n", np->val.s);
     }
     break;
     default:
