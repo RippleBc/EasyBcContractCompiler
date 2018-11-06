@@ -25,8 +25,6 @@ enum {
     CALL = 13 << 4,
     LOAD = 14 << 4,
     ADDRG = 16 << 4,
-    ADDRF = 17 << 4,
-    ADDRL = 18 << 4,
     ADD = 19 << 4,
     SUB = 20 << 4,
     LSH = 21 << 4,

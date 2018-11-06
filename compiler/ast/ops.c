@@ -15,8 +15,6 @@ ops_entry ops_table[] = {
 	{"CALL", CALL},
 	{"LOAD", LOAD},
 	{"ADDRG", ADDRG},
-	{"ADDRF", ADDRF},
-	{"ADDRL", ADDRL},
 	{"ADD", ADD},
 	{"SUB", SUB},
 	{"LSH", LSH},

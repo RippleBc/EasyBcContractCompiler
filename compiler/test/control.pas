@@ -30,7 +30,7 @@ program helloworld;
 		intc := ((intb + inta) + 3 * (intb + inta)) / 4 + intd[2] * 2 + inte.month + intd[1];
 		writeln(intc);
 		writeln('###################');
-		
+
 		inta1 := 1.23;
 		inta2 := inta1 + 1.56;
 		writeln(inta2);
