@@ -205,6 +205,7 @@ int main(int argc, char **argv)
     global_env.u.program.argv = dargv;
 
     yyparse();
+
     fclose(ifp);
 
     if (!err_occur())

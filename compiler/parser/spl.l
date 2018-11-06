@@ -33,17 +33,6 @@ static int id_or_keyword(char *lex);
 						line_pos += strlen(yytext);
 
 static char tmp[NAME_LEN];
-
-#define MAX_OP_CODES_NUM 512
-
-struct _op_code_ {
-    int code;
-    char name[NAME_LEN];
-    int in;
-    int out;
-};
-int op_code_index = 0;
-struct _op_code_ *op_codes[MAX_OP_CODES_NUM];
 %}
 
 letter	[_a-zA-Z]
@@ -52,7 +41,7 @@ dec		[0-9]
 hex		[0-9a-fA-F]
 oct		[0-7]
 
-%s star_slash_comment slash_slash_comment op_code op_code_out
+%s star_slash_comment slash_slash_comment
 %%
 "{" {
 	int c;
@@ -435,28 +424,6 @@ oct		[0-7]
 . {
 	/* 匹配除了换行符之外的所有字符 */
 	DUMP_SOURCE
-}
-
-<op_code>"0x"[a-z0-9]+ {
-	NEW0(op_codes[op_code_index], PERM);
-
-	op_codes[op_code_index] = stoi(yytext, 16);
-}
-
-<op_code>[A-Z]+ {
-	strncpy(op_codes[op_code_index]->name, yytext, NAME_LEN);
-}
-
-<op_code>[0-9]+ {
-	op_codes[op_code_index]->in = stoi(yytext, 10);
-
-	BEGIN(op_code_out);
-}
-
-<op_code_out>[0-9] {
-	op_codes[op_code_index]->out = stoi(yytext, 10);
-
-	BEGIN(op_code_out);
 }
 %%
 
