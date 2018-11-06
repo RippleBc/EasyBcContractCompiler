@@ -10,9 +10,6 @@ List g_routine_forest;
 /*  */
 void interpret(List routine_forest, List dag)
 {
-
-  printf("begin to interpret\n");
-
   g_routine_forest = routine_forest;
 
   Node n;
@@ -120,9 +117,6 @@ void jump_to_label(List l, Symbol label)
 
 void node_process(Node node)
 {
-
-  // printf("node_process %s\n", get_op_name(generic(node->op)));
-
   /* 流程控制相关 */
   switch (generic(node->op))
   {

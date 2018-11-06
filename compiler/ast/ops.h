@@ -4,14 +4,9 @@
 /* system routine and functions. */
 enum {
     SYS_ABS = 1,
-    SYS_ODD,
-    SYS_PRED,
     SYS_SQR,
     SYS_SQRT,
-    SYS_SUCC,
-    SYS_READ,
     SYS_READLN,
-    SYS_WRITE,
     SYS_WRITELN
 };
 
