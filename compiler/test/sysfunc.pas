@@ -30,28 +30,28 @@ program helloworld;
 		intb := 30;
 		intc := ((intb + inta) + 3 * (intb + inta)) / 4 + intd[2] * 2 + inte.month + intd[1];
 		writeln(intc);
-		writeln(1234567890);
+		writeln('####################');
 		
 		reala1 := 1.23;
 		reala2 := reala1 + 1.56;
 		writeln(reala2);
-		writeln(1234567890);
+		writeln('####################');
 
 		chara := 'a';
 		writeln(chara);
-		writeln(1234567890);
+		writeln('####################');
 
 		writeln('abcdefg');
 		writeln('abcdefgafadfafadfafasfadf');
 		writeln('abcdefg');
-		writeln(1234567890);
+		writeln('####################');
 
 		writeln(1.234);
-		writeln(1234567890);
+		writeln('####################');
 
 		stringa := 'abcdefgafadfafadfafasfadf';
 		writeln(stringa[5]);
-		writeln(1234567890);
+		writeln('####################');
 
 		booleana := true;
 		readln(intd[1]);

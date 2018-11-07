@@ -7,19 +7,40 @@
 List g_cp;
 List g_routine_forest;
 
-#define CODE_MAX_NUM
-int code_byte_index = 0;
-unsigned char code_byte_sequence[CODE_MAX_NUM];
-void push_code(int  )
+#define CODE_MAX_NUM 512
+static int code_byte_index = 0;
+static unsigned char code_byte_sequence[CODE_MAX_NUM];
+static int push_data(Type t, Value v)
 {
-  assign_with_byte_unit(p->type->type_id, code_byte_sequence[code_byte_index++])
+  /*  */
+  assign_with_byte_unit(t, code_byte_sequence[code_byte_index], v);
+
+  /*  */
+  code_byte_index += get_type_size(t);
+
+  /*  */
   if(code_byte_index >= CODE_MAX_NUM)
   {
-    printf("code_byte_sequence is empty\n");
-    return;
+    printf("code_byte_sequence overflow\n");
+    return 0;
   }
 
+  return 1;
+}
+
+static int push_code(int code)
+{
+  /*  */
+  if(code_byte_index >= CODE_MAX_NUM)
+  {
+    printf("code_byte_sequence overflow\n");
+    return 0;
+  }
+
+  /*  */
   code_byte_sequence[code_byte_index++] = code;
+
+  return 1;
 }
 
 
@@ -29,7 +50,29 @@ struct _label_detail_
   int code_index;
   char name[NAME_LEN];
 };
-struct LabelDetail label_sequence[CODE_MAX_NUM];
+static int label_sequence_index = 0;
+static LabelDetail label_sequence[CODE_MAX_NUM];
+static void push_label(char *name, int code_index)
+{
+  NEW0(label_sequence[label_sequence_index], PERM);
+
+  /*  */
+  label_sequence[label_sequence_index]->code_index = code_index;
+  strncpy(label_sequence[label_sequence_index]->name, name, NAME_LEN);
+}
+
+static int get_label_code_index(char *name)
+{
+  int i = 0;
+  while(i < CODE_MAX_NUM && label_sequence[i] != NULL)
+  {
+    if(!strcmp(label_sequence[i]->name, name))
+    {
+      return label_sequence[i]->code_index;
+    }
+    return -1;
+  }
+}
 
 /*  */
 void interpret(List routine_forest, List dag)
@@ -146,12 +189,28 @@ void node_process(Node node)
   {
   case LABEL:
   {
-    
+    Symbol p = node->syms[0];
+
+    /*  */
+    push_label(p->name, code_byte_index);
   }
   break;
   case JUMP:
   {
-    jump_to_label(g_cp, node->syms[0]);
+    Symbol p = node->syms[0];
+
+    jump_to_label(g_cp, p);
+
+    /*  */
+    int stack_push_code = get_op_code("PUSH");
+    push_code(stack_push_code);
+    /*  */
+    value label_index;
+    label_index.i = get_label_code_index(p->name);
+    push_data(find_type_by_id(TYPE_INTEGER), &label_index);
+    /*  */
+    int jump_code = get_op_code("JUMP");
+    push_code(jump_code);
   }
   break;
   case COND:
@@ -162,11 +221,28 @@ void node_process(Node node)
     {
     case TYPE_INTEGER:
     {
+      /*  */
+      int stack_push_code = get_op_code("PUSH");
+      push_code(stack_push_code);
+      /*  */
+      value cond;
+
       if((node->kids[0]->val.i == 0 && node->u.cond.true_or_false == false) ||
       (node->kids[0]->val.i != 0 && node->u.cond.true_or_false == true))
       {
         jump_to_label(g_cp, node->u.cond.label);
+
+        /*  */
+        cond.b = true;
       }
+      else
+      {
+        /*  */
+        cond.b = false;
+      }
+
+      /*  */
+      push_data(find_type_by_id(TYPE_BOOLEAN), &cond);
     }
     break;
     case TYPE_CHAR:
@@ -176,11 +252,28 @@ void node_process(Node node)
     break;
     case TYPE_BOOLEAN:
     {
+      /*  */
+      int stack_push_code = get_op_code("PUSH");
+      push_code(stack_push_code);
+      /*  */
+      value cond;
+
       if((node->kids[0]->val.b == false && node->u.cond.true_or_false == false) ||
       (node->kids[0]->val.b == true && node->u.cond.true_or_false == true))
       {
         jump_to_label(g_cp, node->u.cond.label);
+
+        /*  */
+        cond.b = true;
       }
+      else
+      {
+        /*  */
+        cond.b = false;
+      }
+
+      /*  */
+      push_data(find_type_by_id(TYPE_BOOLEAN), &cond);
     }
     break;
     case TYPE_REAL:
@@ -194,6 +287,17 @@ void node_process(Node node)
     }
     break;
     }
+
+    /*  */
+    value label_index;
+    label_index.i = get_label_code_index(node->u.cond.label->name);
+    push_data(find_type_by_id(TYPE_INTEGER), &label_index);
+    /*  */
+    int stack_push_code = get_op_code("PUSH");
+    push_code(stack_push_code);
+    /*  */
+    int jump_code = get_op_code("JUMP");
+    push_code(jump_code);
   }
   break;
   }
@@ -317,7 +421,15 @@ void node_process(Node node)
   {
     case CNST:
     {
-      node->val = node->syms[0]->v;
+      Symbol p = node->syms[0];
+      node->val = p->v;
+
+      /*  */
+      int code = get_op_code("PUSH");
+      /*  */
+      push_code(code);
+      /*  */
+      push_data(p->type, &(p->v));
     }
     break;
     case FIELD:
@@ -423,6 +535,13 @@ void node_process(Node node)
           load_local(node, p, q);
         }
       }
+
+      /*  */
+      int code = get_op_code("PUSH");
+      /*  */
+      push_code(code);
+      /*  */
+      push_data(p->type, &(node->val));
     }
     break;
     case ASGN:
@@ -500,15 +619,24 @@ void node_process(Node node)
     case SUB:
     case MUL:
     case DIV:
+    case MOD:
+    {
+
+    }
     case AND:
     case OR:
+    {
+
+    }
     case EQ:
     case NE:
+    {
+
+    }
     case GE:
     case GT:
     case LE:
     case LT:
-    case MOD:
     {
       /* 计算左表达式AST节点对应的值 */
       if(node->kids[0] != NULL)
@@ -523,6 +651,13 @@ void node_process(Node node)
       }
 
       arithmetical_operate(node);
+
+      /*  */
+      char *code_name = get_op_name(generic(node->op));
+      /*  */
+      int code = get_op_code(code_name);
+      /*  */
+      push_code(code);
     }
     break;
   }
@@ -539,6 +674,13 @@ void node_process(Node node)
       node_process(node->kids[0]);
 
       arithmetical_operate(node);
+
+      /*  */
+      char *code_name = get_op_name(generic(node->op));
+      /*  */
+      int code = get_op_code(code_name);
+      /*  */
+      push_code(code);
     }
     case INCR:
     case DECR:
