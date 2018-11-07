@@ -9,7 +9,7 @@ List g_routine_forest;
 
 #define CODE_MAX_NUM 512
 static int code_byte_index = 0;
-static unsigned char code_byte_sequence[CODE_MAX_NUM];
+unsigned char code_byte_sequence[CODE_MAX_NUM];
 static int push_data(Type t, Value v)
 {
   /*  */
@@ -131,6 +131,14 @@ void interpret(List routine_forest, List dag)
     {
       break;
     }
+  }
+
+  /*  */
+  int i = 0;
+  while(i < CODE_MAX_NUM && code_byte_sequence[i] != NULL)
+  {
+    printf("%x ", code_byte_sequence[i]);
+    i++;
   }
 }
 
