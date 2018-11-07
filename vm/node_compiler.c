@@ -4,19 +4,26 @@
 #include  "../parser/error.h"
 #include  "../parser/rule.h"
 
+static void record_command_data_sequence(int size);
+
 List g_cp;
 List g_routine_forest;
 
+/*  */
 #define CODE_MAX_NUM 512
 static int code_byte_index = 0;
 static unsigned char code_byte_sequence[CODE_MAX_NUM];
 static int push_data(Type t, Value v)
 {
   /*  */
-  assign_with_byte_unit(t, code_byte_sequence[code_byte_index], v);
+  assign_with_byte_unit(t->type_id, &code_byte_sequence[code_byte_index], v);
 
   /*  */
-  code_byte_index += get_type_align_size(t);
+  int data_size = get_type_align_size(t);
+  code_byte_index += data_size;
+
+  /*  */
+  record_command_data_sequence(data_size);
 
   /*  */
   if(code_byte_index >= CODE_MAX_NUM)
@@ -26,8 +33,7 @@ static int push_data(Type t, Value v)
   }
   return 1;
 }
-
-static int push_code(int code)
+static int push_command(int code)
 {
   /*  */
   if(code_byte_index >= CODE_MAX_NUM)
@@ -38,44 +44,87 @@ static int push_code(int code)
 
   /*  */
   code_byte_sequence[code_byte_index++] = code;
+  
+  /*  */
+  record_command_data_sequence(1);
+
   return 1;
 }
 
-
+/*  */
 typedef struct _label_detail_ *LabelDetail;
 struct _label_detail_
 {
   int code_index;
   char name[NAME_LEN];
 };
-static int label_sequence_index = 0;
-static LabelDetail label_sequence[CODE_MAX_NUM];
+static int label_detail_index = 0;
+static LabelDetail label_detail_sequence[CODE_MAX_NUM];
 static void push_label(char *name, int code_index)
 {
-  NEW0(label_sequence[label_sequence_index], PERM);
+  NEW0(label_detail_sequence[label_detail_index], PERM);
 
   /*  */
-  label_sequence[label_sequence_index]->code_index = code_index;
-  strncpy(label_sequence[label_sequence_index]->name, name, NAME_LEN);
-}
+  label_detail_sequence[label_detail_index]->code_index = code_index;
+  strncpy(label_detail_sequence[label_detail_index]->name, name, NAME_LEN);
 
-static int get_label_code_index(char *name)
+  label_detail_index ++;
+}
+static int get_label_index(char *name)
 {
   int i = 0;
-  while(i < CODE_MAX_NUM && label_sequence[i] != NULL)
+  while(i < label_detail_index)
   {
-    if(!strcmp(label_sequence[i]->name, name))
+    if(!strcmp(label_detail_sequence[i]->name, name))
     {
-      return label_sequence[i]->code_index;
+      return label_detail_sequence[i]->code_index;
     }
-    return -1;
+
+    i++;
   }
+  return -1;
+}
+
+/*  */
+struct _jump_detail_
+{
+  int code_index;
+  char name[NAME_LEN];
+};
+typedef struct _jump_detail_ *JumpDetail;
+static int jump_detail_index = 0;
+static JumpDetail jump_detail_sequence[CODE_MAX_NUM];
+static void push_jump_detail(char *name, int index)
+{
+  printf("get jump detail name: %s, index %d\n", name, index);
+
+  NEW0(jump_detail_sequence[jump_detail_index], PERM);
+
+  strncpy(jump_detail_sequence[jump_detail_index]->name, name, NAME_LEN);
+  jump_detail_sequence[jump_detail_index]->code_index = index;
+  
+  jump_detail_index++;
+}
+
+/*  */
+static int command_data_trace = 0;
+static void record_command_data_sequence(int size)
+{
+  command_data_trace += size;
+}
+static void recover_command_data_sequence()
+{
+  code_byte_index -= command_data_trace;
+  command_data_trace = 0;
+}
+static void reset_command_data_sequence()
+{
+  command_data_trace = 0;
 }
 
 /*  */
 void ast_compile(List routine_forest, List dag)
 {
-  return;
   printf("\n\n\n\n");
 
   g_routine_forest = routine_forest;
@@ -95,7 +144,30 @@ void ast_compile(List routine_forest, List dag)
   }
 
   /*  */
+  push_symtab_stack(Global_symtab);
+  /*  */
   int i = 0;
+  while(i < jump_detail_index)
+  {
+    /*  */
+    char *label_name = jump_detail_sequence[i]->name;
+    /*  */
+    int label_index = get_label_index(label_name);
+    /*  */
+    int jump_index = jump_detail_sequence[i]->code_index;
+
+    /*  */
+    value v_jump_code;
+    v_jump_code.i = label_index;
+    printf("reset jump position name: %s, index: %d, label_index: %x\n", label_name, jump_index, label_index);
+    assign_with_byte_unit(TYPE_INTEGER, &code_byte_sequence[jump_index], &v_jump_code);
+
+    i++;
+  }
+
+  printf("begin afadfafasf\n");
+  /*  */
+  i = 0;
   while(i < code_byte_index)
   {
     printf("%x ", code_byte_sequence[i]);
@@ -121,16 +193,17 @@ void node_compile(Node node)
     Symbol p = node->syms[0];
 
     /*  */
-    int stack_push_code = get_op_code_by_name("PUSH");
-    push_code(stack_push_code);
+    int command_push_code = get_op_code_by_name("PUSH");
+    push_command(command_push_code);
+    /* record the jump position */
+    push_jump_detail(p->name, code_byte_index);
     /*  */
-    value label_index;
-    label_index.i = get_label_code_index(p->name);
-    push_data(find_type_by_id(TYPE_INTEGER), &label_index);
-
+    value jump_position;
+    jump_position.i = -1;
+    push_data(find_type_by_id(TYPE_INTEGER), &jump_position);
     /*  */
     int jump_code = get_op_code_by_name("JUMP");
-    push_code(jump_code);
+    push_command(jump_code);
   }
   break;
   case COND:
@@ -142,8 +215,8 @@ void node_compile(Node node)
     case TYPE_INTEGER:
     {
       /*  */
-      int stack_push_code = get_op_code_by_name("PUSH");
-      push_code(stack_push_code);
+      int command_push_code = get_op_code_by_name("PUSH");
+      push_command(command_push_code);
       /*  */
       value cond;
 
@@ -171,8 +244,8 @@ void node_compile(Node node)
     case TYPE_BOOLEAN:
     {
       /*  */
-      int stack_push_code = get_op_code_by_name("PUSH");
-      push_code(stack_push_code);
+      int command_push_code = get_op_code_by_name("PUSH");
+      push_command(command_push_code);
       /*  */
       value cond;
 
@@ -204,16 +277,19 @@ void node_compile(Node node)
     break;
     }
 
+    /* record the jump position */
+    Symbol p = node->u.cond.label;
+    push_jump_detail(p->name, code_byte_index);
     /*  */
-    value label_index;
-    label_index.i = get_label_code_index(node->u.cond.label->name);
-    push_data(find_type_by_id(TYPE_INTEGER), &label_index);
+    value jump_position;
+    jump_position.i = -1;
+    push_data(find_type_by_id(TYPE_INTEGER), &jump_position);
     /*  */
-    int stack_push_code = get_op_code_by_name("PUSH");
-    push_code(stack_push_code);
+    int command_push_code = get_op_code_by_name("PUSH");
+    push_command(command_push_code);
     /*  */
     int jump_code = get_op_code_by_name("JUMP");
-    push_code(jump_code);
+    push_command(jump_code);
   }
   break;
   }
@@ -343,7 +419,7 @@ void node_compile(Node node)
       /*  */
       int code = get_op_code_by_name("PUSH");
       /*  */
-      push_code(code);
+      push_command(code);
       /*  */
       push_data(p->type, &(p->v));
     }
@@ -398,6 +474,9 @@ void node_compile(Node node)
       
 
       node->syms[1] = p;
+
+      /*  */
+      recover_command_data_sequence();
     }
     break;
     case ADDRG:
@@ -455,7 +534,7 @@ void node_compile(Node node)
       /*  */
       int code = get_op_code_by_name("PUSH");
       /*  */
-      push_code(code);
+      push_command(code);
       /*  */
       push_data(p->type, &(node->val));
     }
@@ -513,6 +592,8 @@ void node_compile(Node node)
           assign_local(node->kids[1], p, q);
         }
       }
+
+      reset_command_data_sequence();
     }
     break;
   }
@@ -573,7 +654,7 @@ void node_compile(Node node)
       /*  */
       int code = get_op_code_by_name(code_name);
       /*  */
-      push_code(code);
+      push_command(code);
     }
     break;
   }
@@ -596,7 +677,7 @@ void node_compile(Node node)
       /*  */
       int code = get_op_code_by_name(code_name);
       /*  */
-      push_code(code);
+      push_command(code);
     }
     case INCR:
     case DECR:

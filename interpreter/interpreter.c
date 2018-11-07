@@ -65,14 +65,6 @@ void interpret(List routine_forest, List dag)
       break;
     }
   }
-
-  /*  */
-  // int i = 0;
-  // while(i < CODE_MAX_NUM && code_byte_sequence[i] != NULL)
-  // {
-  //   printf("%x ", code_byte_sequence[i]);
-  //   i++;
-  // }
 }
 
 List find_routine_forest(Symtab ptab)

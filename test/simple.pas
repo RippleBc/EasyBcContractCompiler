@@ -43,5 +43,25 @@ program helloworld;
 		inta4 := 'abcdefg';
 		writeln(inta4[3]);
 		writeln('###################');
+
+		inta := 6;
+		intb := 3;
+		intc := 3;
+		case inta of
+			2: 
+			begin
+			writeln(2);
+			end;
+			5: writeln(5);
+			6:
+				case intb of
+					tue: 
+					begin
+					writeln(3);
+					end;
+					4: writeln(4);
+				end;
+		end;
+		writeln('###################');
 	end
 .
