@@ -442,64 +442,16 @@ int is_symbol(symbol *p, char *name)
     return 1;
 }
 
-int get_symbol_size(symbol *sym)
-{
-    switch(sym->type->type_id)
-    {
-    case TYPE_INTEGER:
-        return  IR->intmetric.size;
-    case TYPE_CHAR:
-    case TYPE_BOOLEAN:
-        return  IR->charmetric.size;
-    case TYPE_REAL:
-        return  IR->floatmetric.size;
-    case TYPE_STRING:
-        return  IR->intmetric.size;
-    case TYPE_ARRAY:
-        internal_error("can not get array symbol size");
-        break;
-    case TYPE_RECORD:
-        internal_error("can not get record symbol size");
-        break;
-    case TYPE_UNKNOWN:
-        internal_error("Unknown type.");
-        break;
-    default:
-        break;
-    }
-    return 0;
-}
-
 int get_symbol_align_size(symbol *sym)
 {
-    switch(sym->type->type_id)
-    {
-    case TYPE_INTEGER:
-        return  IR->intmetric.align;
-    case TYPE_CHAR:
-    case TYPE_BOOLEAN:
-        return  IR->charmetric.align;
-    case TYPE_REAL:
-        return  IR->floatmetric.align;
-    case TYPE_STRING:
-        /*  */
-        return  IR->intmetric.align;
-    case TYPE_ARRAY:
-        /* 用户自定义类型，需要从_type_链表中寻找 */
-        return get_type_size(sym->type_link);
-    case TYPE_RECORD:
-        /* 用户自定义类型，需要从_type_链表中寻找 */
-        return get_type_size(sym->type_link);
-    case TYPE_UNKNOWN:
+    int size = get_type_align_size(sym->type);
+    if(size == 0)
     {
         printf("TYPE_UNKNOWN %s\n", sym->name);
-        internal_error("Unknown type.");
+        return 0;
     }
-        break;
-    default:
-        break;
-    }
-    return 0;
+
+    return size;
 }
 
 symtab *pop_symtab_stack()

@@ -16,12 +16,12 @@ static int push_data(Type t, Value v)
   assign_with_byte_unit(t, code_byte_sequence[code_byte_index], v);
 
   /*  */
-  code_byte_index += get_type_size(t);
+  code_byte_index += get_type_align_size(t);
 
   /*  */
   if(code_byte_index >= CODE_MAX_NUM)
   {
-    printf("code_byte_sequence overflow\n");
+    // printf("code_byte_sequence overflow\n");
     return 0;
   }
 
@@ -33,7 +33,7 @@ static int push_code(int code)
   /*  */
   if(code_byte_index >= CODE_MAX_NUM)
   {
-    printf("code_byte_sequence overflow\n");
+    // printf("code_byte_sequence overflow\n");
     return 0;
   }
 
@@ -134,12 +134,12 @@ void interpret(List routine_forest, List dag)
   }
 
   /*  */
-  int i = 0;
-  while(i < CODE_MAX_NUM && code_byte_sequence[i] != NULL)
-  {
-    printf("%x ", code_byte_sequence[i]);
-    i++;
-  }
+  // int i = 0;
+  // while(i < CODE_MAX_NUM && code_byte_sequence[i] != NULL)
+  // {
+  //   printf("%x ", code_byte_sequence[i]);
+  //   i++;
+  // }
 }
 
 List find_routine_forest(Symtab ptab)
