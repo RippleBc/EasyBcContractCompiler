@@ -13,14 +13,14 @@ void assign_with_byte_unit(int type, unsigned char *array, Value v)
 
       if(g_is_big_endian)
       {
-        for(j = 0; j < IR->intmetric.size; j++)
+        for(j = 0; j < IR->intmetric.size && j < sizeof(int); j++)
         {
          array[IR->intmetric.size - 1 - j] = *(p + sizeof(int) - 1 - j);
         }
       }
       else
       {
-        for(j = 0; j < IR->intmetric.size; j++)
+        for(j = 0; j < IR->intmetric.size && j < sizeof(int); j++)
         {
           array[IR->intmetric.size -1 - j] = *(p + j);
         }
@@ -41,14 +41,14 @@ void assign_with_byte_unit(int type, unsigned char *array, Value v)
 
       if(g_is_big_endian)
       {
-        for(j = 0; j < IR->intmetric.size; j++)
+        for(j = 0; j < IR->intmetric.size && j < sizeof(int); j++)
         {
           array[IR->intmetric.size - 1 - j] = *(p + sizeof(int) - 1 - j);
         }
       }
       else
       {
-        for(j = 0; j < IR->intmetric.size; j++)
+        for(j = 0; j < IR->intmetric.size && j < sizeof(int); j++)
         {
           array[IR->intmetric.size -1 - j] = *(p + j);
         }

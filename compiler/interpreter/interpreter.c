@@ -4,33 +4,32 @@
 #include  "../parser/error.h"
 #include  "../parser/rule.h"
 
-#define CODE_MAX_NUM
-
 List g_cp;
 List g_routine_forest;
 
-// int code_byte_index = 0;
-// unsigned char code_byte_sequence[CODE_MAX_NUM];
-// void push_code(int  )
-// {
-//   assign_with_byte_unit(p->type->type_id, code_byte_sequence[code_byte_index++])
-//   if(code_byte_index >= CODE_MAX_NUM)
-//   {
-//     printf("code_byte_sequence is empty\n");
-//     return;
-//   }
+#define CODE_MAX_NUM
+int code_byte_index = 0;
+unsigned char code_byte_sequence[CODE_MAX_NUM];
+void push_code(int  )
+{
+  assign_with_byte_unit(p->type->type_id, code_byte_sequence[code_byte_index++])
+  if(code_byte_index >= CODE_MAX_NUM)
+  {
+    printf("code_byte_sequence is empty\n");
+    return;
+  }
 
-//   code_byte_sequence[code_byte_index++] = code;
-// }
+  code_byte_sequence[code_byte_index++] = code;
+}
 
 
-// typedef struct _label_detail_ *LabelDetail;
-// struct _label_detail_
-// {
-//   int code_index;
-//   char name[NAME_LEN];
-// };
-// struct LabelDetail label_sequence[CODE_MAX_NUM];
+typedef struct _label_detail_ *LabelDetail;
+struct _label_detail_
+{
+  int code_index;
+  char name[NAME_LEN];
+};
+struct LabelDetail label_sequence[CODE_MAX_NUM];
 
 /*  */
 void interpret(List routine_forest, List dag)
