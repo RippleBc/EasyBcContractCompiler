@@ -92,6 +92,7 @@ void trap_in_debug();
 #define DEBUG_POINT	trap_in_debug();
 #endif
 
+extern void ast_compile(List, List);
 %}
 
 %union {
@@ -230,6 +231,8 @@ program
 		/*  */
 		interpret(&routine_forest, dag_forest->link);
 
+		/*  */
+		ast_compile(&routine_forest, dag_forest->link);
 	}
 
 	return 0;

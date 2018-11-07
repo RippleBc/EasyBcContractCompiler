@@ -21,7 +21,7 @@ void init_op_code()
 	char tmp[NAME_LEN];
 
 	FILE *pFile;
-	pFile = fopen("../opcodes.txt", "rt");
+	pFile = fopen("./opcodes.txt", "rt");
 	if(pFile == NULL)
 	{
 		printf("file opcodes.txt not exit\n");
@@ -84,16 +84,16 @@ void init_op_code()
 		}
 
 		/*  */
-		if(op_codes[op_code_index])
+		if(op_codes[op_code_index] != NULL)
 		{
 			op_code_index++;
 		}
 	}
 }
 
-int get_op_code(char *name)
+int get_op_code_by_name(char *name)
 {
-	for(int i = 0; i < MAX_OP_CODES_NUM && op_codes[i] != NULL; i++)
+	for(int i = 0; i < op_code_index; i++)
 	{
 		if(!strcmp(op_codes[i]->name, name))
 		{

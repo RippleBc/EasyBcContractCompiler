@@ -43,18 +43,5 @@ program helloworld;
 		inta4 := 'abcdefg';
 		writeln(inta4[3]);
 		writeln('###################');
-
-		/* writeln(9876543210); */
-		if(2 > 1) then
-		begin
-			writeln(1);
-			if(2 < 1) then
-			begin
-				writeln(1);
-			end
-			else writeln(0);
-		end
-		else writeln(0);
-		writeln('###################');
 	end
 .
