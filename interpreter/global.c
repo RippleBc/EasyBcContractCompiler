@@ -35,11 +35,9 @@ void assign_global(Node n, Symbol p, Symbol q)
     if(q != NULL)
     {
       baseOffset = q->offset;
-      // printf("assign_global baseOffset %d\n", baseOffset);
     }
     
     assign_with_byte_unit(p->type->type_id, &global_queue[baseOffset + p->offset], &(n->val)); 
-    // printf("assign_global ################## %d %s %d\n", baseOffset + p->offset, p->name, global_queue[baseOffset + p->offset].i);
   }
   
 }
@@ -50,9 +48,7 @@ void load_global(Node n, Symbol p, Symbol q)
   if(q != NULL)
   {
     baseOffset = q->offset;
-    // printf("load_global baseOffset %d\n", baseOffset);
   }
   
-  // printf("load_global ################## %d %s %d\n", baseOffset + p->offset, p->name, global_queue[baseOffset + p->offset].i);
   load_with_byte_unit(p->type->type_id, &global_queue[baseOffset + p->offset], &(n->val));
 }
