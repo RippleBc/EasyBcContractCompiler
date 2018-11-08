@@ -1833,8 +1833,12 @@ args_list
 		arg = rtn->args;
 	else
 	{
-		parse_error("parse argument list.", "");
-		return 0;
+		/*  */
+		if(rtn->level >= 0)
+		{
+			parse_error("parse argument list.", "");
+			return 0;
+		}
 	}
 
 	/* 初始化参数AST树 */

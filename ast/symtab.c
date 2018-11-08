@@ -382,45 +382,12 @@ symtab* new_sys_symbol(KEYENTRY entry)
     ptab->id = - entry.attr; /* 注意，系统符号的ID为attr的负值 */
     ptab->level = -1;
     ptab->defn = DEF_FUNCT; /* 系统函数的大类统一为DEF_FUNCT */
-    ptab->type = find_type_by_id(entry.ret_type); /* 符号表的具体类型，这里指的是函数的返回值类型 */
+    ptab->type = NULL;
     ptab->call_stack_size = 0;
     ptab->args = NULL;
     ptab->localtab = NULL;
     ptab->parent = System_symtab[0]; /* 父节点为定义了内置基础类型的符号表 */
 
-    /* p = (symbol*)malloc(sizeof(symbol)); */
-    NEW0(p, PERM);
-
-    if(!p)
-        internal_error("Insufticent memory.");
-
-    /* 初始化系统符号 */
-    strcpy(p->name, ptab->name);
-    strcpy(p->rname, ptab->rname);
-    p->defn = DEF_FUNCT;
-    p->type = find_type_by_id(entry.ret_type);
-    p->offset = 0;
-    p->next = NULL;
-    p->tab = ptab;
-    p->type_link = NULL;
-
-    /* 将局部变量符号加入系统符号表 */
-    add_local_to_table(ptab, p);
-
-    if(entry.arg_type)
-    {
-        /* p = (symbol*)malloc(sizeof(symbol)); */
-        NEW0(p, PERM);
-
-        if(!p)
-            internal_error("Insufficent memory.");
-        /* 初始化参数符号 */
-        strcpy(p->name, "arg");
-        p->defn = DEF_VALPARA;
-        p->type = find_type_by_id(entry.arg_type);
-        /* 将参数符号放入系统符号表 */
-        add_args_to_table(ptab, p);
-    }
     return ptab;
 }
 

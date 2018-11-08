@@ -3722,18 +3722,22 @@ yyreduce:
 		arg = rtn->args;
 	else
 	{
-		parse_error("parse argument list.", "");
-		return 0;
+		/*  */
+		if(rtn->level >= 0)
+		{
+			parse_error("parse argument list.", "");
+			return 0;
+		}
 	}
 
 	/* 初始化参数AST树 */
 	args = arg_tree(args, rtn, arg, (yyvsp[0].p_tree));
 }
-#line 3733 "parser/rule.c" /* yacc.c:1646  */
+#line 3737 "parser/rule.c" /* yacc.c:1646  */
     break;
 
 
-#line 3737 "parser/rule.c" /* yacc.c:1646  */
+#line 3741 "parser/rule.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3961,7 +3965,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1845 "parser/spl.y" /* yacc.c:1906  */
+#line 1849 "parser/spl.y" /* yacc.c:1906  */
 
 
 #define MAX_TERM  64

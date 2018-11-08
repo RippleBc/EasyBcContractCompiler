@@ -67,10 +67,6 @@ typedef struct
     int key;
     /* 属性 */
     int attr;
-    /* 返回值类型 */
-    int ret_type;
-    /* 参数类型 */
-    int arg_type;
 }
 KEYENTRY;
 
