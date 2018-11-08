@@ -11,9 +11,9 @@ List g_routine_forest;
 
 /*  */
 #define CODE_MAX_NUM 2048
-static int code_byte_index = 0;
-static unsigned char code_byte_sequence[CODE_MAX_NUM];
-static int push_data(Type t, Value v)
+int code_byte_index = 0;
+unsigned char code_byte_sequence[CODE_MAX_NUM];
+int push_data(Type t, Value v)
 {
   /*  */
   assign_with_byte_unit(t->type_id, &code_byte_sequence[code_byte_index], v);
@@ -33,7 +33,7 @@ static int push_data(Type t, Value v)
   }
   return 1;
 }
-static int push_command(int code)
+int push_command(int code)
 {
   /*  */
   if(code_byte_index >= CODE_MAX_NUM)
@@ -256,15 +256,15 @@ void node_compile(Node node)
     switch(node->kids[0]->type->type_id)
     {
     case TYPE_INTEGER:
+    case TYPE_BOOLEAN:
     {
       /*  */
       int command_push_code = get_op_code_by_name("PUSH");
       push_command(command_push_code);
+
       /*  */
       value cond;
-
-      if((node->kids[0]->val.i == 0 && node->u.cond.true_or_false == false) ||
-      (node->kids[0]->val.i != 0 && node->u.cond.true_or_false == true))
+      if(node->u.cond.true_or_false == true)
       {
         /*  */
         cond.b = true;
@@ -284,30 +284,6 @@ void node_compile(Node node)
       parse_error("COND expression can not be char", "");
     }
     break;
-    case TYPE_BOOLEAN:
-    {
-      /*  */
-      int command_push_code = get_op_code_by_name("PUSH");
-      push_command(command_push_code);
-      /*  */
-      value cond;
-
-      if((node->kids[0]->val.b == false && node->u.cond.true_or_false == false) ||
-      (node->kids[0]->val.b == true && node->u.cond.true_or_false == true))
-      {
-        /*  */
-        cond.b = true;
-      }
-      else
-      {
-        /*  */
-        cond.b = false;
-      }
-
-      /*  */
-      push_data(find_type_by_id(TYPE_BOOLEAN), &cond);
-    }
-    break;
     case TYPE_REAL:
     {
       parse_error("COND expression can not be real", "");
@@ -323,13 +299,15 @@ void node_compile(Node node)
     /* record the jump position */
     Symbol p = node->u.cond.label;
     push_jump_detail(p->name, code_byte_index);
+
+    /*  */
+    int command_push_code = get_op_code_by_name("PUSH");
+    push_command(command_push_code);
     /*  */
     value jump_position;
     jump_position.i = -1;
     push_data(find_type_by_id(TYPE_INTEGER), &jump_position);
-    /*  */
-    int command_push_code = get_op_code_by_name("PUSH");
-    push_command(command_push_code);
+
     /*  */
     int jump_code = get_op_code_by_name("JUMP");
     push_command(jump_code);
@@ -345,76 +323,74 @@ void node_compile(Node node)
     /*  */
     node_compile(node->kids[0]);
 
-    /* 有参数 */
-    // switch (node->u.sys_id)
-    // {
-    //   case pREAD:
-    //   {
-    //     read(node);
-    //   }
-    //   break;
-    //   case pWRITELN:
-    //   {
-    //     write(node);
-    //   }
-    //   break;
-    // }
+    int command_function_code = 0;
+    switch (node->u.sys_id)
+    {
+      case pREAD:
+      {
+        /*  */
+        command_function_code = get_op_code_by_name("READ");
+      }
+      break;
+      case pWRITELN:
+      {
+        /*  */
+        command_function_code = get_op_code_by_name("WRITELN");
+      }
+      break;
+    }
+
+    push_command(command_function_code);
   }
   break;
   case CALL:
   {
-    // /* 记录返回地址 */
-    // push_return_position_stack(code_byte_index);
+    /*  */
+    push_function_call_stack(node->symtab);
 
-    // /* 实参 */
-    // if (node->kids[0] != NULL)
-    // {
-    //   node_compile(node->kids[0]);
-    // }
+    /* 记录返回地址 */
+    set_return_index(code_byte_index);
+
+    /* 实参 */
+    if (node->kids[0] != NULL)
+    {
+      node_compile(node->kids[0]);
+    }
     
-    // /* 符号表压栈 */
-    // push_symtab_stack(node->symtab);
+    /* 符号表压栈 */
+    push_symtab_stack(node->symtab);
 
-    // /* 返回值压栈 */
-    // push_return_val_stack(find_symbol(node->symtab, node->symtab->name));
+    /* 实参赋值 */
+    Symbol p;
+    Node tmpNode;
+    int i = 0, j = 0;;
+    for(p = node->symtab->args; p != NULL; p = p->next)
+    {
+      i++;
+      j = 0;
+      for(tmpNode = node->kids[0]; tmpNode != NULL; tmpNode = tmpNode->kids[1])
+      {
+        j++;
+        if(i == j)
+        {
+          assign_function_call_stack_val(tmpNode, p, NULL);
+          break;
+        }
+      }
+    }
 
-    // /* 本地变量压栈 */
-    // push_local_stack(node->symtab);
+    /*  */
+    int command_push_code = get_op_code_by_name("PUSH");
+    push_command(command_push_code);
 
-    // /* 实参压栈 */
-    // push_args_stack(node->symtab);
+    /*  */
+    value function_index;
+    function_index.i = -1;
+    push_data(find_type_by_id(TYPE_INTEGER), &function_index);
 
-    // /* 实参赋值 */
-    // Symbol p;
-    // Node tmpNode;
-    // int i = 0, j = 0;;
-    // for(p = node->symtab->args; p != NULL; p = p->next)
-    // {
-    //   i++;
-    //   j = 0;
-    //   for(tmpNode = node->kids[0]; tmpNode != NULL; tmpNode = tmpNode->kids[1])
-    //   {
-    //     j++;
-    //     if(i == j)
-    //     {
-    //       assign_arg(tmpNode, p, NULL);
-    //       break;
-    //     }
-    //   }
-    // }
-
-    // /*  */
-    // int command_push_code = get_op_code_by_name("PUSH");
-    // push_command(command_push_code);
-
-    // /*  */
-    // value function_index;
-    // function_index.i = -1;
-    // push_data(find_type_by_id(TYPE_INTEGER), &function_index);
-
-    // /*  */
-    // int jump_code = get_op_code_by_name("JUMP");
-    // push_command(jump_code);
+    /*  */
+    int jump_code = get_op_code_by_name("JUMP");
+    push_command(jump_code);
   }
   break;
   case RIGHT:
@@ -553,6 +529,12 @@ void node_compile(Node node)
         if(p->defn == DEF_ENUM_ELEMENT)
         {
           node->val = p->v;
+          /*  */
+          int code = get_op_code_by_name("PUSH");
+          /*  */
+          push_command(code);
+          /*  */
+          push_data(p->type, &(node->val));
         }
         else
         {
@@ -564,25 +546,18 @@ void node_compile(Node node)
         if(p->defn == DEF_ENUM_ELEMENT)
         {
           node->val = p->v;
-        }
-        /* 参数局部类型，从栈取值 */
-        else if((q != NULL && (q->defn == DEF_VALPARA || q->defn == DEF_VARPARA)) || 
-          p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
-        {
-          load_arg(node, p, q);
+          /*  */
+          int code = get_op_code_by_name("PUSH");
+          /*  */
+          push_command(code);
+          /*  */
+          push_data(p->type, &(node->val));
         }
         else {
           /* 普通局部变量，从栈取值 */
-          load_local(node, p, q);
+          load_function_call_stack_val(p, q);
         }
       }
-
-      /*  */
-      int code = get_op_code_by_name("PUSH");
-      /*  */
-      push_command(code);
-      /*  */
-      push_data(p->type, &(node->val));
     }
     break;
     case ASGN:
@@ -618,16 +593,7 @@ void node_compile(Node node)
       }
       else
       {
-        if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
-        {
-          /* 参数赋值 */
-          assign_arg(node->kids[1], p, q);
-        }
-        else if(p->defn == DEF_FUNCT) {
-          /* 函数返回值赋值 */
-          assign_return_val(node->kids[1], p);
-        }
-        else if(p->defn == DEF_PROC)
+        if(p->defn == DEF_PROC)
         {
           parse_error("proc can not have return val", p->name);
           g_cp = NULL;
@@ -635,7 +601,7 @@ void node_compile(Node node)
         else
         {
           /* 局部变量赋值 */
-          assign_local(node->kids[1], p, q);
+          assign_function_call_stack_val(p, q);
         }
       }
 
@@ -693,8 +659,6 @@ void node_compile(Node node)
         node_compile(node->kids[1]);
       }
 
-      arithmetical_operate(node);
-
       /*  */
       char *code_name = get_op_name(generic(node->op));
       /*  */
@@ -716,8 +680,6 @@ void node_compile(Node node)
     {
       node_compile(node->kids[0]);
 
-      arithmetical_operate(node);
-
       /*  */
       char *code_name = get_op_name(generic(node->op));
       /*  */
@@ -738,23 +700,19 @@ void node_compile(Node node)
       p = addr->syms[0];
       if(top_symtab_stack()->level == 0)
       {
-        load_global(addr, p, NULL);
+        load_global(p, NULL);
       }
       else
       {
-        /* 参数局部类型，从栈取值 */
-        if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
-        {
-          load_arg(addr, p, NULL);
-        }
-        else {
-          /* 普通局部变量，从栈取值 */
-          load_local(addr, p, NULL);
-        }
+        load_function_call_stack_val(p, NULL);
       }
 
       /*  */
-      arithmetical_operate(node);
+      char *code_name = get_op_name(generic(node->op));
+      /*  */
+      int code = get_op_code_by_name(code_name);
+      /*  */
+      push_command(code);
 
       /*  */
       if(top_symtab_stack()->level == 0)
@@ -763,7 +721,7 @@ void node_compile(Node node)
       }
       else
       {
-        assign_local(node, p, NULL);
+        assign_function_call_stack_val(node, p, NULL);
       }
     }
     break;
@@ -781,16 +739,18 @@ void node_compile(Node node)
     case TAIL: /* 表示过程以及函数定义的结束 */
     {
       /*  */
-      Symbol sp = pop_symtab_stack();
+      get_return_index();
 
       /*  */
-      g_cp = pop_return_position_stack();
+      Symtab ptab = pop_symtab_stack();
+      /*  */
+      pop_function_call_stack(ptab);
 
       /*  */
-      pop_local_stack(sp);
+      int jump_code = get_op_code_by_name("JUMP");
+      push_command(jump_code);
 
-      /*  */
-      pop_args_stack(sp);
+      
     }
     break;
     case BLOCKBEG:
