@@ -363,68 +363,58 @@ void node_compile(Node node)
   break;
   case CALL:
   {
-    /* 记录返回地址 */
-    push_return_position_stack(g_cp);
+    // /* 记录返回地址 */
+    // push_return_position_stack(code_byte_index);
 
-    /* 对应函数的DAG节点森林 */
-    g_cp = find_routine_forest(node->symtab);
+    // /* 实参 */
+    // if (node->kids[0] != NULL)
+    // {
+    //   node_compile(node->kids[0]);
+    // }
+    
+    // /* 符号表压栈 */
+    // push_symtab_stack(node->symtab);
 
-    if(g_cp)
-    {
-      /* 实参 */
-      if (node->kids[0] != NULL)
-      {
-        node_compile(node->kids[0]);
-      }
-      
-      /* 符号表压栈 */
-      push_symtab_stack(node->symtab);
+    // /* 返回值压栈 */
+    // push_return_val_stack(find_symbol(node->symtab, node->symtab->name));
 
-      /* 返回值压栈 */
-      push_return_val_stack(find_symbol(node->symtab, node->symtab->name));
+    // /* 本地变量压栈 */
+    // push_local_stack(node->symtab);
 
-      /* 本地变量压栈 */
-      push_local_stack(node->symtab);
+    // /* 实参压栈 */
+    // push_args_stack(node->symtab);
 
-      /* 实参压栈 */
-      push_args_stack(node->symtab);
+    // /* 实参赋值 */
+    // Symbol p;
+    // Node tmpNode;
+    // int i = 0, j = 0;;
+    // for(p = node->symtab->args; p != NULL; p = p->next)
+    // {
+    //   i++;
+    //   j = 0;
+    //   for(tmpNode = node->kids[0]; tmpNode != NULL; tmpNode = tmpNode->kids[1])
+    //   {
+    //     j++;
+    //     if(i == j)
+    //     {
+    //       assign_arg(tmpNode, p, NULL);
+    //       break;
+    //     }
+    //   }
+    // }
 
-      /* 实参赋值 */
-      Symbol p;
-      Node tmpNode;
-      int i = 0, j = 0;;
-      for(p = node->symtab->args; p != NULL; p = p->next)
-      {
-        i++;
-        j = 0;
-        for(tmpNode = node->kids[0]; tmpNode != NULL; tmpNode = tmpNode->kids[1])
-        {
-          j++;
-          if(i == j)
-          {
-            assign_arg(tmpNode, p, NULL);
-            break;
-          }
-        }
-      }
-    }
-    else
-    {
-      pop_return_position_stack();
-    }
+    // /*  */
+    // int command_push_code = get_op_code_by_name("PUSH");
+    // push_command(command_push_code);
 
-    /*  */
-    int command_push_code = get_op_code_by_name("PUSH");
-    push_command(command_push_code);
+    // /*  */
+    // value function_index;
+    // function_index.i = -1;
+    // push_data(find_type_by_id(TYPE_INTEGER), &function_index);
 
-    /*  */
-    value function_index;
-    function_index.i = -1;
-    push_data(find_type_by_id(TYPE_INTEGER), &function_index);
-
-    /*  */
-    int jump_code = get_op_code_by_name("JUMP");
-    push_command(jump_code);
+    // /*  */
+    // int jump_code = get_op_code_by_name("JUMP");
+    // push_command(jump_code);
   }
   break;
   case RIGHT:
