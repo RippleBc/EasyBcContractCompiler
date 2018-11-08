@@ -10,7 +10,7 @@ List g_cp;
 List g_routine_forest;
 
 /*  */
-#define CODE_MAX_NUM 512
+#define CODE_MAX_NUM 2048
 static int code_byte_index = 0;
 static unsigned char code_byte_sequence[CODE_MAX_NUM];
 static int push_data(Type t, Value v)
@@ -86,10 +86,45 @@ static int get_label_index(char *name)
 }
 
 /*  */
+typedef struct _function_detail_ *FunctionDetail;
+struct _function_detail_
+{
+  int code_index;
+  Symtab ptab;
+};
+static int function_detail_index = 0;
+static FunctionDetail function_detail_sequence[CODE_MAX_NUM];
+static void push_function(Symtab ptab, int code_index)
+{
+  NEW0(function_detail_sequence[function_detail_index], PERM);
+
+  /*  */
+  function_detail_sequence[function_detail_index]->code_index = code_index;
+  function_detail_sequence[function_detail_index]->ptab = ptab;
+
+  function_detail_index ++;
+}
+static int get_function_index(Symtab ptab)
+{
+  int i = 0;
+  while(i < function_detail_index)
+  {
+    if(function_detail_sequence[i]->ptab == ptab)
+    {
+      return function_detail_sequence[i]->code_index;
+    }
+
+    i++;
+  }
+  return -1;
+}
+
+/*  */
 struct _jump_detail_
 {
   int code_index;
-  char name[NAME_LEN];
+  char name[NAME_LEN]; /* normal label */
+  Symtab ptab; /* function label */
 };
 typedef struct _jump_detail_ *JumpDetail;
 static int jump_detail_index = 0;
@@ -145,14 +180,25 @@ void ast_compile(List routine_forest, List dag)
   push_symtab_stack(Global_symtab);
   /*  */
   int i = 0;
+  int label_index;
+  int jump_index;
   while(i < jump_detail_index)
   {
-    /*  */
-    char *label_name = jump_detail_sequence[i]->name;
-    /*  */
-    int label_index = get_label_index(label_name);
-    /*  */
-    int jump_index = jump_detail_sequence[i]->code_index;
+    if(jump_detail_sequence[i]->ptab == NULL)
+    {
+      /*  */
+      char *label_name = jump_detail_sequence[i]->name;
+      /*  */
+      label_index = get_label_index(label_name);
+    }
+    else
+    {
+      Symtab ptab = jump_detail_sequence[i]->ptab;
+      /*  */
+      label_index = get_function_index(ptab);
+    }
+
+    jump_index = jump_detail_sequence[i]->code_index;
 
     /*  */
     value v_jump_code;
@@ -163,7 +209,6 @@ void ast_compile(List routine_forest, List dag)
     i++;
   }
 
-  printf("begin afadfafasf\n");
   /*  */
   i = 0;
   while(i < code_byte_index)
@@ -319,54 +364,67 @@ void node_compile(Node node)
   case CALL:
   {
     /* 记录返回地址 */
-    // push_return_position_stack(g_cp);
+    push_return_position_stack(g_cp);
 
-    // /* 对应函数的DAG节点森林 */
-    // g_cp = find_routine_forest(node->symtab);
+    /* 对应函数的DAG节点森林 */
+    g_cp = find_routine_forest(node->symtab);
 
-    // if(g_cp)
-    // {
-    //   /* 实参 */
-    //   if (node->kids[0] != NULL)
-    //   {
-    //     node_compile(node->kids[0]);
-    //   }
+    if(g_cp)
+    {
+      /* 实参 */
+      if (node->kids[0] != NULL)
+      {
+        node_compile(node->kids[0]);
+      }
       
-    //   /* 符号表压栈 */
-    //   push_symtab_stack(node->symtab);
+      /* 符号表压栈 */
+      push_symtab_stack(node->symtab);
 
-    //   /* 返回值压栈 */
-    //   push_return_val_stack(find_symbol(node->symtab, node->symtab->name));
+      /* 返回值压栈 */
+      push_return_val_stack(find_symbol(node->symtab, node->symtab->name));
 
-    //   /* 本地变量压栈 */
-    //   push_local_stack(node->symtab);
+      /* 本地变量压栈 */
+      push_local_stack(node->symtab);
 
-    //   /* 实参压栈 */
-    //   push_args_stack(node->symtab);
+      /* 实参压栈 */
+      push_args_stack(node->symtab);
 
-    //   /* 实参赋值 */
-    //   Symbol p;
-    //   Node tmpNode;
-    //   int i = 0, j = 0;;
-    //   for(p = node->symtab->args; p != NULL; p = p->next)
-    //   {
-    //     i++;
-    //     j = 0;
-    //     for(tmpNode = node->kids[0]; tmpNode != NULL; tmpNode = tmpNode->kids[1])
-    //     {
-    //       j++;
-    //       if(i == j)
-    //       {
-    //         assign_arg(tmpNode, p, NULL);
-    //         break;
-    //       }
-    //     }
-    //   }
-    // }
-    // else
-    // {
-    //   pop_return_position_stack();
-    // }
+      /* 实参赋值 */
+      Symbol p;
+      Node tmpNode;
+      int i = 0, j = 0;;
+      for(p = node->symtab->args; p != NULL; p = p->next)
+      {
+        i++;
+        j = 0;
+        for(tmpNode = node->kids[0]; tmpNode != NULL; tmpNode = tmpNode->kids[1])
+        {
+          j++;
+          if(i == j)
+          {
+            assign_arg(tmpNode, p, NULL);
+            break;
+          }
+        }
+      }
+    }
+    else
+    {
+      pop_return_position_stack();
+    }
+
+    /*  */
+    int command_push_code = get_op_code_by_name("PUSH");
+    push_command(command_push_code);
+
+    /*  */
+    value function_index;
+    function_index.i = -1;
+    push_data(find_type_by_id(TYPE_INTEGER), &function_index);
+
+    /*  */
+    int jump_code = get_op_code_by_name("JUMP");
+    push_command(jump_code);
   }
   break;
   case RIGHT:
@@ -726,7 +784,8 @@ void node_compile(Node node)
   {
     case HEADER: /* 表示过程以及函数定义的开始 */  
     {
-      
+      /*  */
+      push_function(node->symtab, code_byte_index);
     }
     break;
     case TAIL: /* 表示过程以及函数定义的结束 */
