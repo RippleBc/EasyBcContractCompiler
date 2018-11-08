@@ -95,6 +95,8 @@ struct _symbol_head_
     symbol *args;
     /* 局部符号表（变量和参数），二叉树的根 */
     symbol *localtab;
+    /*  */
+    symbol *return_sym;
     /* 类型链接 */
     type *type_link;
     /* 函数或者过程的数量 */

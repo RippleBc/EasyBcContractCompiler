@@ -53,7 +53,7 @@ symtab *new_symtab(symtab *parent)
     p->defn = DEF_UNKNOWN; /* 符号所属大类 */
     p->type = find_type_by_id(TYPE_VOID); /* 过程或者函数返回值的类型（普通类型），默认为void */
     p->id = routine_id++; /* 过程或者函数的序号 */
-    p->call_stack_size = 0; /* 局部变量的总字节数 */
+    p->call_stack_size = 1; /* 局部变量的总字节数 */
     p->last_symtab = 0; /* todo */
     return p;
 }
@@ -250,14 +250,17 @@ void add_local_to_table(symtab *tab, symbol *sym)
     else
         sprintf(sym->rname, "v%c_%03d", sym->name[0], new_index(var));
 
+     /*  */
+    var_size = get_symbol_align_size(sym);
+    /* symtab为函数，记录局部变量在symtab中偏移量 */
+    sym->offset = tab->call_stack_size;
+    /* 计算symtab中局部变量所占用的空间 */
+    tab->call_stack_size += var_size;
+
     /*  */
-    if(sym->defn != DEF_FUNCT && sym->defn != DEF_PROC)
-    {
-        var_size = get_symbol_align_size(sym);
-        /* symtab为函数，记录局部变量在symtab中偏移量 */
-        sym->offset = tab->call_stack_size;
-        /* 计算symtab中局部变量所占用的空间 */
-        tab->call_stack_size += var_size;
+    if(sym->defn == DEF_FUNCT)
+    { 
+        tab->return_sym = sym;
     }
 
     /* 将局部变量插入局部符号表中 */
@@ -267,6 +270,7 @@ void add_local_to_table(symtab *tab, symbol *sym)
 void add_args_to_table(symtab *tab, symbol *sym)
 {
     int var_size;
+    
     if(!tab || !sym)
         return;
 
