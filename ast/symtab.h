@@ -89,16 +89,12 @@ struct _symbol_head_
     int defn;
     /* 过程或函数的返回值（过程返回TYPE-VOID） */
     Type type;
-    /* 局部变量的总字节数，用于构造子程序调用帧的局部变量 */
-    int local_size;
-    /* 局部参数的总字节数，用于构造子程序调用帧的参数 */
-    int args_size;
+    /* 局部变量的总字节数 */
+    int call_stack_size;
     /* 局部参数链表 */
     symbol *args;
     /* 局部符号表（变量和参数），二叉树的根 */
     symbol *localtab;
-    /* 局部变量链表 */
-    symbol *locals;
     /* 类型链接 */
     type *type_link;
     /* 函数或者过程的数量 */

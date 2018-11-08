@@ -6,14 +6,7 @@
       } \
       else \
       { \
-        if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA) \
-        { \
-          assign_arg(np, p, q); \
-        } \
-        else \
-        { \
-          assign_local(np, p, q); \
-        } \
+        assign_function_call_stack_val(np, p, q); \
       } \
 
 void read(Node node)

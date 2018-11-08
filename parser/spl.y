@@ -232,7 +232,7 @@ program
 		interpret(&routine_forest, dag_forest->link);
 
 		/*  */
-		ast_compile(&routine_forest, dag_forest->link);
+		//ast_compile(&routine_forest, dag_forest->link);
 	}
 
 	return 0;
@@ -839,13 +839,7 @@ yNAME parameters
 
 parameters
 :%empty {/* 参数部分可以为空 */}
-|oLP para_decl_list oRP
-{
-	/* 对应的符号表 */
-	ptab = top_symtab_stack();
-	/* 符号表大小 */
-	ptab->local_size = 0;
-}
+|oLP para_decl_list oRP {}
 ;
 
 para_decl_list

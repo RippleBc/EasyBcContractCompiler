@@ -223,10 +223,7 @@ void node_process(Node node)
       push_return_val_stack(find_symbol(node->symtab, node->symtab->name));
 
       /* 本地变量压栈 */
-      push_local_stack(node->symtab);
-
-      /* 实参压栈 */
-      push_args_stack(node->symtab);
+      push_function_call_stack(node->symtab);
 
       /* 实参赋值 */
       Symbol p;
@@ -241,7 +238,7 @@ void node_process(Node node)
           j++;
           if(i == j)
           {
-            assign_arg(tmpNode, p, NULL);
+            assign_function_call_stack_val(tmpNode, p, NULL);
             break;
           }
         }
@@ -395,11 +392,11 @@ void node_process(Node node)
         else if((q != NULL && (q->defn == DEF_VALPARA || q->defn == DEF_VARPARA)) || 
           p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
         {
-          load_arg(node, p, q);
+          load_function_call_stack_val(node, p, q);
         }
         else {
           /* 普通局部变量，从栈取值 */
-          load_local(node, p, q);
+          load_function_call_stack_val(node, p, q);
         }
       }
     }
@@ -440,7 +437,7 @@ void node_process(Node node)
         if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
         {
           /* 参数赋值 */
-          assign_arg(node->kids[1], p, q);
+          assign_function_call_stack_val(node->kids[1], p, q);
         }
         else if(p->defn == DEF_FUNCT) {
           /* 函数返回值赋值 */
@@ -454,7 +451,7 @@ void node_process(Node node)
         else
         {
           /* 局部变量赋值 */
-          assign_local(node->kids[1], p, q);
+          assign_function_call_stack_val(node->kids[1], p, q);
         }
       }
     }
@@ -548,11 +545,11 @@ void node_process(Node node)
         /* 参数局部类型，从栈取值 */
         if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
         {
-          load_arg(addr, p, NULL);
+          load_function_call_stack_val(addr, p, NULL);
         }
         else {
           /* 普通局部变量，从栈取值 */
-          load_local(addr, p, NULL);
+          load_function_call_stack_val(addr, p, NULL);
         }
       }
 
@@ -566,7 +563,7 @@ void node_process(Node node)
       }
       else
       {
-        assign_local(node, p, NULL);
+        assign_function_call_stack_val(node, p, NULL);
       }
     }
     break;
@@ -583,16 +580,13 @@ void node_process(Node node)
     case TAIL: /* 表示过程以及函数定义的结束 */
     {
       /*  */
-      Symbol sp = pop_symtab_stack();
+      Symtab ptab = pop_symtab_stack();
 
       /*  */
       g_cp = pop_return_position_stack();
 
       /*  */
-      pop_local_stack(sp);
-
-      /*  */
-      pop_args_stack(sp);
+      pop_function_call_stack(ptab);
     }
     break;
     case BLOCKBEG:

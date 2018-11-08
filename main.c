@@ -142,7 +142,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    init_op_code();
+    // init_op_code();
 
 	init_spl();
 

@@ -36,10 +36,8 @@ symtab *new_symtab(symtab *parent)
         internal_error("insufficient memory.");
 
     p->parent = parent; /* 链接父符号表 */
-    p->args_size = 0; /* 参数的总字节数 */
     p->args = NULL; /* 参数链表 */
     p->localtab = NULL; /* 局部符号二叉树表（参数和变量） */
-    p->locals = NULL; /* 局部变量链表 */
     p->type_link = NULL; /* 用户自定义类型链表 */
 
     if(parent)
@@ -55,7 +53,7 @@ symtab *new_symtab(symtab *parent)
     p->defn = DEF_UNKNOWN; /* 符号所属大类 */
     p->type = find_type_by_id(TYPE_VOID); /* 过程或者函数返回值的类型（普通类型），默认为void */
     p->id = routine_id++; /* 过程或者函数的序号 */
-    p->local_size = 0; /* 局部变量的总字节数 */
+    p->call_stack_size = 0; /* 局部变量的总字节数 */
     p->last_symtab = 0; /* todo */
     return p;
 }
@@ -182,7 +180,7 @@ void add_symbol_to_table(symtab *tab, symbol *sym)
     case DEF_VARPARA:
     case DEF_VALPARA:
         /* 变参（一个变量）、值参（一个常量） */
-        add_args_to_table(tab,sym);
+        add_args_to_table(tab, sym);
         break;
     case DEF_PROG:
     default:
@@ -257,15 +255,10 @@ void add_local_to_table(symtab *tab, symbol *sym)
     {
         var_size = get_symbol_align_size(sym);
         /* symtab为函数，记录局部变量在symtab中偏移量 */
-        sym->offset = tab->local_size;
+        sym->offset = tab->call_stack_size;
         /* 计算symtab中局部变量所占用的空间 */
-        tab->local_size += var_size;
+        tab->call_stack_size += var_size;
     }
-
-    /* 添加sym到局部变量链表中，从头部插入 */
-    sym->next = tab->locals;
-    tab->locals = sym;
-    sym->tab = tab;
 
     /* 将局部变量插入局部符号表中 */
     add_var_to_localtab(tab, sym);
@@ -284,8 +277,8 @@ void add_args_to_table(symtab *tab, symbol *sym)
     var_size = get_symbol_align_size(sym);
 
     /* 计算局部变量在symtab中的偏移量 */
-    sym->offset = tab->args_size;
-    tab->args_size += var_size;
+    sym->offset = tab->call_stack_size;
+    tab->call_stack_size += var_size;
 
     /* 添加sym到局部参数链表中，从头部插入 */
     sym->next = tab->args;
@@ -342,11 +335,9 @@ void make_system_symtab()
     ptab->level = -1;
     ptab->defn = DEF_UNKNOWN; /* 属性值 */
     ptab->type = TYPE_UNKNOWN; /* 符号表类型 */ 
-    ptab->local_size = 0;
-    ptab->args_size = 0;
+    ptab->call_stack_size = 0;
     ptab->args = NULL;
     ptab->parent = NULL;
-    ptab->locals = new_symbol("", DEF_UNKNOWN, TYPE_UNKNOWN); /* 局部变量链表 */
 
     /* 系统函数 */
     int n = 1;
@@ -366,7 +357,7 @@ void make_system_symtab()
     pop_symtab_stack();
     
     /* 系统函数个数 */
-    ptab->local_size = n;
+    ptab->call_stack_size = n;
 }
 
 /* 创建系统符号 */
@@ -392,11 +383,9 @@ symtab* new_sys_symbol(KEYENTRY entry)
     ptab->level = -1;
     ptab->defn = DEF_FUNCT; /* 系统函数的大类统一为DEF_FUNCT */
     ptab->type = find_type_by_id(entry.ret_type); /* 符号表的具体类型，这里指的是函数的返回值类型 */
-    ptab->local_size = 0;
-    ptab->args_size = 0;
+    ptab->call_stack_size = 0;
     ptab->args = NULL;
     ptab->localtab = NULL;
-    ptab->locals = NULL;
     ptab->parent = System_symtab[0]; /* 父节点为定义了内置基础类型的符号表 */
 
     /* p = (symbol*)malloc(sizeof(symbol)); */
@@ -502,7 +491,7 @@ symtab *find_routine(symtab *tab, char *name)
 symtab *find_sys_routine(int routine_id)
 {
     int i;
-    for(i = 1; i < System_symtab[0]->local_size; i++)
+    for(i = 1; i < System_symtab[0]->call_stack_size; i++)
         if(System_symtab[i]->id == -routine_id)
             return System_symtab[i];
     return NULL;
@@ -531,12 +520,6 @@ symbol *find_symbol(symtab *tab, char *name)
     symtab *ptab = tab;
     type *pt;
 
-    if(!ptab)
-    {
-        p = System_symtab[0]->locals;
-        p->type = TYPE_UNKNOWN;
-        return p;
-    }
     while(ptab)
     {   
         /* 寻找指定的实例符号 */
