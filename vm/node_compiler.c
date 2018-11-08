@@ -96,8 +96,6 @@ static int jump_detail_index = 0;
 static JumpDetail jump_detail_sequence[CODE_MAX_NUM];
 static void push_jump_detail(char *name, int index)
 {
-  printf("get jump detail name: %s, index %d\n", name, index);
-
   NEW0(jump_detail_sequence[jump_detail_index], PERM);
 
   strncpy(jump_detail_sequence[jump_detail_index]->name, name, NAME_LEN);
@@ -159,7 +157,7 @@ void ast_compile(List routine_forest, List dag)
     /*  */
     value v_jump_code;
     v_jump_code.i = label_index;
-    printf("reset jump position name: %s, index: %d, label_index: %x\n", label_name, jump_index, label_index);
+
     assign_with_byte_unit(TYPE_INTEGER, &code_byte_sequence[jump_index], &v_jump_code);
 
     i++;
