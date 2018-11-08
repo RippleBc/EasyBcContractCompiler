@@ -23,32 +23,6 @@ List top_return_position_stack()
 }
 
 /*  */
-int return_val_deep = STACK_DEEP;
-unsigned char return_val_stack[STACK_DEEP];
-
-int push_return_val_stack(Symbol p)
-{
-  if(return_val_deep < get_symbol_align_size(p))
-  {
-    return 0;
-  }
-  return_val_deep -= get_symbol_align_size(p);
-  return 1;
-}
-void pop_return_val_stack(Symbol p)
-{
-  return_val_deep += get_symbol_align_size(p);
-}
-void assign_return_val(Node n, Symbol p)
-{
-  assign_with_byte_unit(p->type->type_id, &return_val_stack[return_val_deep + p->offset], &(n->val));
-}
-void load_return_val(Node n, Symbol p)
-{
-  load_with_byte_unit(p->type->type_id, &return_val_stack[return_val_deep + p->offset], &(n->val));
-}
-
-/*  */
 int function_call_stack_deep = STACK_DEEP;
 unsigned char function_call_stack[STACK_DEEP];
 int push_function_call_stack(Symtab tab)

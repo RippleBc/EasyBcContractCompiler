@@ -219,9 +219,6 @@ void node_process(Node node)
       /* 符号表压栈 */
       push_symtab_stack(node->symtab);
 
-      /* 返回值压栈 */
-      push_return_val_stack(find_symbol(node->symtab, node->symtab->name));
-
       /* 本地变量压栈 */
       push_function_call_stack(node->symtab);
 
@@ -434,16 +431,7 @@ void node_process(Node node)
       }
       else
       {
-        if(p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
-        {
-          /* 参数赋值 */
-          assign_function_call_stack_val(node->kids[1], p, q);
-        }
-        else if(p->defn == DEF_FUNCT) {
-          /* 函数返回值赋值 */
-          assign_return_val(node->kids[1], p);
-        }
-        else if(p->defn == DEF_PROC)
+        if(p->defn == DEF_PROC)
         {
           parse_error("proc can not have return val", p->name);
           g_cp = NULL;
