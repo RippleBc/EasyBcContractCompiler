@@ -21,7 +21,6 @@ char pasname[FILE_NAME_LEN];
 char codname[FILE_NAME_LEN];
 char errname[FILE_NAME_LEN];
 
-void init(char *);
 void emit_byte_sequence();
 void clear();
 void signup();
