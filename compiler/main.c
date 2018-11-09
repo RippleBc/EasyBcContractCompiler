@@ -221,8 +221,8 @@ int main(int argc, char **argv)
         print_result(pasname);
         return 0;
     }
-    //     clear();
-   
+    
+    clear();
 
     finalize();
 
@@ -236,16 +236,9 @@ void emit_byte_sequence()
     int i = 0;
     while(i < code_byte_index)
     {
-        printf("%x ", code_byte_sequence[i]);
-
+        putc(code_byte_sequence[i], codfp);
         i++;
     }
-
-    if(fputs(code_byte_sequence, codfp) > 0)
-    {
-        printf("byte sequence write success\n");
-    }
-    
 }
 
 void clear()
