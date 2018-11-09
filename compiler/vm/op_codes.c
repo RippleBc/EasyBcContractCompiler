@@ -21,7 +21,7 @@ void init_op_code()
 	char tmp[NAME_LEN];
 
 	FILE *pFile;
-	pFile = fopen("./opcodes.txt", "rt");
+	pFile = fopen("../opcodes.txt", "rt");
 	if(pFile == NULL)
 	{
 		printf("file opcodes.txt not exit\n");
