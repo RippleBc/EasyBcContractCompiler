@@ -487,7 +487,7 @@ int get_type_align_size(type *pt)
         return  IR->intmetric.align;
     case TYPE_ARRAY:
     {
-        return pt->num_ele * get_symbol_align_size(pt->first);
+        return pt->num_ele * get_symbol_align_size(pt->last);
     } 
     case TYPE_RECORD:
     {

@@ -220,6 +220,7 @@ void ast_compile(List routine_forest, List dag)
 
 void node_compile(Node node)
 {
+  printf("node compile %s\n", get_op_name(generic(node->op)));
   /* 流程控制相关 */
   switch (generic(node->op))
   {
@@ -235,11 +236,12 @@ void node_compile(Node node)
   {
     Symbol p = node->syms[0];
 
+    /* record the jump position */
+    push_jump_detail(p->name, code_byte_index);
+
     /*  */
     int command_push_code = get_op_code_by_name("PUSH");
     push_command(command_push_code);
-    /* record the jump position */
-    push_jump_detail(p->name, code_byte_index);
     /*  */
     value jump_position;
     jump_position.i = -1;
@@ -253,6 +255,11 @@ void node_compile(Node node)
   {
     node_compile(node->kids[0]);
 
+    /* record the jump position */
+    Symbol p = node->u.cond.label;
+    push_jump_detail(p->name, code_byte_index);
+
+    /*  */
     switch(node->kids[0]->type->type_id)
     {
     case TYPE_INTEGER:
@@ -296,10 +303,6 @@ void node_compile(Node node)
     break;
     }
 
-    /* record the jump position */
-    Symbol p = node->u.cond.label;
-    push_jump_detail(p->name, code_byte_index);
-
     /*  */
     int command_push_code = get_op_code_by_name("PUSH");
     push_command(command_push_code);
@@ -307,9 +310,8 @@ void node_compile(Node node)
     value jump_position;
     jump_position.i = -1;
     push_data(find_type_by_id(TYPE_INTEGER), &jump_position);
-
     /*  */
-    int jump_code = get_op_code_by_name("JUMP");
+    int jump_code = get_op_code_by_name("COND");
     push_command(jump_code);
   }
   break;
@@ -326,10 +328,10 @@ void node_compile(Node node)
     int command_function_code = 0;
     switch (node->u.sys_id)
     {
-      case pREAD:
+      case pREADLN:
       {
         /*  */
-        command_function_code = get_op_code_by_name("READ");
+        command_function_code = get_op_code_by_name("READLN");
       }
       break;
       case pWRITELN:
@@ -346,10 +348,10 @@ void node_compile(Node node)
   case CALL:
   {
     /*  */
-    push_function_call_stack(node->symtab);
+    vm_push_function_call_stack(node->symtab);
 
     /* 记录返回地址 */
-    set_return_index(code_byte_index);
+    vm_set_return_index(code_byte_index);
 
     /* 实参 */
     if (node->kids[0] != NULL)
@@ -373,7 +375,7 @@ void node_compile(Node node)
         j++;
         if(i == j)
         {
-          assign_function_call_stack_val(tmpNode, p, NULL);
+          vm_assign_function_call_stack_val(tmpNode, p, NULL);
           break;
         }
       }
@@ -382,12 +384,10 @@ void node_compile(Node node)
     /*  */
     int command_push_code = get_op_code_by_name("PUSH");
     push_command(command_push_code);
-
     /*  */
     value function_index;
     function_index.i = -1;
     push_data(find_type_by_id(TYPE_INTEGER), &function_index);
-
     /*  */
     int jump_code = get_op_code_by_name("JUMP");
     push_command(jump_code);
@@ -436,114 +436,137 @@ void node_compile(Node node)
     case CNST:
     {
       Symbol p = node->syms[0];
-      node->val = p->v;
 
-      /*  */
-      int code = get_op_code_by_name("PUSH");
-      /*  */
-      push_command(code);
-      /*  */
-      push_data(p->type, &(p->v));
+      if(p->type->type_id == TYPE_STRING)
+      {
+        node->val = p->v;
+      }
+      else
+      {
+        /*  */
+        int code = get_op_code_by_name("PUSH");
+        /*  */
+        push_command(code);
+        /*  */
+        push_data(p->type, &(p->v));
+      }
     }
     break;
     case FIELD:
     {
+      Symbol record = node->syms[0];
+      Symbol field = node->syms[1];
       
+      /* compute field offset base on record */
+      int code = get_op_code_by_name("PUSH");
+      push_command(code);
+      value filed_offset;
+      filed_offset.i = field->offset;
+      push_data(find_type_by_id(TYPE_INTEGER), &filed_offset);
+
+      /* compute record offset base on stack*/
+      code = get_op_code_by_name("PUSH");
+      push_command(code);
+      value record_offset;
+      record_offset.i = record->offset;
+      push_data(find_type_by_id(TYPE_INTEGER), &record_offset);
+
+      /* compute field offset base on stack */
+      code = get_op_code_by_name("ADD");
+      push_command(code);
     }
     break;
     case ARRAY:
     {
-      Symbol p = NULL;
-      char eleName[NAME_LEN];
-
       /* 数组下标 */
       node_compile(node->kids[0]);
 
-      int index = node->kids[0]->val.i;
-
-      int startIndex = node->syms[0]->type_link->first->v.i;
-
-      if(index < startIndex || index > startIndex + node->syms[0]->type_link->num_ele - 1)
-      {
-        parse_error("array index out of bound", "");
-        return;
-      }
-
-      p = node->syms[0]->type_link->last;
-      while(p != NULL)
-      {
-        snprintf(eleName, NAME_LEN, "%s_%d", node->syms[0]->name, index);
-
-        if(!strcmp(eleName, p->name))
-        {
-          break;
-        }
-        p = p->next;
-      }
-
-      if(p == NULL)
-      {
-        /*  */
-        p = clone_symbol(node->syms[0]->type_link->last);
-        p->offset = (index - startIndex) * get_symbol_align_size(p);
-
-        /*  */
-        snprintf(p->name, NAME_LEN, "%s_%d", node->syms[0]->name, index);
-
-        p->next = node->syms[0]->type_link->last;
-        node->syms[0]->type_link->last = p;
-      }
-      
-
-      node->syms[1] = p;
-
+      Symbol array = node->syms[0];
+      /* compute element offset base on array */
+      int code = get_op_code_by_name("PUSH");
+      push_command(code);
+      value startIndex;
+      startIndex.i = array->type_link->first->v.i;
+      push_data(find_type_by_id(TYPE_INTEGER), &startIndex);
       /*  */
-      recover_command_data_sequence();
+      code = get_op_code_by_name("SUB");
+      push_command(code);
+      /*  */
+      code = get_op_code_by_name("PUSH");
+      push_command(code);
+      value ele_size;
+      ele_size.i = get_symbol_align_size(array->type_link->last);
+      push_data(find_type_by_id(TYPE_INTEGER), &ele_size);
+      /*  */
+      code = get_op_code_by_name("MUL");
+      push_command(code);
+
+      /* compute array offset base on stack */
+      code = get_op_code_by_name("PUSH");
+      push_command(code);
+      value base_offset;
+      base_offset.i = array->offset;
+      push_data(find_type_by_id(TYPE_INTEGER), &base_offset);
+
+      /* compute element offset base on stack*/
+      code = get_op_code_by_name("ADD");
+      push_command(code);
     }
     break;
     case ADDRG:
     {
-
+      Symbol sym = node->syms[0];
+      
+      if(sym->type->type_id != TYPE_ARRAY)
+      {
+        /* compute sym offset */
+        int code = get_op_code_by_name("PUSH");
+        push_command(code);
+        value sym_offset;
+        sym_offset.i = sym->offset;
+        push_data(find_type_by_id(TYPE_INTEGER), &sym_offset);
+      }
     }
     break;
     case LOAD:
     {
-      Symbol p;
-      Symbol q = NULL;
+      Symbol p = node->syms[0];
+
       if(node->kids[0])
       {
         /* 地址节点 */
         node_compile(node->kids[0]);
-        /* syms[0]表示数组或者记录，syms[1]表示数组成员或者属性，node->kids[0]表示ARRAY或者FIELD节点 */
-        p = node->kids[0]->syms[1];
-        q = node->kids[0]->syms[0];
-      }
-      else
-      {
-        p = node->syms[0];
       }
 
       /* 全局变量 */
       if(top_symtab_stack()->level == 0)
       {
-        if(p->defn == DEF_ENUM_ELEMENT)
+        if(p && p->defn == DEF_ENUM_ELEMENT)
         {
           node->val = p->v;
           /*  */
           int code = get_op_code_by_name("PUSH");
-          /*  */
           push_command(code);
-          /*  */
           push_data(p->type, &(node->val));
         }
         else
         {
-          load_global(node, p, q);
+          if(p)
+          {
+            /*  */
+            int code = get_op_code_by_name("PUSH");
+            push_command(code);
+            value sym_offset;
+            sym_offset.i = p->offset;
+            push_data(p->type, &(node->val));
+          }
+
+          vm_load_global();
         }
       }
       else
       {
-        if(p->defn == DEF_ENUM_ELEMENT)
+        if(p && p->defn == DEF_ENUM_ELEMENT)
         {
           node->val = p->v;
           /*  */
@@ -554,8 +577,18 @@ void node_compile(Node node)
           push_data(p->type, &(node->val));
         }
         else {
+          if(p)
+          {
+            /*  */
+            int code = get_op_code_by_name("PUSH");
+            push_command(code);
+            value sym_offset;
+            sym_offset.i = p->offset;
+            push_data(p->type, &(node->val));
+          }
+
           /* 普通局部变量，从栈取值 */
-          load_function_call_stack_val(p, q);
+          vm_load_function_call_stack_val();
         }
       }
     }
@@ -563,25 +596,13 @@ void node_compile(Node node)
     case ASGN:
     {
       Symbol p;
-      Symbol q = NULL;
-
-      if(node->kids[0])
+      if(generic(node->kids[0]->op) == ARRAY)
       {
-        /* 地址节点 */
-        node_compile(node->kids[0]);
-      }
-
-      if(generic(node->kids[0]->op) == ARRAY || generic(node->kids[0]->op) == FIELD)
-      {
-        /* syms[0]表示数组或者记录，syms[1]表示数组成员或者属性，node->kids[0]表示ARRAY或者FIELD节点 */
-        p = node->kids[0]->syms[1];
-        q = node->kids[0]->syms[0];
-      }
-      else
-      {
-        /* node->kids[0]表示ADDRG节点 */
         p = node->kids[0]->syms[0];
       }
+
+      /* address */
+      node_compile(node->kids[0]);
 
       /* 表达式AST节点 */
       node_compile(node->kids[1]);
@@ -589,7 +610,7 @@ void node_compile(Node node)
       if(top_symtab_stack()->level == 0)
       {
         /*  */
-        assign_global(node->kids[1], p, q);
+        vm_assign_global(&node, p);
       }
       else
       {
@@ -601,11 +622,9 @@ void node_compile(Node node)
         else
         {
           /* 局部变量赋值 */
-          assign_function_call_stack_val(p, q);
+          vm_assign_function_call_stack_val(&node, p);
         }
       }
-
-      reset_command_data_sequence();
     }
     break;
   }
@@ -690,21 +709,22 @@ void node_compile(Node node)
     case INCR:
     case DECR:
     {
-      Symbol p;
+      Symbol p = node->kids[0]->syms[0];
 
-      /*  */
+      /* address used by binaray operation */
+      node_compile(node->kids[0]);
+
+      /* address use by assignment */
       node_compile(node->kids[0]);
 
       /*  */
-      Node addr = node->kids[0];
-      p = addr->syms[0];
       if(top_symtab_stack()->level == 0)
       {
-        load_global(p, NULL);
+        vm_load_global();
       }
       else
       {
-        load_function_call_stack_val(p, NULL);
+        vm_load_function_call_stack_val();
       }
 
       /*  */
@@ -717,11 +737,11 @@ void node_compile(Node node)
       /*  */
       if(top_symtab_stack()->level == 0)
       {
-        assign_global(node, p, NULL);
+        vm_assign_global();
       }
       else
       {
-        assign_function_call_stack_val(node, p, NULL);
+        vm_assign_function_call_stack_val();
       }
     }
     break;
@@ -738,18 +758,19 @@ void node_compile(Node node)
     break;
     case TAIL: /* 表示过程以及函数定义的结束 */
     {
+      printf("TAIL begin\n");
       /*  */
-      get_return_index();
+      vm_get_return_index();
 
       /*  */
       Symtab ptab = pop_symtab_stack();
       /*  */
-      pop_function_call_stack(ptab);
+      vm_pop_function_call_stack(ptab);
 
       /*  */
       int jump_code = get_op_code_by_name("JUMP");
       push_command(jump_code);
-
+      printf("TAIL end\n");
       
     }
     break;

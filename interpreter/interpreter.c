@@ -187,7 +187,7 @@ void node_process(Node node)
     /* 有参数 */
     switch (node->u.sys_id)
     {
-      case pREAD:
+      case pREADLN:
       {
         read(node);
       }

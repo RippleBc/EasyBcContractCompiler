@@ -1649,7 +1649,7 @@ yyreduce:
 		pop_ast_forest_stack();
 
 		/*  */
-		//interpret(&routine_forest, dag_forest->link);
+		interpret(&routine_forest, dag_forest->link);
 
 		/*  */
 		ast_compile(&routine_forest, dag_forest->link);
