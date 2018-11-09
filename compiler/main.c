@@ -221,12 +221,8 @@ int main(int argc, char **argv)
         print_result(pasname);
         return 0;
     }
-    else
-    {
-        clear();
-        print_result(pasname);
-        return 1;
-    }
+    //     clear();
+   
 
     finalize();
 
@@ -249,18 +245,17 @@ void emit_byte_sequence()
     {
         printf("byte sequence write success\n");
     }
-
-    fclose(codfp);
-    fclose(errfp);
-    unlink(codname);
-    unlink(errname);
+    
 }
 
 void clear()
 {
+    fclose(ifp);
     fclose(codfp);
     fclose(errfp);
+    unlink(pasname);
     unlink(codname);
+    unlink(errname);
 }
 
 void signup()
