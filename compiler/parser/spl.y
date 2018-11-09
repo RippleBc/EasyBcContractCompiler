@@ -158,11 +158,12 @@ extern void ast_compile(List, List);
 %term fSQR
 %term fSQRT
 %term <p_lex>SYS_PROC
-%term pREAD
-%term pREADLN
+%term <p_lex>SYS_READ
 
 %term  pWRITE
 %term  pWRITELN
+%term  pREAD
+%term  pREADLN
 %term  oPLUS
 %term  oMINUS
 %term  oMUL
@@ -1110,7 +1111,7 @@ oLP args_list oRP
 
 	pop_call_stack();
 }
-|pREAD oLP factor oRP
+|SYS_READ oLP factor oRP
 {
 	if($3 == NULL){
 		parse_error("too few parameters in call to", "read");
@@ -1135,7 +1136,7 @@ oLP args_list oRP
 	}
 
 	/* 系统函数或者系统过程调用AST节点 */
-	$$ = sys_tree(pREAD, t);
+	$$ = sys_tree($1->attr, t);
 
 	/* 放入AST森林 */
 	list_append(top_ast_forest_stack(), $$);

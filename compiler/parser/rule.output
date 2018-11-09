@@ -16,9 +16,10 @@ Terminals unused in grammar
    fABS
    fSQR
    fSQRT
-   pREADLN
    pWRITE
    pWRITELN
+   pREAD
+   pREADLN
    oQUOTE
    oARROW
 
@@ -173,7 +174,7 @@ Terminals unused in grammar
    91 $@9: %empty
 
    92 routine_stmt: SYS_PROC $@9 oLP args_list oRP
-   93             | pREAD oLP factor oRP
+   93             | SYS_READ oLP factor oRP
 
    94 $@10: %empty
 
@@ -336,206 +337,207 @@ fABS (305)
 fSQR (306)
 fSQRT (307)
 SYS_PROC (308) 88 92
-pREAD (309) 93
-pREADLN (310)
-pWRITE (311)
-pWRITELN (312)
-oPLUS (313) 133
-oMINUS (314) 39 40 134 152
-oMUL (315) 137
-oDIV (316) 138
-oEQUAL (317) 15 16 26 130
-oASSIGN (318) 79 82 84 112
-oUNEQU (319) 131
-oLT (320) 129
-oLE (321) 128
-oGT (322) 127
-oGE (323) 126
-oCOMMA (324) 7 10 157
-oSEMI (325) 3 4 9 15 16 26 34 46 52 55 60 68 69 122 125
-oCOLON (326) 34 46 54 62 63 122 125
-oQUOTE (327)
-oDOT (328) 1 84 155
-oDOTDOT (329) 38 39 40 41
-oARROW (330)
-oLP (331) 37 59 86 90 92 93 145 148 150
-oRP (332) 37 59 86 90 92 93 145 148 150
-oLB (333) 30 82 154
-oRB (334) 30 82 154
-yNAME (335) 3 7 8 9 10 15 16 26 36 41 54 57 79 82 84 86 112 125 143
+SYS_READ (309) 93
+pWRITE (310)
+pWRITELN (311)
+pREAD (312)
+pREADLN (313)
+oPLUS (314) 133
+oMINUS (315) 39 40 134 152
+oMUL (316) 137
+oDIV (317) 138
+oEQUAL (318) 15 16 26 130
+oASSIGN (319) 79 82 84 112
+oUNEQU (320) 131
+oLT (321) 129
+oLE (322) 128
+oGT (323) 127
+oGE (324) 126
+oCOMMA (325) 7 10 157
+oSEMI (326) 3 4 9 15 16 26 34 46 52 55 60 68 69 122 125
+oCOLON (327) 34 46 54 62 63 122 125
+oQUOTE (328)
+oDOT (329) 1 84 155
+oDOTDOT (330) 38 39 40 41
+oARROW (331)
+oLP (332) 37 59 86 90 92 93 145 148 150
+oRP (333) 37 59 86 90 92 93 145 148 150
+oLB (334) 30 82 154
+oRB (335) 30 82 154
+yNAME (336) 3 7 8 9 10 15 16 26 36 41 54 57 79 82 84 86 112 125 143
     145 154 155
 
 
 Nonterminals, with rules where they appear
 
-$accept (81)
+$accept (82)
     左： 0
-program (82)
+program (83)
     左： 1, 右： 0
-first_act_at_prog (83)
+first_act_at_prog (84)
     左： 2, 右： 1
-program_head (84)
+program_head (85)
     左： 3 4, 右： 1
-sub_program (85)
+sub_program (86)
     左： 6, 右： 1
-$@1 (86)
+$@1 (87)
     左： 5, 右： 6
-name_list (87)
+name_list (88)
     左： 7 8 9 10, 右： 7 34 37 46 64 65
-sub_routine (88)
+sub_routine (89)
     左： 11, 右： 52 55
-routine_head (89)
+routine_head (90)
     左： 12, 右： 6 11
-const_part (90)
+const_part (91)
     左： 13 14, 右： 12
-const_expr_list (91)
+const_expr_list (92)
     左： 15 16, 右： 14 15
-const_value (92)
+const_value (93)
     左： 17 18 19 20 21, 右： 15 16 38 39 40 122 149
-type_part (93)
+type_part (94)
     左： 22 23, 右： 12
-type_decl_list (94)
+type_decl_list (95)
     左： 24 25, 右： 23 24
-type_definition (95)
+type_definition (96)
     左： 26, 右： 24 25
-type_decl (96)
+type_decl (97)
     左： 27 28 29, 右： 26 30 34 46
-array_type_decl (97)
+array_type_decl (98)
     左： 30, 右： 28
-record_type_decl (98)
+record_type_decl (99)
     左： 31, 右： 29
-field_decl_list (99)
+field_decl_list (100)
     左： 32 33, 右： 31 32
-field_decl (100)
+field_decl (101)
     左： 34, 右： 32 33
-simple_type_decl (101)
+simple_type_decl (102)
     左： 35 36 37 38 39 40 41, 右： 27 30 54 62 63
-var_part (102)
+var_part (103)
     左： 42 43, 右： 12
-var_decl_list (103)
+var_decl_list (104)
     左： 44 45, 右： 43 44
-var_decl (104)
+var_decl (105)
     左： 46, 右： 44 45
-routine_part (105)
+routine_part (106)
     左： 47 48 49 50 51, 右： 12 48 49
-function_decl (106)
+function_decl (107)
     左： 52, 右： 48 50
-function_head (107)
+function_head (108)
     左： 54, 右： 52
-$@2 (108)
+$@2 (109)
     左： 53, 右： 54
-procedure_decl (109)
+procedure_decl (110)
     左： 55, 右： 49 51
-procedure_head (110)
+procedure_head (111)
     左： 57, 右： 55
-$@3 (111)
+$@3 (112)
     左： 56, 右： 57
-parameters (112)
+parameters (113)
     左： 58 59, 右： 54 57
-para_decl_list (113)
+para_decl_list (114)
     左： 60 61, 右： 59 60
-para_type_list (114)
+para_type_list (115)
     左： 62 63, 右： 60 61
-val_para_list (115)
+val_para_list (116)
     左： 64, 右： 62
-var_para_list (116)
+var_para_list (117)
     左： 65, 右： 63
-routine_body (117)
+routine_body (118)
     左： 66, 右： 6 11
-stmt_list (118)
+stmt_list (119)
     左： 67 68 69, 右： 68 69 95
-stmt (119)
+stmt (120)
     左： 70 71 72 73 74 75 76 77 78, 右： 68 99 102 104 106 109
     112 122 125
-assign_stmt (120)
+assign_stmt (121)
     左： 79 82 84, 右： 71
-$@4 (121)
+$@4 (122)
     左： 80, 右： 82
-$@5 (122)
+$@5 (123)
     左： 81, 右： 82
-$@6 (123)
+$@6 (124)
     左： 83, 右： 84
-routine_stmt (124)
+routine_stmt (125)
     左： 86 87 88 90 92 93, 右： 72
-$@7 (125)
+$@7 (126)
     左： 85, 右： 86
-$@8 (126)
+$@8 (127)
     左： 89, 右： 90
-$@9 (127)
+$@9 (128)
     左： 91, 右： 92
-compound_stmt (128)
+compound_stmt (129)
     左： 95, 右： 66 73
-$@10 (129)
+$@10 (130)
     左： 94, 右： 95
-if_stmt (130)
+if_stmt (131)
     左： 99 102, 右： 74
-$@11 (131)
+$@11 (132)
     左： 96, 右： 99
-$@12 (132)
+$@12 (133)
     左： 97, 右： 99
-$@13 (133)
+$@13 (134)
     左： 98, 右： 99
-$@14 (134)
+$@14 (135)
     左： 100, 右： 102
-$@15 (135)
+$@15 (136)
     左： 101, 右： 102
-else_clause (136)
+else_clause (137)
     左： 103 104, 右： 99 102
-repeat_stmt (137)
+repeat_stmt (138)
     左： 106, 右： 75
-$@16 (138)
+$@16 (139)
     左： 105, 右： 106
-while_stmt (139)
+while_stmt (140)
     左： 109, 右： 76
-$@17 (140)
+$@17 (141)
     左： 107, 右： 109
-$@18 (141)
+$@18 (142)
     左： 108, 右： 109
-for_stmt (142)
+for_stmt (143)
     左： 112, 右： 77
-$@19 (143)
+$@19 (144)
     左： 110, 右： 112
-$@20 (144)
+$@20 (145)
     左： 111, 右： 112
-direction (145)
+direction (146)
     左： 113 114, 右： 112
-case_stmt (146)
+case_stmt (147)
     左： 117, 右： 78
-$@21 (147)
+$@21 (148)
     左： 115, 右： 117
-$@22 (148)
+$@22 (149)
     左： 116, 右： 117
-case_expr_list (149)
+case_expr_list (150)
     左： 118 119, 右： 117 118
-case_expr (150)
+case_expr (151)
     左： 122 125, 右： 118 119
-$@23 (151)
+$@23 (152)
     左： 120, 右： 122
-$@24 (152)
+$@24 (153)
     左： 121, 右： 122
-$@25 (153)
+$@25 (154)
     左： 123, 右： 125
-$@26 (154)
+$@26 (155)
     左： 124, 右： 125
-expression (155)
+expression (156)
     左： 126 127 128 129 130 131 132, 右： 79 82 84 99 106 109
     112 117 126 127 128 129 130 131 150 154 157 158
-expr (156)
+expr (157)
     左： 133 134 135 136, 右： 126 127 128 129 130 131 132 133
     134 135
-term (157)
+term (158)
     左： 137 138 139 140 141 142, 右： 133 134 135 136 137 138
     139 140 141
-factor (158)
+factor (159)
     左： 143 145 146 148 149 150 151 152 154 155, 右： 93 137 138
     139 140 141 142 151 152
-$@27 (159)
+$@27 (160)
     左： 144, 右： 145
-$@28 (160)
+$@28 (161)
     左： 147, 右： 148
-$@29 (161)
+$@29 (162)
     左： 153, 右： 154
-args_list (162)
+args_list (163)
     左： 156 157 158, 右： 86 90 92 145 148 157
 
 
@@ -1039,7 +1041,7 @@ State 53
     kWHILE     shift, and go to state 82
     SYS_FUNCT  shift, and go to state 83
     SYS_PROC   shift, and go to state 84
-    pREAD      shift, and go to state 85
+    SYS_READ   shift, and go to state 85
     yNAME      shift, and go to state 86
 
     oSEMI  reduce using rule 70 (stmt)
@@ -1348,7 +1350,7 @@ State 84
 
 State 85
 
-   93 routine_stmt: pREAD . oLP factor oRP
+   93 routine_stmt: SYS_READ . oLP factor oRP
 
     oLP  shift, and go to state 123
 
@@ -1675,7 +1677,7 @@ State 119
     kWHILE     shift, and go to state 82
     SYS_FUNCT  shift, and go to state 83
     SYS_PROC   shift, and go to state 84
-    pREAD      shift, and go to state 85
+    SYS_READ   shift, and go to state 85
     yNAME      shift, and go to state 86
 
     $default  reduce using rule 70 (stmt)
@@ -1729,7 +1731,7 @@ State 122
 
 State 123
 
-   93 routine_stmt: pREAD oLP . factor oRP
+   93 routine_stmt: SYS_READ oLP . factor oRP
 
     kNOT       shift, and go to state 144
     SYS_CON    shift, and go to state 30
@@ -2212,7 +2214,7 @@ State 160
 
 State 161
 
-   93 routine_stmt: pREAD oLP factor . oRP
+   93 routine_stmt: SYS_READ oLP factor . oRP
 
     oRP  shift, and go to state 207
 
@@ -2865,7 +2867,7 @@ State 206
 
 State 207
 
-   93 routine_stmt: pREAD oLP factor oRP .
+   93 routine_stmt: SYS_READ oLP factor oRP .
 
     $default  reduce using rule 93 (routine_stmt)
 
@@ -3340,7 +3342,7 @@ State 244
     kWHILE     shift, and go to state 82
     SYS_FUNCT  shift, and go to state 83
     SYS_PROC   shift, and go to state 84
-    pREAD      shift, and go to state 85
+    SYS_READ   shift, and go to state 85
     yNAME      shift, and go to state 86
 
     $default  reduce using rule 70 (stmt)
@@ -3368,7 +3370,7 @@ State 245
     kWHILE     shift, and go to state 82
     SYS_FUNCT  shift, and go to state 83
     SYS_PROC   shift, and go to state 84
-    pREAD      shift, and go to state 85
+    SYS_READ   shift, and go to state 85
     yNAME      shift, and go to state 86
 
     $default  reduce using rule 70 (stmt)
@@ -3416,7 +3418,7 @@ State 247
     kWHILE     shift, and go to state 82
     SYS_FUNCT  shift, and go to state 83
     SYS_PROC   shift, and go to state 84
-    pREAD      shift, and go to state 85
+    SYS_READ   shift, and go to state 85
     yNAME      shift, and go to state 86
 
     $default  reduce using rule 70 (stmt)
@@ -3743,7 +3745,7 @@ State 277
     kWHILE     shift, and go to state 82
     SYS_FUNCT  shift, and go to state 83
     SYS_PROC   shift, and go to state 84
-    pREAD      shift, and go to state 85
+    SYS_READ   shift, and go to state 85
     yNAME      shift, and go to state 86
 
     $default  reduce using rule 70 (stmt)
@@ -3771,7 +3773,7 @@ State 278
     kWHILE     shift, and go to state 82
     SYS_FUNCT  shift, and go to state 83
     SYS_PROC   shift, and go to state 84
-    pREAD      shift, and go to state 85
+    SYS_READ   shift, and go to state 85
     yNAME      shift, and go to state 86
 
     $default  reduce using rule 70 (stmt)
@@ -3825,7 +3827,7 @@ State 281
     kWHILE     shift, and go to state 82
     SYS_FUNCT  shift, and go to state 83
     SYS_PROC   shift, and go to state 84
-    pREAD      shift, and go to state 85
+    SYS_READ   shift, and go to state 85
     yNAME      shift, and go to state 86
 
     $default  reduce using rule 70 (stmt)
@@ -3969,7 +3971,7 @@ State 293
     kWHILE     shift, and go to state 82
     SYS_FUNCT  shift, and go to state 83
     SYS_PROC   shift, and go to state 84
-    pREAD      shift, and go to state 85
+    SYS_READ   shift, and go to state 85
     yNAME      shift, and go to state 86
 
     $default  reduce using rule 70 (stmt)

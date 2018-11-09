@@ -2488,7 +2488,7 @@ void yyfree (void * ptr )
 	end 主程序的end后面加'.'，函数，过程，和其他的加'；'（record定义、case of语句末尾），如果end后面有else，就什么都不加
 */
 
-/* 匹配字符，对应的Token，Token类型，参数，返回值 */
+/* 匹配字符，对应的Token，Token类型*/
 KEYENTRY Keytable[] = {
 {"abs",		SYS_FUNCT,	fABS},
 {"and",		kAND,		KEYWORD},
@@ -2517,8 +2517,8 @@ KEYENTRY Keytable[] = {
 {"or",		kOR,		KEYWORD},
 {"procedure", 	kPROCEDURE,	KEYWORD},
 {"program", 	kPROGRAM, KEYWORD},
-{"read",	pREAD,	pREAD},
-{"readln", 	pREAD,	pREADLN},
+{"read",	SYS_READ,	pREAD},
+{"readln", 	SYS_READ,	pREADLN},
 {"real",	SYS_TYPE,	tREAL},
 {"record", 	kRECORD,	KEYWORD},
 {"repeat",	kREPEAT,	KEYWORD},
@@ -2564,7 +2564,7 @@ struct {
 	{"kOR",			kOR },
 	{"kPROCEDURE", 	kPROCEDURE },
 	{"kPROGRAM", 	kPROGRAM },
-	{"pREAD",		pREAD },
+	{"SYS_READ",		SYS_READ },
 	{"kRECORD", 	kRECORD },
 	{"kREPEAT",		kREPEAT },
 	{"kTHEN",		kTHEN },
@@ -2626,7 +2626,16 @@ static int id_or_keyword(char *lex)
 					printf(",yylval.p_lex = &Keytable[%d]", mid);
 				}
 			}
-			
+			else if(Keytable[mid].key == SYS_READ)
+			{
+				/* read function */
+				yylval.p_lex = &Keytable[mid];
+
+				if (dump_token)
+				{
+					printf(",yylval.p_lex = &Keytable[%d]", mid);
+				}
+			}
 			else if (Keytable[mid].key == SYS_CON)
 			{
 				/* true、false或者maxint */
