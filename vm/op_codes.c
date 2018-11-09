@@ -1,6 +1,50 @@
-#include "../common.h"
+#include "./common.h"
 
 #define MAX_OP_CODES_NUM 512
+
+/* 字符串转化为10进制数字 */
+int stoi(char *s,int radix)
+{
+    char *p = s;
+    int val = 0;
+
+    if (radix == 8)
+    {
+        p++;
+        while(*p)
+        {
+            val = val * radix + (*p - '0');
+            p++;
+        }
+    }
+    else if (radix == 16 )
+    {
+        p++;
+        p++;
+
+        while(*p)
+        {
+            if (isdigit(*p))
+            {
+                val = val * radix + (*p - '0');
+            }
+            else
+            {
+                val = val * radix + (tolower(*p) - 'a');
+            }
+            p++;
+        }
+    }
+    else
+    {
+        while(*p)
+        {
+            val = val * radix + (*p -'0');
+            p++;
+        }
+    }
+    return val;
+}
 
 struct _op_code_ {
     int code;

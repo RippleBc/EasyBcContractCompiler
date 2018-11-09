@@ -3,7 +3,6 @@
 #define GLOBAL_LENGTH 256
 
 /*  */
-int global_length = GLOBAL_LENGTH;
 value global_queue[GLOBAL_LENGTH];
 
 void assign_global(Node n, Symbol p, Symbol q)

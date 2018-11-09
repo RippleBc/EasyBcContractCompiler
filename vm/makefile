@@ -2,7 +2,7 @@ CC=gcc
 CFLAGS=-g -Wall
 
 #
-SUB_DIRS=stack
+SUB_DIRS=command
 
 #记住当前工程的根目录路径
 ROOT_DIR=$(shell pwd)

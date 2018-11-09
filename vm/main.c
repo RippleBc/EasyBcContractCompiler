@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "common.h"
+#include "./common.h"
 
 FILE *codfp, *errfp;
 
@@ -34,6 +34,14 @@ union {
 boolean testBigEndin() {
     _host_byte_order_example_.number = 0x01000002;
     return (_host_byte_order_example_.s == 0x01);
+}
+
+static void finalize()
+{
+    /* clear all memory. */
+    deallocate(PERM);
+    deallocate(FUNC);
+    deallocate(LASTARENA);
 }
 
 void prepare_file(char *fname)
@@ -109,16 +117,16 @@ int main(int argc, char **argv)
                         switch(*p++)
                         {
                         case 's':
-                            dump_source = 1;
+                            
                             break;
                         case 'a':
-                            dump_ast = 1;
+                            
                             break;
                         case 't':
-                            dump_token = 1;
+                            
                             break;
                         case 'd':
-                            dump_dag = 1;
+                            
                             break;
                         default:
                             printf("Unkown dump option %c.\n", *(p - 1));
