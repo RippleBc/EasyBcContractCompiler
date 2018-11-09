@@ -24,14 +24,9 @@ void vm_pop_function_call_stack(Symtab tab)
   code = get_op_code_by_name("POP_CALL");
   push_command(code);
 }
-void vm_top_function_call_stack(Symtab tab)
+void vm_assign_function_call_stack_val(Value v, Symbol p)
 {
-  int code = get_op_code_by_name("TOP_CALL");
-  push_command(code);
-}
-void vm_assign_function_call_stack_val(Node n, Symbol p)
-{
-  if(n != NULL && p != NULL)
+  if(v != NULL && p != NULL)
   {
     /*  */
     value s_index;
@@ -44,7 +39,7 @@ void vm_assign_function_call_stack_val(Node n, Symbol p)
     int ele_size = get_symbol_align_size(p->type_link->last);
 
     /*  */
-    for(int i = 0; i < strlen(n->val.s); i++)
+    for(int i = 0; i < strlen(v->s); i++)
     {
       if(i > p->type_link->num_ele - 1)
       {
@@ -52,21 +47,16 @@ void vm_assign_function_call_stack_val(Node n, Symbol p)
         return;
       }
 
-      /* address*/
-      int code = get_op_code_by_name("TOP_CALL");
-      push_command(code);
-      /*  */
-      code = get_op_code_by_name("PUSH");
+      /* address */
+      int code = get_op_code_by_name("PUSH");
       push_command(code);
       value s_offset;
       s_offset.i = baseOffset + i * ele_size;
       push_data(find_type_by_id(TYPE_INTEGER), &s_offset);
-      /*  */
-      code = get_op_code_by_name("ADD");
       /* val */
       code = get_op_code_by_name("PUSH");
       push_command(code);
-      s_val.c = n->val.s[i];
+      s_val.c = v->s[i];
       push_data(find_type_by_id(TYPE_CHAR), &s_val);
       /*  */
       code = get_op_code_by_name("ASSIGN_CALL");

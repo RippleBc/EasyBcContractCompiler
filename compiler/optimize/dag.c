@@ -222,12 +222,8 @@ Node travel(Tree tp)
     case ARG:
         l = travel(tp->kids[0]);
         r = travel(tp->kids[1]);
-
         /* tp->u.arg.sym表示参数对应的符号 */
         p = new_node(op, l, r, tp->u.generic.sym);
-
-        /* tp->u.arg.symtab表示对应的符号表 */
-        p->symtab = tp->u.generic.symtab;
         break;
     case RIGHT:
         /* 参数AST节点的子节点，表示实参 */

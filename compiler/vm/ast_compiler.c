@@ -359,25 +359,6 @@ void node_compile(Node node)
       node_compile(node->kids[0]);
     }
 
-    /* 实参赋值 */
-    Symbol p;
-    Node tmpNode;
-    int i = 0, j = 0;;
-    for(p = node->symtab->args; p != NULL; p = p->next)
-    {
-      i++;
-      j = 0;
-      for(tmpNode = node->kids[0]; tmpNode != NULL; tmpNode = tmpNode->kids[1])
-      {
-        j++;
-        if(i == j)
-        {
-          vm_assign_function_call_stack_val(tmpNode, p, NULL);
-          break;
-        }
-      }
-    }
-
     /*  */
     push_jump_detail(NULL, -1, node->symtab);
 
@@ -394,32 +375,38 @@ void node_compile(Node node)
   }
   break;
   case RIGHT:
-  {
-    /* 计算表达式AST节点对应的值 */
-    if(node->kids[0] != NULL)
-    {
-      node_compile(node->kids[0]);
-    }
-
-    node->val = node->kids[0]->val;
-
-    /* 计算其余参数的值 */
-    if(node->kids[1] != NULL)
-    {
-      node_compile(node->kids[1]);
-    }
-  }
-  break;
   case ARG:
   {
-    /* 计算参数的值 */
-    if(node->kids[0] != NULL)
+    Symbol arg = node->syms[0];
+
+    
+    if(arg)
     {
+      if(arg->type->type_id == TYPE_ARRAY)
+      {
+        vm_assign_function_call_stack_val(&(node->kids[0]->syms[0]->v), arg);
+      }
+      else
+      {
+        /* address */
+        int code = get_op_code_by_name("PUSH");
+        push_command(code);
+        value s_offset;
+        s_offset.i = arg->offset;
+        push_data(find_type_by_id(TYPE_INTEGER), &s_offset);
+
+        /* val */
+        node_compile(node->kids[0]);
+
+        vm_assign_function_call_stack_val(NULL, NULL);
+      }
+    }
+    else
+    {
+      /* syscall, no symtab, no arg sym */
       node_compile(node->kids[0]);
     }
-
-    /* 参数赋值 */
-    node->val = node->kids[0]->val;
+    
 
     /* 计算其余参数的值 */
     if(node->kids[1] != NULL)
@@ -437,11 +424,7 @@ void node_compile(Node node)
     {
       Symbol p = node->syms[0];
 
-      if(p->type->type_id == TYPE_STRING)
-      {
-        node->val = p->v;
-      }
-      else
+      if(p->type->type_id != TYPE_STRING)
       {
         /*  */
         int code = get_op_code_by_name("PUSH");
@@ -543,11 +526,10 @@ void node_compile(Node node)
       {
         if(p && p->defn == DEF_ENUM_ELEMENT)
         {
-          node->val = p->v;
           /*  */
           int code = get_op_code_by_name("PUSH");
           push_command(code);
-          push_data(p->type, &(node->val));
+          push_data(p->type, &(p->v));
         }
         else
         {
@@ -558,7 +540,7 @@ void node_compile(Node node)
             push_command(code);
             value sym_offset;
             sym_offset.i = p->offset;
-            push_data(p->type, &(node->val));
+            push_data(p->type, &sym_offset);
           }
 
           vm_load_global();
@@ -568,13 +550,12 @@ void node_compile(Node node)
       {
         if(p && p->defn == DEF_ENUM_ELEMENT)
         {
-          node->val = p->v;
           /*  */
           int code = get_op_code_by_name("PUSH");
           /*  */
           push_command(code);
           /*  */
-          push_data(p->type, &(node->val));
+          push_data(p->type, &(p->v));
         }
         else {
           if(p)
@@ -584,7 +565,7 @@ void node_compile(Node node)
             push_command(code);
             value sym_offset;
             sym_offset.i = p->offset;
-            push_data(p->type, &(node->val));
+            push_data(p->type, &sym_offset);
           }
 
           /* 普通局部变量，从栈取值 */
@@ -595,8 +576,8 @@ void node_compile(Node node)
     break;
     case ASGN:
     {
-      Symbol p;
-      if(generic(node->kids[0]->op) == ARRAY)
+      Symbol p = NULL;
+      if(generic(node->kids[0]->op) == ADDRG && node->kids[0]->syms[0]->type->type_id == TYPE_ARRAY)
       {
         p = node->kids[0]->syms[0];
       }
@@ -609,8 +590,15 @@ void node_compile(Node node)
 
       if(top_symtab_stack()->level == 0)
       {
-        /*  */
-        vm_assign_global(&node, p);
+        if(p)
+        {
+          /*  */
+          vm_assign_global(&(node->kids[1]->syms[0]->v), p);
+        }
+        else
+        {
+          vm_assign_global(NULL, NULL);
+        }
       }
       else
       {
@@ -621,8 +609,15 @@ void node_compile(Node node)
         }
         else
         {
-          /* 局部变量赋值 */
-          vm_assign_function_call_stack_val(&node, p);
+          if(p)
+          {
+            /* 局部变量赋值 */
+            vm_assign_function_call_stack_val(&(node->kids[1]->syms[0]->v), p);
+          }
+          else
+          {
+            vm_assign_function_call_stack_val(NULL, NULL);
+          }
         }
       }
     }

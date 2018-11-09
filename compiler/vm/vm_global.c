@@ -1,8 +1,8 @@
 #include "../common.h"
 
-void vm_assign_global(Node n, Symbol p)
+void vm_assign_global(Value v, Symbol p)
 {
-  if(n != NULL && p != NULL)
+  if(v != NULL && p != NULL)
   {
     value s_index;
     /*  */
@@ -14,7 +14,7 @@ void vm_assign_global(Node n, Symbol p)
     int ele_size = get_symbol_align_size(p->type_link->last);
 
     /*  */
-    for(int i = 0; i < strlen(n->val.s); i++)
+    for(int i = 0; i < strlen(v->s); i++)
     {
       if(i > p->type_link->num_ele - 1)
       {
@@ -30,7 +30,7 @@ void vm_assign_global(Node n, Symbol p)
       /* val */
       code = get_op_code_by_name("PUSH");
       push_command(code);
-      s_val.c = n->val.s[i];
+      s_val.c = v->s[i];
       push_data(find_type_by_id(TYPE_CHAR), &s_val);
       /*  */
       code = get_op_code_by_name("ASSIGN_GLOBAL");

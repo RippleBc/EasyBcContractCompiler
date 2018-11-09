@@ -2626,6 +2626,7 @@ static int id_or_keyword(char *lex)
 					printf(",yylval.p_lex = &Keytable[%d]", mid);
 				}
 			}
+			
 			else if (Keytable[mid].key == SYS_CON)
 			{
 				/* true、false或者maxint */
