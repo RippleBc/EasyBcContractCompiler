@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include "common.h"
 
-FILE *codfp, *datfp, *errfp;
+FILE *codfp, *errfp;
 FILE *ifp;
 extern FILE *yyin;
 
@@ -14,14 +14,15 @@ extern int line_pos;
 extern struct list routine_forest;
 extern struct list *dag_forest;
 
+extern int code_byte_index;
+extern unsigned char code_byte_sequence[];
+
 char pasname[FILE_NAME_LEN];
-char datname[FILE_NAME_LEN];
 char codname[FILE_NAME_LEN];
 char errname[FILE_NAME_LEN];
 
-static char buffer[128];
 void init(char *);
-void emit_asm();
+void emit_byte_sequence();
 void clear();
 void signup();
 
@@ -86,9 +87,6 @@ void prepare_file(char *fname)
     }
 
     snprintf(pasname, sizeof(pasname), "%s.pas", fname);
-
-    snprintf(datname, sizeof(datname), "%s.asm", fname);
-
     snprintf(codname, sizeof(codname), "%s.cod", fname);
     snprintf(errname, sizeof(errname), "%s.err", fname);
 
@@ -105,10 +103,9 @@ void prepare_file(char *fname)
     line_pos = 0;
 
     codfp = fopen(codname, "wt");
-    datfp = fopen(datname, "wt");
     errfp = fopen(errname, "wt");
 
-    if (!codfp || !datfp || !errfp)
+    if (!codfp || !errfp)
     {
         printf("File open error!\n");
         exit(1);
@@ -220,7 +217,7 @@ int main(int argc, char **argv)
 
     if (!err_occur())
     {
-        emit_asm();
+        emit_byte_sequence();
         print_result(pasname);
         return 0;
     }
@@ -238,19 +235,22 @@ int main(int argc, char **argv)
     return 0;
 }
 
-void emit_asm()
+void emit_byte_sequence()
 {
-    fclose(codfp);
-    codfp = fopen(codname, "rt");
-    fgets(buffer, sizeof(buffer), codfp);
-    while(!feof(codfp))
+    int i = 0;
+    while(i < code_byte_index)
     {
-        fputs(buffer, datfp);
-        fgets(buffer, sizeof(buffer), codfp);
+        printf("%x ", code_byte_sequence[i]);
+
+        i++;
+    }
+
+    if(fputs(code_byte_sequence, codfp) > 0)
+    {
+        printf("byte sequence write success\n");
     }
 
     fclose(codfp);
-    fclose(datfp);
     fclose(errfp);
     unlink(codname);
     unlink(errname);
@@ -259,10 +259,8 @@ void emit_asm()
 void clear()
 {
     fclose(codfp);
-    fclose(datfp);
     fclose(errfp);
     unlink(codname);
-    unlink(datname);
 }
 
 void signup()

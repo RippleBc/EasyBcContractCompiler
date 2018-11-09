@@ -4,7 +4,6 @@ void vm_assign_global(Node n, Symbol p)
 {
   if(n != NULL && p != NULL)
   {
-    /*  */
     value s_index;
     /*  */
     value s_val;

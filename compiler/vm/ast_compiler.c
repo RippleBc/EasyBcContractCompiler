@@ -10,7 +10,7 @@ List g_cp;
 List g_routine_forest;
 
 /*  */
-#define CODE_MAX_NUM 2048
+#define CODE_MAX_NUM 1024 * 48
 int code_byte_index = 0;
 unsigned char code_byte_sequence[CODE_MAX_NUM];
 int push_data(Type t, Value v)
@@ -165,7 +165,7 @@ static void reset_command_data_sequence()
 /*  */
 void ast_compile(List routine_forest, List dag)
 {
-  printf("\n\n\n\n");
+  printf("\n********************\nbegin compiler to code bytes\n********************\n");
 
   g_routine_forest = routine_forest;
 
@@ -216,13 +216,7 @@ void ast_compile(List routine_forest, List dag)
     i++;
   }
 
-  /*  */
-  i = 0;
-  while(i < code_byte_index)
-  {
-    printf("%x ", code_byte_sequence[i]);
-    i++;
-  }
+  code_byte_sequence[code_byte_index] = '\0';
 }
 
 void node_compile(Node node)
@@ -726,11 +720,11 @@ void node_compile(Node node)
       /*  */
       if(top_symtab_stack()->level == 0)
       {
-        vm_load_global();
+        vm_load_global(NULL, NULL);
       }
       else
       {
-        vm_load_function_call_stack_val();
+        vm_load_function_call_stack_val(NULL, NULL);
       }
 
       /*  */
@@ -743,11 +737,11 @@ void node_compile(Node node)
       /*  */
       if(top_symtab_stack()->level == 0)
       {
-        vm_assign_global();
+        vm_assign_global(NULL, NULL);
       }
       else
       {
-        vm_assign_function_call_stack_val();
+        vm_assign_function_call_stack_val(NULL, NULL);
       }
     }
     break;
