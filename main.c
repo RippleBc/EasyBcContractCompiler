@@ -11,6 +11,8 @@ extern FILE *yyin;
 extern int line_no;
 extern int line_pos;
 
+extern struct list routine_forest;
+extern struct list *dag_forest;
 
 char pasname[FILE_NAME_LEN];
 char datname[FILE_NAME_LEN];
@@ -207,6 +209,12 @@ int main(int argc, char **argv)
     global_env.u.program.argv = dargv;
 
     yyparse();
+
+    /*  */
+    interpret(&routine_forest, dag_forest->link);
+
+    /*  */
+    ast_compile(&routine_forest, dag_forest->link);
 
     fclose(ifp);
 

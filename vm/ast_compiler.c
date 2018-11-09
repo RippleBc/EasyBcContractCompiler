@@ -129,13 +129,20 @@ struct _jump_detail_
 typedef struct _jump_detail_ *JumpDetail;
 static int jump_detail_index = 0;
 static JumpDetail jump_detail_sequence[CODE_MAX_NUM];
-static void push_jump_detail(char *name, int index)
+static void push_jump_detail(char *name, int index, Symtab ptab)
 {
   NEW0(jump_detail_sequence[jump_detail_index], PERM);
 
-  strncpy(jump_detail_sequence[jump_detail_index]->name, name, NAME_LEN);
-  jump_detail_sequence[jump_detail_index]->code_index = index;
-  
+  if(name)
+  {
+    strncpy(jump_detail_sequence[jump_detail_index]->name, name, NAME_LEN);
+    jump_detail_sequence[jump_detail_index]->code_index = index;
+  }
+  else
+  {
+    jump_detail_sequence[jump_detail_index]->ptab = ptab;
+  }
+
   jump_detail_index++;
 }
 
@@ -220,7 +227,6 @@ void ast_compile(List routine_forest, List dag)
 
 void node_compile(Node node)
 {
-  printf("node compile %s\n", get_op_name(generic(node->op)));
   /* 流程控制相关 */
   switch (generic(node->op))
   {
@@ -237,7 +243,7 @@ void node_compile(Node node)
     Symbol p = node->syms[0];
 
     /* record the jump position */
-    push_jump_detail(p->name, code_byte_index);
+    push_jump_detail(p->name, code_byte_index, NULL);
 
     /*  */
     int command_push_code = get_op_code_by_name("PUSH");
@@ -257,7 +263,7 @@ void node_compile(Node node)
 
     /* record the jump position */
     Symbol p = node->u.cond.label;
-    push_jump_detail(p->name, code_byte_index);
+    push_jump_detail(p->name, code_byte_index, NULL);
 
     /*  */
     switch(node->kids[0]->type->type_id)
@@ -358,9 +364,6 @@ void node_compile(Node node)
     {
       node_compile(node->kids[0]);
     }
-    
-    /* 符号表压栈 */
-    push_symtab_stack(node->symtab);
 
     /* 实参赋值 */
     Symbol p;
@@ -380,6 +383,9 @@ void node_compile(Node node)
         }
       }
     }
+
+    /*  */
+    push_jump_detail(NULL, -1, node->symtab);
 
     /*  */
     int command_push_code = get_op_code_by_name("PUSH");
@@ -752,26 +758,27 @@ void node_compile(Node node)
   {
     case HEADER: /* 表示过程以及函数定义的开始 */  
     {
-      /*  */
+       /* 符号表压栈 */
+      push_symtab_stack(node->symtab);
+      /* record function */
       push_function(node->symtab, code_byte_index);
     }
     break;
     case TAIL: /* 表示过程以及函数定义的结束 */
     {
-      printf("TAIL begin\n");
       /*  */
       vm_get_return_index();
-
+     
       /*  */
-      Symtab ptab = pop_symtab_stack();
-      /*  */
+      Symtab ptab = top_symtab_stack();
       vm_pop_function_call_stack(ptab);
 
       /*  */
       int jump_code = get_op_code_by_name("JUMP");
       push_command(jump_code);
-      printf("TAIL end\n");
-      
+
+      /*  */
+      pop_symtab_stack();
     }
     break;
     case BLOCKBEG:

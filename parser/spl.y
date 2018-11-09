@@ -227,12 +227,6 @@ program
 		gen_dag(top_ast_forest_stack(), dag_forest);
 
 		pop_ast_forest_stack();
-
-		/*  */
-		interpret(&routine_forest, dag_forest->link);
-
-		/*  */
-		ast_compile(&routine_forest, dag_forest->link);
 	}
 
 	return 0;
