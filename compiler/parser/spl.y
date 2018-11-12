@@ -185,6 +185,7 @@ extern void ast_compile(List, List);
 %term  oBCOM
 %term  oRSH
 %term  oLSH
+%term  oMOD
 %term  oLT
 %term  oLE
 %term  oGT
@@ -1680,6 +1681,10 @@ expr
 {
 	$$ = binary_expr_tree(OR, $1, $3);
 }
+|expr oOR term
+{
+	$$ = binary_expr_tree(OR, $1, $3);
+}
 |term
 {
 	$$ = $1;
@@ -1731,10 +1736,51 @@ term
 
 	$$ = binary_expr_tree(MOD, $1, $3);
 }
+|term oMOD factor
+{
+	/* 二元运算AST树（mod） */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch", "");
+		return 0;
+	}
+
+	$$ = binary_expr_tree(MOD, $1, $3);
+}
 |term kAND factor
 {
 	$$ = binary_expr_tree(AND, $1, $3);
 }
+|term oAND factor
+{
+	$$ = binary_expr_tree(AND, $1, $3);
+}
+
+|term oBAND factor
+{
+	$$ = binary_expr_tree(BAND, $1, $3);
+}
+|term oBOR factor
+{
+	$$ = binary_expr_tree(BOR, $1, $3);
+}
+|term oBXOR factor
+{
+	$$ = binary_expr_tree(BXOR, $1, $3);
+}
+|term oBCOM factor
+{
+	$$ = binary_expr_tree(BCOM, $1, $3);
+}
+|term oRSH factor
+{
+	$$ = binary_expr_tree(RSH, $1, $3);
+}
+|term oLSH factor
+{
+	$$ = binary_expr_tree(LSH, $1, $3);
+}
+
 |factor
 {
 	$$ = $1;
@@ -1837,6 +1883,11 @@ oLP args_list oRP
 	$$ = $2;
 }
 |kNOT factor
+{
+	/* 一元操作符（not） */
+	$$ = not_tree($2);
+}
+|oNOT factor
 {
 	/* 一元操作符（not） */
 	$$ = not_tree($2);
