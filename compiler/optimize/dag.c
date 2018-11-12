@@ -282,6 +282,7 @@ Node travel(Tree tp)
     {
     case NOT:
     case NEG:
+    case BCOM:
         l = travel(tp->kids[0]);
         p = node(op, l, NULL, NULL);
 

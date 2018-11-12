@@ -94,6 +94,14 @@ Tree not_tree(Tree source)
     return t;
 }
 
+Tree com_tree(Tree source)
+{
+    Tree t;
+
+    t = new_tree(BCOM, source->result_type, source, NULL);
+    return t;
+}
+
 /* arguments tree.
  * set argtree to NULL when first called.
  * argtree表示可以参数AST树、function表示函数对应的符号表、arg指向符号表中的参数链表的头部、expr表示实参

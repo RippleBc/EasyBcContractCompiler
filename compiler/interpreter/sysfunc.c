@@ -84,7 +84,7 @@ void write(Node node)
 {
 	Node np;
   Node exp;
-  Symbol p = NULL;
+  int type_id;
 
 	for(np = node->kids[0]; np != NULL; np = np->kids[1])
   {    
@@ -95,19 +95,20 @@ void write(Node node)
       if(exp->kids[0])
       {
         /*  */
-        p = exp->kids[0]->syms[1];
+        type_id = exp->kids[0]->syms[1]->type->type_id;
       }
       else
       {
-        p = exp->syms[0];
+        type_id = exp->syms[0]->type->type_id;
       }
     }
     else
     {
-      p = exp->syms[0];
+      type_id = exp->type->type_id;
     }
 
-    switch(p->type->type_id)
+
+    switch(type_id)
     {
     case TYPE_INTEGER:
     {

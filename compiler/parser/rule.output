@@ -264,26 +264,26 @@ Terminals unused in grammar
   145     | term oBAND factor
   146     | term oBOR factor
   147     | term oBXOR factor
-  148     | term oBCOM factor
-  149     | term oRSH factor
-  150     | term oLSH factor
-  151     | factor
+  148     | term oRSH factor
+  149     | term oLSH factor
+  150     | factor
 
-  152 factor: yNAME
+  151 factor: yNAME
 
-  153 $@27: %empty
+  152 $@27: %empty
 
-  154 factor: yNAME $@27 oLP args_list oRP
-  155       | SYS_FUNCT
+  153 factor: yNAME $@27 oLP args_list oRP
+  154       | SYS_FUNCT
 
-  156 $@28: %empty
+  155 $@28: %empty
 
-  157 factor: SYS_FUNCT $@28 oLP args_list oRP
-  158       | const_value
-  159       | oLP expression oRP
-  160       | kNOT factor
-  161       | oNOT factor
-  162       | oMINUS factor
+  156 factor: SYS_FUNCT $@28 oLP args_list oRP
+  157       | const_value
+  158       | oLP expression oRP
+  159       | kNOT factor
+  160       | oNOT factor
+  161       | oMINUS factor
+  162       | oBCOM factor
   163       | TYPE_CONVERT factor
 
   164 $@29: %empty
@@ -318,7 +318,7 @@ kIN (272)
 kLABEL (273)
 kMOD (274) 141
 kNIL (275)
-kNOT (276) 160
+kNOT (276) 159
 kOF (277) 30 117
 kOR (278) 135
 kPROCEDURE (279) 57
@@ -346,7 +346,7 @@ tCHAR (300)
 tREAL (301)
 tBOOLEAN (302)
 tTEXT (303)
-SYS_FUNCT (304) 87 90 155 157
+SYS_FUNCT (304) 87 90 154 156
 fABS (305)
 fSQR (306)
 fSQRT (307)
@@ -362,7 +362,7 @@ pWRITELN (316)
 pREAD (317)
 pREADLN (318)
 oPLUS (319) 133
-oMINUS (320) 39 40 134 162
+oMINUS (320) 39 40 134 161
 oMUL (321) 138
 oDIV (322) 139
 oEQUAL (323) 15 16 26 130
@@ -370,13 +370,13 @@ oASSIGN (324) 79 82 84 112
 oUNEQU (325) 131
 oAND (326) 144
 oOR (327) 136
-oNOT (328) 161
+oNOT (328) 160
 oBAND (329) 145
 oBOR (330) 146
 oBXOR (331) 147
-oBCOM (332) 148
-oRSH (333) 149
-oLSH (334) 150
+oBCOM (332) 162
+oRSH (333) 148
+oLSH (334) 149
 oMOD (335) 142
 oLT (336) 129
 oLE (337) 128
@@ -388,12 +388,12 @@ oCOLON (342) 34 46 54 62 63 122 125
 oQUOTE (343)
 oDOT (344) 1 84 166
 oDOTDOT (345) 38 39 40 41
-oLP (346) 37 59 86 90 92 93 154 157 159
-oRP (347) 37 59 86 90 92 93 154 157 159
+oLP (346) 37 59 86 90 92 93 153 156 158
+oRP (347) 37 59 86 90 92 93 153 156 158
 oLB (348) 30 82 165
 oRB (349) 30 82 165
-yNAME (350) 3 7 8 9 10 15 16 26 36 41 54 57 79 82 84 86 112 125 152
-    154 165 166
+yNAME (350) 3 7 8 9 10 15 16 26 36 41 54 57 79 82 84 86 112 125 151
+    153 165 166
 
 
 Nonterminals, with rules where they appear
@@ -421,7 +421,7 @@ const_part (105)
 const_expr_list (106)
     左： 15 16, 右： 14 15
 const_value (107)
-    左： 17 18 19 20 21, 右： 15 16 38 39 40 122 158
+    左： 17 18 19 20 21, 右： 15 16 38 39 40 122 157
 type_part (108)
     左： 22 23, 右： 12
 type_decl_list (109)
@@ -549,26 +549,26 @@ $@26 (169)
     左： 124, 右： 125
 expression (170)
     左： 126 127 128 129 130 131 132, 右： 79 82 84 99 106 109
-    112 117 126 127 128 129 130 131 159 165 168 169
+    112 117 126 127 128 129 130 131 158 165 168 169
 expr (171)
     左： 133 134 135 136 137, 右： 126 127 128 129 130 131 132
     133 134 135 136
 term (172)
-    左： 138 139 140 141 142 143 144 145 146 147 148 149 150 151,
-    右： 133 134 135 136 137 138 139 140 141 142 143 144 145 146
-    147 148 149 150
+    左： 138 139 140 141 142 143 144 145 146 147 148 149 150, 右：
+    133 134 135 136 137 138 139 140 141 142 143 144 145 146 147 148
+    149
 factor (173)
-    左： 152 154 155 157 158 159 160 161 162 163 165 166, 右：
-    93 138 139 140 141 142 143 144 145 146 147 148 149 150 151 160
+    左： 151 153 154 156 157 158 159 160 161 162 163 165 166, 右：
+    93 138 139 140 141 142 143 144 145 146 147 148 149 150 159 160
     161 162 163
 $@27 (174)
-    左： 153, 右： 154
+    左： 152, 右： 153
 $@28 (175)
-    左： 156, 右： 157
+    左： 155, 右： 156
 $@29 (176)
     左： 164, 右： 165
 args_list (177)
-    左： 167 168 169, 右： 86 90 92 154 157 168
+    左： 167 168 169, 右： 86 90 92 153 156 168
 
 
 State 0
@@ -1334,6 +1334,7 @@ State 80
     TYPE_CONVERT  reduce using rule 96 ($@11)
     oMINUS        reduce using rule 96 ($@11)
     oNOT          reduce using rule 96 ($@11)
+    oBCOM         reduce using rule 96 ($@11)
     oLP           reduce using rule 96 ($@11)
     yNAME         reduce using rule 96 ($@11)
 
@@ -1651,21 +1652,22 @@ State 115
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    expression   转到状态 152
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
+    const_value  转到状态 152
+    expression   转到状态 153
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
 
 
 State 116
 
   112 for_stmt: kFOR yNAME . oASSIGN expression $@19 direction expression kDO $@20 stmt
 
-    oASSIGN  shift, and go to state 156
+    oASSIGN  shift, and go to state 157
 
 
 State 117
@@ -1674,7 +1676,7 @@ State 117
 
     $default  reduce using rule 100 ($@14)
 
-    $@14  转到状态 157
+    $@14  转到状态 158
 
 
 State 118
@@ -1691,14 +1693,15 @@ State 118
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    expression   转到状态 158
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
+    const_value  转到状态 152
+    expression   转到状态 159
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
 
 
 State 119
@@ -1718,7 +1721,7 @@ State 119
 
     $default  reduce using rule 70 (stmt)
 
-    stmt           转到状态 159
+    stmt           转到状态 160
     assign_stmt    转到状态 88
     routine_stmt   转到状态 89
     compound_stmt  转到状态 90
@@ -1743,28 +1746,29 @@ State 120
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    expression   转到状态 160
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
+    const_value  转到状态 152
+    expression   转到状态 161
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
 
 
 State 121
 
    90 routine_stmt: SYS_FUNCT $@8 . oLP args_list oRP
 
-    oLP  shift, and go to state 161
+    oLP  shift, and go to state 162
 
 
 State 122
 
    92 routine_stmt: SYS_PROC $@9 . oLP args_list oRP
 
-    oLP  shift, and go to state 162
+    oLP  shift, and go to state 163
 
 
 State 123
@@ -1781,11 +1785,12 @@ State 123
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    factor       转到状态 163
+    const_value  转到状态 152
+    factor       转到状态 164
 
 
 State 124
@@ -1802,21 +1807,22 @@ State 124
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    expression   转到状态 164
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
+    const_value  转到状态 152
+    expression   转到状态 165
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
 
 
 State 125
 
    84 assign_stmt: yNAME oDOT . yNAME $@6 oASSIGN expression
 
-    yNAME  shift, and go to state 165
+    yNAME  shift, and go to state 166
 
 
 State 126
@@ -1825,14 +1831,14 @@ State 126
 
     $default  reduce using rule 80 ($@4)
 
-    $@4  转到状态 166
+    $@4  转到状态 167
 
 
 State 127
 
    86 routine_stmt: yNAME $@7 . oLP args_list oRP
 
-    oLP  shift, and go to state 167
+    oLP  shift, and go to state 168
 
 
 State 128
@@ -1846,7 +1852,7 @@ State 129
 
    30 array_type_decl: kARRAY oLB simple_type_decl . oRB kOF type_decl
 
-    oRB  shift, and go to state 168
+    oRB  shift, and go to state 169
 
 
 State 130
@@ -1866,7 +1872,7 @@ State 130
     yNAME     shift, and go to state 59
 
     const_value       转到状态 60
-    type_decl         转到状态 169
+    type_decl         转到状态 170
     array_type_decl   转到状态 62
     record_type_decl  转到状态 63
     simple_type_decl  转到状态 64
@@ -1896,9 +1902,9 @@ State 133
     cINTEGER  shift, and go to state 32
     cREAL     shift, and go to state 33
     cCHAR     shift, and go to state 34
-    oMINUS    shift, and go to state 170
+    oMINUS    shift, and go to state 171
 
-    const_value  转到状态 171
+    const_value  转到状态 172
 
 
 State 134
@@ -1933,21 +1939,21 @@ State 138
 
    59 parameters: oLP . para_decl_list oRP
 
-    kVAR   shift, and go to state 172
+    kVAR   shift, and go to state 173
     yNAME  shift, and go to state 40
 
-    name_list       转到状态 173
-    para_decl_list  转到状态 174
-    para_type_list  转到状态 175
-    val_para_list   转到状态 176
-    var_para_list   转到状态 177
+    name_list       转到状态 174
+    para_decl_list  转到状态 175
+    para_type_list  转到状态 176
+    val_para_list   转到状态 177
+    var_para_list   转到状态 178
 
 
 State 139
 
    54 function_head: kFUNCTION $@2 yNAME parameters . oCOLON simple_type_decl
 
-    oCOLON  shift, and go to state 178
+    oCOLON  shift, and go to state 179
 
 
 State 140
@@ -1980,7 +1986,7 @@ State 143
 
 State 144
 
-  160 factor: kNOT . factor
+  159 factor: kNOT . factor
 
     kNOT          shift, and go to state 144
     SYS_CON       shift, and go to state 30
@@ -1992,22 +1998,23 @@ State 144
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    factor       转到状态 179
+    const_value  转到状态 152
+    factor       转到状态 180
 
 
 State 145
 
-  155 factor: SYS_FUNCT .
-  157       | SYS_FUNCT . $@28 oLP args_list oRP
+  154 factor: SYS_FUNCT .
+  156       | SYS_FUNCT . $@28 oLP args_list oRP
 
-    oLP       reduce using rule 156 ($@28)
-    $default  reduce using rule 155 (factor)
+    oLP       reduce using rule 155 ($@28)
+    $default  reduce using rule 154 (factor)
 
-    $@28  转到状态 180
+    $@28  转到状态 181
 
 
 State 146
@@ -2024,16 +2031,17 @@ State 146
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    factor       转到状态 181
+    const_value  转到状态 152
+    factor       转到状态 182
 
 
 State 147
 
-  162 factor: oMINUS . factor
+  161 factor: oMINUS . factor
 
     kNOT          shift, and go to state 144
     SYS_CON       shift, and go to state 30
@@ -2045,16 +2053,17 @@ State 147
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    factor       转到状态 182
+    const_value  转到状态 152
+    factor       转到状态 183
 
 
 State 148
 
-  161 factor: oNOT . factor
+  160 factor: oNOT . factor
 
     kNOT          shift, and go to state 144
     SYS_CON       shift, and go to state 30
@@ -2066,16 +2075,17 @@ State 148
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    factor       转到状态 183
+    const_value  转到状态 152
+    factor       转到状态 184
 
 
 State 149
 
-  159 factor: oLP . expression oRP
+  162 factor: oBCOM . factor
 
     kNOT          shift, and go to state 144
     SYS_CON       shift, and go to state 30
@@ -2087,40 +2097,63 @@ State 149
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    expression   转到状态 184
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
+    const_value  转到状态 152
+    factor       转到状态 185
 
 
 State 150
 
-  152 factor: yNAME .
-  154       | yNAME . $@27 oLP args_list oRP
-  165       | yNAME . oLB $@29 expression oRB
-  166       | yNAME . oDOT yNAME
+  158 factor: oLP . expression oRP
 
-    oDOT  shift, and go to state 185
-    oLB   shift, and go to state 186
+    kNOT          shift, and go to state 144
+    SYS_CON       shift, and go to state 30
+    cSTRING       shift, and go to state 31
+    cINTEGER      shift, and go to state 32
+    cREAL         shift, and go to state 33
+    cCHAR         shift, and go to state 34
+    SYS_FUNCT     shift, and go to state 145
+    TYPE_CONVERT  shift, and go to state 146
+    oMINUS        shift, and go to state 147
+    oNOT          shift, and go to state 148
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    oLP       reduce using rule 153 ($@27)
-    $default  reduce using rule 152 (factor)
-
-    $@27  转到状态 187
+    const_value  转到状态 152
+    expression   转到状态 186
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
 
 
 State 151
 
-  158 factor: const_value .
+  151 factor: yNAME .
+  153       | yNAME . $@27 oLP args_list oRP
+  165       | yNAME . oLB $@29 expression oRB
+  166       | yNAME . oDOT yNAME
 
-    $default  reduce using rule 158 (factor)
+    oDOT  shift, and go to state 187
+    oLB   shift, and go to state 188
+
+    oLP       reduce using rule 152 ($@27)
+    $default  reduce using rule 151 (factor)
+
+    $@27  转到状态 189
 
 
 State 152
+
+  157 factor: const_value .
+
+    $default  reduce using rule 157 (factor)
+
+
+State 153
 
   117 case_stmt: kCASE $@21 expression . kOF case_expr_list $@22 kEND
   126 expression: expression . oGE expr
@@ -2130,16 +2163,16 @@ State 152
   130           | expression . oEQUAL expr
   131           | expression . oUNEQU expr
 
-    kOF     shift, and go to state 188
-    oEQUAL  shift, and go to state 189
-    oUNEQU  shift, and go to state 190
-    oLT     shift, and go to state 191
-    oLE     shift, and go to state 192
-    oGT     shift, and go to state 193
-    oGE     shift, and go to state 194
+    kOF     shift, and go to state 190
+    oEQUAL  shift, and go to state 191
+    oUNEQU  shift, and go to state 192
+    oLT     shift, and go to state 193
+    oLE     shift, and go to state 194
+    oGT     shift, and go to state 195
+    oGE     shift, and go to state 196
 
 
-State 153
+State 154
 
   132 expression: expr .
   133 expr: expr . oPLUS term
@@ -2147,15 +2180,15 @@ State 153
   135     | expr . kOR term
   136     | expr . oOR term
 
-    kOR     shift, and go to state 195
-    oPLUS   shift, and go to state 196
-    oMINUS  shift, and go to state 197
-    oOR     shift, and go to state 198
+    kOR     shift, and go to state 197
+    oPLUS   shift, and go to state 198
+    oMINUS  shift, and go to state 199
+    oOR     shift, and go to state 200
 
     $default  reduce using rule 132 (expression)
 
 
-State 154
+State 155
 
   137 expr: term .
   138 term: term . oMUL factor
@@ -2168,35 +2201,33 @@ State 154
   145     | term . oBAND factor
   146     | term . oBOR factor
   147     | term . oBXOR factor
-  148     | term . oBCOM factor
-  149     | term . oRSH factor
-  150     | term . oLSH factor
+  148     | term . oRSH factor
+  149     | term . oLSH factor
 
-    kAND   shift, and go to state 199
-    kDIV   shift, and go to state 200
-    kMOD   shift, and go to state 201
-    oMUL   shift, and go to state 202
-    oDIV   shift, and go to state 203
-    oAND   shift, and go to state 204
-    oBAND  shift, and go to state 205
-    oBOR   shift, and go to state 206
-    oBXOR  shift, and go to state 207
-    oBCOM  shift, and go to state 208
-    oRSH   shift, and go to state 209
-    oLSH   shift, and go to state 210
-    oMOD   shift, and go to state 211
+    kAND   shift, and go to state 201
+    kDIV   shift, and go to state 202
+    kMOD   shift, and go to state 203
+    oMUL   shift, and go to state 204
+    oDIV   shift, and go to state 205
+    oAND   shift, and go to state 206
+    oBAND  shift, and go to state 207
+    oBOR   shift, and go to state 208
+    oBXOR  shift, and go to state 209
+    oRSH   shift, and go to state 210
+    oLSH   shift, and go to state 211
+    oMOD   shift, and go to state 212
 
     $default  reduce using rule 137 (expr)
 
 
-State 155
-
-  151 term: factor .
-
-    $default  reduce using rule 151 (term)
-
-
 State 156
+
+  150 term: factor .
+
+    $default  reduce using rule 150 (term)
+
+
+State 157
 
   112 for_stmt: kFOR yNAME oASSIGN . expression $@19 direction expression kDO $@20 stmt
 
@@ -2210,24 +2241,25 @@ State 156
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    expression   转到状态 212
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
-
-
-State 157
-
-  102 if_stmt: kIF error $@14 . kTHEN $@15 stmt else_clause
-
-    kTHEN  shift, and go to state 213
+    const_value  转到状态 152
+    expression   转到状态 213
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
 
 
 State 158
+
+  102 if_stmt: kIF error $@14 . kTHEN $@15 stmt else_clause
+
+    kTHEN  shift, and go to state 214
+
+
+State 159
 
    99 if_stmt: kIF $@11 expression . kTHEN $@12 stmt $@13 else_clause
   126 expression: expression . oGE expr
@@ -2237,23 +2269,23 @@ State 158
   130           | expression . oEQUAL expr
   131           | expression . oUNEQU expr
 
-    kTHEN   shift, and go to state 214
-    oEQUAL  shift, and go to state 189
-    oUNEQU  shift, and go to state 190
-    oLT     shift, and go to state 191
-    oLE     shift, and go to state 192
-    oGT     shift, and go to state 193
-    oGE     shift, and go to state 194
-
-
-State 159
-
-  106 repeat_stmt: kREPEAT $@16 stmt . kUNTIL expression
-
-    kUNTIL  shift, and go to state 215
+    kTHEN   shift, and go to state 215
+    oEQUAL  shift, and go to state 191
+    oUNEQU  shift, and go to state 192
+    oLT     shift, and go to state 193
+    oLE     shift, and go to state 194
+    oGT     shift, and go to state 195
+    oGE     shift, and go to state 196
 
 
 State 160
+
+  106 repeat_stmt: kREPEAT $@16 stmt . kUNTIL expression
+
+    kUNTIL  shift, and go to state 216
+
+
+State 161
 
   109 while_stmt: kWHILE $@17 expression . kDO $@18 stmt
   126 expression: expression . oGE expr
@@ -2263,16 +2295,16 @@ State 160
   130           | expression . oEQUAL expr
   131           | expression . oUNEQU expr
 
-    kDO     shift, and go to state 216
-    oEQUAL  shift, and go to state 189
-    oUNEQU  shift, and go to state 190
-    oLT     shift, and go to state 191
-    oLE     shift, and go to state 192
-    oGT     shift, and go to state 193
-    oGE     shift, and go to state 194
+    kDO     shift, and go to state 217
+    oEQUAL  shift, and go to state 191
+    oUNEQU  shift, and go to state 192
+    oLT     shift, and go to state 193
+    oLE     shift, and go to state 194
+    oGT     shift, and go to state 195
+    oGE     shift, and go to state 196
 
 
-State 161
+State 162
 
    90 routine_stmt: SYS_FUNCT $@8 oLP . args_list oRP
 
@@ -2286,20 +2318,21 @@ State 161
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
     $default  reduce using rule 167 (args_list)
 
-    const_value  转到状态 151
-    expression   转到状态 217
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
-    args_list    转到状态 218
+    const_value  转到状态 152
+    expression   转到状态 218
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
+    args_list    转到状态 219
 
 
-State 162
+State 163
 
    92 routine_stmt: SYS_PROC $@9 oLP . args_list oRP
 
@@ -2313,27 +2346,28 @@ State 162
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
     $default  reduce using rule 167 (args_list)
 
-    const_value  转到状态 151
-    expression   转到状态 217
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
-    args_list    转到状态 219
-
-
-State 163
-
-   93 routine_stmt: SYS_READ oLP factor . oRP
-
-    oRP  shift, and go to state 220
+    const_value  转到状态 152
+    expression   转到状态 218
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
+    args_list    转到状态 220
 
 
 State 164
+
+   93 routine_stmt: SYS_READ oLP factor . oRP
+
+    oRP  shift, and go to state 221
+
+
+State 165
 
    79 assign_stmt: yNAME oASSIGN expression .
   126 expression: expression . oGE expr
@@ -2343,26 +2377,26 @@ State 164
   130           | expression . oEQUAL expr
   131           | expression . oUNEQU expr
 
-    oEQUAL  shift, and go to state 189
-    oUNEQU  shift, and go to state 190
-    oLT     shift, and go to state 191
-    oLE     shift, and go to state 192
-    oGT     shift, and go to state 193
-    oGE     shift, and go to state 194
+    oEQUAL  shift, and go to state 191
+    oUNEQU  shift, and go to state 192
+    oLT     shift, and go to state 193
+    oLE     shift, and go to state 194
+    oGT     shift, and go to state 195
+    oGE     shift, and go to state 196
 
     $default  reduce using rule 79 (assign_stmt)
 
 
-State 165
+State 166
 
    84 assign_stmt: yNAME oDOT yNAME . $@6 oASSIGN expression
 
     $default  reduce using rule 83 ($@6)
 
-    $@6  转到状态 221
+    $@6  转到状态 222
 
 
-State 166
+State 167
 
    82 assign_stmt: yNAME oLB $@4 . expression oRB $@5 oASSIGN expression
 
@@ -2376,17 +2410,18 @@ State 166
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    expression   转到状态 222
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
+    const_value  转到状态 152
+    expression   转到状态 223
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
 
 
-State 167
+State 168
 
    86 routine_stmt: yNAME $@7 oLP . args_list oRP
 
@@ -2400,34 +2435,35 @@ State 167
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
     $default  reduce using rule 167 (args_list)
 
-    const_value  转到状态 151
-    expression   转到状态 217
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
-    args_list    转到状态 223
-
-
-State 168
-
-   30 array_type_decl: kARRAY oLB simple_type_decl oRB . kOF type_decl
-
-    kOF  shift, and go to state 224
+    const_value  转到状态 152
+    expression   转到状态 218
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
+    args_list    转到状态 224
 
 
 State 169
 
-   34 field_decl: name_list oCOLON type_decl . oSEMI
+   30 array_type_decl: kARRAY oLB simple_type_decl oRB . kOF type_decl
 
-    oSEMI  shift, and go to state 225
+    kOF  shift, and go to state 225
 
 
 State 170
+
+   34 field_decl: name_list oCOLON type_decl . oSEMI
+
+    oSEMI  shift, and go to state 226
+
+
+State 171
 
    40 simple_type_decl: oMINUS const_value oDOTDOT oMINUS . const_value
 
@@ -2437,26 +2473,26 @@ State 170
     cREAL     shift, and go to state 33
     cCHAR     shift, and go to state 34
 
-    const_value  转到状态 226
+    const_value  转到状态 227
 
 
-State 171
+State 172
 
    39 simple_type_decl: oMINUS const_value oDOTDOT const_value .
 
     $default  reduce using rule 39 (simple_type_decl)
 
 
-State 172
+State 173
 
    65 var_para_list: kVAR . name_list
 
     yNAME  shift, and go to state 40
 
-    name_list  转到状态 227
+    name_list  转到状态 228
 
 
-State 173
+State 174
 
     7 name_list: name_list . oCOMMA yNAME
    64 val_para_list: name_list .
@@ -2466,37 +2502,37 @@ State 173
     $default  reduce using rule 64 (val_para_list)
 
 
-State 174
+State 175
 
    59 parameters: oLP para_decl_list . oRP
    60 para_decl_list: para_decl_list . oSEMI para_type_list
 
-    oSEMI  shift, and go to state 228
-    oRP    shift, and go to state 229
+    oSEMI  shift, and go to state 229
+    oRP    shift, and go to state 230
 
 
-State 175
+State 176
 
    61 para_decl_list: para_type_list .
 
     $default  reduce using rule 61 (para_decl_list)
 
 
-State 176
-
-   62 para_type_list: val_para_list . oCOLON simple_type_decl
-
-    oCOLON  shift, and go to state 230
-
-
 State 177
 
-   63 para_type_list: var_para_list . oCOLON simple_type_decl
+   62 para_type_list: val_para_list . oCOLON simple_type_decl
 
     oCOLON  shift, and go to state 231
 
 
 State 178
+
+   63 para_type_list: var_para_list . oCOLON simple_type_decl
+
+    oCOLON  shift, and go to state 232
+
+
+State 179
 
    54 function_head: kFUNCTION $@2 yNAME parameters oCOLON . simple_type_decl
 
@@ -2511,45 +2547,52 @@ State 178
     yNAME     shift, and go to state 59
 
     const_value       转到状态 60
-    simple_type_decl  转到状态 232
-
-
-State 179
-
-  160 factor: kNOT factor .
-
-    $default  reduce using rule 160 (factor)
+    simple_type_decl  转到状态 233
 
 
 State 180
 
-  157 factor: SYS_FUNCT $@28 . oLP args_list oRP
+  159 factor: kNOT factor .
 
-    oLP  shift, and go to state 233
+    $default  reduce using rule 159 (factor)
 
 
 State 181
+
+  156 factor: SYS_FUNCT $@28 . oLP args_list oRP
+
+    oLP  shift, and go to state 234
+
+
+State 182
 
   163 factor: TYPE_CONVERT factor .
 
     $default  reduce using rule 163 (factor)
 
 
-State 182
-
-  162 factor: oMINUS factor .
-
-    $default  reduce using rule 162 (factor)
-
-
 State 183
 
-  161 factor: oNOT factor .
+  161 factor: oMINUS factor .
 
     $default  reduce using rule 161 (factor)
 
 
 State 184
+
+  160 factor: oNOT factor .
+
+    $default  reduce using rule 160 (factor)
+
+
+State 185
+
+  162 factor: oBCOM factor .
+
+    $default  reduce using rule 162 (factor)
+
+
+State 186
 
   126 expression: expression . oGE expr
   127           | expression . oGT expr
@@ -2557,41 +2600,41 @@ State 184
   129           | expression . oLT expr
   130           | expression . oEQUAL expr
   131           | expression . oUNEQU expr
-  159 factor: oLP expression . oRP
+  158 factor: oLP expression . oRP
 
-    oEQUAL  shift, and go to state 189
-    oUNEQU  shift, and go to state 190
-    oLT     shift, and go to state 191
-    oLE     shift, and go to state 192
-    oGT     shift, and go to state 193
-    oGE     shift, and go to state 194
-    oRP     shift, and go to state 234
+    oEQUAL  shift, and go to state 191
+    oUNEQU  shift, and go to state 192
+    oLT     shift, and go to state 193
+    oLE     shift, and go to state 194
+    oGT     shift, and go to state 195
+    oGE     shift, and go to state 196
+    oRP     shift, and go to state 235
 
 
-State 185
+State 187
 
   166 factor: yNAME oDOT . yNAME
 
-    yNAME  shift, and go to state 235
+    yNAME  shift, and go to state 236
 
 
-State 186
+State 188
 
   165 factor: yNAME oLB . $@29 expression oRB
 
     $default  reduce using rule 164 ($@29)
 
-    $@29  转到状态 236
+    $@29  转到状态 237
 
 
-State 187
+State 189
 
-  154 factor: yNAME $@27 . oLP args_list oRP
+  153 factor: yNAME $@27 . oLP args_list oRP
 
-    oLP  shift, and go to state 237
+    oLP  shift, and go to state 238
 
 
-State 188
+State 190
 
   117 case_stmt: kCASE $@21 expression kOF . case_expr_list $@22 kEND
 
@@ -2600,14 +2643,14 @@ State 188
     cINTEGER  shift, and go to state 32
     cREAL     shift, and go to state 33
     cCHAR     shift, and go to state 34
-    yNAME     shift, and go to state 238
+    yNAME     shift, and go to state 239
 
-    const_value     转到状态 239
-    case_expr_list  转到状态 240
-    case_expr       转到状态 241
+    const_value     转到状态 240
+    case_expr_list  转到状态 241
+    case_expr       转到状态 242
 
 
-State 189
+State 191
 
   130 expression: expression oEQUAL . expr
 
@@ -2621,16 +2664,17 @@ State 189
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    expr         转到状态 242
-    term         转到状态 154
-    factor       转到状态 155
+    const_value  转到状态 152
+    expr         转到状态 243
+    term         转到状态 155
+    factor       转到状态 156
 
 
-State 190
+State 192
 
   131 expression: expression oUNEQU . expr
 
@@ -2644,16 +2688,17 @@ State 190
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    expr         转到状态 243
-    term         转到状态 154
-    factor       转到状态 155
+    const_value  转到状态 152
+    expr         转到状态 244
+    term         转到状态 155
+    factor       转到状态 156
 
 
-State 191
+State 193
 
   129 expression: expression oLT . expr
 
@@ -2667,16 +2712,17 @@ State 191
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    expr         转到状态 244
-    term         转到状态 154
-    factor       转到状态 155
+    const_value  转到状态 152
+    expr         转到状态 245
+    term         转到状态 155
+    factor       转到状态 156
 
 
-State 192
+State 194
 
   128 expression: expression oLE . expr
 
@@ -2690,16 +2736,17 @@ State 192
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    expr         转到状态 245
-    term         转到状态 154
-    factor       转到状态 155
+    const_value  转到状态 152
+    expr         转到状态 246
+    term         转到状态 155
+    factor       转到状态 156
 
 
-State 193
+State 195
 
   127 expression: expression oGT . expr
 
@@ -2713,16 +2760,17 @@ State 193
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    expr         转到状态 246
-    term         转到状态 154
-    factor       转到状态 155
+    const_value  转到状态 152
+    expr         转到状态 247
+    term         转到状态 155
+    factor       转到状态 156
 
 
-State 194
+State 196
 
   126 expression: expression oGE . expr
 
@@ -2736,16 +2784,17 @@ State 194
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    expr         转到状态 247
-    term         转到状态 154
-    factor       转到状态 155
+    const_value  转到状态 152
+    expr         转到状态 248
+    term         转到状态 155
+    factor       转到状态 156
 
 
-State 195
+State 197
 
   135 expr: expr kOR . term
 
@@ -2759,15 +2808,16 @@ State 195
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    term         转到状态 248
-    factor       转到状态 155
+    const_value  转到状态 152
+    term         转到状态 249
+    factor       转到状态 156
 
 
-State 196
+State 198
 
   133 expr: expr oPLUS . term
 
@@ -2781,15 +2831,16 @@ State 196
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    term         转到状态 249
-    factor       转到状态 155
+    const_value  转到状态 152
+    term         转到状态 250
+    factor       转到状态 156
 
 
-State 197
+State 199
 
   134 expr: expr oMINUS . term
 
@@ -2803,15 +2854,16 @@ State 197
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    term         转到状态 250
-    factor       转到状态 155
+    const_value  转到状态 152
+    term         转到状态 251
+    factor       转到状态 156
 
 
-State 198
+State 200
 
   136 expr: expr oOR . term
 
@@ -2825,15 +2877,16 @@ State 198
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    term         转到状态 251
-    factor       转到状态 155
+    const_value  转到状态 152
+    term         转到状态 252
+    factor       转到状态 156
 
 
-State 199
+State 201
 
   143 term: term kAND . factor
 
@@ -2847,14 +2900,15 @@ State 199
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    factor       转到状态 252
+    const_value  转到状态 152
+    factor       转到状态 253
 
 
-State 200
+State 202
 
   140 term: term kDIV . factor
 
@@ -2868,14 +2922,15 @@ State 200
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    factor       转到状态 253
+    const_value  转到状态 152
+    factor       转到状态 254
 
 
-State 201
+State 203
 
   141 term: term kMOD . factor
 
@@ -2889,14 +2944,15 @@ State 201
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    factor       转到状态 254
+    const_value  转到状态 152
+    factor       转到状态 255
 
 
-State 202
+State 204
 
   138 term: term oMUL . factor
 
@@ -2910,14 +2966,15 @@ State 202
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    factor       转到状态 255
+    const_value  转到状态 152
+    factor       转到状态 256
 
 
-State 203
+State 205
 
   139 term: term oDIV . factor
 
@@ -2931,14 +2988,15 @@ State 203
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    factor       转到状态 256
+    const_value  转到状态 152
+    factor       转到状态 257
 
 
-State 204
+State 206
 
   144 term: term oAND . factor
 
@@ -2952,14 +3010,15 @@ State 204
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    factor       转到状态 257
+    const_value  转到状态 152
+    factor       转到状态 258
 
 
-State 205
+State 207
 
   145 term: term oBAND . factor
 
@@ -2973,14 +3032,15 @@ State 205
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    factor       转到状态 258
+    const_value  转到状态 152
+    factor       转到状态 259
 
 
-State 206
+State 208
 
   146 term: term oBOR . factor
 
@@ -2994,14 +3054,15 @@ State 206
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    factor       转到状态 259
+    const_value  转到状态 152
+    factor       转到状态 260
 
 
-State 207
+State 209
 
   147 term: term oBXOR . factor
 
@@ -3015,58 +3076,17 @@ State 207
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    factor       转到状态 260
-
-
-State 208
-
-  148 term: term oBCOM . factor
-
-    kNOT          shift, and go to state 144
-    SYS_CON       shift, and go to state 30
-    cSTRING       shift, and go to state 31
-    cINTEGER      shift, and go to state 32
-    cREAL         shift, and go to state 33
-    cCHAR         shift, and go to state 34
-    SYS_FUNCT     shift, and go to state 145
-    TYPE_CONVERT  shift, and go to state 146
-    oMINUS        shift, and go to state 147
-    oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
-
-    const_value  转到状态 151
+    const_value  转到状态 152
     factor       转到状态 261
-
-
-State 209
-
-  149 term: term oRSH . factor
-
-    kNOT          shift, and go to state 144
-    SYS_CON       shift, and go to state 30
-    cSTRING       shift, and go to state 31
-    cINTEGER      shift, and go to state 32
-    cREAL         shift, and go to state 33
-    cCHAR         shift, and go to state 34
-    SYS_FUNCT     shift, and go to state 145
-    TYPE_CONVERT  shift, and go to state 146
-    oMINUS        shift, and go to state 147
-    oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
-
-    const_value  转到状态 151
-    factor       转到状态 262
 
 
 State 210
 
-  150 term: term oLSH . factor
+  148 term: term oRSH . factor
 
     kNOT          shift, and go to state 144
     SYS_CON       shift, and go to state 30
@@ -3078,14 +3098,37 @@ State 210
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
-    factor       转到状态 263
+    const_value  转到状态 152
+    factor       转到状态 262
 
 
 State 211
+
+  149 term: term oLSH . factor
+
+    kNOT          shift, and go to state 144
+    SYS_CON       shift, and go to state 30
+    cSTRING       shift, and go to state 31
+    cINTEGER      shift, and go to state 32
+    cREAL         shift, and go to state 33
+    cCHAR         shift, and go to state 34
+    SYS_FUNCT     shift, and go to state 145
+    TYPE_CONVERT  shift, and go to state 146
+    oMINUS        shift, and go to state 147
+    oNOT          shift, and go to state 148
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
+
+    const_value  转到状态 152
+    factor       转到状态 263
+
+
+State 212
 
   142 term: term oMOD . factor
 
@@ -3099,14 +3142,15 @@ State 211
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
+    const_value  转到状态 152
     factor       转到状态 264
 
 
-State 212
+State 213
 
   112 for_stmt: kFOR yNAME oASSIGN expression . $@19 direction expression kDO $@20 stmt
   126 expression: expression . oGE expr
@@ -3116,19 +3160,19 @@ State 212
   130           | expression . oEQUAL expr
   131           | expression . oUNEQU expr
 
-    oEQUAL  shift, and go to state 189
-    oUNEQU  shift, and go to state 190
-    oLT     shift, and go to state 191
-    oLE     shift, and go to state 192
-    oGT     shift, and go to state 193
-    oGE     shift, and go to state 194
+    oEQUAL  shift, and go to state 191
+    oUNEQU  shift, and go to state 192
+    oLT     shift, and go to state 193
+    oLE     shift, and go to state 194
+    oGT     shift, and go to state 195
+    oGE     shift, and go to state 196
 
     $default  reduce using rule 110 ($@19)
 
     $@19  转到状态 265
 
 
-State 213
+State 214
 
   102 if_stmt: kIF error $@14 kTHEN . $@15 stmt else_clause
 
@@ -3137,7 +3181,7 @@ State 213
     $@15  转到状态 266
 
 
-State 214
+State 215
 
    99 if_stmt: kIF $@11 expression kTHEN . $@12 stmt $@13 else_clause
 
@@ -3146,7 +3190,7 @@ State 214
     $@12  转到状态 267
 
 
-State 215
+State 216
 
   106 repeat_stmt: kREPEAT $@16 stmt kUNTIL . expression
 
@@ -3160,17 +3204,18 @@ State 215
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
+    const_value  转到状态 152
     expression   转到状态 268
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
 
 
-State 216
+State 217
 
   109 while_stmt: kWHILE $@17 expression kDO . $@18 stmt
 
@@ -3179,7 +3224,7 @@ State 216
     $@18  转到状态 269
 
 
-State 217
+State 218
 
   126 expression: expression . oGE expr
   127           | expression . oGT expr
@@ -3189,17 +3234,17 @@ State 217
   131           | expression . oUNEQU expr
   169 args_list: expression .
 
-    oEQUAL  shift, and go to state 189
-    oUNEQU  shift, and go to state 190
-    oLT     shift, and go to state 191
-    oLE     shift, and go to state 192
-    oGT     shift, and go to state 193
-    oGE     shift, and go to state 194
+    oEQUAL  shift, and go to state 191
+    oUNEQU  shift, and go to state 192
+    oLT     shift, and go to state 193
+    oLE     shift, and go to state 194
+    oGT     shift, and go to state 195
+    oGE     shift, and go to state 196
 
     $default  reduce using rule 169 (args_list)
 
 
-State 218
+State 219
 
    90 routine_stmt: SYS_FUNCT $@8 oLP args_list . oRP
   168 args_list: args_list . oCOMMA expression
@@ -3208,7 +3253,7 @@ State 218
     oRP     shift, and go to state 271
 
 
-State 219
+State 220
 
    92 routine_stmt: SYS_PROC $@9 oLP args_list . oRP
   168 args_list: args_list . oCOMMA expression
@@ -3217,21 +3262,21 @@ State 219
     oRP     shift, and go to state 272
 
 
-State 220
+State 221
 
    93 routine_stmt: SYS_READ oLP factor oRP .
 
     $default  reduce using rule 93 (routine_stmt)
 
 
-State 221
+State 222
 
    84 assign_stmt: yNAME oDOT yNAME $@6 . oASSIGN expression
 
     oASSIGN  shift, and go to state 273
 
 
-State 222
+State 223
 
    82 assign_stmt: yNAME oLB $@4 expression . oRB $@5 oASSIGN expression
   126 expression: expression . oGE expr
@@ -3241,16 +3286,16 @@ State 222
   130           | expression . oEQUAL expr
   131           | expression . oUNEQU expr
 
-    oEQUAL  shift, and go to state 189
-    oUNEQU  shift, and go to state 190
-    oLT     shift, and go to state 191
-    oLE     shift, and go to state 192
-    oGT     shift, and go to state 193
-    oGE     shift, and go to state 194
+    oEQUAL  shift, and go to state 191
+    oUNEQU  shift, and go to state 192
+    oLT     shift, and go to state 193
+    oLE     shift, and go to state 194
+    oGT     shift, and go to state 195
+    oGE     shift, and go to state 196
     oRB     shift, and go to state 274
 
 
-State 223
+State 224
 
    86 routine_stmt: yNAME $@7 oLP args_list . oRP
   168 args_list: args_list . oCOMMA expression
@@ -3259,7 +3304,7 @@ State 223
     oRP     shift, and go to state 275
 
 
-State 224
+State 225
 
    30 array_type_decl: kARRAY oLB simple_type_decl oRB kOF . type_decl
 
@@ -3282,21 +3327,21 @@ State 224
     simple_type_decl  转到状态 64
 
 
-State 225
+State 226
 
    34 field_decl: name_list oCOLON type_decl oSEMI .
 
     $default  reduce using rule 34 (field_decl)
 
 
-State 226
+State 227
 
    40 simple_type_decl: oMINUS const_value oDOTDOT oMINUS const_value .
 
     $default  reduce using rule 40 (simple_type_decl)
 
 
-State 227
+State 228
 
     7 name_list: name_list . oCOMMA yNAME
    65 var_para_list: kVAR name_list .
@@ -3306,27 +3351,27 @@ State 227
     $default  reduce using rule 65 (var_para_list)
 
 
-State 228
+State 229
 
    60 para_decl_list: para_decl_list oSEMI . para_type_list
 
-    kVAR   shift, and go to state 172
+    kVAR   shift, and go to state 173
     yNAME  shift, and go to state 40
 
-    name_list       转到状态 173
+    name_list       转到状态 174
     para_type_list  转到状态 277
-    val_para_list   转到状态 176
-    var_para_list   转到状态 177
+    val_para_list   转到状态 177
+    var_para_list   转到状态 178
 
 
-State 229
+State 230
 
    59 parameters: oLP para_decl_list oRP .
 
     $default  reduce using rule 59 (parameters)
 
 
-State 230
+State 231
 
    62 para_type_list: val_para_list oCOLON . simple_type_decl
 
@@ -3344,7 +3389,7 @@ State 230
     simple_type_decl  转到状态 278
 
 
-State 231
+State 232
 
    63 para_type_list: var_para_list oCOLON . simple_type_decl
 
@@ -3362,16 +3407,16 @@ State 231
     simple_type_decl  转到状态 279
 
 
-State 232
+State 233
 
    54 function_head: kFUNCTION $@2 yNAME parameters oCOLON simple_type_decl .
 
     $default  reduce using rule 54 (function_head)
 
 
-State 233
+State 234
 
-  157 factor: SYS_FUNCT $@28 oLP . args_list oRP
+  156 factor: SYS_FUNCT $@28 oLP . args_list oRP
 
     kNOT          shift, and go to state 144
     SYS_CON       shift, and go to state 30
@@ -3383,34 +3428,35 @@ State 233
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
     $default  reduce using rule 167 (args_list)
 
-    const_value  转到状态 151
-    expression   转到状态 217
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
+    const_value  转到状态 152
+    expression   转到状态 218
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
     args_list    转到状态 280
 
 
-State 234
-
-  159 factor: oLP expression oRP .
-
-    $default  reduce using rule 159 (factor)
-
-
 State 235
+
+  158 factor: oLP expression oRP .
+
+    $default  reduce using rule 158 (factor)
+
+
+State 236
 
   166 factor: yNAME oDOT yNAME .
 
     $default  reduce using rule 166 (factor)
 
 
-State 236
+State 237
 
   165 factor: yNAME oLB $@29 . expression oRB
 
@@ -3424,19 +3470,20 @@ State 236
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
+    const_value  转到状态 152
     expression   转到状态 281
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
 
 
-State 237
+State 238
 
-  154 factor: yNAME $@27 oLP . args_list oRP
+  153 factor: yNAME $@27 oLP . args_list oRP
 
     kNOT          shift, and go to state 144
     SYS_CON       shift, and go to state 30
@@ -3448,20 +3495,21 @@ State 237
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
     $default  reduce using rule 167 (args_list)
 
-    const_value  转到状态 151
-    expression   转到状态 217
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
+    const_value  转到状态 152
+    expression   转到状态 218
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
     args_list    转到状态 282
 
 
-State 238
+State 239
 
   125 case_expr: yNAME . $@25 oCOLON stmt $@26 oSEMI
 
@@ -3470,7 +3518,7 @@ State 238
     $@25  转到状态 283
 
 
-State 239
+State 240
 
   122 case_expr: const_value . $@23 oCOLON stmt $@24 oSEMI
 
@@ -3479,7 +3527,7 @@ State 239
     $@23  转到状态 284
 
 
-State 240
+State 241
 
   117 case_stmt: kCASE $@21 expression kOF case_expr_list . $@22 kEND
   118 case_expr_list: case_expr_list . case_expr
@@ -3489,23 +3537,23 @@ State 240
     cINTEGER  shift, and go to state 32
     cREAL     shift, and go to state 33
     cCHAR     shift, and go to state 34
-    yNAME     shift, and go to state 238
+    yNAME     shift, and go to state 239
 
     $default  reduce using rule 116 ($@22)
 
-    const_value  转到状态 239
+    const_value  转到状态 240
     $@22         转到状态 285
     case_expr    转到状态 286
 
 
-State 241
+State 242
 
   119 case_expr_list: case_expr .
 
     $default  reduce using rule 119 (case_expr_list)
 
 
-State 242
+State 243
 
   130 expression: expression oEQUAL expr .
   133 expr: expr . oPLUS term
@@ -3513,15 +3561,15 @@ State 242
   135     | expr . kOR term
   136     | expr . oOR term
 
-    kOR     shift, and go to state 195
-    oPLUS   shift, and go to state 196
-    oMINUS  shift, and go to state 197
-    oOR     shift, and go to state 198
+    kOR     shift, and go to state 197
+    oPLUS   shift, and go to state 198
+    oMINUS  shift, and go to state 199
+    oOR     shift, and go to state 200
 
     $default  reduce using rule 130 (expression)
 
 
-State 243
+State 244
 
   131 expression: expression oUNEQU expr .
   133 expr: expr . oPLUS term
@@ -3529,15 +3577,15 @@ State 243
   135     | expr . kOR term
   136     | expr . oOR term
 
-    kOR     shift, and go to state 195
-    oPLUS   shift, and go to state 196
-    oMINUS  shift, and go to state 197
-    oOR     shift, and go to state 198
+    kOR     shift, and go to state 197
+    oPLUS   shift, and go to state 198
+    oMINUS  shift, and go to state 199
+    oOR     shift, and go to state 200
 
     $default  reduce using rule 131 (expression)
 
 
-State 244
+State 245
 
   129 expression: expression oLT expr .
   133 expr: expr . oPLUS term
@@ -3545,15 +3593,15 @@ State 244
   135     | expr . kOR term
   136     | expr . oOR term
 
-    kOR     shift, and go to state 195
-    oPLUS   shift, and go to state 196
-    oMINUS  shift, and go to state 197
-    oOR     shift, and go to state 198
+    kOR     shift, and go to state 197
+    oPLUS   shift, and go to state 198
+    oMINUS  shift, and go to state 199
+    oOR     shift, and go to state 200
 
     $default  reduce using rule 129 (expression)
 
 
-State 245
+State 246
 
   128 expression: expression oLE expr .
   133 expr: expr . oPLUS term
@@ -3561,15 +3609,15 @@ State 245
   135     | expr . kOR term
   136     | expr . oOR term
 
-    kOR     shift, and go to state 195
-    oPLUS   shift, and go to state 196
-    oMINUS  shift, and go to state 197
-    oOR     shift, and go to state 198
+    kOR     shift, and go to state 197
+    oPLUS   shift, and go to state 198
+    oMINUS  shift, and go to state 199
+    oOR     shift, and go to state 200
 
     $default  reduce using rule 128 (expression)
 
 
-State 246
+State 247
 
   127 expression: expression oGT expr .
   133 expr: expr . oPLUS term
@@ -3577,15 +3625,15 @@ State 246
   135     | expr . kOR term
   136     | expr . oOR term
 
-    kOR     shift, and go to state 195
-    oPLUS   shift, and go to state 196
-    oMINUS  shift, and go to state 197
-    oOR     shift, and go to state 198
+    kOR     shift, and go to state 197
+    oPLUS   shift, and go to state 198
+    oMINUS  shift, and go to state 199
+    oOR     shift, and go to state 200
 
     $default  reduce using rule 127 (expression)
 
 
-State 247
+State 248
 
   126 expression: expression oGE expr .
   133 expr: expr . oPLUS term
@@ -3593,15 +3641,15 @@ State 247
   135     | expr . kOR term
   136     | expr . oOR term
 
-    kOR     shift, and go to state 195
-    oPLUS   shift, and go to state 196
-    oMINUS  shift, and go to state 197
-    oOR     shift, and go to state 198
+    kOR     shift, and go to state 197
+    oPLUS   shift, and go to state 198
+    oMINUS  shift, and go to state 199
+    oOR     shift, and go to state 200
 
     $default  reduce using rule 126 (expression)
 
 
-State 248
+State 249
 
   135 expr: expr kOR term .
   138 term: term . oMUL factor
@@ -3614,28 +3662,26 @@ State 248
   145     | term . oBAND factor
   146     | term . oBOR factor
   147     | term . oBXOR factor
-  148     | term . oBCOM factor
-  149     | term . oRSH factor
-  150     | term . oLSH factor
+  148     | term . oRSH factor
+  149     | term . oLSH factor
 
-    kAND   shift, and go to state 199
-    kDIV   shift, and go to state 200
-    kMOD   shift, and go to state 201
-    oMUL   shift, and go to state 202
-    oDIV   shift, and go to state 203
-    oAND   shift, and go to state 204
-    oBAND  shift, and go to state 205
-    oBOR   shift, and go to state 206
-    oBXOR  shift, and go to state 207
-    oBCOM  shift, and go to state 208
-    oRSH   shift, and go to state 209
-    oLSH   shift, and go to state 210
-    oMOD   shift, and go to state 211
+    kAND   shift, and go to state 201
+    kDIV   shift, and go to state 202
+    kMOD   shift, and go to state 203
+    oMUL   shift, and go to state 204
+    oDIV   shift, and go to state 205
+    oAND   shift, and go to state 206
+    oBAND  shift, and go to state 207
+    oBOR   shift, and go to state 208
+    oBXOR  shift, and go to state 209
+    oRSH   shift, and go to state 210
+    oLSH   shift, and go to state 211
+    oMOD   shift, and go to state 212
 
     $default  reduce using rule 135 (expr)
 
 
-State 249
+State 250
 
   133 expr: expr oPLUS term .
   138 term: term . oMUL factor
@@ -3648,28 +3694,26 @@ State 249
   145     | term . oBAND factor
   146     | term . oBOR factor
   147     | term . oBXOR factor
-  148     | term . oBCOM factor
-  149     | term . oRSH factor
-  150     | term . oLSH factor
+  148     | term . oRSH factor
+  149     | term . oLSH factor
 
-    kAND   shift, and go to state 199
-    kDIV   shift, and go to state 200
-    kMOD   shift, and go to state 201
-    oMUL   shift, and go to state 202
-    oDIV   shift, and go to state 203
-    oAND   shift, and go to state 204
-    oBAND  shift, and go to state 205
-    oBOR   shift, and go to state 206
-    oBXOR  shift, and go to state 207
-    oBCOM  shift, and go to state 208
-    oRSH   shift, and go to state 209
-    oLSH   shift, and go to state 210
-    oMOD   shift, and go to state 211
+    kAND   shift, and go to state 201
+    kDIV   shift, and go to state 202
+    kMOD   shift, and go to state 203
+    oMUL   shift, and go to state 204
+    oDIV   shift, and go to state 205
+    oAND   shift, and go to state 206
+    oBAND  shift, and go to state 207
+    oBOR   shift, and go to state 208
+    oBXOR  shift, and go to state 209
+    oRSH   shift, and go to state 210
+    oLSH   shift, and go to state 211
+    oMOD   shift, and go to state 212
 
     $default  reduce using rule 133 (expr)
 
 
-State 250
+State 251
 
   134 expr: expr oMINUS term .
   138 term: term . oMUL factor
@@ -3682,28 +3726,26 @@ State 250
   145     | term . oBAND factor
   146     | term . oBOR factor
   147     | term . oBXOR factor
-  148     | term . oBCOM factor
-  149     | term . oRSH factor
-  150     | term . oLSH factor
+  148     | term . oRSH factor
+  149     | term . oLSH factor
 
-    kAND   shift, and go to state 199
-    kDIV   shift, and go to state 200
-    kMOD   shift, and go to state 201
-    oMUL   shift, and go to state 202
-    oDIV   shift, and go to state 203
-    oAND   shift, and go to state 204
-    oBAND  shift, and go to state 205
-    oBOR   shift, and go to state 206
-    oBXOR  shift, and go to state 207
-    oBCOM  shift, and go to state 208
-    oRSH   shift, and go to state 209
-    oLSH   shift, and go to state 210
-    oMOD   shift, and go to state 211
+    kAND   shift, and go to state 201
+    kDIV   shift, and go to state 202
+    kMOD   shift, and go to state 203
+    oMUL   shift, and go to state 204
+    oDIV   shift, and go to state 205
+    oAND   shift, and go to state 206
+    oBAND  shift, and go to state 207
+    oBOR   shift, and go to state 208
+    oBXOR  shift, and go to state 209
+    oRSH   shift, and go to state 210
+    oLSH   shift, and go to state 211
+    oMOD   shift, and go to state 212
 
     $default  reduce using rule 134 (expr)
 
 
-State 251
+State 252
 
   136 expr: expr oOR term .
   138 term: term . oMUL factor
@@ -3716,109 +3758,100 @@ State 251
   145     | term . oBAND factor
   146     | term . oBOR factor
   147     | term . oBXOR factor
-  148     | term . oBCOM factor
-  149     | term . oRSH factor
-  150     | term . oLSH factor
+  148     | term . oRSH factor
+  149     | term . oLSH factor
 
-    kAND   shift, and go to state 199
-    kDIV   shift, and go to state 200
-    kMOD   shift, and go to state 201
-    oMUL   shift, and go to state 202
-    oDIV   shift, and go to state 203
-    oAND   shift, and go to state 204
-    oBAND  shift, and go to state 205
-    oBOR   shift, and go to state 206
-    oBXOR  shift, and go to state 207
-    oBCOM  shift, and go to state 208
-    oRSH   shift, and go to state 209
-    oLSH   shift, and go to state 210
-    oMOD   shift, and go to state 211
+    kAND   shift, and go to state 201
+    kDIV   shift, and go to state 202
+    kMOD   shift, and go to state 203
+    oMUL   shift, and go to state 204
+    oDIV   shift, and go to state 205
+    oAND   shift, and go to state 206
+    oBAND  shift, and go to state 207
+    oBOR   shift, and go to state 208
+    oBXOR  shift, and go to state 209
+    oRSH   shift, and go to state 210
+    oLSH   shift, and go to state 211
+    oMOD   shift, and go to state 212
 
     $default  reduce using rule 136 (expr)
 
 
-State 252
+State 253
 
   143 term: term kAND factor .
 
     $default  reduce using rule 143 (term)
 
 
-State 253
+State 254
 
   140 term: term kDIV factor .
 
     $default  reduce using rule 140 (term)
 
 
-State 254
+State 255
 
   141 term: term kMOD factor .
 
     $default  reduce using rule 141 (term)
 
 
-State 255
+State 256
 
   138 term: term oMUL factor .
 
     $default  reduce using rule 138 (term)
 
 
-State 256
+State 257
 
   139 term: term oDIV factor .
 
     $default  reduce using rule 139 (term)
 
 
-State 257
+State 258
 
   144 term: term oAND factor .
 
     $default  reduce using rule 144 (term)
 
 
-State 258
+State 259
 
   145 term: term oBAND factor .
 
     $default  reduce using rule 145 (term)
 
 
-State 259
+State 260
 
   146 term: term oBOR factor .
 
     $default  reduce using rule 146 (term)
 
 
-State 260
+State 261
 
   147 term: term oBXOR factor .
 
     $default  reduce using rule 147 (term)
 
 
-State 261
+State 262
 
-  148 term: term oBCOM factor .
+  148 term: term oRSH factor .
 
     $default  reduce using rule 148 (term)
 
 
-State 262
-
-  149 term: term oRSH factor .
-
-    $default  reduce using rule 149 (term)
-
-
 State 263
 
-  150 term: term oLSH factor .
+  149 term: term oLSH factor .
 
-    $default  reduce using rule 150 (term)
+    $default  reduce using rule 149 (term)
 
 
 State 264
@@ -3904,12 +3937,12 @@ State 268
   130           | expression . oEQUAL expr
   131           | expression . oUNEQU expr
 
-    oEQUAL  shift, and go to state 189
-    oUNEQU  shift, and go to state 190
-    oLT     shift, and go to state 191
-    oLE     shift, and go to state 192
-    oGT     shift, and go to state 193
-    oGE     shift, and go to state 194
+    oEQUAL  shift, and go to state 191
+    oUNEQU  shift, and go to state 192
+    oLT     shift, and go to state 193
+    oLE     shift, and go to state 194
+    oGT     shift, and go to state 195
+    oGE     shift, and go to state 196
 
     $default  reduce using rule 106 (repeat_stmt)
 
@@ -3956,14 +3989,15 @@ State 270
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
+    const_value  转到状态 152
     expression   转到状态 293
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
 
 
 State 271
@@ -3994,14 +4028,15 @@ State 273
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
+    const_value  转到状态 152
     expression   转到状态 294
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
 
 
 State 274
@@ -4050,7 +4085,7 @@ State 279
 
 State 280
 
-  157 factor: SYS_FUNCT $@28 oLP args_list . oRP
+  156 factor: SYS_FUNCT $@28 oLP args_list . oRP
   168 args_list: args_list . oCOMMA expression
 
     oCOMMA  shift, and go to state 270
@@ -4067,18 +4102,18 @@ State 281
   131           | expression . oUNEQU expr
   165 factor: yNAME oLB $@29 expression . oRB
 
-    oEQUAL  shift, and go to state 189
-    oUNEQU  shift, and go to state 190
-    oLT     shift, and go to state 191
-    oLE     shift, and go to state 192
-    oGT     shift, and go to state 193
-    oGE     shift, and go to state 194
+    oEQUAL  shift, and go to state 191
+    oUNEQU  shift, and go to state 192
+    oLT     shift, and go to state 193
+    oLE     shift, and go to state 194
+    oGT     shift, and go to state 195
+    oGE     shift, and go to state 196
     oRB     shift, and go to state 297
 
 
 State 282
 
-  154 factor: yNAME $@27 oLP args_list . oRP
+  153 factor: yNAME $@27 oLP args_list . oRP
   168 args_list: args_list . oCOMMA expression
 
     oCOMMA  shift, and go to state 270
@@ -4141,14 +4176,15 @@ State 289
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
+    const_value  转到状态 152
     expression   转到状态 302
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
 
 
 State 290
@@ -4189,12 +4225,12 @@ State 293
   131           | expression . oUNEQU expr
   168 args_list: args_list oCOMMA expression .
 
-    oEQUAL  shift, and go to state 189
-    oUNEQU  shift, and go to state 190
-    oLT     shift, and go to state 191
-    oLE     shift, and go to state 192
-    oGT     shift, and go to state 193
-    oGE     shift, and go to state 194
+    oEQUAL  shift, and go to state 191
+    oUNEQU  shift, and go to state 192
+    oLT     shift, and go to state 193
+    oLE     shift, and go to state 194
+    oGT     shift, and go to state 195
+    oGE     shift, and go to state 196
 
     $default  reduce using rule 168 (args_list)
 
@@ -4209,12 +4245,12 @@ State 294
   130           | expression . oEQUAL expr
   131           | expression . oUNEQU expr
 
-    oEQUAL  shift, and go to state 189
-    oUNEQU  shift, and go to state 190
-    oLT     shift, and go to state 191
-    oLE     shift, and go to state 192
-    oGT     shift, and go to state 193
-    oGE     shift, and go to state 194
+    oEQUAL  shift, and go to state 191
+    oUNEQU  shift, and go to state 192
+    oLT     shift, and go to state 193
+    oLE     shift, and go to state 194
+    oGT     shift, and go to state 195
+    oGE     shift, and go to state 196
 
     $default  reduce using rule 84 (assign_stmt)
 
@@ -4228,9 +4264,9 @@ State 295
 
 State 296
 
-  157 factor: SYS_FUNCT $@28 oLP args_list oRP .
+  156 factor: SYS_FUNCT $@28 oLP args_list oRP .
 
-    $default  reduce using rule 157 (factor)
+    $default  reduce using rule 156 (factor)
 
 
 State 297
@@ -4242,9 +4278,9 @@ State 297
 
 State 298
 
-  154 factor: yNAME $@27 oLP args_list oRP .
+  153 factor: yNAME $@27 oLP args_list oRP .
 
-    $default  reduce using rule 154 (factor)
+    $default  reduce using rule 153 (factor)
 
 
 State 299
@@ -4321,12 +4357,12 @@ State 302
   131           | expression . oUNEQU expr
 
     kDO     shift, and go to state 309
-    oEQUAL  shift, and go to state 189
-    oUNEQU  shift, and go to state 190
-    oLT     shift, and go to state 191
-    oLE     shift, and go to state 192
-    oGT     shift, and go to state 193
-    oGE     shift, and go to state 194
+    oEQUAL  shift, and go to state 191
+    oUNEQU  shift, and go to state 192
+    oLT     shift, and go to state 193
+    oLE     shift, and go to state 194
+    oGT     shift, and go to state 195
+    oGE     shift, and go to state 196
 
 
 State 303
@@ -4390,14 +4426,15 @@ State 306
     TYPE_CONVERT  shift, and go to state 146
     oMINUS        shift, and go to state 147
     oNOT          shift, and go to state 148
-    oLP           shift, and go to state 149
-    yNAME         shift, and go to state 150
+    oBCOM         shift, and go to state 149
+    oLP           shift, and go to state 150
+    yNAME         shift, and go to state 151
 
-    const_value  转到状态 151
+    const_value  转到状态 152
     expression   转到状态 312
-    expr         转到状态 153
-    term         转到状态 154
-    factor       转到状态 155
+    expr         转到状态 154
+    term         转到状态 155
+    factor       转到状态 156
 
 
 State 307
@@ -4451,12 +4488,12 @@ State 312
   130           | expression . oEQUAL expr
   131           | expression . oUNEQU expr
 
-    oEQUAL  shift, and go to state 189
-    oUNEQU  shift, and go to state 190
-    oLT     shift, and go to state 191
-    oLE     shift, and go to state 192
-    oGT     shift, and go to state 193
-    oGE     shift, and go to state 194
+    oEQUAL  shift, and go to state 191
+    oUNEQU  shift, and go to state 192
+    oLT     shift, and go to state 193
+    oLE     shift, and go to state 194
+    oGT     shift, and go to state 195
+    oGE     shift, and go to state 196
 
     $default  reduce using rule 82 (assign_stmt)
 

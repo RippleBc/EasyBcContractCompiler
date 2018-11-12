@@ -1768,10 +1768,6 @@ term
 {
 	$$ = binary_expr_tree(BXOR, $1, $3);
 }
-|term oBCOM factor
-{
-	$$ = binary_expr_tree(BCOM, $1, $3);
-}
 |term oRSH factor
 {
 	$$ = binary_expr_tree(RSH, $1, $3);
@@ -1896,6 +1892,11 @@ oLP args_list oRP
 {
 	/* 一元操作符（-） */
 	$$ = neg_tree($2);
+}
+|oBCOM factor
+{
+	/* 一元操作符（~） */
+	$$ = com_tree($2);
 }
 |TYPE_CONVERT factor
 {
