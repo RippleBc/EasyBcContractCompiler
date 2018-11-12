@@ -237,6 +237,16 @@ oct		[0-7]
 	return oDIV; 
 }
 
+"%" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oMOD.\n");
+	}
+	return oMOD; 
+}
+
 ":=" { 
 	DUMP_SOURCE 
 	
@@ -297,7 +307,7 @@ oct		[0-7]
 	return oGE; 
 }
 
-"<>" { 
+"!=" { 
 	DUMP_SOURCE 
 	
 	if (dump_token)
@@ -307,14 +317,94 @@ oct		[0-7]
 	return oUNEQU; 
 }
 
-"," { 
+"&&" { 
 	DUMP_SOURCE 
 	
 	if (dump_token)
 	{
-		printf("token: oCOMMA.\n");
+		printf("token: oAND.\n");
 	}
-	return oCOMMA; 
+	return oAND; 
+}
+
+"||" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oOR.\n");
+	}
+	return oOR; 
+}
+
+"!" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oNOT.\n");
+	}
+	return oNOT; 
+}
+
+"&" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oBAND.\n");
+	}
+	return oBAND; 
+}
+
+"|" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oBOR.\n");
+	}
+	return oBOR; 
+}
+
+"^" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oBXOR.\n");
+	}
+	return oBXOR; 
+}
+
+"~" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oBCOM.\n");
+	}
+	return oBCOM; 
+}
+
+">>" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oRSH.\n");
+	}
+	return oRSH; 
+}
+
+"<<" { 
+	DUMP_SOURCE 
+	
+	if (dump_token)
+	{
+		printf("token: oLSH.\n");
+	}
+	return oLSH; 
 }
 
 ";" { 
@@ -365,16 +455,6 @@ oct		[0-7]
 		printf("token: oQUOTE.\n");
 	}
 	return oQUOTE; 
-}
-
-"^" { 
-	DUMP_SOURCE 
-	
-	if (dump_token)
-	{
-		printf("token: oARROW.\n");
-	}
-	return oARROW; 
 }
 
 {letter}{alnum}* {

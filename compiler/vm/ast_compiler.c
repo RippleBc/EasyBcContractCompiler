@@ -607,9 +607,8 @@ void node_compile(Node node)
     case CVF:
     {
       node_process(node->kids[0]);
-
       /*  */
-      int code = get_op_code_by_name("CVF");
+      int code = get_type_related_op_code_by_name("CVF");
       push_command(code);
     }
     break;
@@ -618,7 +617,7 @@ void node_compile(Node node)
       node_process(node->kids[0]);
 
       /*  */
-      int code = get_op_code_by_name("CVI");
+      int code = get_type_related_op_code_by_name("CVI");
       push_command(code);
     }
     break;
@@ -627,7 +626,7 @@ void node_compile(Node node)
       node_process(node->kids[0]);
       
       /*  */
-      int code = get_op_code_by_name("CVB");
+      int code = get_type_related_op_code_by_name("CVB");
       push_command(code);
     }
     break;
@@ -652,11 +651,6 @@ void node_compile(Node node)
     case MUL:
     case DIV:
     case MOD:
-    {
-
-    }
-    case AND:
-    case OR:
     {
 
     }
@@ -685,7 +679,29 @@ void node_compile(Node node)
       /*  */
       char *code_name = get_op_name(generic(node->op));
       /*  */
-      int code = get_op_code_by_name(code_name);
+      int code = get_type_related_op_code_by_name(node->type, code_name);
+      /*  */
+      push_command(code);
+    }
+    case AND:
+    case OR:
+    {
+      /* 计算左表达式AST节点对应的值 */
+      if(node->kids[0] != NULL)
+      {
+        node_compile(node->kids[0]);
+      }
+
+      /* 计算右表达式AST节点对应的值 */
+      if(node->kids[1] != NULL)
+      {
+        node_compile(node->kids[1]);
+      }
+
+      /*  */
+      char *code_name = get_op_name(generic(node->op));
+      /*  */
+      int code = get_op_code_by_name(node->type, code_name);
       /*  */
       push_command(code);
     }
@@ -706,7 +722,7 @@ void node_compile(Node node)
       /*  */
       char *code_name = get_op_name(generic(node->op));
       /*  */
-      int code = get_op_code_by_name(code_name);
+      int code = get_type_related_op_code_by_name(node->type, code_name);
       /*  */
       push_command(code);
     }
@@ -734,7 +750,7 @@ void node_compile(Node node)
       /*  */
       char *code_name = get_op_name(generic(node->op));
       /*  */
-      int code = get_op_code_by_name(code_name);
+      int code = get_type_related_op_code_by_name(node->type, code_name);
       /*  */
       push_command(code);
 

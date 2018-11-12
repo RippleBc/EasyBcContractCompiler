@@ -176,6 +176,15 @@ extern void ast_compile(List, List);
 %term  oEQUAL
 %term  oASSIGN
 %term  oUNEQU
+%term  oAND
+%term  oOR
+%term  oNOT
+%term  oBAND
+%term  oBOR
+%term  oBXOR
+%term  oBCOM
+%term  oRSH
+%term  oLSH
 %term  oLT
 %term  oLE
 %term  oGT
@@ -186,7 +195,6 @@ extern void ast_compile(List, List);
 %term  oQUOTE
 %term  oDOT
 %term  oDOTDOT
-%term  oARROW
 %term  oLP
 %term  oRP
 %term  oLB
