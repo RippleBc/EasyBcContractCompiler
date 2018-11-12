@@ -701,7 +701,7 @@ void node_compile(Node node)
       /*  */
       char *code_name = get_op_name(generic(node->op));
       /*  */
-      int code = get_op_code_by_name(node->type, code_name);
+      int code = get_op_code_by_name(code_name);
       /*  */
       push_command(code);
     }
