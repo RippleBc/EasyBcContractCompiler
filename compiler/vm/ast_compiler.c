@@ -4,8 +4,6 @@
 #include  "../parser/error.h"
 #include  "../parser/rule.h"
 
-static void record_command_data_sequence(int size);
-
 List g_cp;
 List g_routine_forest;
 
@@ -21,9 +19,6 @@ int push_data(Type t, Value v)
   /*  */
   int data_size = get_type_align_size(t);
   code_byte_index += data_size;
-
-  /*  */
-  record_command_data_sequence(data_size);
 
   /*  */
   if(code_byte_index >= CODE_MAX_NUM)
@@ -44,9 +39,6 @@ int push_command(int code)
 
   /*  */
   code_byte_sequence[code_byte_index++] = code;
-  
-  /*  */
-  record_command_data_sequence(1);
 
   return 1;
 }
@@ -144,22 +136,6 @@ static void push_jump_detail(char *name, int index, Symtab ptab)
   }
 
   jump_detail_index++;
-}
-
-/*  */
-static int command_data_trace = 0;
-static void record_command_data_sequence(int size)
-{
-  command_data_trace += size;
-}
-static void recover_command_data_sequence()
-{
-  code_byte_index -= command_data_trace;
-  command_data_trace = 0;
-}
-static void reset_command_data_sequence()
-{
-  command_data_trace = 0;
 }
 
 /*  */
