@@ -317,6 +317,16 @@ oct		[0-7]
 	return oUNEQU; 
 }
 
+"," { 
+	DUMP_SOURCE 
+	if (dump_token)
+	{
+		printf("token: oCOMMA.\n");
+	}
+	return oCOMMA; 
+}
+ 
+
 "&&" { 
 	DUMP_SOURCE 
 	
