@@ -600,6 +600,39 @@ void node_compile(Node node)
     break;
   }
 
+  /*  */
+  switch (generic(node->op))
+  {
+    /*  */
+    case CVF:
+    {
+      node_process(node->kids[0]);
+
+      /*  */
+      int code = get_op_code_by_name("CVF");
+      push_command(code);
+    }
+    break;
+    case CVI:
+    {
+      node_process(node->kids[0]);
+
+      /*  */
+      int code = get_op_code_by_name("CVI");
+      push_command(code);
+    }
+    break;
+    case CVB:
+    {
+      node_process(node->kids[0]);
+      
+      /*  */
+      int code = get_op_code_by_name("CVB");
+      push_command(code);
+    }
+    break;
+  }
+
   /* 二元数学运算 */
   switch (generic(node->op))
   {
