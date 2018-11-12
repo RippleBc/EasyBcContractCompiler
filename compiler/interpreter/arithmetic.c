@@ -12,7 +12,11 @@ switch(con->kids[0]->type->type_id) { \
                 con->val.c = (con->kids[0]->val.c) realop (con->kids[1]->val.c); \
                 break; \
         default: \
-                break; \
+        { \
+            parse_error("compute error", get_op_name(optype)); \
+            assert(0); \
+        } \
+        break; \
 } \
 break;
 
@@ -31,7 +35,11 @@ switch(con->kids[0]->type->type_id) { \
                 con->val.f = (con->kids[0]->val.f) realop (con->kids[1]->val.f); \
                 break; \
         default: \
-                break; \
+        { \
+            parse_error("compute error", get_op_name(optype)); \
+            assert(0); \
+        } \
+        break; \
 } \
 break;
 
@@ -47,7 +55,11 @@ switch(con->kids[0]->type->type_id) { \
                 con->val.c = realop (con->kids[0]->val.c);\
                 break; \
         default: \
-                break; \
+        { \
+            parse_error("compute error", get_op_name(optype)); \
+            assert(0); \
+        } \
+        break; \
 } \
 break;
 
@@ -66,7 +78,11 @@ switch(con->kids[0]->type->type_id) { \
                 con->val.f = realop (con->kids[0]->val.f); \
                 break; \
         default: \
-                break; \
+        { \
+            parse_error("compute error", get_op_name(optype)); \
+            assert(0); \
+        } \
+        break; \
 } \
 break;
 
