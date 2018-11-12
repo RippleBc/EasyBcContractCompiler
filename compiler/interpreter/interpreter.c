@@ -449,16 +449,16 @@ void node_process(Node node)
   /*  */
   switch (generic(node->op))
   {
-    node_process(node->kids[0]);
-
     /*  */
     case CVF:
     {
+      node_process(node->kids[0]);
+
       switch(node->kids[0]->type->type_id)
       {
         case TYPE_INTEGER:
         {
-          node->val.f = (float)node->val.i;
+          node->val.f = (float)node->kids[0]->val.i;
         }
         break;
         case TYPE_REAL:
@@ -467,7 +467,7 @@ void node_process(Node node)
         }
         case TYPE_BOOLEAN:
         {
-          node->val.f = (float)node->val.b;
+          node->val.f = (float)node->kids[0]->val.b;
         }
         break;
         default:
@@ -479,6 +479,8 @@ void node_process(Node node)
     break;
     case CVI:
     {
+      node_process(node->kids[0]);
+
       switch(node->kids[0]->type->type_id)
       {
         case TYPE_INTEGER:
@@ -488,7 +490,7 @@ void node_process(Node node)
         break;
         case TYPE_REAL:
         {
-          node->val.i = (int)node->val.f;
+          node->val.i = (int)node->kids[0]->val.f;
         }
         break;
         case TYPE_BOOLEAN:
@@ -505,16 +507,18 @@ void node_process(Node node)
     break;
     case CVB:
     {
+      node_process(node->kids[0]);
+      
       switch(node->kids[0]->type->type_id)
       {
         case TYPE_INTEGER:
         {
-          node->val.b = node->val.i == 0 ? false : true;
+          node->val.b = node->kids[0]->val.i == 0 ? false : true;
         }
         break;
         case TYPE_REAL:
         {
-          node->val.b = node->val.f == 0 ? false : true;
+          node->val.b = node->kids[0]->val.f == 0 ? false : true;
         }
         break;
         case TYPE_BOOLEAN:
@@ -590,14 +594,14 @@ void node_process(Node node)
   {
     case BCOM:
     case NOT:
-    case CVF:
-    case CVI:
-    case NEG:
+    case NEG:   
     {
       node_process(node->kids[0]);
 
+      /*  */
       arithmetical_operate(node);
     }
+    break;
     case INCR:
     case DECR:
     {

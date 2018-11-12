@@ -96,8 +96,6 @@ void arithmetical_operate(Node con)
     single_xx(BCOM, ~);
     single_xx(INCR, ++);
     single_xx(DECR, --);
-    single_xx(CVF, (float));
-    single_xx(CVI, (int));
     real_single_xx(NEG, -);
     default:
     {

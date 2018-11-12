@@ -118,6 +118,7 @@ void const_folding(Node n)
         single_xx(BCOM, ~);
         single_xx(CVF, (float));
         single_xx(CVI, (int));
+        single_xx(CVB, (int));
         real_single_xx(NEG, -);
         default:
             assert(0);

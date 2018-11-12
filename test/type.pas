@@ -32,7 +32,7 @@ program helloworld;
 		writeln(1234567890);
 		
 		inta1 := 1.23;
-		inta1 := (inta1 + 1.56);
+		intc := cvi (inta1 + 1.56);
 		writeln(intc);
 		writeln(1234567890);
 
