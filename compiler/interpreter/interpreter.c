@@ -446,6 +446,91 @@ void node_process(Node node)
     break;
   }
 
+  /*  */
+  switch (generic(node->op))
+  {
+    node_process(node->kids[0]);
+
+    /*  */
+    case CVF:
+    {
+      switch(node->kids[0]->type->type_id)
+      {
+        case TYPE_INTEGER:
+        {
+          node->val.f = (float)node->val.i;
+        }
+        break;
+        case TYPE_REAL:
+        {
+          
+        }
+        case TYPE_BOOLEAN:
+        {
+          node->val.f = (float)node->val.b;
+        }
+        break;
+        default:
+        {
+          printf("convert type error");
+        }
+      }
+    }
+    break;
+    case CVI:
+    {
+      switch(node->kids[0]->type->type_id)
+      {
+        case TYPE_INTEGER:
+        {
+          
+        }
+        break;
+        case TYPE_REAL:
+        {
+          node->val.i = (int)node->val.f;
+        }
+        break;
+        case TYPE_BOOLEAN:
+        {
+
+        }
+        break;
+        default:
+        {
+          printf("convert type error");
+        }
+      }
+    }
+    break;
+    case CVB:
+    {
+      switch(node->kids[0]->type->type_id)
+      {
+        case TYPE_INTEGER:
+        {
+          node->val.b = node->val.i == 0 ? false : true;
+        }
+        break;
+        case TYPE_REAL:
+        {
+          node->val.b = node->val.f == 0 ? false : true;
+        }
+        break;
+        case TYPE_BOOLEAN:
+        {
+
+        }
+        break;
+        default:
+        {
+          printf("convert type error");
+        }
+      }
+    }
+    break;
+  }
+
   /* 二元数学运算 */
   switch (generic(node->op))
   {

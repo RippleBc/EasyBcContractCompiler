@@ -458,6 +458,9 @@ KEYENTRY Keytable[] = {
 {"case",	kCASE, 		KEYWORD},
 {"char",	SYS_TYPE,	tCHAR},
 {"const",	kCONST,		KEYWORD},
+{"cvb", TYPE_CONVERT, cvBOOLEAN},
+{"cvf",	TYPE_CONVERT,	cvREAL},
+{"cvi",	TYPE_CONVERT, cvINT},
 {"div", 	kDIV,		KEYWORD},
 {"do",		kDO, 		KEYWORD},
 {"downto",	kDOWNTO,	KEYWORD},
@@ -500,6 +503,7 @@ struct {
 	char *name;
 	int key;
 }key_to_name[] = {
+	{"TYPE_CONVERT", TYPE_CONVERT },
 	{"SYS_FUNCT",	SYS_FUNCT },
 	{"kAND",		kAND },
 	{"kARRAY",		kARRAY },
@@ -596,6 +600,15 @@ static int id_or_keyword(char *lex)
 					printf(",yylval.p_lex = &Keytable[%d]", mid);
 				}
 			}
+			else if(Keytable[mid].key == TYPE_CONVERT)
+			{
+				/* type conversion */
+				yylval.p_lex = &Keytable[mid];
+				if (dump_token)
+				{
+					printf(",yylval.p_lex = &Keytable[%d]", mid);
+				}
+			}
 			else if (Keytable[mid].key == SYS_CON)
 			{
 				/* true、false或者maxint */
@@ -603,8 +616,7 @@ static int id_or_keyword(char *lex)
 
 				if (dump_token)
 				{
-					printf(",yylval.p_num = Keytable[%d].atrr = %d", 
-						mid, Keytable[mid].attr);
+					printf(",yylval.p_num = Keytable[%d].atrr = %d", mid, Keytable[mid].attr);
 				}
 			}
 			else if (Keytable[mid].key == SYS_TYPE)

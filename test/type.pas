@@ -32,8 +32,8 @@ program helloworld;
 		writeln(1234567890);
 		
 		inta1 := 1.23;
-		inta2 := inta1 + 1.56;
-		writeln(inta2);
+		inta1 := (inta1 + 1.56);
+		writeln(intc);
 		writeln(1234567890);
 
 		inta3 := 'a';

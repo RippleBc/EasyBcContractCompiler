@@ -97,10 +97,9 @@ enum {
     TYPE_RECORD = 8,
     TYPE_VOID = 9,
     TYPE_STRING = 10,
-    TYPE_POINTER = 11,
-    TYPE_DOUBLE = 12,
-    TYPE_FUNCTION = 13,
-    TYPE_LONG = 14
+    TYPE_DOUBLE = 11,
+    TYPE_FUNCTION = 12,
+    TYPE_LONG = 13
 };
 
 /* for operations. */

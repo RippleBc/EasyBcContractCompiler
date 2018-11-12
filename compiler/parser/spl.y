@@ -159,7 +159,12 @@ extern void ast_compile(List, List);
 %term fSQRT
 %term <p_lex>SYS_PROC
 %term <p_lex>SYS_READ
+%term <p_lex>TYPE_CONVERT
 
+%term  cvBOOLEAN
+%term  cvINT
+%term  cvPOINTER
+%term  cvREAL
 %term  pWRITE
 %term  pWRITELN
 %term  pREAD
@@ -1352,11 +1357,23 @@ direction expression kDO
 
 	if ($6 == kTO)
 	{
+		if(t->result_type->type_id != $7->result_type->type_id)
+		{
+			parse_error("type mismatch", "");
+			return 0;
+		}
+
 		/* 比较AST节点 */
 		t = compare_expr_tree(LE, t, $7);
 	}
 	else
 	{
+		if(t->result_type->type_id != $7->result_type->type_id)
+		{
+			parse_error("type mismatch", "");
+			return 0;
+		}
+
 		t = compare_expr_tree(GE, t, $7);
 	}
 
@@ -1452,6 +1469,11 @@ expression kOF case_expr_list
 		/* 获取标签符号（CASE子句的入口） */
 		new_label = cases[i]->u.generic.sym;
 		/* 比较AST节点（CASE子句判断条件） */
+		if($3->result_type->type_id != cases[i + 1]->result_type->type_id)
+		{
+			parse_error("type mismatch", "");
+			return 0;
+		}
 		t = compare_expr_tree(EQ, $3, cases[i + 1]);
 		/* 条件跳转AST节点（条件为真时跳转到指定的CASE子句） */
 		t = cond_jump_tree(t, true, new_label);
@@ -1554,31 +1576,67 @@ expression
 :expression oGE expr
 {
 	/* 比较运算AST树（>=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch", "");
+		return 0;
+	}
+
 	$$ = compare_expr_tree(GE, $1, $3);
 }
 |expression oGT expr
 {
 	/* 比较运算AST树（>） */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch", "");
+		return 0;
+	}
+
 	$$ = compare_expr_tree(GT, $1, $3);
 }
 |expression oLE expr
 {
 	/* 比较运算AST树（<=） */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch", "");
+		return 0;
+	}
+
 	$$ = compare_expr_tree(LE, $1, $3);
 }
 |expression oLT expr
 {
 	/* 比较运算AST树（<） */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch", "");
+		return 0;
+	}
+
 	$$ = compare_expr_tree(LT, $1, $3);
 }
 |expression oEQUAL expr
 {
 	/* 比较运算AST树（=） */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch", "");
+		return 0;
+	}
+
 	$$ = compare_expr_tree(EQ, $1, $3);
 }
 |expression oUNEQU  expr
 {
 	/* 比较运算AST树（<>，不相等） */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch", "");
+		return 0;
+	}
+
 	$$ = compare_expr_tree(NE, $1, $3);
 }
 |expr
@@ -1591,16 +1649,27 @@ expr
 :expr oPLUS term
 {
 	/* 二元运算AST树（+），由于优先级问题，放在expr表达式中（expr表达式中的运算优先级比term中的要低），仅支持左结合 */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch", "");
+		return 0;
+	}
+
 	$$ = binary_expr_tree(ADD, $1, $3);
 }
 |expr oMINUS term
 {
 	/* 二元运算AST树（-） */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch", "");
+		return 0;
+	}
+
 	$$ = binary_expr_tree(SUB, $1, $3);
 }
 |expr kOR term
 {
-	/* 二元运算AST树（or）  */
 	$$ = binary_expr_tree(OR, $1, $3);
 }
 |term
@@ -1613,26 +1682,49 @@ term
 :term oMUL factor
 {
 	/* 二元运算AST树（*），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch", "");
+		return 0;
+	}
+
 	$$ = binary_expr_tree(MUL, $1, $3);
 }
 |term oDIV factor
 {
 	/* 二元运算AST树（/） */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch", "");
+		return 0;
+	}
+
 	$$ = binary_expr_tree(DIV, $1, $3);
 }
 |term kDIV factor
 {
 	/* 二元运算AST树（div） */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch", "");
+		return 0;
+	}
+
 	$$ = binary_expr_tree(DIV, $1, $3);
 }
 |term kMOD factor
 {
 	/* 二元运算AST树（mod） */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch", "");
+		return 0;
+	}
+
 	$$ = binary_expr_tree(MOD, $1, $3);
 }
 |term kAND factor
 {
-	/* 二元运算AST树（and） */
 	$$ = binary_expr_tree(AND, $1, $3);
 }
 |factor
@@ -1745,6 +1837,29 @@ oLP args_list oRP
 {
 	/* 一元操作符（-） */
 	$$ = neg_tree($2);
+}
+|TYPE_CONVERT factor
+{
+	Type t;
+	switch($1->attr)
+	{
+		case cvBOOLEAN:
+		{
+			t = find_type_by_id(TYPE_BOOLEAN);
+		}
+		break;
+		case cvINT:
+		{
+			t = find_type_by_id(TYPE_INTEGER);
+		}
+		break;
+		case cvREAL:
+		{
+			t = find_type_by_id(TYPE_REAL);
+		}
+		break;
+	}
+	$$ = conversion_tree($2, t);
 }
 |yNAME oLB
 {

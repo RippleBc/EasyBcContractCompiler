@@ -89,7 +89,7 @@ typedef tree * Tree;
 
 Tree new_tree(int op, Type type, Tree left, Tree right);
 Tree header_tree(symtab *ptab);
-Tree conversion_tree(Symbol source, Type target);
+Tree conversion_tree(Tree source, Type target);
 Tree id_factor_tree(Tree source, Symbol sym);
 Tree address_tree(Symbol sym);
 Tree not_tree(Tree source);

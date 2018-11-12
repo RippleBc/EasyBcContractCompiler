@@ -29,28 +29,23 @@ Tree header_tree(symtab *ptab)
 }
 
 /* type conversion tree. */
-Tree conversion_tree(Symbol source, Type target)
+Tree conversion_tree(Tree source, Type target)
 {
     Tree t;
 
     switch (target->type_id)
     {
     case TYPE_INTEGER:
-        t = new_tree(CVI, target, NULL, NULL);
+        t = new_tree(CVI, target, source, NULL);
         break;
     case TYPE_REAL:
-        t = new_tree(CVF, target, NULL, NULL);
-        break;
-     case TYPE_POINTER:
-        t = new_tree(CVP, target, NULL, NULL);
+        t = new_tree(CVF, target, source, NULL);
         break;
     case TYPE_BOOLEAN:
-        t = new_tree(CVB, target, NULL, NULL);
+        t = new_tree(CVB, target, source, NULL);
         break;
     }
 
-    /* 节点对应的symbol */
-    t->u.generic.sym = source;
     return t;
 }
 
@@ -238,7 +233,6 @@ Tree compare_expr_tree(int op, Tree left, Tree right)
     t = new_tree(op, find_type_by_id(TYPE_BOOLEAN), left, right);
     return t;
 }
-
 
 Tree assign_tree(Tree id, Tree expr)
 {

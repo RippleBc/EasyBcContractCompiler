@@ -97,33 +97,38 @@ extern int yydebug;
     fSQRT = 307,
     SYS_PROC = 308,
     SYS_READ = 309,
-    pWRITE = 310,
-    pWRITELN = 311,
-    pREAD = 312,
-    pREADLN = 313,
-    oPLUS = 314,
-    oMINUS = 315,
-    oMUL = 316,
-    oDIV = 317,
-    oEQUAL = 318,
-    oASSIGN = 319,
-    oUNEQU = 320,
-    oLT = 321,
-    oLE = 322,
-    oGT = 323,
-    oGE = 324,
-    oCOMMA = 325,
-    oSEMI = 326,
-    oCOLON = 327,
-    oQUOTE = 328,
-    oDOT = 329,
-    oDOTDOT = 330,
-    oARROW = 331,
-    oLP = 332,
-    oRP = 333,
-    oLB = 334,
-    oRB = 335,
-    yNAME = 336
+    TYPE_CONVERT = 310,
+    cvBOOLEAN = 311,
+    cvINT = 312,
+    cvPOINTER = 313,
+    cvREAL = 314,
+    pWRITE = 315,
+    pWRITELN = 316,
+    pREAD = 317,
+    pREADLN = 318,
+    oPLUS = 319,
+    oMINUS = 320,
+    oMUL = 321,
+    oDIV = 322,
+    oEQUAL = 323,
+    oASSIGN = 324,
+    oUNEQU = 325,
+    oLT = 326,
+    oLE = 327,
+    oGT = 328,
+    oGE = 329,
+    oCOMMA = 330,
+    oSEMI = 331,
+    oCOLON = 332,
+    oQUOTE = 333,
+    oDOT = 334,
+    oDOTDOT = 335,
+    oARROW = 336,
+    oLP = 337,
+    oRP = 338,
+    oLB = 339,
+    oRB = 340,
+    yNAME = 341
   };
 #endif
 
@@ -142,7 +147,7 @@ union YYSTYPE
 	KEYENTRY	*p_lex; /* 关键字 */
 	Tree 		p_tree;
 
-#line 146 "parser/rule.h" /* yacc.c:1909  */
+#line 151 "parser/rule.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
