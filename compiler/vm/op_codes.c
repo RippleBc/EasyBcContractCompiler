@@ -107,19 +107,19 @@ int get_op_code_by_name(char *name)
 int get_type_related_op_code_by_name(Type t, char *name)
 {
 	char op_name[MAX_OP_CODES_NUM];
-	if(t->type->type_id == TYPE_INTEGER)
+	if(t->type_id == TYPE_INTEGER)
 	{
-		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", "I", name);
+		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", 'I', name);
 		return get_op_code_by_name(op_name);
 	}
-	else if(t->type->type_id == TYPE_REAL)
+	else if(t->type_id == TYPE_REAL)
 	{
-		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", "R", name);
+		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", 'R', name);
 		return get_op_code_by_name(op_name);
 	}
-	else if(t->type->type_id == TYPE_BOOLEAN)
+	else if(t->type_id == TYPE_BOOLEAN)
 	{
-		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", "B", name);
+		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", 'B', name);
 		return get_op_code_by_name(op_name);
 	}
 	else
