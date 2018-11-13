@@ -320,7 +320,11 @@ void make_system_symtab()
     /* 基础类型 */
     ptab->type_link = new_system_type(TYPE_INTEGER);
     pt = ptab->type_link;
+    pt->next = new_system_type(TYPE_UINTEGER);
+    pt = pt->next;
     pt->next = new_system_type(TYPE_CHAR);
+    pt = pt->next;
+    pt->next = new_system_type(TYPE_UCHAR);
     pt = pt->next;
     pt->next = new_system_type(TYPE_BOOLEAN);
     pt = pt->next;

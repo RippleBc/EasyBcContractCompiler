@@ -135,7 +135,6 @@ void node_process(Node node)
   case COND:
   {
     node_process(node->kids[0]);
-
     switch(node->kids[0]->type->type_id)
     {
     case TYPE_INTEGER:
@@ -147,7 +146,17 @@ void node_process(Node node)
       }
     }
     break;
+    case TYPE_UINTEGER:
+    {
+      if((node->kids[0]->val.ui == 0 && node->u.cond.true_or_false == false) ||
+      (node->kids[0]->val.ui != 0 && node->u.cond.true_or_false == true))
+      {
+        jump_to_label(g_cp, node->u.cond.label);
+      }
+    }
+    break;
     case TYPE_CHAR:
+    case TYPE_UCHAR:
     {
       parse_error("COND expression can not be char", "");
     }
@@ -421,6 +430,8 @@ void node_process(Node node)
         p = node->kids[0]->syms[0];
       }
 
+
+
       /* 表达式AST节点 */
       node_process(node->kids[1]);
 
@@ -459,6 +470,11 @@ void node_process(Node node)
         case TYPE_INTEGER:
         {
           node->val.f = (float)node->kids[0]->val.i;
+        }
+        break;
+        case TYPE_UINTEGER:
+        {
+          node->val.f = (float)node->kids[0]->val.ui;
         }
         break;
         case TYPE_REAL:
@@ -514,6 +530,11 @@ void node_process(Node node)
         case TYPE_INTEGER:
         {
           node->val.b = node->kids[0]->val.i == 0 ? false : true;
+        }
+        break;
+        case TYPE_UINTEGER:
+        {
+          node->val.b = node->kids[0]->val.ui == 0 ? false : true;
         }
         break;
         case TYPE_REAL:

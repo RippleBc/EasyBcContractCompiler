@@ -88,18 +88,20 @@ void *allocate(unsigned long n, unsigned a);
 enum {
     TYPE_UNKNOWN = 0,
     TYPE_INTEGER = 1,
-    TYPE_CHAR = 2,
-    TYPE_REAL = 3,
-    TYPE_BOOLEAN = 4,
-    TYPE_ARRAY = 5,
-    TYPE_ENUM = 6,
-    TYPE_SUBRANGE = 7,
-    TYPE_RECORD = 8,
-    TYPE_VOID = 9,
-    TYPE_STRING = 10,
-    TYPE_DOUBLE = 11,
-    TYPE_FUNCTION = 12,
-    TYPE_LONG = 13
+    TYPE_UINTEGER = 2,
+    TYPE_CHAR = 3,
+    TYPE_UCHAR = 4,
+    TYPE_REAL = 5,
+    TYPE_BOOLEAN = 6,
+    TYPE_ARRAY = 7,
+    TYPE_ENUM = 8,
+    TYPE_SUBRANGE = 9,
+    TYPE_RECORD = 10,
+    TYPE_VOID = 11,
+    TYPE_STRING = 12,
+    TYPE_DOUBLE = 13,
+    TYPE_FUNCTION = 14,
+    TYPE_LONG = 15
 };
 
 /* for operations. */

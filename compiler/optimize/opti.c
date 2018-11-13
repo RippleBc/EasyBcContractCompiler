@@ -9,11 +9,17 @@ switch(n->kids[0]->syms[0]->type->type_id) { \
         case TYPE_INTEGER: \
                 con->v.i = (n->kids[0]->syms[0]->v.i) realop (n->kids[1]->syms[0]->v.i); \
                 break; \
+        case TYPE_UINTEGER: \
+                con->v.ui = (n->kids[0]->syms[0]->v.ui) realop (n->kids[1]->syms[0]->v.ui); \
+                break; \
         case TYPE_BOOLEAN: \
                 con->v.b = (n->kids[0]->syms[0]->v.b) realop (n->kids[1]->syms[0]->v.b); \
                 break; \
         case TYPE_CHAR: \
                 con->v.c = (n->kids[0]->syms[0]->v.c) realop (n->kids[1]->syms[0]->v.c); \
+                break; \
+        case TYPE_UCHAR: \
+                con->v.uc = (n->kids[0]->syms[0]->v.uc) realop (n->kids[1]->syms[0]->v.uc); \
                 break; \
         default: \
                 break; \
@@ -25,11 +31,17 @@ switch(n->kids[0]->syms[0]->type->type_id) { \
         case TYPE_INTEGER: \
                 con->v.i = (n->kids[0]->syms[0]->v.i) realop (n->kids[1]->syms[0]->v.i); \
                 break; \
+        case TYPE_UINTEGER: \
+                con->v.ui = (n->kids[0]->syms[0]->v.ui) realop (n->kids[1]->syms[0]->v.ui); \
+                break; \
         case TYPE_BOOLEAN: \
                 con->v.b = (n->kids[0]->syms[0]->v.b) realop (n->kids[1]->syms[0]->v.b); \
                 break; \
         case TYPE_CHAR: \
                 con->v.c = (n->kids[0]->syms[0]->v.c) realop (n->kids[1]->syms[0]->v.c); \
+                break; \
+        case TYPE_UCHAR: \
+                con->v.uc = (n->kids[0]->syms[0]->v.uc) realop (n->kids[1]->syms[0]->v.uc); \
                 break; \
         case TYPE_REAL: \
                 con->v.f = (n->kids[0]->syms[0]->v.f) realop (n->kids[1]->syms[0]->v.f); \
@@ -44,11 +56,17 @@ switch(n->kids[0]->syms[0]->type->type_id) { \
         case TYPE_INTEGER: \
                 con->v.i = realop (n->kids[0]->syms[0]->v.i); \
                 break; \
+        case TYPE_UINTEGER: \
+                con->v.ui = realop (n->kids[0]->syms[0]->v.ui); \
+                break; \
         case TYPE_BOOLEAN: \
                 con->v.b = realop (n->kids[0]->syms[0]->v.b); \
                 break; \
         case TYPE_CHAR: \
                 con->v.c = realop (n->kids[0]->syms[0]->v.c);\
+                break; \
+        case TYPE_UCHAR: \
+                con->v.uc = realop (n->kids[0]->syms[0]->v.uc);\
                 break; \
         default: \
                 break; \
@@ -60,6 +78,9 @@ switch(n->kids[0]->syms[0]->type->type_id) { \
         case TYPE_INTEGER: \
                 con->v.i = realop (n->kids[0]->syms[0]->v.i); \
                 break; \
+        case TYPE_UINTEGER: \
+                con->v.ui = realop (n->kids[0]->syms[0]->v.ui); \
+                break; \
         case TYPE_BOOLEAN: \
                 con->v.b = realop (n->kids[0]->syms[0]->v.b); \
                 break; \
@@ -68,6 +89,9 @@ switch(n->kids[0]->syms[0]->type->type_id) { \
                 break; \
         case TYPE_CHAR: \
                 con->v.c = realop (n->kids[0]->syms[0]->v.c);\
+                break; \
+        case TYPE_UCHAR: \
+                con->v.uc = realop (n->kids[0]->syms[0]->v.uc);\
                 break; \
         default: \
                 break; \

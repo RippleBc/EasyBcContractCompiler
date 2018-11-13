@@ -12,7 +12,8 @@ Terminals unused in grammar
    tCHAR
    tREAL
    tBOOLEAN
-   tTEXT
+   tUCHAR
+   tUINTEGER
    fABS
    fSQR
    fSQRT
@@ -345,229 +346,230 @@ tINTEGER (299)
 tCHAR (300)
 tREAL (301)
 tBOOLEAN (302)
-tTEXT (303)
-SYS_FUNCT (304) 87 90 154 156
-fABS (305)
-fSQR (306)
-fSQRT (307)
-SYS_PROC (308) 88 92
-SYS_READ (309) 93
-TYPE_CONVERT (310) 163
-cvBOOLEAN (311)
-cvINT (312)
-cvPOINTER (313)
-cvREAL (314)
-pWRITE (315)
-pWRITELN (316)
-pREAD (317)
-pREADLN (318)
-oPLUS (319) 133
-oMINUS (320) 39 40 134 161
-oMUL (321) 138
-oDIV (322) 139
-oEQUAL (323) 15 16 26 130
-oASSIGN (324) 79 82 84 112
-oUNEQU (325) 131
-oAND (326) 144
-oOR (327) 136
-oNOT (328) 160
-oBAND (329) 145
-oBOR (330) 146
-oBXOR (331) 147
-oBCOM (332) 162
-oRSH (333) 148
-oLSH (334) 149
-oMOD (335) 142
-oLT (336) 129
-oLE (337) 128
-oGT (338) 127
-oGE (339) 126
-oCOMMA (340) 7 10 168
-oSEMI (341) 3 4 9 15 16 26 34 46 52 55 60 68 69 122 125
-oCOLON (342) 34 46 54 62 63 122 125
-oQUOTE (343)
-oDOT (344) 1 84 166
-oDOTDOT (345) 38 39 40 41
-oLP (346) 37 59 86 90 92 93 153 156 158
-oRP (347) 37 59 86 90 92 93 153 156 158
-oLB (348) 30 82 165
-oRB (349) 30 82 165
-yNAME (350) 3 7 8 9 10 15 16 26 36 41 54 57 79 82 84 86 112 125 151
+tUCHAR (303)
+tUINTEGER (304)
+SYS_FUNCT (305) 87 90 154 156
+fABS (306)
+fSQR (307)
+fSQRT (308)
+SYS_PROC (309) 88 92
+SYS_READ (310) 93
+TYPE_CONVERT (311) 163
+cvBOOLEAN (312)
+cvINT (313)
+cvPOINTER (314)
+cvREAL (315)
+pWRITE (316)
+pWRITELN (317)
+pREAD (318)
+pREADLN (319)
+oPLUS (320) 133
+oMINUS (321) 39 40 134 161
+oMUL (322) 138
+oDIV (323) 139
+oEQUAL (324) 15 16 26 130
+oASSIGN (325) 79 82 84 112
+oUNEQU (326) 131
+oAND (327) 144
+oOR (328) 136
+oNOT (329) 160
+oBAND (330) 145
+oBOR (331) 146
+oBXOR (332) 147
+oBCOM (333) 162
+oRSH (334) 148
+oLSH (335) 149
+oMOD (336) 142
+oLT (337) 129
+oLE (338) 128
+oGT (339) 127
+oGE (340) 126
+oCOMMA (341) 7 10 168
+oSEMI (342) 3 4 9 15 16 26 34 46 52 55 60 68 69 122 125
+oCOLON (343) 34 46 54 62 63 122 125
+oQUOTE (344)
+oDOT (345) 1 84 166
+oDOTDOT (346) 38 39 40 41
+oLP (347) 37 59 86 90 92 93 153 156 158
+oRP (348) 37 59 86 90 92 93 153 156 158
+oLB (349) 30 82 165
+oRB (350) 30 82 165
+yNAME (351) 3 7 8 9 10 15 16 26 36 41 54 57 79 82 84 86 112 125 151
     153 165 166
 
 
 Nonterminals, with rules where they appear
 
-$accept (96)
+$accept (97)
     左： 0
-program (97)
+program (98)
     左： 1, 右： 0
-first_act_at_prog (98)
+first_act_at_prog (99)
     左： 2, 右： 1
-program_head (99)
+program_head (100)
     左： 3 4, 右： 1
-sub_program (100)
+sub_program (101)
     左： 6, 右： 1
-$@1 (101)
+$@1 (102)
     左： 5, 右： 6
-name_list (102)
+name_list (103)
     左： 7 8 9 10, 右： 7 34 37 46 64 65
-sub_routine (103)
+sub_routine (104)
     左： 11, 右： 52 55
-routine_head (104)
+routine_head (105)
     左： 12, 右： 6 11
-const_part (105)
+const_part (106)
     左： 13 14, 右： 12
-const_expr_list (106)
+const_expr_list (107)
     左： 15 16, 右： 14 15
-const_value (107)
+const_value (108)
     左： 17 18 19 20 21, 右： 15 16 38 39 40 122 157
-type_part (108)
+type_part (109)
     左： 22 23, 右： 12
-type_decl_list (109)
+type_decl_list (110)
     左： 24 25, 右： 23 24
-type_definition (110)
+type_definition (111)
     左： 26, 右： 24 25
-type_decl (111)
+type_decl (112)
     左： 27 28 29, 右： 26 30 34 46
-array_type_decl (112)
+array_type_decl (113)
     左： 30, 右： 28
-record_type_decl (113)
+record_type_decl (114)
     左： 31, 右： 29
-field_decl_list (114)
+field_decl_list (115)
     左： 32 33, 右： 31 32
-field_decl (115)
+field_decl (116)
     左： 34, 右： 32 33
-simple_type_decl (116)
+simple_type_decl (117)
     左： 35 36 37 38 39 40 41, 右： 27 30 54 62 63
-var_part (117)
+var_part (118)
     左： 42 43, 右： 12
-var_decl_list (118)
+var_decl_list (119)
     左： 44 45, 右： 43 44
-var_decl (119)
+var_decl (120)
     左： 46, 右： 44 45
-routine_part (120)
+routine_part (121)
     左： 47 48 49 50 51, 右： 12 48 49
-function_decl (121)
+function_decl (122)
     左： 52, 右： 48 50
-function_head (122)
+function_head (123)
     左： 54, 右： 52
-$@2 (123)
+$@2 (124)
     左： 53, 右： 54
-procedure_decl (124)
+procedure_decl (125)
     左： 55, 右： 49 51
-procedure_head (125)
+procedure_head (126)
     左： 57, 右： 55
-$@3 (126)
+$@3 (127)
     左： 56, 右： 57
-parameters (127)
+parameters (128)
     左： 58 59, 右： 54 57
-para_decl_list (128)
+para_decl_list (129)
     左： 60 61, 右： 59 60
-para_type_list (129)
+para_type_list (130)
     左： 62 63, 右： 60 61
-val_para_list (130)
+val_para_list (131)
     左： 64, 右： 62
-var_para_list (131)
+var_para_list (132)
     左： 65, 右： 63
-routine_body (132)
+routine_body (133)
     左： 66, 右： 6 11
-stmt_list (133)
+stmt_list (134)
     左： 67 68 69, 右： 68 69 95
-stmt (134)
+stmt (135)
     左： 70 71 72 73 74 75 76 77 78, 右： 68 99 102 104 106 109
     112 122 125
-assign_stmt (135)
+assign_stmt (136)
     左： 79 82 84, 右： 71
-$@4 (136)
+$@4 (137)
     左： 80, 右： 82
-$@5 (137)
+$@5 (138)
     左： 81, 右： 82
-$@6 (138)
+$@6 (139)
     左： 83, 右： 84
-routine_stmt (139)
+routine_stmt (140)
     左： 86 87 88 90 92 93, 右： 72
-$@7 (140)
+$@7 (141)
     左： 85, 右： 86
-$@8 (141)
+$@8 (142)
     左： 89, 右： 90
-$@9 (142)
+$@9 (143)
     左： 91, 右： 92
-compound_stmt (143)
+compound_stmt (144)
     左： 95, 右： 66 73
-$@10 (144)
+$@10 (145)
     左： 94, 右： 95
-if_stmt (145)
+if_stmt (146)
     左： 99 102, 右： 74
-$@11 (146)
+$@11 (147)
     左： 96, 右： 99
-$@12 (147)
+$@12 (148)
     左： 97, 右： 99
-$@13 (148)
+$@13 (149)
     左： 98, 右： 99
-$@14 (149)
+$@14 (150)
     左： 100, 右： 102
-$@15 (150)
+$@15 (151)
     左： 101, 右： 102
-else_clause (151)
+else_clause (152)
     左： 103 104, 右： 99 102
-repeat_stmt (152)
+repeat_stmt (153)
     左： 106, 右： 75
-$@16 (153)
+$@16 (154)
     左： 105, 右： 106
-while_stmt (154)
+while_stmt (155)
     左： 109, 右： 76
-$@17 (155)
+$@17 (156)
     左： 107, 右： 109
-$@18 (156)
+$@18 (157)
     左： 108, 右： 109
-for_stmt (157)
+for_stmt (158)
     左： 112, 右： 77
-$@19 (158)
+$@19 (159)
     左： 110, 右： 112
-$@20 (159)
+$@20 (160)
     左： 111, 右： 112
-direction (160)
+direction (161)
     左： 113 114, 右： 112
-case_stmt (161)
+case_stmt (162)
     左： 117, 右： 78
-$@21 (162)
+$@21 (163)
     左： 115, 右： 117
-$@22 (163)
+$@22 (164)
     左： 116, 右： 117
-case_expr_list (164)
+case_expr_list (165)
     左： 118 119, 右： 117 118
-case_expr (165)
+case_expr (166)
     左： 122 125, 右： 118 119
-$@23 (166)
+$@23 (167)
     左： 120, 右： 122
-$@24 (167)
+$@24 (168)
     左： 121, 右： 122
-$@25 (168)
+$@25 (169)
     左： 123, 右： 125
-$@26 (169)
+$@26 (170)
     左： 124, 右： 125
-expression (170)
+expression (171)
     左： 126 127 128 129 130 131 132, 右： 79 82 84 99 106 109
     112 117 126 127 128 129 130 131 158 165 168 169
-expr (171)
+expr (172)
     左： 133 134 135 136 137, 右： 126 127 128 129 130 131 132
     133 134 135 136
-term (172)
+term (173)
     左： 138 139 140 141 142 143 144 145 146 147 148 149 150, 右：
     133 134 135 136 137 138 139 140 141 142 143 144 145 146 147 148
     149
-factor (173)
+factor (174)
     左： 151 153 154 156 157 158 159 160 161 162 163 165 166, 右：
     93 138 139 140 141 142 143 144 145 146 147 148 149 150 159 160
     161 162 163
-$@27 (174)
+$@27 (175)
     左： 152, 右： 153
-$@28 (175)
+$@28 (176)
     左： 155, 右： 156
-$@29 (176)
+$@29 (177)
     左： 164, 右： 165
-args_list (177)
+args_list (178)
     左： 167 168 169, 右： 86 90 92 153 156 168
 
 

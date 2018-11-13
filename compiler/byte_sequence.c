@@ -29,7 +29,30 @@ void assign_with_byte_unit(int type, unsigned char *array, Value v)
       }
     }
     break;
+    case TYPE_UINTEGER:
+    {
+      p = &(v->ui);
+
+      if(g_is_big_endian)
+      {
+        for(j = 0; j < IR->intmetric.size && j < sizeof(int); j++)
+        {
+         array[IR->intmetric.size - 1 - j] = *(p + sizeof(int) - 1 - j);
+         // printf("big endian %d %d", IR->intmetric.size -1 - j, array[IR->intmetric.size -1 - j]);
+        }
+      }
+      else
+      {
+        for(j = 0; j < IR->intmetric.size && j < sizeof(int); j++)
+        {
+          array[IR->intmetric.size -1 - j] = *(p + j);
+          // printf("little endian %d %d", IR->intmetric.size -1 - j, array[IR->intmetric.size -1 - j]);
+        }
+      }
+    }
+    break;
     case TYPE_CHAR:
+    case TYPE_UCHAR:
     case TYPE_BOOLEAN:
     {
       p = &(v->c);
@@ -87,7 +110,28 @@ void load_with_byte_unit(int type, unsigned char *array, Value v)
       }
     }
     break;
+    case TYPE_UINTEGER:
+    {
+      p = &(v->ui);
+
+      if(g_is_big_endian)
+      {
+        for(j = 0; j < IR->intmetric.size; j++)
+        {
+          *(p + sizeof(int) - 1 - j) = array[IR->intmetric.size - 1 - j];
+        }
+      }
+      else
+      {
+        for(j = 0; j < IR->intmetric.size; j++)
+        {
+          *(p + j) = array[IR->intmetric.size -1 - j];
+        }
+      }
+    }
+    break;
     case TYPE_CHAR:
+    case TYPE_UCHAR:
     case TYPE_BOOLEAN:
     {
       p = &(v->c);

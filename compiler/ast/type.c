@@ -74,9 +74,19 @@ type *new_system_type(int base_type)
         strcpy(pt->name, "integer");
     }
         break;
+    case TYPE_UINTEGER:
+    {
+        strcpy(pt->name, "uinteger");
+    }
+        break;
     case TYPE_CHAR:
     {
         strcpy(pt->name, "char");
+    }
+        break;
+    case TYPE_UCHAR:
+    {
+        strcpy(pt->name, "uchar");
     }
         break;
     case TYPE_BOOLEAN:
@@ -108,8 +118,8 @@ type *new_system_type(int base_type)
 type *new_subrange_type(char *name, int element_type)
 {
     type *pt;
-    if (element_type != TYPE_INTEGER
-            &&element_type != TYPE_CHAR)
+    if (element_type != TYPE_INTEGER && element_type != TYPE_CHAR
+            && element_type != TYPE_UINTEGER && element_type != TYPE_UCHAR)
         return NULL;
 
     /* pt = (type*)malloc(sizeof(type)); */
@@ -417,7 +427,9 @@ type *clone_type(type *src)
         pt->first->next = pt->last;
         break;
     case TYPE_INTEGER:
+    case TYPE_UINTEGER:
     case TYPE_CHAR:
+    case TYPE_UCHAR:
     case TYPE_BOOLEAN:
     case TYPE_REAL:
         pt = new_system_type(src->type_id);
@@ -476,8 +488,10 @@ int get_type_align_size(type *pt)
     switch(pt->type_id)
     {
     case TYPE_INTEGER:
+    case TYPE_UINTEGER:
         return  IR->intmetric.align;
     case TYPE_CHAR:
+    case TYPE_UCHAR:
     case TYPE_BOOLEAN:
         return  IR->charmetric.align;
     case TYPE_REAL:

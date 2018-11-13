@@ -152,7 +152,8 @@ extern void ast_compile(List, List);
 %term tCHAR
 %term tREAL
 %term tBOOLEAN
-%term tTEXT
+%term tUCHAR
+%term tUINTEGER
 %term <p_lex>SYS_FUNCT
 %term fABS
 %term fSQR
@@ -516,11 +517,11 @@ field_decl
 simple_type_decl
 :SYS_TYPE
 {
-	/* char，integer，boolean，real */
+	/* char，integer，boolean，real, uchar, uinterger */
 	pt = find_type_by_name($1);
 
 	if(!pt)
-		parse_error("Undeclared type name",$1);
+		parse_error("Undeclared type name", $1);
 
 	$$ = pt;
 }
@@ -2006,7 +2007,7 @@ args_list
 		/*  */
 		if(rtn->level >= 0)
 		{
-			parse_error("parse argument list.", "");
+			parse_error("parse argument list error.", "");
 			return 0;
 		}
 	}

@@ -6,8 +6,10 @@
 /* 保存常量的值 */
 union _value_ {
     char c;
+    unsigned char uc;
     char *s;
     int i;
+    unsigned int ui;
     float f;
     boolean b;
 

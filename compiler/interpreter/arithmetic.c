@@ -5,11 +5,17 @@ switch(con->kids[0]->type->type_id) { \
         case TYPE_INTEGER: \
                 con->val.i = (con->kids[0]->val.i) realop (con->kids[1]->val.i); \
                 break; \
+        case TYPE_UINTEGER: \
+                con->val.ui = (con->kids[0]->val.ui) realop (con->kids[1]->val.ui); \
+                break; \
         case TYPE_BOOLEAN: \
                 con->val.b = (con->kids[0]->val.b) realop (con->kids[1]->val.b); \
                 break; \
         case TYPE_CHAR: \
                 con->val.c = (con->kids[0]->val.c) realop (con->kids[1]->val.c); \
+                break; \
+        case TYPE_UCHAR: \
+                con->val.uc = (con->kids[0]->val.uc) realop (con->kids[1]->val.uc); \
                 break; \
         default: \
         { \
@@ -25,11 +31,17 @@ switch(con->kids[0]->type->type_id) { \
         case TYPE_INTEGER: \
                 con->val.i = (con->kids[0]->val.i) realop (con->kids[1]->val.i); \
                 break; \
+        case TYPE_UINTEGER: \
+                con->val.ui = (con->kids[0]->val.ui) realop (con->kids[1]->val.ui); \
+                break; \
         case TYPE_BOOLEAN: \
                 con->val.b = (con->kids[0]->val.b) realop (con->kids[1]->val.b); \
                 break; \
         case TYPE_CHAR: \
                 con->val.c = (con->kids[0]->val.c) realop (con->kids[1]->val.c); \
+                break; \
+        case TYPE_UCHAR: \
+                con->val.uc = (con->kids[0]->val.uc) realop (con->kids[1]->val.uc); \
                 break; \
         case TYPE_REAL: \
                 con->val.f = (con->kids[0]->val.f) realop (con->kids[1]->val.f); \
@@ -48,11 +60,17 @@ switch(con->kids[0]->type->type_id) { \
         case TYPE_INTEGER: \
                 con->val.i = realop (con->kids[0]->val.i); \
                 break; \
+        case TYPE_UINTEGER: \
+                con->val.ui = realop (con->kids[0]->val.ui); \
+                break; \
         case TYPE_BOOLEAN: \
                 con->val.b = realop (con->kids[0]->val.b); \
                 break; \
         case TYPE_CHAR: \
                 con->val.c = realop (con->kids[0]->val.c);\
+                break; \
+        case TYPE_UCHAR: \
+                con->val.uc = realop (con->kids[0]->val.uc); \
                 break; \
         default: \
         { \
@@ -68,11 +86,17 @@ switch(con->kids[0]->type->type_id) { \
         case TYPE_INTEGER: \
                 con->val.i = realop (con->kids[0]->val.i); \
                 break; \
+        case TYPE_UINTEGER: \
+                con->val.ui = realop (con->kids[0]->val.ui); \
+                break; \
         case TYPE_BOOLEAN: \
                 con->val.b = realop (con->kids[0]->val.b); \
                 break; \
         case TYPE_CHAR: \
                 con->val.c = realop (con->kids[0]->val.c);\
+                break; \
+        case TYPE_UCHAR: \
+                con->val.uc = realop (con->kids[0]->val.uc); \
                 break; \
         case TYPE_REAL: \
                 con->val.f = realop (con->kids[0]->val.f); \

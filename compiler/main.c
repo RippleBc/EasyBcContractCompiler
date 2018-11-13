@@ -245,9 +245,6 @@ void clear()
     fclose(ifp);
     fclose(codfp);
     fclose(errfp);
-    unlink(pasname);
-    unlink(codname);
-    unlink(errname);
 }
 
 void signup()

@@ -55,9 +55,21 @@ void read(Node node)
     ASSIGN_VAL;
   }
   break;
+  case TYPE_UINTEGER:
+  {
+    np->val.ui = (unsigned int)atoi(str);
+    ASSIGN_VAL;
+  }
+  break;
   case TYPE_CHAR:
   {
     np->val.c = str[0];
+    ASSIGN_VAL;
+  }
+  break;
+  case TYPE_UCHAR:
+  {
+    np->val.uc = str[0];
     ASSIGN_VAL;
   }
   break;

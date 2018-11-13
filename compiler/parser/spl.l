@@ -581,12 +581,14 @@ KEYENTRY Keytable[] = {
 {"to",		kTO,		KEYWORD},
 {"true",	SYS_CON,	cTRUE},
 {"type",	kTYPE,		KEYWORD},
-{"until",	kUNTIL,		KEYWORD},
+{"uchar",	SYS_TYPE,	tUCHAR},
+{"uinteger",	SYS_TYPE,	tUINTEGER},
+{"until",	kUNTIL,	KEYWORD},
 {"var",		kVAR,		KEYWORD},
 {"while",	kWHILE,		KEYWORD},
 {"write",	SYS_PROC,	pWRITE},
 {"writeln",	SYS_PROC,	pWRITELN},
-{"----",	LAST_ENTRY,	KEYWORD},
+{"----",	LAST_ENTRY,	KEYWORD}
 };
 
 struct {
