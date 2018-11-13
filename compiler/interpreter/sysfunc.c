@@ -127,9 +127,19 @@ void write(Node node)
       printf("%d\n", np->val.i);
     }
     break;
+    case TYPE_UINTEGER:
+    {
+      printf("%u\n", np->val.ui);
+    }
+    break;
     case TYPE_CHAR:
     {
       printf("%c\n", np->val.c);
+    }
+    break;
+    case TYPE_UCHAR:
+    {
+      printf("%u\n", np->val.uc);
     }
     break;
     case TYPE_BOOLEAN:
