@@ -488,7 +488,7 @@ void node_process(Node node)
         break;
         default:
         {
-          printf("convert type error");
+          printf("CVF convert type error\n");
         }
       }
     }
@@ -516,7 +516,7 @@ void node_process(Node node)
         break;
         default:
         {
-          printf("convert type error");
+          printf("CVI convert type error\n");
         }
       }
     }
@@ -549,7 +549,7 @@ void node_process(Node node)
         break;
         default:
         {
-          printf("convert type error");
+          printf("CVB convert type error\n");
         }
       }
     }
@@ -567,10 +567,11 @@ void node_process(Node node)
         break;
         default:
         {
-          printf("convert type error");
+          printf("CVUI convert type error\n");
         }
       }
     }
+    break;
     case CVUC:
     {
       node_process(node->kids[0]);
@@ -579,12 +580,13 @@ void node_process(Node node)
       {
         case TYPE_CHAR:
         {
-          node->val.uc = (int)node->kids[0]->val.c;
+          node->val.uc = (unsigned char)node->kids[0]->val.c;
 
         }
+        break;
         default:
         {
-          printf("convert type error");
+          printf("CVUC convert type error\n");
         }
       }
     }

@@ -101,7 +101,7 @@ int get_op_code_by_name(char *name)
 		}
 	}
 
-	printf("get_op_code_by_name code not exist %s\n", name);
+	// printf("get_op_code_by_name code not exist %s\n", name);
 	return -1;
 }
 
@@ -125,7 +125,7 @@ int get_type_related_op_code_by_name(Type t, char *name)
 	}
 	else
 	{
-		printf("get_type_related_op_code_by_name byte error\n");
+		// printf("get_type_related_op_code_by_name byte error\n");
 		return -1;
 	}
 }

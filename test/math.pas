@@ -12,8 +12,10 @@ program helloworld;
 		age = 1..150;
 	var
 		inta, intb, intc: integer;
+		uintegera: uinteger;
 		reala, realb: real;
 		chara: char;
+		uchara: uchar;
 		texta: text;
 		arraya : arr;
 		recorda : date;
@@ -33,5 +35,11 @@ program helloworld;
 		writeln(~0);
 		/* 1 */
 		writeln(!0);
+		/* 97 */
+		uchara := cvuc 'a';
+		writeln(uchara);
+		/* 4294967295 */
+		uintegera := cvui -1;
+		writeln(uintegera);
 	end
 .
