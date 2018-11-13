@@ -164,8 +164,10 @@ extern void ast_compile(List, List);
 
 %term  cvBOOLEAN
 %term  cvINT
-%term  cvPOINTER
 %term  cvREAL
+%term  cvUCHAR
+%term  cvCHAR
+%term  cvUINT
 %term  pWRITE
 %term  pWRITELN
 %term  pREAD
@@ -1917,6 +1919,21 @@ oLP args_list oRP
 		case cvREAL:
 		{
 			t = find_type_by_id(TYPE_REAL);
+		}
+		break;
+		case cvUINT:
+		{
+			t = find_type_by_id(TYPE_UINTEGER);
+		}
+		break;
+		case cvUCHAR:
+		{
+			t = find_type_by_id(TYPE_UCHAR);
+		}
+		break;
+		case cvCHAR:
+		{
+			t = find_type_by_id(TYPE_CHAR);
 		}
 		break;
 	}
