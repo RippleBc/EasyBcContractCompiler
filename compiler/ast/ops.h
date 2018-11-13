@@ -19,7 +19,8 @@ enum {
     SYS = 5 << 4,			/* for sys routine. */
     CVF = 7 << 4,
     CVI = 8 << 4,
-    CVP = 9 << 4,
+    CVUI = 9 << 4,
+    CVUC = 10 << 4,
     CVB = 11 << 4,
     NEG = 12 << 4,
     CALL = 13 << 4,

@@ -44,6 +44,12 @@ Tree conversion_tree(Tree source, Type target)
     case TYPE_BOOLEAN:
         t = new_tree(CVB, target, source, NULL);
         break;
+    case TYPE_UINTEGER:
+        t = new_tree(CVUI, target, source, NULL);
+        break;
+    case TYPE_UCHAR:
+        t = new_tree(CVUC, target, source, NULL);
+        break;
     }
 
     return t;

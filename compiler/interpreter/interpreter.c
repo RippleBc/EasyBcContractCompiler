@@ -554,6 +554,40 @@ void node_process(Node node)
       }
     }
     break;
+    case CVUI:
+    {
+      node_process(node->kids[0]);
+
+      switch(node->kids[0]->type->type_id)
+      {
+        case TYPE_INTEGER:
+        {
+          node->val.ui = (unsigned int)node->kids[0]->val.i;
+        }
+        break;
+        default:
+        {
+          printf("convert type error");
+        }
+      }
+    }
+    case CVUC:
+    {
+      node_process(node->kids[0]);
+
+      switch(node->kids[0]->type->type_id)
+      {
+        case TYPE_CHAR:
+        {
+          node->val.uc = (int)node->kids[0]->val.c;
+
+        }
+        default:
+        {
+          printf("convert type error");
+        }
+      }
+    }
   }
 
   /* 二元数学运算 */
