@@ -8,6 +8,7 @@ void assign_with_byte_unit(int type, unsigned char *array, Value v)
   switch(type)
   {
     case TYPE_INTEGER:
+    case TYPE_BOOLEAN:
     {
       p = &(v->i);
 
@@ -53,7 +54,6 @@ void assign_with_byte_unit(int type, unsigned char *array, Value v)
     break;
     case TYPE_CHAR:
     case TYPE_UCHAR:
-    case TYPE_BOOLEAN:
     {
       p = &(v->c);
 
@@ -91,6 +91,7 @@ void load_with_byte_unit(int type, unsigned char *array, Value v)
   switch(type)
   {
     case TYPE_INTEGER:
+    case TYPE_BOOLEAN:
     {
       p = &(v->i);
 
@@ -132,7 +133,6 @@ void load_with_byte_unit(int type, unsigned char *array, Value v)
     break;
     case TYPE_CHAR:
     case TYPE_UCHAR:
-    case TYPE_BOOLEAN:
     {
       p = &(v->c);
 

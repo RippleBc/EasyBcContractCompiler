@@ -1,17 +1,17 @@
 #include "../common.h"
 
 ops_entry ops_table[] = {
-
 	{"CNST", CNST},
 	{"ARG", ARG},
 	{"ASGN", ASGN},
 	{"INDIR", INDIR},
 	{"SYS", SYS},
+	{"CVC", CVC},
 	{"CVF", CVF},
 	{"CVI", CVI},
-	{"CVB", CVB},
+	{"CVUC", CVUC},
 	{"CVUI", CVUI},
-	{"CVUC", CVUI},
+	{"CVB", CVB},
 	{"NEG", NEG},
 	{"CALL", CALL},
 	{"LOAD", LOAD},
@@ -53,26 +53,26 @@ ops_entry ops_table[] = {
 
 char *get_op_name(int op)
 {
-    int left = 0, right;
-    int middle;
+  int left = 0, right;
+  int middle;
 
-    right = sizeof(ops_table) / sizeof(ops_entry);
-    while (left <= right)
-    {
-        middle = (right + left) / 2;
-        if (ops_table[middle].op < op)
-        {
-            left = middle + 1;
-        }
-        else if (ops_table[middle].op == op)
-        {
-            return ops_table[middle].name;
-        }
-        else
-        {
-            right = middle - 1;
-        }
-    }
+  right = sizeof(ops_table) / sizeof(ops_entry);
+  while (left <= right)
+  {
+      middle = (right + left) / 2;
+      if (ops_table[middle].op < op)
+      {
+          left = middle + 1;
+      }
+      else if (ops_table[middle].op == op)
+      {
+          return ops_table[middle].name;
+      }
+      else
+      {
+          right = middle - 1;
+      }
+  }
 	return "Unknown op";
 }
 

@@ -101,7 +101,7 @@ int get_op_code_by_name(char *name)
 		}
 	}
 
-	// printf("get_op_code_by_name code not exist %s\n", name);
+	printf("get_op_code_by_name code not exist %s\n", name);
 	return -1;
 }
 
@@ -118,14 +118,14 @@ int get_type_related_op_code_by_name(Type t, char *name)
 		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", 'R', name);
 		return get_op_code_by_name(op_name);
 	}
-	else if(t->type_id == TYPE_BOOLEAN)
+	else if(t->type_id == TYPE_UINTEGER)
 	{
-		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", 'B', name);
+		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", 'UI', name);
 		return get_op_code_by_name(op_name);
 	}
 	else
 	{
-		// printf("get_type_related_op_code_by_name byte error\n");
+		printf("get_type_related_op_code_by_name byte error %s %s\n", name, t->name);
 		return -1;
 	}
 }

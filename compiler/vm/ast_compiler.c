@@ -647,7 +647,7 @@ void node_compile(Node node)
       /*  */
       char *code_name = get_op_name(generic(node->op));
       /*  */
-      int code = get_type_related_op_code_by_name(node->type, code_name);
+      int code = get_type_related_op_code_by_name(node->kids[0]->type, code_name);
       /*  */
       push_command(code);
     }
@@ -679,13 +679,25 @@ void node_compile(Node node)
   /* 一元数学元算 */
   switch (generic(node->op))
   {
+    case CVC:
+    case CVUC:
+    {
+      node_compile(node->kids[0]);
+
+      /*  */
+      char *code_name = get_op_name(generic(node->op));
+      /*  */
+      int code = get_op_code_by_name(code_name);
+      /*  */
+      push_command(code);
+    }
+    break;
     case BCOM:
     case NOT:
     case CVF:
     case CVI:
     case CVB:
     case CVUI:
-    case CVUC:
     case NEG:
     {
       node_compile(node->kids[0]);
