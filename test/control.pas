@@ -1,87 +1,140 @@
 program helloworld;
 	type
-		arr = array[1..50] of integer;
-		text = array[1..50] of char;
-		date = record
-			year:1900..1999;
-			month:1..12;
-			day:1..31;
-		end;
+		intarray = array[1..10] of integer;
 		days = (sun,mon,tue,wed,thu,fri,sat);
-		colors = (red,yellow,blue,white,black,green);
-		age = 1..150;
 	var
 		inta, intb, intc: integer;
-		inta1, inta2: real;
-		inta3: char;
-		inta4: text;
-		intd : arr;
-		inte : date;
+		arraya: intarray;
 	begin
-		intd[1] := 10;
-		intd[2] := 20;
-		intd[3] := 30;
-		intd[4] := 40;
-		intd[5] := 50;
-		inte.year := 30;
-		inte.month := 5;
-		inta := 20;
-		intb := 30;
-		intc := ((intb + inta) + 3 * (intb + inta)) / 4 + intd[2] * 2 + inte.month + intd[1];
-		writeln(intc);
-		writeln('###################');
-
-		inta1 := 1.23;
-		inta2 := inta1 + 1.56;
-		writeln(inta2);
-		writeln('###################');
-
-		inta3 := 'a';
-		writeln(inta3);
-		writeln('###################');
-
-		inta4 := 'abcdefg';
-		writeln(inta4[3]);
-		writeln('###################');
-
-		/* writeln(9876543210); */
 		if(2 > 1) then
 		begin
-			writeln(1);
+			writeln('line 9 ok');
 			if(2 < 1) then
 			begin
 				writeln(1);
 			end
-			else writeln(0);
+			else writeln('line 14 ok');;
 		end
 		else writeln(0);
-		writeln('###################');
+
 
 		inta := 1;
-		intb := 10;
+		intb := 3;
 		repeat
 		begin
+			arraya[inta] := inta;
 			inta := inta + 1;
-			writeln(inta);
 		end
 		until (inta > intb);
-		writeln('###################');
+
+		if(inta != 4) then
+		begin
+			writeln('3 repeat num fail');
+		end;
+
+		for inta := 1 to 3 do
+		begin
+			if(inta = 1) then
+			begin
+				if(arraya[inta] != 1) then
+				begin
+					writeln('1 repeat fail');
+				end;
+			end;
+			if(inta = 2) then
+			begin
+				if(arraya[inta] != 2) then
+				begin
+					writeln('2 repeat fail');
+				end;
+			end;
+			if(inta = 3) then
+			begin
+				if(arraya[inta] != 3) then
+				begin
+					writeln('3 repeat fail');
+				end;
+			end;
+		end;
+
 
 		intb := 10;
+		intc := 1;
 		for inta := 1 to intb do
 		begin
-			writeln(inta);
+			arraya[intc] := inta;
+			intc := intc + 1;
 			inta := inta + 3;
 		end;
-		writeln('###################');
+
+		if(intc != 4) then
+		begin
+			writeln('3 for num fail');
+		end;
+
+		for inta := 1 to 3 do
+		begin
+			if(inta = 1) then
+			begin
+				if(arraya[inta] != 1) then
+				begin
+					writeln('1 for fail');
+				end;
+			end;
+			if(inta = 2) then
+			begin
+				if(arraya[inta] != 5) then
+				begin
+					writeln('5 for fail');
+				end;
+			end;
+			if(inta = 3) then
+			begin
+				if(arraya[inta] != 9) then
+				begin
+					writeln('9 for fail');
+				end;
+			end;
+		end;
+
 
 		intb := 1;
-		while intb <= 10 do
+		while intb <= 3 do
 		begin
-			writeln(intb);
+			arraya[intb] := intb;
 			intb := intb + 1;
 		end;
-		writeln('###################');
+
+		if(intb != 4) then
+		begin
+			writeln('3 while num fail');
+		end;
+
+		for inta := 1 to 3 do
+		begin
+			if(inta = 1) then
+			begin
+				if(arraya[inta] != 1) then
+				begin
+					writeln('1 while fail');
+				end;
+			end;
+			if(inta = 2) then
+			begin
+				if(arraya[inta] != 2) then
+				begin
+					writeln('2 while fail');
+				end;
+			end;
+			if(inta = 3) then
+			begin
+				if(arraya[inta] != 3) then
+				begin
+					writeln('3 while fail');
+				end;
+			end;
+		end;
+
 		
 		inta := 6;
 		intb := 3;
@@ -96,11 +149,11 @@ program helloworld;
 				case intb of
 					tue: 
 					begin
-					writeln(3);
+					writeln('line 57 ok');
 					end;
 					4: writeln(4);
 				end;
 		end;
-		writeln('###################');
+
 	end
 .

@@ -184,7 +184,7 @@ Tree array_index_tree(Symbol array, Tree expr)
 {
     Tree t;
     /* expr用于表示array的下标 */
-    t = new_tree(ARRAY, array->type->first->type, expr, NULL);
+    t = new_tree(ARRAY, array->type->last->type, expr, NULL);
     /* 对应的array符号 */
     t->u.generic.sym = array;
 

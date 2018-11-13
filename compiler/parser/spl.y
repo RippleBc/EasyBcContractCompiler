@@ -556,7 +556,7 @@ simple_type_decl
   /* 子范围类型的前后常量类型必须一致 */
 	if($1->type->type_id != $3->type->type_id)
 	{
-		parse_error("type mismatch","");
+		parse_error("type mismatch", "");
 		return 0;
 	}
 	
@@ -1590,7 +1590,7 @@ expression
 	/* 比较运算AST树（>=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
 	if($1->result_type->type_id != $3->result_type->type_id)
 	{
-		parse_error("type mismatch", "");
+		parse_error("type mismatch >=", "");
 		return 0;
 	}
 
@@ -1601,7 +1601,7 @@ expression
 	/* 比较运算AST树（>） */
 	if($1->result_type->type_id != $3->result_type->type_id)
 	{
-		parse_error("type mismatch", "");
+		parse_error("type mismatch >", "");
 		return 0;
 	}
 
@@ -1612,7 +1612,7 @@ expression
 	/* 比较运算AST树（<=） */
 	if($1->result_type->type_id != $3->result_type->type_id)
 	{
-		parse_error("type mismatch", "");
+		parse_error("type mismatch <=", "");
 		return 0;
 	}
 
@@ -1623,7 +1623,7 @@ expression
 	/* 比较运算AST树（<） */
 	if($1->result_type->type_id != $3->result_type->type_id)
 	{
-		parse_error("type mismatch", "");
+		parse_error("type mismatch <", "");
 		return 0;
 	}
 
@@ -1634,7 +1634,8 @@ expression
 	/* 比较运算AST树（=） */
 	if($1->result_type->type_id != $3->result_type->type_id)
 	{
-		parse_error("type mismatch", "");
+		printf("%s adsad %s %s aaaaaaaa\n", $1->u.generic.sym->name, $1->result_type->name, $3->result_type->name);
+		parse_error("type mismatch =", "");
 		return 0;
 	}
 
@@ -1645,7 +1646,7 @@ expression
 	/* 比较运算AST树（<>，不相等） */
 	if($1->result_type->type_id != $3->result_type->type_id)
 	{
-		parse_error("type mismatch", "");
+		parse_error("type mismatch !=", "");
 		return 0;
 	}
 
@@ -1663,7 +1664,7 @@ expr
 	/* 二元运算AST树（+），由于优先级问题，放在expr表达式中（expr表达式中的运算优先级比term中的要低），仅支持左结合 */
 	if($1->result_type->type_id != $3->result_type->type_id)
 	{
-		parse_error("type mismatch", "");
+		parse_error("type mismatch +", "");
 		return 0;
 	}
 
@@ -1674,7 +1675,7 @@ expr
 	/* 二元运算AST树（-） */
 	if($1->result_type->type_id != $3->result_type->type_id)
 	{
-		parse_error("type mismatch", "");
+		parse_error("type mismatch -", "");
 		return 0;
 	}
 
@@ -1700,7 +1701,7 @@ term
 	/* 二元运算AST树（*），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
 	if($1->result_type->type_id != $3->result_type->type_id)
 	{
-		parse_error("type mismatch", "");
+		parse_error("type mismatch *", "");
 		return 0;
 	}
 
@@ -1708,10 +1709,10 @@ term
 }
 |term oDIV factor
 {
-	/* 二元运算AST树（/） */
+	/* 二元运算AST树（\） */
 	if($1->result_type->type_id != $3->result_type->type_id)
 	{
-		parse_error("type mismatch", "");
+		parse_error("type mismatch \\", "");
 		return 0;
 	}
 
@@ -1722,7 +1723,7 @@ term
 	/* 二元运算AST树（div） */
 	if($1->result_type->type_id != $3->result_type->type_id)
 	{
-		parse_error("type mismatch", "");
+		parse_error("type mismatch div", "");
 		return 0;
 	}
 
@@ -1733,7 +1734,7 @@ term
 	/* 二元运算AST树（mod） */
 	if($1->result_type->type_id != $3->result_type->type_id)
 	{
-		parse_error("type mismatch", "");
+		parse_error("type mismatch mod", "");
 		return 0;
 	}
 
@@ -1744,7 +1745,7 @@ term
 	/* 二元运算AST树（mod） */
 	if($1->result_type->type_id != $3->result_type->type_id)
 	{
-		parse_error("type mismatch", "");
+		parse_error("type mismatch %", "");
 		return 0;
 	}
 

@@ -1,31 +1,61 @@
 program helloworld;
-	type text = array[1..50] of char;
+	type
+		int_array = array[1..10] of integer;
+		text = array[1..50] of char;
 	var inta, intb: integer;
-			texta : text;
+			texta: text;
+			arraya: int_array;
 	function testInsideFunc(x,y:integer):integer;
 		var inta,intb : integer;
 		function hello(x,y:integer):integer;
 		begin
-			writeln(x);
-			writeln(y);
+			if((x != 9) && (y != 2)) then
+			begin
+				writeln('9 2 line 9 fail');
+			end;
 		end;
 	begin
-		writeln(x);
+		if(x != 10) then
+		begin
+			writeln('line 15 fail');
+		end
+		else
+
 		hello(9, 2);
-		writeln(y);
+
+		if(y != 1) then
+		begin
+			writeln('line 20 fail');
+		end;
 	end;
 
 	function testMixedArg(x:integer;y:text;z:char):integer;
-		var inta : integer;
+		var inta: integer;
 	begin
 		inta := 1;
-		writeln(inta);
-		writeln(x);
-		writeln(y[3]);
-		writeln(z);
+
+		if(inta != 1) then
+		begin
+			writeln('1 line 30 fail');
+		end;
+
+		if(x != 10) then
+		begin
+			writeln('10 line 34 fail');
+		end;
+
+		if(y[3] != 'c') then
+		begin
+			writeln('c line 41 fail');
+		end;
+		
+		if(z != 'd') then
+		begin
+			writeln('d line 46 fail');
+		end;
 	end;
 
-	function testMixedType(x,y:integer):integer;
+	function testMixedType:integer;
 		type
 			arr = array[1..50] of integer;
 			date = record
@@ -50,15 +80,48 @@ program helloworld;
 		c := mon;
 		d := blue;
 		e := 27;
-		writeln(a[1]);
-		writeln(a[2]);
-		writeln(b.year);
-		writeln(b.month);
-		writeln(b.day);
-		writeln(c);
-		writeln(d);
-		writeln(e);
+
+		if(a[1] != 1) then
+		begin
+			writeln('1 line 69 fail');
+		end;
+
+		if(a[2] != 2) then
+		begin
+			writeln('2 line 73 fail');
+		end;
+
+		if(b.year != 2018) then
+		begin
+			writeln('2018 line 79 fail');
+		end;
+
+		if(b.month != 11) then
+		begin
+			writeln('11 line 84 fail');
+		end;
+
+		if(b.day != 12) then
+		begin
+			writeln('12 line 89 fail');
+		end;
+
+		if(c != mon) then
+		begin
+			writeln('mon line 94 fail');
+		end;
+
+		if(d != blue) then
+		begin
+			writeln('blue line 99 fail');
+		end;
+
+		if(e != 27) then
+		begin
+			writeln('27 line 104 fail');
+		end;
 	end;
+
 	function testFunc(x,y:integer):integer;
 		var
 			k,sum : integer;
@@ -66,41 +129,66 @@ program helloworld;
 		sum := 1;
 		for k:=2 to x div 2 do
 		begin
-		writeln(k);
 		if x mod k = 0 then 
 				begin
 						sum := sum + k;
 				end;
 		end;
-		writeln(sum);
+		if(sum != 8) then
+		begin
+			writeln('8 line 135 fail');
+		end;
 		testFunc := x + y;
 	end;
-	function testRecurveFunc(x,y:integer):integer;
+
+	function testRecurveFunc(x:integer):integer;
 	begin
 		if(x > 0) then
 		begin
-			writeln(x);
-			testRecurveFunc(x-1, y);
+			
+			testRecurveFunc(x-1);
 		end
 		else
-			writeln(1000);
-		testRecurveFunc := x + y;
+		begin
+			if(x != 0) then
+			begin
+				writeln('x end fail');
+			end;
+		end;
 	end;
+
 	begin
-		inta := 100;
 		texta := 'abafqweradf';
-		writeln(texta[5]);
-		writeln('##################');
+		if(texta[5] != 'q') then
+		begin
+			writeln('q line 92 fail');
+		end;
 		testInsideFunc(10, 1);
-		writeln('##################');
 		testMixedArg(10, 'abcdefg', 'd');
-		writeln('##################');
-		testMixedType(10, 1);
-		writeln('##################');
+		testMixedType();
 		testFunc(10, 1);
-		writeln('##################');
-		testRecurveFunc(10, 1);
-		writeln('##################');
-		writeln(inta);
+		testRecurveFunc(3);
+		for inta := 1 to 3 do
+		begin
+			if(arraya[inta] != 1) then
+			begin
+				writeln('1 testRecurveFunc fail');
+			end;
+
+			if(arraya[inta] != 2) then
+			begin
+				writeln('2 testRecurveFunc fail');
+			end;
+
+			if(arraya[inta] != 3) then
+			begin
+				writeln('3 testRecurveFunc fail');
+			end;
+		end
+
+		if(inta != 3) then
+		begin
+			writeln('3 line 172 fail');
+		end;
 	end
 .
