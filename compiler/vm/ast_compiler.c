@@ -488,11 +488,14 @@ void node_compile(Node node)
     case LOAD:
     {
       Symbol p = node->syms[0];
+      Symbol s_mixedType = NULL;
 
       if(node->kids[0])
       {
         /* 地址节点 */
         node_compile(node->kids[0]);
+        /* syms[0]表示数组或者记录，syms[1]表示数组成员或者属性，node->kids[0]表示ARRAY或者FIELD节点 */
+        s_mixedType = node->kids[0]->syms[0];
       }
 
       if(p && p->defn == DEF_ENUM_ELEMENT)
@@ -505,11 +508,11 @@ void node_compile(Node node)
       else
       {
         /* 全局变量 */
-        if(top_symtab_stack()->level == 0)
+        if((s_mixedType && s_mixedType->tab == Global_symtab) || (p && p->tab == Global_symtab))
         {
           if(p)
           {
-            /* mixed type val */
+            /* system type val */
             int code = get_op_code_by_name("PUSH");
             push_command(code);
             value sym_offset;
@@ -524,7 +527,7 @@ void node_compile(Node node)
         {
           if(p)
           {
-            /* mixed type val */
+            /* system type val */
             int code = get_op_code_by_name("PUSH");
             push_command(code);
             value sym_offset;
@@ -541,8 +544,15 @@ void node_compile(Node node)
     case ASGN:
     {
       Symbol p = node->kids[0]->syms[0];
+      Symbol s_mixedType = NULL;
       Symbol s_array = NULL;
       
+      if(generic(node->kids[0]->op) != ADDRG)
+      {
+        /* array or record */
+        s_mixedType = node->kids[0]->syms[0];
+      }
+
       if(generic(node->kids[0]->op) == ADDRG && node->kids[0]->syms[0]->type->type_id == TYPE_ARRAY)
       {
         s_array = node->kids[0]->syms[0];
@@ -554,7 +564,7 @@ void node_compile(Node node)
       /* 表达式AST节点 */
       node_compile(node->kids[1]);
 
-      if(top_symtab_stack()->level == 0)
+      if((s_mixedType && s_mixedType->tab == Global_symtab) || (p && p->tab == Global_symtab))
       {
         if(s_array)
         {
@@ -694,9 +704,6 @@ void node_compile(Node node)
     {
       Symbol p = node->kids[0]->syms[0];
 
-      /*  */
-      push_symtab_stack(p->tab);
-
       /* address used by binaray operation */
       node_compile(node->kids[0]);
 
@@ -704,7 +711,7 @@ void node_compile(Node node)
       node_compile(node->kids[0]);
 
       /*  */
-      if(top_symtab_stack()->level == 0)
+      if(p->tab == Global_symtab)
       {
         vm_load_global(NULL, NULL);
       }
@@ -721,7 +728,7 @@ void node_compile(Node node)
       push_command(code);
 
       /*  */
-      if(top_symtab_stack()->level == 0)
+      if(p->tab == Global_symtab)
       {
         vm_assign_global(NULL, NULL);
       }
@@ -729,9 +736,6 @@ void node_compile(Node node)
       {
         vm_assign_function_call_stack_val(NULL, NULL);
       }
-
-      /*  */
-      pop_symtab_stack();
     }
     break;
   }

@@ -8,14 +8,13 @@ program helloworld;
 	begin
 		if(2 > 1) then
 		begin
-			writeln('line 9 ok');
 			if(2 < 1) then
 			begin
-				writeln(1);
+				writeln('line 11 fail');
 			end
-			else writeln('line 14 ok');;
+			else;
 		end
-		else writeln(0);
+		else writeln('line 9 fail');
 
 
 		inta := 1;
@@ -141,16 +140,13 @@ program helloworld;
 		case inta of
 			2: 
 			begin
-			writeln(2);
+			writeln('line 140 fail');
 			end;
-			5: writeln(5);
+			5: writeln('line 140 fail');
 			6:
 				case intb of
-					tue: 
-					begin
-					writeln('line 57 ok');
-					end;
-					4: writeln(4);
+					tue: writeln('case control stmt ok');
+					4: writeln('line 147 fail');
 				end;
 		end;
 
