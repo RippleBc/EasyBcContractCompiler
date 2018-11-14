@@ -843,7 +843,7 @@ procedure_head
 		parse_error("can not def function in function", "");
 		return 0;
 	}
-	
+
 	ptab = new_symtab(Global_symtab);
 
 	add_routine_to_table(top_symtab_stack(), ptab);
@@ -1789,22 +1789,54 @@ term
 
 |term oBAND factor
 {
+	/* 二元运算AST树（&） */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch &", "");
+		return 0;
+	}
+
 	$$ = binary_expr_tree(BAND, $1, $3);
 }
 |term oBOR factor
 {
+	/* 二元运算AST树（|） */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch |", "");
+		return 0;
+	}
+
 	$$ = binary_expr_tree(BOR, $1, $3);
 }
 |term oBXOR factor
 {
+	/* 二元运算AST树（^） */
+	if($1->result_type->type_id != $3->result_type->type_id)
+	{
+		parse_error("type mismatch ^", "");
+		return 0;
+	}
 	$$ = binary_expr_tree(BXOR, $1, $3);
 }
 |term oRSH factor
 {
+	/* 二元运算AST树（>>） */
+	if($1->result_type->type_id != TYPE_INTEGER || $3->result_type->type_id != TYPE_INTEGER)
+	{
+		parse_error("type mismatch >>", "");
+		return 0;
+	}
 	$$ = binary_expr_tree(RSH, $1, $3);
 }
 |term oLSH factor
 {
+	/* 二元运算AST树（<<） */
+	if($1->result_type->type_id != TYPE_INTEGER || $3->result_type->type_id != TYPE_INTEGER)
+	{
+		parse_error("type mismatch <<", "");
+		return 0;
+	}
 	$$ = binary_expr_tree(LSH, $1, $3);
 }
 
@@ -1912,6 +1944,12 @@ oLP args_list oRP
 |kNOT factor
 {
 	/* 一元操作符（not） */
+	if($2->result_type->type_id != TYPE_BOOLEAN)
+	{
+		parse_error("type mismatch not", "");
+		return 0;
+	}
+
 	$$ = not_tree($2);
 }
 |oNOT factor
@@ -1922,6 +1960,12 @@ oLP args_list oRP
 |oMINUS factor
 {
 	/* 一元操作符（-） */
+	if($2->result_type->type_id == TYPE_UINTEGER || $2->result_type->type_id == TYPE_BOOLEAN || $2->result_type->type_id == TYPE_CHAR || $2->result_type->type_id == TYPE_UCHAR)
+	{
+		parse_error("type mismatch -", "");
+		return 0;
+	}
+
 	$$ = neg_tree($2);
 }
 |oBCOM factor
