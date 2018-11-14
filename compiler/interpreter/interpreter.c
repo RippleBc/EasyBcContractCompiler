@@ -577,12 +577,12 @@ void node_process(Node node)
         break;
         case TYPE_CHAR:
         {
-          node->val.b = (unsigned int)(node->kids[0]->val.c) == 0 ? false : true;
+          node->val.b = (unsigned char)(node->kids[0]->val.c) == 0 ? false : true;
         }
         break;
         case TYPE_UCHAR:
         {
-          node->val.b = (unsigned int)(node->kids[0]->val.uc) == 0 ? false : true;
+          node->val.b = (unsigned char)(node->kids[0]->val.uc) == 0 ? false : true;
         }
         case TYPE_BOOLEAN:
         {
@@ -607,9 +607,57 @@ void node_process(Node node)
           node->val.ui = (unsigned int)node->kids[0]->val.i;
         }
         break;
+        case TYPE_UINTEGER:
+        {
+          
+        }
+        break;
+        case TYPE_CHAR:
+        {
+          node->val.ui = (unsigned int)node->kids[0]->val.c;
+        }
+        break;
+        case TYPE_UCHAR:
+        {
+          node->val.ui = (unsigned int)node->kids[0]->val.uc;
+        }
+        break;
         default:
         {
           printf("CVUI convert type error\n");
+        }
+      }
+    }
+    break;
+    case CVC:
+    {
+      node_process(node->kids[0]);
+
+      switch(node->kids[0]->type->type_id)
+      {
+        case TYPE_INTEGER:
+        {
+          node->val.c = (char)(node->kids[0]->val.i);
+        }
+        break;
+        case TYPE_UINTEGER:
+        {
+          node->val.c = (char)(node->kids[0]->val.ui);
+        }
+        break;
+        case TYPE_CHAR:
+        {
+          
+        }
+        break;
+        case TYPE_UCHAR:
+        {
+          node->val.c = (char)node->kids[0]->val.uc;
+        }
+        break;
+        default:
+        {
+          printf("CVC convert type error\n");
         }
       }
     }
@@ -620,9 +668,24 @@ void node_process(Node node)
 
       switch(node->kids[0]->type->type_id)
       {
+        case TYPE_INTEGER:
+        {
+          node->val.uc = (unsigned char)(node->kids[0]->val.i);
+        }
+        break;
+        case TYPE_UINTEGER:
+        {
+          node->val.uc = (unsigned char)(node->kids[0]->val.ui);
+        }
+        break;
         case TYPE_CHAR:
         {
           node->val.uc = (unsigned char)node->kids[0]->val.c;
+
+        }
+        break;
+        case TYPE_UCHAR:
+        {
 
         }
         break;
@@ -632,6 +695,7 @@ void node_process(Node node)
         }
       }
     }
+    break;
   }
 
   /* 二元数学运算 */

@@ -154,6 +154,7 @@ Node travel(Tree tp)
     case CVB:
     case CVUI:
     case CVUC:
+    case CVC:
         l = travel(tp->kids[0]);
         /* 变量 */
         p = node(op, l, NULL, NULL);

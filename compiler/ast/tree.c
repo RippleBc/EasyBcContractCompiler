@@ -50,6 +50,9 @@ Tree conversion_tree(Tree source, Type target)
     case TYPE_UCHAR:
         t = new_tree(CVUC, target, source, NULL);
         break;
+    case TYPE_CHAR:
+        t = new_tree(CVC, target, source, NULL);
+        break;
     }
 
     return t;

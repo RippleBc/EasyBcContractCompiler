@@ -538,6 +538,7 @@ oct		[0-7]
 	end 主程序的end后面加'.'，函数，过程，和其他的加'；'（record定义、case of语句末尾），如果end后面有else，就什么都不加
 */
 
+
 /* 匹配字符，对应的Token，Token类型*/
 KEYENTRY Keytable[] = {
 {"abs",		SYS_FUNCT,	fABS},
@@ -548,8 +549,8 @@ KEYENTRY Keytable[] = {
 {"case",	kCASE, 		KEYWORD},
 {"char",	SYS_TYPE,	tCHAR},
 {"const",	kCONST,		KEYWORD},
-{"cvc",	TYPE_CONVERT, cvCHAR},
 {"cvb", TYPE_CONVERT, cvBOOLEAN},
+{"cvc",	TYPE_CONVERT, cvCHAR},
 {"cvf",	TYPE_CONVERT,	cvREAL},
 {"cvi",	TYPE_CONVERT, cvINT},
 {"cvuc",	TYPE_CONVERT, cvUCHAR},

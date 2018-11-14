@@ -1656,7 +1656,7 @@ expression
 
 	$$ = compare_expr_tree(EQ, $1, $3);
 }
-|expression oUNEQU  expr
+|expression oUNEQU expr
 {
 	/* 比较运算AST树（!=，不相等） */
 	if($1->result_type->type_id != $3->result_type->type_id)
@@ -1949,7 +1949,7 @@ oLP args_list oRP
 		break;
 		case cvCHAR:
 		{
-			t = find_type_by_id(TYPE_CHAR);
+			t = find_type_by_id(TYPE_CHAR); 
 		}
 		break;
 	}

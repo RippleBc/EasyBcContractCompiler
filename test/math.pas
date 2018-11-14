@@ -65,5 +65,10 @@ program helloworld;
 		begin
 			writeln('4294967295 line 64 fail'); 
 		end;
+
+		if(cvc 97 != 'a') then
+		begin
+			writeln('a line 69 fail'); 
+		end;
 	end
 .

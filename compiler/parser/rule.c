@@ -3882,7 +3882,7 @@ yyreduce:
 		break;
 		case cvCHAR:
 		{
-			t = find_type_by_id(TYPE_CHAR);
+			t = find_type_by_id(TYPE_CHAR); 
 		}
 		break;
 	}
