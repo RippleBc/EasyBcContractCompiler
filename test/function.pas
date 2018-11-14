@@ -7,26 +7,19 @@ program helloworld;
 			arraya: int_array;
 	function testInsideFunc(x,y:integer):integer;
 		var inta,intb : integer;
-		function hello(x,y:integer):integer;
-		begin
-			if((x != 9) && (y != 2)) then
-			begin
-				writeln('9 2 line 9 fail');
-			end;
-		end;
 	begin
+
 		if(x != 10) then
 		begin
-			writeln('line 15 fail');
+			writeln('line 14 fail');
 		end
 		else
 
-		hello(9, 2);
-
 		if(y != 1) then
 		begin
-			writeln('line 20 fail');
+			writeln('line 18 fail');
 		end;
+
 	end;
 
 	function testMixedArg(x:integer;yyyy:text;z:char):integer;

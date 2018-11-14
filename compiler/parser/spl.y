@@ -751,8 +751,14 @@ function_head
 	NEW0(ast_forest, TREE);
 	push_ast_forest_stack(ast_forest);
 
+	if(top_symtab_stack() != Global_symtab)
+	{
+		parse_error("can not def function in function", "");
+		return 0;
+	}
+
 	/* 创建符号表 */
-	ptab = new_symtab(top_symtab_stack());
+	ptab = new_symtab(Global_symtab);
 
 	/* 记录自定义函数 */
 	add_routine_to_table(top_symtab_stack(), ptab);
@@ -832,7 +838,13 @@ procedure_head
 	NEW0(ast_forest, TREE);
 	push_ast_forest_stack(ast_forest);
 
-	ptab = new_symtab(top_symtab_stack());
+	if(top_symtab_stack() != Global_symtab)
+	{
+		parse_error("can not def function in function", "");
+		return 0;
+	}
+	
+	ptab = new_symtab(Global_symtab);
 
 	add_routine_to_table(top_symtab_stack(), ptab);
 
