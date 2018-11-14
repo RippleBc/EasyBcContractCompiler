@@ -429,7 +429,7 @@ int node_compile(Node node)
       push_data(find_type_by_id(TYPE_INTEGER), &record_offset);
 
       /* compute field offset base on stack */
-      code = get_op_code_by_name("ADD");
+      code = get_op_code_by_name("IADD");
       push_command(code);
     }
     break;
@@ -446,7 +446,7 @@ int node_compile(Node node)
       startIndex.i = array->type->first->v.i;
       push_data(find_type_by_id(TYPE_INTEGER), &startIndex);
       /*  */
-      code = get_op_code_by_name("SUB");
+      code = get_op_code_by_name("ISUB");
       push_command(code);
       /*  */
       code = get_op_code_by_name("PUSH");
@@ -455,7 +455,7 @@ int node_compile(Node node)
       ele_size.i = get_symbol_align_size(array->type->last);
       push_data(find_type_by_id(TYPE_INTEGER), &ele_size);
       /*  */
-      code = get_op_code_by_name("MUL");
+      code = get_op_code_by_name("IMUL");
       push_command(code);
 
       /* compute array offset base on stack */
@@ -466,7 +466,7 @@ int node_compile(Node node)
       push_data(find_type_by_id(TYPE_INTEGER), &base_offset);
 
       /* compute element offset base on stack*/
-      code = get_op_code_by_name("ADD");
+      code = get_op_code_by_name("IADD");
       push_command(code);
     }
     break;
