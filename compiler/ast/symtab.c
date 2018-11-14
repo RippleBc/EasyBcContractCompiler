@@ -15,7 +15,6 @@ int arg_index;
 int cur_level;
 int routine_id;
 
-
 #define  SYMTAB_STACK_SIZE 64
 int symtab_tos = SYMTAB_STACK_SIZE - 1;
 symtab *symtab_stack[SYMTAB_STACK_SIZE]; /* 保存上下文（符号表） */
@@ -453,15 +452,22 @@ symtab *find_routine(symtab *tab, char *name)
     {
         return tab;
     }
-    /* 外部调用函数或者过程 */
-    for(i = 0; i < tab->last_symtab; i++)
+
+    /*  */
+    while(tab)
     {
-        routine = tab->routine_queue[i];
-        if(!strcmp(routine->name, name))
+        /* 外部调用函数或者过程 */
+        for(i = 0; i < tab->last_symtab; i++)
         {
-            return routine;
+            routine = tab->routine_queue[i];
+            if(!strcmp(routine->name, name))
+            {
+                return routine;
+            }
         }
-    }
+
+        tab = tab->parent;
+    }  
     
     return NULL;
 }

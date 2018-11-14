@@ -5,24 +5,8 @@ program helloworld;
 	var inta, intb: integer;
 			texta: text;
 			arraya: int_array;
-	function testInsideFunc(x,y:integer):integer;
-		var inta,intb : integer;
-	begin
 
-		if(x != 10) then
-		begin
-			writeln('line 14 fail');
-		end
-		else
-
-		if(y != 1) then
-		begin
-			writeln('line 18 fail');
-		end;
-
-	end;
-
-	function testMixedArg(x:integer;yyyy:text;z:char):integer;
+	function mixedArgFunc(x:integer;yyyy:text;z:char):integer;
 		var inta: integer;
 	begin
 		inta := 1;
@@ -48,7 +32,7 @@ program helloworld;
 		end;
 	end;
 
-	function testMixedType:integer;
+	function mixedTypeFunc:integer;
 		type
 			arr = array[1..50] of integer;
 			date = record
@@ -150,17 +134,34 @@ program helloworld;
 		end;
 	end;
 
+	function insideFunc(x,y:integer):integer;
+		var inta,intb : integer;
+	begin
+
+		if(x != 10) then
+		begin
+			writeln('line 14 fail');
+		end
+		else
+
+		if(y != 1) then
+		begin
+			writeln('line 18 fail');
+		end;
+
+		testRecurveFunc(3);
+	end;
+
 	begin
 		texta := 'abafqweradf';
 		if(texta[5] != 'q') then
 		begin
 			writeln('q line 92 fail');
 		end;
-		testInsideFunc(10, 1);
-		testMixedArg(10, 'abcdefg', 'd');
-		testMixedType();
+		mixedArgFunc(10, 'abcdefg', 'd');
+		mixedTypeFunc();
 		testFunc(10, 1);
-		testRecurveFunc(3);
+		insideFunc(10, 1);
 		for inta := 3 downto 1 do
 		begin
 			if(inta = 3) then
