@@ -384,18 +384,8 @@ void node_process(Node node)
       }
       else
       {
-        if(q)
-        {
-          /* record or array */
-          push_symtab_stack(q->tab);
-        }
-        else
-        {
-          push_symtab_stack(p->tab);
-        }
-
         /* 全局变量 */
-        if(top_symtab_stack()->level == 0)
+        if((q && q->tab == Global_symtab) || (p && p->tab == Global_symtab))
         {
           load_global(node, p, q);
         }
@@ -412,9 +402,6 @@ void node_process(Node node)
             load_function_call_stack_val(node, p, q);
           }
         }
-
-        /*  */
-        pop_symtab_stack();
       }
     }
     break;
@@ -444,18 +431,7 @@ void node_process(Node node)
       /* 表达式AST节点 */
       node_process(node->kids[1]);
 
-      /*  */
-      if(q)
-      {
-        /* record or array */
-        push_symtab_stack(q->tab);
-      }
-      else
-      {
-        push_symtab_stack(p->tab);
-      }
-
-      if(top_symtab_stack()->level == 0)
+      if((q && q->tab == Global_symtab) || (p && p->tab == Global_symtab))
       {
         /*  */
         assign_global(node->kids[1], p, q);
@@ -469,13 +445,9 @@ void node_process(Node node)
         }
         else
         {
-          /* 局部变量赋值 */
           assign_function_call_stack_val(node->kids[1], p, q);
         }
       }
-
-      /*  */
-      pop_symtab_stack();
     }
     break;
   }
@@ -777,11 +749,8 @@ void node_process(Node node)
       Node addr = node->kids[0];
       p = addr->syms[0];
 
-      /*  */
-      push_symtab_stack(p->tab);
-
       /* add operation */
-      if(top_symtab_stack()->level == 0)
+      if(p->tab == Global_symtab)
       {
         load_global(addr, p, NULL);
       }
@@ -802,17 +771,15 @@ void node_process(Node node)
       arithmetical_operate(node);
 
       /* assign val */
-      if(top_symtab_stack()->level == 0)
+      if(p->tab == Global_symtab)
       {
         assign_global(node, p, NULL);
       }
       else
       {
+        /* function */
         assign_function_call_stack_val(node, p, NULL);
       }
-
-      /*  */
-      pop_symtab_stack();
     }
     break;
   }

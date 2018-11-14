@@ -495,21 +495,36 @@ void node_compile(Node node)
         node_compile(node->kids[0]);
       }
 
-      /* 全局变量 */
-      if(top_symtab_stack()->level == 0)
+      if(p && p->defn == DEF_ENUM_ELEMENT)
       {
-        if(p && p->defn == DEF_ENUM_ELEMENT)
+        /*  */
+        int code = get_op_code_by_name("PUSH");
+        push_command(code);
+        push_data(p->type, &(p->v));
+      }
+      else
+      {
+        /* 全局变量 */
+        if(top_symtab_stack()->level == 0)
         {
-          /*  */
-          int code = get_op_code_by_name("PUSH");
-          push_command(code);
-          push_data(p->type, &(p->v));
+          if(p)
+          {
+            /* mixed type val */
+            int code = get_op_code_by_name("PUSH");
+            push_command(code);
+            value sym_offset;
+            sym_offset.i = p->offset;
+            push_data(p->type, &sym_offset);
+          }
+
+          /* array or record */
+          vm_load_global();
         }
         else
         {
           if(p)
           {
-            /*  */
+            /* mixed type val */
             int code = get_op_code_by_name("PUSH");
             push_command(code);
             value sym_offset;
@@ -517,32 +532,7 @@ void node_compile(Node node)
             push_data(p->type, &sym_offset);
           }
 
-          vm_load_global();
-        }
-      }
-      else
-      {
-        if(p && p->defn == DEF_ENUM_ELEMENT)
-        {
-          /*  */
-          int code = get_op_code_by_name("PUSH");
-          /*  */
-          push_command(code);
-          /*  */
-          push_data(p->type, &(p->v));
-        }
-        else {
-          if(p)
-          {
-            /*  */
-            int code = get_op_code_by_name("PUSH");
-            push_command(code);
-            value sym_offset;
-            sym_offset.i = p->offset;
-            push_data(p->type, &sym_offset);
-          }
-
-          /* 普通局部变量，从栈取值 */
+          /* array or record */
           vm_load_function_call_stack_val();
         }
       }
@@ -550,10 +540,12 @@ void node_compile(Node node)
     break;
     case ASGN:
     {
-      Symbol p = NULL;
+      Symbol p = node->kids[0]->syms[0];
+      Symbol s_array = NULL;
+      
       if(generic(node->kids[0]->op) == ADDRG && node->kids[0]->syms[0]->type->type_id == TYPE_ARRAY)
       {
-        p = node->kids[0]->syms[0];
+        s_array = node->kids[0]->syms[0];
       }
 
       /* address */
@@ -564,10 +556,10 @@ void node_compile(Node node)
 
       if(top_symtab_stack()->level == 0)
       {
-        if(p)
+        if(s_array)
         {
           /*  */
-          vm_assign_global(&(node->kids[1]->syms[0]->v), p);
+          vm_assign_global(&(node->kids[1]->syms[0]->v), s_array);
         }
         else
         {
@@ -583,10 +575,10 @@ void node_compile(Node node)
         }
         else
         {
-          if(p)
+          if(s_array)
           {
             /* 局部变量赋值 */
-            vm_assign_function_call_stack_val(&(node->kids[1]->syms[0]->v), p);
+            vm_assign_function_call_stack_val(&(node->kids[1]->syms[0]->v), s_array);
           }
           else
           {
@@ -702,6 +694,9 @@ void node_compile(Node node)
     {
       Symbol p = node->kids[0]->syms[0];
 
+      /*  */
+      push_symtab_stack(p->tab);
+
       /* address used by binaray operation */
       node_compile(node->kids[0]);
 
@@ -734,6 +729,9 @@ void node_compile(Node node)
       {
         vm_assign_function_call_stack_val(NULL, NULL);
       }
+
+      /*  */
+      pop_symtab_stack();
     }
     break;
   }
