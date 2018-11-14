@@ -32,7 +32,6 @@ Tree header_tree(symtab *ptab)
 Tree conversion_tree(Tree source, Type target)
 {
     Tree t;
-
     switch (target->type_id)
     {
     case TYPE_INTEGER:
