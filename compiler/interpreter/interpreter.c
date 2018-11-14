@@ -776,6 +776,11 @@ void node_process(Node node)
       /*  */
       Node addr = node->kids[0];
       p = addr->syms[0];
+
+      /*  */
+      push_symtab_stack(p->tab);
+
+      /* add operation */
       if(top_symtab_stack()->level == 0)
       {
         load_global(addr, p, NULL);
@@ -796,7 +801,7 @@ void node_process(Node node)
       /*  */
       arithmetical_operate(node);
 
-      /*  */
+      /* assign val */
       if(top_symtab_stack()->level == 0)
       {
         assign_global(node, p, NULL);
@@ -805,6 +810,9 @@ void node_process(Node node)
       {
         assign_function_call_stack_val(node, p, NULL);
       }
+
+      /*  */
+      pop_symtab_stack();
     }
     break;
   }

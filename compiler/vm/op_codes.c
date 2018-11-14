@@ -108,7 +108,7 @@ int get_op_code_by_name(char *name)
 int get_type_related_op_code_by_name(Type t, char *name)
 {
 	char op_name[MAX_OP_CODES_NUM];
-	if(t->type_id == TYPE_INTEGER)
+	if(t->type_id == TYPE_INTEGER || t->type_id == TYPE_BOOLEAN)
 	{
 		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", 'I', name);
 		return get_op_code_by_name(op_name);
@@ -121,6 +121,16 @@ int get_type_related_op_code_by_name(Type t, char *name)
 	else if(t->type_id == TYPE_UINTEGER)
 	{
 		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", 'UI', name);
+		return get_op_code_by_name(op_name);
+	}
+	else if(t->type_id == TYPE_CHAR)
+	{
+		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", 'C', name);
+		return get_op_code_by_name(op_name);
+	}
+	else if(t->type_id == TYPE_UCHAR)
+	{
+		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", 'UC', name);
 		return get_op_code_by_name(op_name);
 	}
 	else

@@ -677,21 +677,10 @@ void node_compile(Node node)
   /* 一元数学元算 */
   switch (generic(node->op))
   {
-    case CVC:
-    case CVUC:
-    {
-      node_compile(node->kids[0]);
-
-      /*  */
-      char *code_name = get_op_name(generic(node->op));
-      /*  */
-      int code = get_op_code_by_name(code_name);
-      /*  */
-      push_command(code);
-    }
-    break;
     case BCOM:
     case NOT:
+    case CVC:
+    case CVUC:
     case CVF:
     case CVI:
     case CVB:
@@ -707,6 +696,7 @@ void node_compile(Node node)
       /*  */
       push_command(code);
     }
+    break;
     case INCR:
     case DECR:
     {
