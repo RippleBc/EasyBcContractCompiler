@@ -476,6 +476,11 @@ void node_process(Node node)
         {
           
         }
+        case TYPE_CHAR:
+        {
+          node->val.f = (float)node->kids[0]->val.c;
+        }
+        break;
         case TYPE_BOOLEAN:
         {
           node->val.f = (float)node->kids[0]->val.b;
@@ -516,7 +521,7 @@ void node_process(Node node)
         break;
         case TYPE_BOOLEAN:
         {
-
+          node->val.i = node->kids[0]->val.b;
         }
         break;
         default:
@@ -594,6 +599,11 @@ void node_process(Node node)
           node->val.ui = (unsigned int)node->kids[0]->val.uc;
         }
         break;
+        case TYPE_BOOLEAN:
+        {
+          node->val.ui = node->kids[0]->val.b;
+        }
+        break;
         default:
         {
           printf("CVUI convert type error\n");
@@ -625,6 +635,11 @@ void node_process(Node node)
         case TYPE_UCHAR:
         {
           node->val.c = (char)node->kids[0]->val.uc;
+        }
+        break;
+        case TYPE_BOOLEAN:
+        {
+          node->val.c = (char)node->kids[0]->val.b;
         }
         break;
         default:

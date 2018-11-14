@@ -193,7 +193,7 @@ void ast_compile(List routine_forest, List dag)
   code_byte_sequence[code_byte_index] = '\0';
 }
 
-void node_compile(Node node)
+int node_compile(Node node)
 {
   /* 流程控制相关 */
   switch (generic(node->op))
@@ -603,30 +603,39 @@ void node_compile(Node node)
   /* 二元数学运算 */
   switch (generic(node->op))
   {
+    case LSH:
+    case RSH:
+    case MOD:
+    {
+      /* 计算左表达式AST节点对应的值 */
+      if(node->kids[0] != NULL)
+      {
+        node_compile(node->kids[0]);
+      }
+
+      /* 计算右表达式AST节点对应的值 */
+      if(node->kids[1] != NULL)
+      {
+        node_compile(node->kids[1]);
+      }
+
+      /*  */
+      char *code_name = get_op_name(generic(node->op));
+      /*  */
+      int code = get_op_code_by_name(code_name);
+      /*  */
+      push_command(code);
+    }
+    break;
     case BAND:
     case BOR:
     case BXOR:
-    {
-
-    }
-    case LSH:
-    case RSH:
-    {
-
-    }
     case ADD:
     case SUB:
     case MUL:
     case DIV:
-    case MOD:
-    {
-
-    }
     case EQ:
     case NE:
-    {
-
-    }
     case GE:
     case GT:
     case LE:
@@ -651,6 +660,7 @@ void node_compile(Node node)
       /*  */
       push_command(code);
     }
+    break;
     case AND:
     case OR:
     {
@@ -679,8 +689,19 @@ void node_compile(Node node)
   /* 一元数学元算 */
   switch (generic(node->op))
   {
-    case BCOM:
     case NOT:
+    {
+      node_compile(node->kids[0]);
+
+      /*  */
+      char *code_name = get_op_name(generic(node->op));
+      /*  */
+      int code = get_op_code_by_name(code_name);
+      /*  */
+      push_command(code);
+    }
+    break;
+    case BCOM:
     case CVC:
     case CVUC:
     case CVF:

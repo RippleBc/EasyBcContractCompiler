@@ -1710,10 +1710,20 @@ expr
 }
 |expr kOR term
 {
+	if($1->result_type->type_id != TYPE_BOOLEAN || $3->result_type->type_id != TYPE_BOOLEAN)
+	{
+		parse_error("type mismatch ||", "");
+		return 0;
+	}
 	$$ = binary_expr_tree(OR, $1, $3);
 }
 |expr oOR term
 {
+	if($1->result_type->type_id != TYPE_BOOLEAN || $3->result_type->type_id != TYPE_BOOLEAN)
+	{
+		parse_error("type mismatch ||", "");
+		return 0;
+	}
 	$$ = binary_expr_tree(OR, $1, $3);
 }
 |term
@@ -1770,7 +1780,7 @@ term
 |term oMOD factor
 {
 	/* 二元运算AST树（mod） */
-	if($1->result_type->type_id != $3->result_type->type_id)
+	if($1->result_type->type_id != TYPE_INTEGER || $3->result_type->type_id != TYPE_INTEGER)
 	{
 		parse_error("type mismatch %", "");
 		return 0;
@@ -1780,10 +1790,20 @@ term
 }
 |term kAND factor
 {
+	if($1->result_type->type_id != TYPE_BOOLEAN || $3->result_type->type_id != TYPE_BOOLEAN)
+	{
+		parse_error("type mismatch &&", "");
+		return 0;
+	}
 	$$ = binary_expr_tree(AND, $1, $3);
 }
 |term oAND factor
 {
+	if($1->result_type->type_id != TYPE_BOOLEAN || $3->result_type->type_id != TYPE_BOOLEAN)
+	{
+		parse_error("type mismatch &&", "");
+		return 0;
+	}
 	$$ = binary_expr_tree(AND, $1, $3);
 }
 
