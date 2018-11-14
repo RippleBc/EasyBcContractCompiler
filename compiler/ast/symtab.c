@@ -480,7 +480,7 @@ symbol *find_field(symbol *p, char *name)
 
     if(!p || p->type->type_id != TYPE_RECORD)
         return NULL;
-    pt = p->type_link;
+    pt = p->type;
     /* 遍历符号类型 */
     for(q = pt->first; q; q = q->next)
         if(is_symbol(q, name))

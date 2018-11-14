@@ -1,7 +1,7 @@
 program helloworld;
 	type
-		int_array = array[1..10] of integer;
 		text = array[1..50] of char;
+		int_array = array[1..10] of integer;
 	var inta, intb: integer;
 			texta: text;
 			arraya: int_array;
@@ -29,7 +29,7 @@ program helloworld;
 		end;
 	end;
 
-	function testMixedArg(x:integer;y:text;z:char):integer;
+	function testMixedArg(x:integer;yyyy:text;z:char):integer;
 		var inta: integer;
 	begin
 		inta := 1;
@@ -44,7 +44,7 @@ program helloworld;
 			writeln('10 line 34 fail');
 		end;
 
-		if(y[3] != 'c') then
+		if(yyyy[3] != 'c') then
 		begin
 			writeln('c line 41 fail');
 		end;

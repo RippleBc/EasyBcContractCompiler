@@ -256,10 +256,10 @@ first_act_at_prog
 {
 	/* 初始化解析器 */
 	parser_init();
-	/* 创建全局符号表 */
-	make_global_symtab();
 	/* 创建系统符号表 */
 	make_system_symtab();
+	/* 创建全局符号表 */
+	make_global_symtab();
 };
 
 program_head
@@ -442,6 +442,7 @@ type_definition
 		$$ = $3;
 		/* 命名 */
 		strncpy($$->name, $1, NAME_LEN);
+		printf("type name %s, type id %d\n", $$->name, $$->type_id);
 	}
 	else
 	{
@@ -501,13 +502,16 @@ field_decl
 	for(p = $1; p; p = p->next) {
 		/* 定义符号小类 */
 		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
+		{
 			/* 变量（子范围或枚举类型）的类型由其类型的成员（子范围或枚举类型中的成员）的类型定义 */
 			p->type = $3->first->type;
+			/* 检查子范围和枚举类型的符号值是否合法 */
+			p->type_link = $3;
+		}
 		else
-			p->type = find_type_by_id($3->type_id);
-
-		/* 检查子范围和枚举类型的符号值是否合法 */
-		p->type_link = $3;
+		{
+			p->type = $3;
+		}
 
 		/* 定义符号大类 */
 		p->defn = DEF_FIELD;
@@ -683,14 +687,13 @@ var_decl
 		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
 		{
 			/* 变量（子范围以及枚举类型）的类型是由其类型中的成员（子范围或者枚举类型的成员）的类型定义 */
-			p->type = find_type_by_id($3->first->type->type_id);
+			p->type = $3->first->type;
+			p->type_link = $3;
 		}
 		else
 		{
-			p->type = find_type_by_id($3->type_id);
+			p->type = $3;
 		}
-
-		p->type_link = $3;
 
 		/* 定义符号大类 */
 		p->defn = DEF_VAR;
@@ -774,14 +777,18 @@ yNAME parameters oCOLON simple_type_decl
 	
 	/* 符号表小类 */
 	if($6->type_id == TYPE_SUBRANGE || $6->type_id == TYPE_ENUM)
-		ptab->type = find_type_by_id(TYPE_INTEGER);
+	{
+		ptab->type = $6->first->type;
+		/* 当函数返回值为子范围或枚举时，需要检查返回值是否合法 */
+		p->type_link = $6;
+	}
 	else
-		ptab->type = find_type_by_id($6->type_id);
+	{
+		ptab->type = $6;
+	}
 
 	/* 函数符号 */
 	p = new_symbol($3, DEF_FUNCT, ptab->type->type_id);
-	/* 当函数返回值为子范围或枚举时，需要检查返回值是否合法 */
-	p->type_link = $6;
 	/* 添加到符号表中 */
 	add_symbol_to_table(ptab, p);
 	/* 符号表中的参数符号链表反转 */
@@ -866,15 +873,21 @@ para_type_list
 	ptab = top_symtab_stack();
 
 	/* 遍历名称符号链表 */
+	printf("para_type_list begin\n");
 	for(p = $1; p;)
 	{
 		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
+		{
 			p->type = $3->first->type;
+			p->type_link = $3;
+		}
 		else
-			p->type = find_type_by_id($3->type_id);
-		p->type_link = $3;
+		{
+			p->type = $3;
+		}
+		
 		p->defn = DEF_VALPARA;
-
+		
 		q = p; 
 		p = p->next;
 		q->next = NULL;
@@ -882,6 +895,7 @@ para_type_list
 		/* 放入符号表中 */
 		add_symbol_to_table(ptab, q);
 	}
+	printf("para_type_list end\n");
 }
 |var_para_list oCOLON simple_type_decl
 {
@@ -892,10 +906,15 @@ para_type_list
 	for(p = $1; p;)
 	{
 		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
+		{
 			p->type = $3->first->type;
+			p->type_link = $3;
+		}
 		else
-			p->type = find_type_by_id($3->type_id);
-		p->type_link = $3;
+		{
+			p->type = $3;
+		}
+		
 		p->defn = DEF_VARPARA;
 
 		q = p; p = p->next;
@@ -1634,7 +1653,6 @@ expression
 	/* 比较运算AST树（=） */
 	if($1->result_type->type_id != $3->result_type->type_id)
 	{
-		printf("%s adsad %s %s aaaaaaaa\n", $1->u.generic.sym->name, $1->result_type->name, $3->result_type->name);
 		parse_error("type mismatch =", "");
 		return 0;
 	}
@@ -1643,7 +1661,7 @@ expression
 }
 |expression oUNEQU  expr
 {
-	/* 比较运算AST树（<>，不相等） */
+	/* 比较运算AST树（!=，不相等） */
 	if($1->result_type->type_id != $3->result_type->type_id)
 	{
 		parse_error("type mismatch !=", "");

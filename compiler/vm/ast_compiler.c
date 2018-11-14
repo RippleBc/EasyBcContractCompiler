@@ -445,7 +445,7 @@ void node_compile(Node node)
       int code = get_op_code_by_name("PUSH");
       push_command(code);
       value startIndex;
-      startIndex.i = array->type_link->first->v.i;
+      startIndex.i = array->type->first->v.i;
       push_data(find_type_by_id(TYPE_INTEGER), &startIndex);
       /*  */
       code = get_op_code_by_name("SUB");
@@ -454,7 +454,7 @@ void node_compile(Node node)
       code = get_op_code_by_name("PUSH");
       push_command(code);
       value ele_size;
-      ele_size.i = get_symbol_align_size(array->type_link->last);
+      ele_size.i = get_symbol_align_size(array->type->last);
       push_data(find_type_by_id(TYPE_INTEGER), &ele_size);
       /*  */
       code = get_op_code_by_name("MUL");

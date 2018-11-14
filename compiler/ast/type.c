@@ -373,31 +373,13 @@ type *find_type_by_name(char *name)
 
 type *find_type_by_id(int id)
 {
-    type *pt;
-    symtab *ptab;
-
-    ptab = top_symtab_stack();
-    if (!ptab)
-        return NULL;
-
-    /* 从当前块的符号表中寻找类型 */
-    for (pt = ptab->type_link; pt; pt = pt->next)
-        if (id == pt->type_id)
-            return pt;
-
+    Type pt;
+    
     /* 从系统符号表中寻找类型 */
     for (pt = System_symtab[0]->type_link; pt; pt = pt->next)
         if (id == pt->type_id)
             return pt;
 
-    /* 从父级块的符号表中寻找类型 */
-    ptab = ptab->parent;
-    while(ptab)
-    {
-        for(pt = ptab->type_link; pt; pt = pt->next)
-            if (id == pt->type_id)
-                return pt;
-    }
 
     return NULL;
 }

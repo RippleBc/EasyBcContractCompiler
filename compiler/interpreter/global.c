@@ -14,12 +14,12 @@ void assign_global(Node n, Symbol p, Symbol q)
 
     baseOffset = p->offset;
 
-    int eleOffset = get_symbol_align_size(p->type_link->last);
+    int eleOffset = get_symbol_align_size(p->type->last);
 
     int i;
     for(i = 0; i < strlen(n->val.s); i++)
     {
-      if(i > p->type_link->num_ele - 1)
+      if(i > p->type->num_ele - 1)
       {
         parse_error("assign_global array out of index", p->name);
         return;

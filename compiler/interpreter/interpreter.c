@@ -317,15 +317,15 @@ void node_process(Node node)
 
       int index = node->kids[0]->val.i;
 
-      int startIndex = node->syms[0]->type_link->first->v.i;
+      int startIndex = node->syms[0]->type->first->v.i;
 
-      if(index < startIndex || index > startIndex + node->syms[0]->type_link->num_ele - 1)
+      if(index < startIndex || index > startIndex + node->syms[0]->type->num_ele - 1)
       {
         parse_error("array index out of bound", "");
         return;
       }
 
-      p = node->syms[0]->type_link->last;
+      p = node->syms[0]->type->last;
       while(p != NULL)
       {
         snprintf(eleName, NAME_LEN, "%s_%d", node->syms[0]->name, index);
@@ -340,14 +340,14 @@ void node_process(Node node)
       if(p == NULL)
       {
         /*  */
-        p = clone_symbol(node->syms[0]->type_link->last);
+        p = clone_symbol(node->syms[0]->type->last);
         p->offset = (index - startIndex) * get_symbol_align_size(p);
 
         /*  */
         snprintf(p->name, NAME_LEN, "%s_%d", node->syms[0]->name, index);
 
-        p->next = node->syms[0]->type_link->last;
-        node->syms[0]->type_link->last = p;
+        p->next = node->syms[0]->type->last;
+        node->syms[0]->type->last = p;
       }
       
 
