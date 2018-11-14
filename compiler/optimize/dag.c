@@ -346,9 +346,6 @@ Node travel(Tree tp)
 
 int gen_dag(List ast_forest, List dag_forest)
 {
-    /* 将全局符号表压入符号表栈中 */
-    push_symtab_stack(Global_symtab);
-
     int n, i, dag_count;
     Tree *forest;
 
@@ -378,9 +375,6 @@ int gen_dag(List ast_forest, List dag_forest)
 
     /* clean temporary memory. */
     deallocate(STMT);
-
-    /* 将全局符号表压入符号表栈中 */
-    pop_symtab_stack();
 
     return dag_count;
 }

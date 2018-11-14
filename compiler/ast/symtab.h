@@ -74,6 +74,8 @@ struct _type_
     symbol *last;
     /* 组织类型标识符的链表 */
     struct _type_ *next;
+    /* 指向符号表的表头结构 */
+    struct _symbol_head_ *tab;
 };
 
 /* 符号表的表头 */
@@ -124,7 +126,6 @@ symtab *Global_symtab;
 symtab *System_symtab[MAX_SYS_ROUTINE];
 
 symtab *new_symtab(symtab *);
-symtab *make_system_table();
 symtab *new_sys_symbol(KEYENTRY);
 symtab *find_routine(symtab *, char *);
 symtab *find_sys_routine(int);

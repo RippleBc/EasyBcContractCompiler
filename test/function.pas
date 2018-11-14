@@ -145,7 +145,7 @@ program helloworld;
 	begin
 		if(x > 0) then
 		begin
-			
+			arraya[x] := x;
 			testRecurveFunc(x-1);
 		end
 		else
@@ -168,27 +168,36 @@ program helloworld;
 		testMixedType();
 		testFunc(10, 1);
 		testRecurveFunc(3);
-		for inta := 1 to 3 do
+		for inta := 3 downto 1 do
 		begin
-			if(arraya[inta] != 1) then
+			if(inta = 3) then
 			begin
-				writeln('1 testRecurveFunc fail');
+				if(arraya[inta] != 3) then
+				begin
+					writeln('3 testRecurveFunc fail');
+				end;
+			end;
+			
+			if(inta = 2) then
+			begin
+				if(arraya[inta] != 2) then
+				begin
+					writeln('2 testRecurveFunc fail');
+				end;
 			end;
 
-			if(arraya[inta] != 2) then
+			if(inta = 1) then
 			begin
-				writeln('2 testRecurveFunc fail');
+				if(arraya[inta] != 1) then
+				begin
+					writeln('1 testRecurveFunc fail');
+				end;
 			end;
+		end;
 
-			if(arraya[inta] != 3) then
-			begin
-				writeln('3 testRecurveFunc fail');
-			end;
-		end
-
-		if(inta != 3) then
+		if(inta != 0) then
 		begin
-			writeln('3 line 172 fail');
+			writeln('0 line 172 fail');
 		end;
 	end
 .

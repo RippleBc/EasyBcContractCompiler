@@ -54,6 +54,8 @@ void interpret(List routine_forest, List dag)
     }
   }
 
+  /*  */
+  printf("\n********************\nbegin compiler to code bytes\n********************\n");
 
   /*  */
   for(g_cp = dag->link; g_cp != NULL; g_cp = g_cp->link)
@@ -342,7 +344,6 @@ void node_process(Node node)
         /*  */
         p = clone_symbol(node->syms[0]->type->last);
         p->offset = (index - startIndex) * get_symbol_align_size(p);
-
         /*  */
         snprintf(p->name, NAME_LEN, "%s_%d", node->syms[0]->name, index);
 
@@ -376,34 +377,44 @@ void node_process(Node node)
         p = node->syms[0];
       }
 
-      /* 全局变量 */
-      if(top_symtab_stack()->level == 0)
+      /*  */
+      if(p->defn == DEF_ENUM_ELEMENT)
       {
-        if(p->defn == DEF_ENUM_ELEMENT)
-        {
-          node->val = p->v;
-        }
-        else
-        {
-          load_global(node, p, q);
-        }
+        node->val = p->v;
       }
       else
       {
-        if(p->defn == DEF_ENUM_ELEMENT)
+        if(q)
         {
-          node->val = p->v;
+          /* record or array */
+          push_symtab_stack(q->tab);
         }
-        /* 参数局部类型，从栈取值 */
-        else if((q != NULL && (q->defn == DEF_VALPARA || q->defn == DEF_VARPARA)) || 
-          p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
+        else
         {
-          load_function_call_stack_val(node, p, q);
+          push_symtab_stack(p->tab);
         }
-        else {
-          /* 普通局部变量，从栈取值 */
-          load_function_call_stack_val(node, p, q);
+
+        /* 全局变量 */
+        if(top_symtab_stack()->level == 0)
+        {
+          load_global(node, p, q);
         }
+        else
+        {
+          /* 参数局部类型，从栈取值 */
+          if((q != NULL && (q->defn == DEF_VALPARA || q->defn == DEF_VARPARA)) || 
+            p->defn == DEF_VALPARA || p->defn == DEF_VARPARA)
+          {
+            load_function_call_stack_val(node, p, q);
+          }
+          else {
+            /* 普通局部变量，从栈取值 */
+            load_function_call_stack_val(node, p, q);
+          }
+        }
+
+        /*  */
+        pop_symtab_stack();
       }
     }
     break;
@@ -430,10 +441,19 @@ void node_process(Node node)
         p = node->kids[0]->syms[0];
       }
 
-
-
       /* 表达式AST节点 */
       node_process(node->kids[1]);
+
+      /*  */
+      if(q)
+      {
+        /* record or array */
+        push_symtab_stack(q->tab);
+      }
+      else
+      {
+        push_symtab_stack(p->tab);
+      }
 
       if(top_symtab_stack()->level == 0)
       {
@@ -453,6 +473,9 @@ void node_process(Node node)
           assign_function_call_stack_val(node->kids[1], p, q);
         }
       }
+
+      /*  */
+      pop_symtab_stack();
     }
     break;
   }
@@ -509,6 +532,16 @@ void node_process(Node node)
           node->val.i = (int)node->kids[0]->val.f;
         }
         break;
+        case TYPE_CHAR:
+        {
+          node->val.i = (int)node->kids[0]->val.c;
+        }
+        break;
+        case TYPE_UCHAR:
+        {
+          node->val.i = (int)node->kids[0]->val.uc;
+        }
+        break;
         case TYPE_BOOLEAN:
         {
 
@@ -542,6 +575,15 @@ void node_process(Node node)
           node->val.b = node->kids[0]->val.f == 0 ? false : true;
         }
         break;
+        case TYPE_CHAR:
+        {
+          node->val.b = (unsigned int)(node->kids[0]->val.c) == 0 ? false : true;
+        }
+        break;
+        case TYPE_UCHAR:
+        {
+          node->val.b = (unsigned int)(node->kids[0]->val.uc) == 0 ? false : true;
+        }
         case TYPE_BOOLEAN:
         {
 

@@ -442,7 +442,6 @@ type_definition
 		$$ = $3;
 		/* 命名 */
 		strncpy($$->name, $1, NAME_LEN);
-		printf("type name %s, type id %d\n", $$->name, $$->type_id);
 	}
 	else
 	{
@@ -873,7 +872,6 @@ para_type_list
 	ptab = top_symtab_stack();
 
 	/* 遍历名称符号链表 */
-	printf("para_type_list begin\n");
 	for(p = $1; p;)
 	{
 		if($3->type_id == TYPE_SUBRANGE || $3->type_id == TYPE_ENUM)
@@ -895,7 +893,6 @@ para_type_list
 		/* 放入符号表中 */
 		add_symbol_to_table(ptab, q);
 	}
-	printf("para_type_list end\n");
 }
 |var_para_list oCOLON simple_type_decl
 {
@@ -2230,7 +2227,7 @@ List top_case_ast_stack()
 Symbol install_temporary_symbol(char *name, int deftype, int typeid)
 {
 	Symbol p = new_symbol(name, deftype, typeid);
-	add_local_to_table(top_symtab_stack(), p);
+	add_symbol_to_table(top_symtab_stack(), p);
 	return p;
 }
 

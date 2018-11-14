@@ -168,6 +168,10 @@ void add_routine_to_table(symtab *tab, symtab *routine)
 
 void add_symbol_to_table(symtab *tab, symbol *sym)
 {
+    /* specify the symtab which sym is belong */
+    sym->tab = tab;
+
+    /*  */
     switch(sym->defn)
     {
     case DEF_FUNCT:

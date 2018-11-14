@@ -116,6 +116,7 @@ void const_folding(Node n)
         /*  */
         snprintf(little_buf, sizeof(little_buf) - 1, "g_con_%d", folding_const++);
         con = new_symbol(little_buf, DEF_CONST, n->kids[0]->syms[0]->type->type_id);
+        con->tab = n->kids[0]->syms[0]->tab;
         n->syms[0] = con;
 
         switch(generic(n->op))

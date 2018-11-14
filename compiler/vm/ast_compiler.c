@@ -145,9 +145,9 @@ void ast_compile(List routine_forest, List dag)
 
   g_routine_forest = routine_forest;
 
-  /*  */
+  /* 将全局符号表压入符号表栈中 */
   push_symtab_stack(Global_symtab);
-
+  
   /*  */
   for(g_cp = dag->link; g_cp != NULL; g_cp = g_cp->link)
   {
@@ -159,8 +159,6 @@ void ast_compile(List routine_forest, List dag)
     }
   }
 
-  /*  */
-  push_symtab_stack(Global_symtab);
   /*  */
   int i = 0;
   int label_index;

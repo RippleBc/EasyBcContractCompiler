@@ -337,6 +337,9 @@ void add_type_to_table(symtab *ptab, type *pt)
             return;
         }
 
+    /* specify the symtab which pt belong */
+    pt->tab = ptab;
+
     /* 将新定义的类型插入类型链表头部 */
     pt->next = ptab->type_link;
     ptab->type_link = pt;
