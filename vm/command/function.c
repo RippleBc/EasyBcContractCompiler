@@ -5,24 +5,32 @@
 /*  */
 int function_call_stack_deep = STACK_DEEP;
 unsigned char function_call_stack[STACK_DEEP];
-int push_call(int size)
+int PUSH_CALL(int size)
 {
   if(function_call_stack_deep < size)
   {
-    return 0;
+    return -1;
   }
   function_call_stack_deep -= size;
   return 1;
 }
-void pop_call(int size)
+void POP_CALL(int size)
 {
   function_call_stack_deep += size;
 }
-void assign_call(int index, unsigned char val)
+void ASSIGN_CALL(int index, unsigned char *val, int size)
 {
-  function_call_stack[index] = val;
+	for(int i = 0; i < size; i++)
+	{
+		function_call_stack[i] = *val;
+	}
 }
-unsigned char load_call(int index)
+unsigned char *LOAD_CALL(int index)
 {
-  return function_call_stack[index];
+  return &function_call_stack[index];
+}
+
+int TOP_CALL()
+{
+	return function_call_stack_deep;
 }

@@ -24,7 +24,7 @@ void assign_with_byte_unit(int type, unsigned char *array, Value v)
       {
         for(j = 0; j < IR->intmetric.size && j < sizeof(int); j++)
         {
-          array[IR->intmetric.size -1 - j] = *(p + j);
+          array[IR->intmetric.size - 1 - j] = *(p + j);
           // printf("little endian %d %d", IR->intmetric.size -1 - j, array[IR->intmetric.size -1 - j]);
         }
       }
@@ -46,7 +46,7 @@ void assign_with_byte_unit(int type, unsigned char *array, Value v)
       {
         for(j = 0; j < IR->intmetric.size && j < sizeof(int); j++)
         {
-          array[IR->intmetric.size -1 - j] = *(p + j);
+          array[IR->intmetric.size - 1 - j] = *(p + j);
           // printf("little endian %d %d", IR->intmetric.size -1 - j, array[IR->intmetric.size -1 - j]);
         }
       }
@@ -75,7 +75,7 @@ void assign_with_byte_unit(int type, unsigned char *array, Value v)
       {
         for(j = 0; j < IR->intmetric.size && j < sizeof(int); j++)
         {
-          array[IR->intmetric.size -1 - j] = *(p + j);
+          array[IR->intmetric.size - 1 - j] = *(p + j);
         }
       }
     }
@@ -106,7 +106,7 @@ void load_with_byte_unit(int type, unsigned char *array, Value v)
       {
         for(j = 0; j < IR->intmetric.size; j++)
         {
-          *(p + j) = array[IR->intmetric.size -1 - j];
+          *(p + j) = array[IR->intmetric.size - 1 - j];
         }
       }
     }
@@ -126,7 +126,7 @@ void load_with_byte_unit(int type, unsigned char *array, Value v)
       {
         for(j = 0; j < IR->intmetric.size; j++)
         {
-          *(p + j) = array[IR->intmetric.size -1 - j];
+          *(p + j) = array[IR->intmetric.size - 1 - j];
         }
       }
     }
@@ -154,7 +154,7 @@ void load_with_byte_unit(int type, unsigned char *array, Value v)
       {
         for(j = 0; j < IR->intmetric.size; j++)
         {
-          *(p + j) = array[IR->intmetric.size -1 - j];
+          *(p + j) = array[IR->intmetric.size - 1 - j];
         }
       }
     }

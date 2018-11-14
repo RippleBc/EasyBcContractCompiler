@@ -23,17 +23,13 @@ void vm_assign_global(Value v, Symbol p)
       }
 
       /* address */
-      int code = get_op_code_by_name("PUSH");
-      push_command(code);
       s_index.i = baseOffset + i * ele_size;
       push_data(find_type_by_id(TYPE_INTEGER), &s_index);
       /* val */
-      code = get_op_code_by_name("PUSH");
-      push_command(code);
       s_val.c = v->s[i];
       push_data(find_type_by_id(TYPE_CHAR), &s_val);
       /*  */
-      code = get_op_code_by_name("ASSIGN_GLOBAL");
+      int code = get_op_code_by_name("ASSIGN_GLOBAL");
       push_command(code);
     }
   }

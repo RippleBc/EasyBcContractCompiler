@@ -3,25 +3,21 @@
 /*  */
 void vm_push_function_call_stack(Symtab tab)
 {
-  int code = get_op_code_by_name("PUSH");
-  push_command(code);
   value s_add;
   s_add.i = tab->call_stack_size;
   push_data(find_type_by_id(TYPE_INTEGER), &s_add);
   /*  */
-  code = get_op_code_by_name("PUSH_CALL");
+  int code = get_op_code_by_name("PUSH_CALL");
   push_command(code);
   
 }
 void vm_pop_function_call_stack(Symtab tab)
 {
-  int code = get_op_code_by_name("PUSH");
-  push_command(code);
   value s_sub;
   s_sub.i = tab->call_stack_size;
   push_data(find_type_by_id(TYPE_INTEGER), &s_sub);
   /*  */
-  code = get_op_code_by_name("POP_CALL");
+  int code = get_op_code_by_name("POP_CALL");
   push_command(code);
 }
 void vm_assign_function_call_stack_val(Value v, Symbol p)
@@ -48,18 +44,14 @@ void vm_assign_function_call_stack_val(Value v, Symbol p)
       }
 
       /* address */
-      int code = get_op_code_by_name("PUSH");
-      push_command(code);
       value s_offset;
       s_offset.i = baseOffset + i * ele_size;
       push_data(find_type_by_id(TYPE_INTEGER), &s_offset);
       /* val */
-      code = get_op_code_by_name("PUSH");
-      push_command(code);
       s_val.c = v->s[i];
       push_data(find_type_by_id(TYPE_CHAR), &s_val);
       /*  */
-      code = get_op_code_by_name("ASSIGN_CALL");
+      int code = get_op_code_by_name("ASSIGN_CALL");
       push_command(code);
     }
   }

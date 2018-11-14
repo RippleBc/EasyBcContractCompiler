@@ -14,10 +14,18 @@ unsigned char code_byte_sequence[CODE_MAX_NUM];
 int push_data(Type t, Value v)
 {
   /*  */
-  assign_with_byte_unit(t->type_id, &code_byte_sequence[code_byte_index], v);
+  int data_size = get_type_align_size(t);
 
   /*  */
-  int data_size = get_type_align_size(t);
+  char command[NAME_LEN];
+  snprintf(command, NAME_LEN, "PUSH%d", data_size);
+  int code = get_op_code_by_name(command);
+  push_command(code);
+
+  /*  */
+  assign_with_byte_unit(t->type_id, &code_byte_sequence[code_byte_index], v);
+  
+  /*  */
   code_byte_index += data_size;
 
   /*  */
@@ -214,9 +222,6 @@ int node_compile(Node node)
     push_jump_detail(p->name, code_byte_index, NULL);
 
     /*  */
-    int command_push_code = get_op_code_by_name("PUSH");
-    push_command(command_push_code);
-    /*  */
     value jump_position;
     jump_position.i = -1;
     push_data(find_type_by_id(TYPE_INTEGER), &jump_position);
@@ -239,10 +244,6 @@ int node_compile(Node node)
     case TYPE_INTEGER:
     case TYPE_BOOLEAN:
     {
-      /*  */
-      int command_push_code = get_op_code_by_name("PUSH");
-      push_command(command_push_code);
-
       /*  */
       value cond;
       if(node->u.cond.true_or_false == true)
@@ -277,9 +278,6 @@ int node_compile(Node node)
     break;
     }
 
-    /*  */
-    int command_push_code = get_op_code_by_name("PUSH");
-    push_command(command_push_code);
     /*  */
     value jump_position;
     jump_position.i = -1;
@@ -337,9 +335,6 @@ int node_compile(Node node)
     push_jump_detail(NULL, -1, node->symtab);
 
     /*  */
-    int command_push_code = get_op_code_by_name("PUSH");
-    push_command(command_push_code);
-    /*  */
     value function_index;
     function_index.i = -1;
     push_data(find_type_by_id(TYPE_INTEGER), &function_index);
@@ -363,8 +358,6 @@ int node_compile(Node node)
       else
       {
         /* address */
-        int code = get_op_code_by_name("PUSH");
-        push_command(code);
         value s_offset;
         s_offset.i = arg->offset;
         push_data(find_type_by_id(TYPE_INTEGER), &s_offset);
@@ -401,10 +394,6 @@ int node_compile(Node node)
       if(p->type->type_id != TYPE_STRING)
       {
         /*  */
-        int code = get_op_code_by_name("PUSH");
-        /*  */
-        push_command(code);
-        /*  */
         push_data(p->type, &(p->v));
       }
     }
@@ -415,21 +404,17 @@ int node_compile(Node node)
       Symbol field = node->syms[1];
       
       /* compute field offset base on record */
-      int code = get_op_code_by_name("PUSH");
-      push_command(code);
       value filed_offset;
       filed_offset.i = field->offset;
       push_data(find_type_by_id(TYPE_INTEGER), &filed_offset);
 
       /* compute record offset base on stack*/
-      code = get_op_code_by_name("PUSH");
-      push_command(code);
       value record_offset;
       record_offset.i = record->offset;
       push_data(find_type_by_id(TYPE_INTEGER), &record_offset);
 
       /* compute field offset base on stack */
-      code = get_op_code_by_name("IADD");
+      int code = get_op_code_by_name("IADD");
       push_command(code);
     }
     break;
@@ -440,17 +425,13 @@ int node_compile(Node node)
 
       Symbol array = node->syms[0];
       /* compute element offset base on array */
-      int code = get_op_code_by_name("PUSH");
-      push_command(code);
       value startIndex;
       startIndex.i = array->type->first->v.i;
       push_data(find_type_by_id(TYPE_INTEGER), &startIndex);
       /*  */
-      code = get_op_code_by_name("ISUB");
+      int code = get_op_code_by_name("ISUB");
       push_command(code);
       /*  */
-      code = get_op_code_by_name("PUSH");
-      push_command(code);
       value ele_size;
       ele_size.i = get_symbol_align_size(array->type->last);
       push_data(find_type_by_id(TYPE_INTEGER), &ele_size);
@@ -459,8 +440,6 @@ int node_compile(Node node)
       push_command(code);
 
       /* compute array offset base on stack */
-      code = get_op_code_by_name("PUSH");
-      push_command(code);
       value base_offset;
       base_offset.i = array->offset;
       push_data(find_type_by_id(TYPE_INTEGER), &base_offset);
@@ -477,8 +456,6 @@ int node_compile(Node node)
       if(sym->type->type_id != TYPE_ARRAY)
       {
         /* compute sym offset */
-        int code = get_op_code_by_name("PUSH");
-        push_command(code);
         value sym_offset;
         sym_offset.i = sym->offset;
         push_data(find_type_by_id(TYPE_INTEGER), &sym_offset);
@@ -501,8 +478,6 @@ int node_compile(Node node)
       if(p && p->defn == DEF_ENUM_ELEMENT)
       {
         /*  */
-        int code = get_op_code_by_name("PUSH");
-        push_command(code);
         push_data(p->type, &(p->v));
       }
       else
@@ -513,8 +488,6 @@ int node_compile(Node node)
           if(p)
           {
             /* system type val */
-            int code = get_op_code_by_name("PUSH");
-            push_command(code);
             value sym_offset;
             sym_offset.i = p->offset;
             push_data(p->type, &sym_offset);
@@ -528,8 +501,6 @@ int node_compile(Node node)
           if(p)
           {
             /* system type val */
-            int code = get_op_code_by_name("PUSH");
-            push_command(code);
             value sym_offset;
             sym_offset.i = p->offset;
             push_data(p->type, &sym_offset);
