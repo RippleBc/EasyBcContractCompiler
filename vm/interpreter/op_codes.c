@@ -1,4 +1,4 @@
-#include "./common.h"
+#include "../common.h"
 
 #define MAX_OP_CODES_NUM 512
 
@@ -145,5 +145,6 @@ int get_op_code_by_name(char *name)
 		}
 	}
 
+	printf("get_op_code_by_name code not exist %s\n", name);
 	return -1;
 }
