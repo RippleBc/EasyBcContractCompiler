@@ -13,6 +13,8 @@ void clear();
 void signup();
 
 extern union header *arena[LASTARENA];
+extern int byte_sequence_index;
+extern unsigned char byte_sequence[];
 
 Interface x64_vm_interface = {
     {1, 4},     /* charmetric */
@@ -41,7 +43,12 @@ static void finalize()
     /* clear all memory. */
     deallocate(PERM);
     deallocate(FUNC);
-    deallocate(LASTARENA);
+}
+
+void init_spl()
+{
+    memset(arena, 0, sizeof(arena));
+    signup();
 }
 
 void prepare_file(char *fname)
@@ -51,7 +58,7 @@ void prepare_file(char *fname)
     for (p = fname; *p; p++)
         *p = tolower(*p);
 
-    if (strstr(fname, ".pas"))
+    if (strstr(fname, ".cod"))
     {
         for (; p > fname; p--)
         {
@@ -65,7 +72,7 @@ void prepare_file(char *fname)
     snprintf(codname, sizeof(codname), "%s.cod", fname);
     snprintf(errname, sizeof(errname), "%s.err", fname);
     
-    codfp = fopen(codname, "wt");
+    codfp = fopen(codname, "r");
     errfp = fopen(errname, "wt");
 
     if (!codfp || !errfp)
@@ -74,7 +81,6 @@ void prepare_file(char *fname)
         exit(1);
     }
 }
-
 
 int main(int argc, char **argv)
 {
@@ -94,6 +100,8 @@ int main(int argc, char **argv)
     }
 
     init_op_code();
+
+    init_spl();
 
     arg = argv + 1;
     dargc = 0;
@@ -150,7 +158,19 @@ int main(int argc, char **argv)
         }
     }
 
-    
+    int c;
+    while((c = fgetc(codfp)) != EOF)
+    {
+        printf("%x ", c);
+
+        byte_sequence[byte_sequence_index] = (unsigned char)c;
+
+        byte_sequence_index++;
+    }
+    printf("\n");
+
+    interpret();
+
     clear();
 
     finalize();
@@ -164,8 +184,6 @@ void clear()
 {
     fclose(codfp);
     fclose(errfp);
-    unlink(codname);
-    unlink(errname);
 }
 
 void signup()

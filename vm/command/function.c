@@ -14,14 +14,17 @@ int PUSH_CALL(int size)
   function_call_stack_deep -= size;
   return 1;
 }
+
 void POP_CALL(int size)
 {
   function_call_stack_deep += size;
 }
+
 void ASSIGN_CALL(int index, unsigned char val)
 {
-	function_call_stack[i] = *val;
+	function_call_stack[index] = val;
 }
+
 unsigned char *LOAD_CALL(int index)
 {
   return &function_call_stack[index];

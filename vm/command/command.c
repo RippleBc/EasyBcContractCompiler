@@ -10,6 +10,7 @@ void IXOR()
 {
 	
 }
+
 void UIBAND()
 {
 	
@@ -22,6 +23,7 @@ void UIXOR()
 {
 	
 }
+
 void RBAND()
 {
 	
@@ -34,6 +36,7 @@ void RXOR()
 {
 	
 }
+
 void CBAND()
 {
 	
@@ -46,6 +49,7 @@ void CXOR()
 {
 	
 }
+
 void UCBAND()
 {
 	
@@ -451,7 +455,52 @@ void COND()
 	
 }
 
-void PUSH()
+void ASSIGN_GLOBAL4()
+{
+
+}
+
+void LOAD_GLOBAL4()
+{
+
+}
+
+void ASSIGN_GLOBAL8()
+{
+
+}
+
+void LOAD_GLOBAL8()
+{
+
+}
+
+void ASSIGN_CALL4()
+{
+
+}
+
+void LOAD_CALL4()
+{
+
+}
+
+void ASSIGN_CALL8()
+{
+
+}
+
+void LOAD_CALL8()
+{
+
+}
+
+void PUSH4()
+{
+	
+}
+
+void PUSH8()
 {
 	
 }
@@ -460,6 +509,7 @@ void READLN()
 {
 	
 }
+
 void WRITELN()
 {
 	

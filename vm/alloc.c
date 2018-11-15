@@ -18,7 +18,7 @@ void *allocate(unsigned long n, unsigned a)
     /* sizeof *new = sizeof(struct header)，在64位机器中指针占用8个字节，总共占用24个字节。32位机器中指针占用4个字节，总共占用12个字节。 */
     struct header *new = malloc(sizeof *new + n);
 
-    /* NELEMS(arena) = 5，表示总共有5个区域可以分配内存，判断内存分配区域是否符合规范 */
+    /* NELEMS(arena) = 3，表示总共有5个区域可以分配内存，判断内存分配区域是否符合规范 */
     assert(a < NELEMS(arena));
 
     /* 判断内存是否正确分配 */
@@ -41,7 +41,7 @@ void deallocate(unsigned a)
 {
     struct header *p, *q;
 
-    assert(a < NELEMS(arena));
+    assert(a < sizeof(arena));
     
     for (p = arena[a]; p; p = q)
     {

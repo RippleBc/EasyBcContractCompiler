@@ -119,7 +119,6 @@ static void finalize()
 	deallocate(STMT);
 	deallocate(TREE);
 	deallocate(DAG);
-	deallocate(LASTARENA);
 }
 
 
