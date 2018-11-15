@@ -13,7 +13,7 @@ void clear();
 void signup();
 
 extern union header *arena[LASTARENA];
-extern int byte_sequence_index;
+extern int byte_sequence_size;
 extern unsigned char byte_sequence[];
 
 Interface x64_vm_interface = {
@@ -152,7 +152,7 @@ int main(int argc, char **argv)
             }
         }
         else
-        {
+        { 
             prepare_file(arg[0]);
             break;
         }
@@ -161,13 +161,8 @@ int main(int argc, char **argv)
     int c;
     while((c = fgetc(codfp)) != EOF)
     {
-        printf("%x ", c);
-
-        byte_sequence[byte_sequence_index] = (unsigned char)c;
-
-        byte_sequence_index++;
+        byte_sequence[byte_sequence_size++] = (unsigned char)c;
     }
-    printf("\n");
 
     interpret();
 

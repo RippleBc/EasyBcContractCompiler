@@ -55,7 +55,7 @@ void interpret(List routine_forest, List dag)
   }
 
   /*  */
-  printf("\n********************\nbegin compiler to code bytes\n********************\n");
+  printf("\n********************\nbegin interpret ast\n********************\n");
 
   /*  */
   for(g_cp = dag->link; g_cp != NULL; g_cp = g_cp->link)

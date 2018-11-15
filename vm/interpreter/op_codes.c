@@ -2,18 +2,33 @@
 
 #define MAX_OP_CODES_NUM 512
 
-/* 字符串转化为10进制数字 */
+struct _op_code_ {
+    int code;
+    char name[NAME_LEN];
+    int in;
+    int out;
+};
+int op_code_index = 0;
+struct _op_code_ *op_codes[MAX_OP_CODES_NUM];
+
 int stoi(char *s,int radix)
 {
     char *p = s;
     int val = 0;
+    int c_val = 0;
 
     if (radix == 8)
     {
         p++;
         while(*p)
         {
-            val = val * radix + (*p - '0');
+            c_val = *p -'0';
+            if(c_val > 7)
+            {
+                printf("octal transform fail %d", c_val);
+                return -1;
+            }
+            val = val * radix + c_val;
             p++;
         }
     }
@@ -30,7 +45,13 @@ int stoi(char *s,int radix)
             }
             else
             {
-                val = val * radix + (tolower(*p) - 'a');
+                c_val = tolower(*p) -'a';
+                if(c_val > 5)
+                {
+                    printf("hex transform fail %d", c_val);
+                    return -1;
+                }
+                val = val * radix + c_val + 10;
             }
             p++;
         }
@@ -39,21 +60,18 @@ int stoi(char *s,int radix)
     {
         while(*p)
         {
-            val = val * radix + (*p -'0');
+            c_val = *p -'0';
+            if(c_val > 9)
+            {
+                printf("decimal transform fail %d", c_val);
+                return -1;
+            }
+            val = val * radix + c_val;
             p++;
         }
     }
     return val;
 }
-
-struct _op_code_ {
-    int code;
-    char name[NAME_LEN];
-    int in;
-    int out;
-};
-int op_code_index = 0;
-struct _op_code_ *op_codes[MAX_OP_CODES_NUM];
 
 void init_op_code()
 {	
@@ -100,6 +118,7 @@ void init_op_code()
 				{
 					NEW0(op_codes[op_code_index], PERM);
 					op_codes[op_code_index]->code = stoi(tmp, 16);
+					printf("tmp op code %s %d\n", tmp, op_codes[op_code_index]->code);
 				}
 				else
 				{
@@ -135,16 +154,16 @@ void init_op_code()
 	}
 }
 
-int get_op_code_by_name(char *name)
+struct _op_code_ *get_detail_by_op_code(int op_code)
 {
 	for(int i = 0; i < op_code_index; i++)
 	{
-		if(!strcmp(op_codes[i]->name, name))
+		if(op_codes[i]->code == op_code)
 		{
-			return op_codes[i]->code;
+			return op_codes[i];
 		}
 	}
 
-	printf("get_op_code_by_name code not exist %s\n", name);
-	return -1;
+	printf("get_op_code_by_name code not exist %x\n", op_code);
+	return NULL;
 }

@@ -1216,6 +1216,10 @@ if_stmt
 }
 expression kTHEN
 {
+	if($3->result_type->type_id != TYPE_BOOLEAN)
+	{
+		parse_error("cond expression result must be boolean", "");
+	}
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_false_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	/* 标签符号（ELSE子句的入口） */
@@ -1288,6 +1292,10 @@ repeat_stmt
 }
 stmt kUNTIL expression
 {
+	if($5->result_type->type_id != TYPE_BOOLEAN)
+	{
+		parse_error("cond expression result must be boolean", "");
+	}
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "repeat_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	/* 标签符号（REPEAT结构的入口） */
@@ -1315,6 +1323,11 @@ while_stmt
 }
 expression kDO
 {
+	if($3->result_type->type_id != TYPE_BOOLEAN)
+	{
+		parse_error("cond expression result must be boolean", "");
+	}
+	
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	/* 标签符号（WHILE结构的出口） */

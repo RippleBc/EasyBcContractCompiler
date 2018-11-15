@@ -1,168 +1,167 @@
 0x00, 'IBAND', 2, 1
 0x01, 'IBOR', 2, 1
-0x03, 'IXOR', 2, 1
+0x02, 'IXOR', 2, 1
 
-0x04, 'UIBAND', 2, 1
-0x05, 'UIBOR', 2, 1
-0x06, 'UIXOR', 2, 1
+0x03, 'UIBAND', 2, 1
+0x04, 'UIBOR', 2, 1
+0x05, 'UIXOR', 2, 1
 
-0x07, 'RBAND', 2, 1
-0x08, 'RBOR', 2, 1
-0x09, 'RXOR', 2, 1
+0x06, 'RBAND', 2, 1
+0x07, 'RBOR', 2, 1
+0x08, 'RXOR', 2, 1
 
-0x0a, 'CBAND', 2, 1
-0x0b, 'CBOR', 2, 1
-0x0c, 'CXOR', 2, 1
+0x09, 'CBAND', 2, 1
+0x0a, 'CBOR', 2, 1
+0x0b, 'CXOR', 2, 1
 
-0x0d, 'UCBAND', 2, 1
-0x0e, 'UCBOR', 2, 1
-0x0f, 'UCXOR', 2, 1
+0x0c, 'UCBAND', 2, 1
+0x0d, 'UCBOR', 2, 1
+0x0e, 'UCXOR', 2, 1
 
-0x10, 'LSH', 2, 1
-0x11, 'RSH', 2, 1
+0x0f, 'LSH', 2, 1
+0x20, 'RSH', 2, 1
 
-0x12, 'IADD', 2, 1
-0x13, 'ISUB', 2, 1
-0x14, 'IMUL', 2, 1
-0x15, 'IDIV', 2, 1
+0x21, 'IADD', 2, 1
+0x22, 'ISUB', 2, 1
+0x23, 'IMUL', 2, 1
+0x24, 'IDIV', 2, 1
 
-0x16, 'UIADD', 2, 1
-0x17, 'UISUB', 2, 1
-0x18, 'UIMUL', 2, 1
-0x19, 'UIDIV', 2, 1
+0x25, 'UIADD', 2, 1
+0x26, 'UISUB', 2, 1
+0x27, 'UIMUL', 2, 1
+0x28, 'UIDIV', 2, 1
 
-0x1a, 'RADD', 2, 1
-0x1b, 'RSUB', 2, 1
-0x1c, 'RMUL', 2, 1
-0x1d, 'RDIV', 2, 1
+0x29, 'RADD', 2, 1
+0x2a, 'RSUB', 2, 1
+0x2b, 'RMUL', 2, 1
+0x2c, 'RDIV', 2, 1
 
-0x1e, 'UCADD', 2, 1
-0x1f, 'UCSUB', 2, 1
-0x20, 'UCMUL', 2, 1
-0x21, 'UCDIV', 2, 1
+0x2d, 'UCADD', 2, 1
+0x2e, 'UCSUB', 2, 1
+0x2f, 'UCMUL', 2, 1
+0x30, 'UCDIV', 2, 1
 
-0x22, 'MOD', 2, 1
+0x31, 'MOD', 2, 1
 
-0x23, 'AND', 2, 1
-0x24, 'OR', 2, 1
+0x32, 'AND', 2, 1
+0x33, 'OR', 2, 1
 
-0x25, 'IEQ', 2, 1
-0x26, 'INE', 2, 1
-0x27, 'IGE', 2, 1
-0x28, 'IGT', 2, 1
-0x29, 'ILE', 2, 1
-0x2a, 'ILT', 2, 1
+0x34, 'IEQ', 2, 1
+0x35, 'INE', 2, 1
+0x36, 'IGE', 2, 1
+0x37, 'IGT', 2, 1
+0x38, 'ILE', 2, 1
+0x39, 'ILT', 2, 1
 
-0x2b, 'UIEQ', 2, 1
-0x2c, 'UINE', 2, 1
-0x2d, 'UIGE', 2, 1
-0x2e, 'UIGT', 2, 1
-0x2f, 'UILE', 2, 1
-0x30, 'UILT', 2, 1
+0x3a, 'UIEQ', 2, 1
+0x3b, 'UINE', 2, 1
+0x3c, 'UIGE', 2, 1
+0x3d, 'UIGT', 2, 1
+0x3e, 'UILE', 2, 1
+0x3f, 'UILT', 2, 1
 
-0x31, 'REQ', 2, 1
-0x32, 'RNE', 2, 1
-0x33, 'RGE', 2, 1
-0x34, 'RGT', 2, 1
-0x35, 'RLE', 2, 1
-0x36, 'RLT', 2, 1
+0x40, 'REQ', 2, 1
+0x41, 'RNE', 2, 1
+0x42, 'RGE', 2, 1
+0x43, 'RGT', 2, 1
+0x44, 'RLE', 2, 1
+0x45, 'RLT', 2, 1
 
-0x37, 'CEQ', 2, 1
-0x38, 'CNE', 2, 1
-0x39, 'CGE', 2, 1
-0x3a, 'CGT', 2, 1
-0x3b, 'CLE', 2, 1
-0x3c, 'CLT', 2, 1
+0x46, 'CEQ', 2, 1
+0x47, 'CNE', 2, 1
+0x48, 'CGE', 2, 1
+0x49, 'CGT', 2, 1
+0x4a, 'CLE', 2, 1
+0x4b, 'CLT', 2, 1
 
-0x3d, 'UCEQ', 2, 1
-0x3e, 'UCNE', 2, 1
-0x3f, 'UCGE', 2, 1
-0x40, 'UCGT', 2, 1
-0x41, 'UCLE', 2, 1
-0x42, 'UCLT', 2, 1
+0x4c, 'UCEQ', 2, 1
+0x4d, 'UCNE', 2, 1
+0x4e, 'UCGE', 2, 1
+0x4f, 'UCGT', 2, 1
+0x50, 'UCLE', 2, 1
+0x51, 'UCLT', 2, 1
 
-0X12, 'INEG', 1, 1
-0X12, 'FNEG', 1, 1
+0x52, 'INEG', 1, 1
+0x53, 'FNEG', 1, 1
 
-0x13, 'NOT', 1, 1
+0x54, 'NOT', 1, 1
 
-0x14, 'IBCOM', 1, 1
-0x14, 'UIBCOM', 1, 1
-0x14, 'RBCOM', 1, 1
-0x14, 'CBCOM', 1, 1
-0x14, 'UCBCOM', 1, 1
+0x55, 'IBCOM', 1, 1
+0x56, 'UIBCOM', 1, 1
+0x57, 'RBCOM', 1, 1
+0x58, 'CBCOM', 1, 1
+0x59, 'UCBCOM', 1, 1
 
-0x15, 'ICVF', 1, 1
-0x16, 'ICVI', 1, 1
-0x17, 'ICVB', 1, 1
-0x18, 'ICVUI', 1, 1
-0x19, 'ICVUC', 1, 1
-0x00, 'ICVC', 1, 1
+0x5a, 'ICVF', 1, 1
+0x5b, 'ICVI', 1, 1
+0x5c, 'ICVB', 1, 1
+0x5d, 'ICVUI', 1, 1
+0x5e, 'ICVUC', 1, 1
+0x5f, 'ICVC', 1, 1
 
-0x14, 'UIBCOM', 1, 1
-0x15, 'UICVF', 1, 1
-0x16, 'UICVI', 1, 1
-0x17, 'UICVB', 1, 1
-0x18, 'UICVUI', 1, 1
-0x19, 'UICVUC', 1, 1
-0x00, 'UICVC', 1, 1
+0x60, 'UIBCOM', 1, 1
+0x61, 'UICVF', 1, 1
+0x62, 'UICVI', 1, 1
+0x63, 'UICVB', 1, 1
+0x64, 'UICVUI', 1, 1
+0x65, 'UICVUC', 1, 1
+0x66, 'UICVC', 1, 1
 
-0x14, 'RBCOM', 1, 1
-0x15, 'RCVF', 1, 1
-0x16, 'RCVI', 1, 1
-0x17, 'RCVB', 1, 1
-0x18, 'RCVUI', 1, 1
-0x19, 'RCVUC', 1, 1
-0x00, 'RCVC', 1, 1
+0x67, 'RBCOM', 1, 1
+0x68, 'RCVF', 1, 1
+0x69, 'RCVI', 1, 1
+0x6a, 'RCVB', 1, 1
+0x6b, 'RCVUI', 1, 1
+0x6c, 'RCVUC', 1, 1
+0x6d, 'RCVC', 1, 1
 
-0x14, 'CBCOM', 1, 1
-0x15, 'CCVF', 1, 1
-0x16, 'CCVI', 1, 1
-0x17, 'CCVB', 1, 1
-0x18, 'CCVUI', 1, 1
-0x19, 'CCVUC', 1, 1
-0x00, 'CCVC', 1, 1
+0x6e, 'CBCOM', 1, 1
+0x6f, 'CCVF', 1, 1
+0x70, 'CCVI', 1, 1
+0x71, 'CCVB', 1, 1
+0x72, 'CCVUI', 1, 1
+0x73, 'CCVUC', 1, 1
+0x74, 'CCVC', 1, 1
 
-0x14, 'UCBCOM', 1, 1
-0x15, 'UCCVF', 1, 1
-0x16, 'UCCVI', 1, 1
-0x17, 'UCCVB', 1, 1
-0x18, 'UCCVUI', 1, 1
-0x19, 'UCCVUC', 1, 1
-0x00, 'UCCVC', 1, 1
+0x75, 'UCBCOM', 1, 1
+0x76, 'UCCVF', 1, 1
+0x77, 'UCCVI', 1, 1
+0x78, 'UCCVB', 1, 1
+0x79, 'UCCVUI', 1, 1
+0x7a, 'UCCVUC', 1, 1
+0x7b, 'UCCVC', 1, 1
 
-0x1a, 'IINCR', 1, 1
-0x1b, 'IDECR', 1, 1
-0x1c, 'UIINCR', 1, 1
-0x1d, 'UIDECR', 1, 1
-0x1e, 'RINCR', 1, 1
-0x1f, 'RDECR', 1, 1
-0x20, 'CINCR', 1, 1
-0x21, 'CDECR', 1, 1
-0x22, 'UCINCR', 1, 1
-0x23, 'UCDECR', 1, 1
+0x7c, 'IINCR', 1, 1
+0x7d, 'IDECR', 1, 1
+0x7e, 'UIINCR', 1, 1
+0x7f, 'UIDECR', 1, 1
+0x80, 'RINCR', 1, 1
+0x81, 'RDECR', 1, 1
+0x82, 'CINCR', 1, 1
+0x83, 'CDECR', 1, 1
+0x84, 'UCINCR', 1, 1
+0x85, 'UCDECR', 1, 1
 
+0x86, 'JUMP', 4, 0
+0x87, 'COND', 8, 0
 
-0x30, 'JUMP', 1, 0
-0x31, 'COND', 2, 0
+0x88, 'PUSH4', 0, 4
+0x89, 'PUSH8', 0, 8
 
-0x40, 'PUSH4', 0, 4
-0x41, 'PUSH8', 0, 8
+0x8a, 'ASSIGN_GLOBAL4', 6, 0
+0x8b, 'LOAD_GLOBAL4', 1, 4
+0x8c, 'ASSIGN_GLOBAL8', 10, 0
+0x8d, 'LOAD_GLOBAL8', 1, 8
 
-0x42, 'ASSIGN_GLOBAL4', 2, 0
-0x43, 'LOAD_GLOBAL4', 1, 1
-0x42, 'ASSIGN_GLOBAL8', 2, 0
-0x43, 'LOAD_GLOBAL8', 1, 1
+0x8e, 'ASSIGN_CALL4', 6, 0
+0x8f, 'LOAD_CALL4', 1, 4
+0x90, 'ASSIGN_CALL8', 10, 0
+0x91, 'LOAD_CALL8', 1, 8
 
-0x44, 'ASSIGN_CALL4', 2, 0
-0x45, 'LOAD_CALL4', 1, 1
-0x44, 'ASSIGN_CALL8', 2, 0
-0x45, 'LOAD_CALL8', 1, 1
+0x92, 'PUSH_CALL', 4, 0
+0x93, 'POP_CALL', 4, 0
 
-0x46, 'PUSH_CALL', 1, 0
-0x47, 'POP_CALL', 1, 0
+0X94, 'TOP_CALL', 0, 4
 
-0X48, 'TOP_CALL', 0, 1
-
-0x50, 'READLN', 1, 0
-0x51, 'WRITELN', 1, 0
+0x95, 'READLN', -1, 0
+0x96, 'WRITELN', -1, 0

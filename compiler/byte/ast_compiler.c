@@ -179,12 +179,24 @@ void ast_compile(List routine_forest, List dag)
       char *label_name = jump_detail_sequence[i]->name;
       /*  */
       label_index = get_label_index(label_name);
+
+      if(label_index < 0)
+      {
+        printf("ast compile error, can not find function %s", label_name);
+        return;
+      }
     }
     else
     {
       Symtab ptab = jump_detail_sequence[i]->ptab;
       /*  */
       label_index = get_function_index(ptab);
+
+      if(label_index < 0)
+      {
+        printf("ast compile error, can not find label %s", ptab->name);
+        return;
+      }
     }
 
     jump_index = jump_detail_sequence[i]->code_index;
@@ -192,7 +204,6 @@ void ast_compile(List routine_forest, List dag)
     /*  */
     value v_jump_code;
     v_jump_code.i = label_index;
-
     assign_with_byte_unit(TYPE_INTEGER, &code_byte_sequence[jump_index], &v_jump_code);
 
     i++;
@@ -219,9 +230,8 @@ int node_compile(Node node)
     Symbol p = node->syms[0];
 
     /* record the jump position */
-    push_jump_detail(p->name, code_byte_index, NULL);
-
-    /*  */
+    push_jump_detail(p->name, code_byte_index + 1, NULL);
+    /* jump position */
     value jump_position;
     jump_position.i = -1;
     push_data(find_type_by_id(TYPE_INTEGER), &jump_position);
@@ -232,11 +242,8 @@ int node_compile(Node node)
   break;
   case COND:
   {
+    /* test val */
     node_compile(node->kids[0]);
-
-    /* record the jump position */
-    Symbol p = node->u.cond.label;
-    push_jump_detail(p->name, code_byte_index, NULL);
 
     /*  */
     switch(node->kids[0]->type->type_id)
@@ -278,7 +285,10 @@ int node_compile(Node node)
     break;
     }
 
-    /*  */
+    /* record the jump position */
+    Symbol p = node->u.cond.label;
+    push_jump_detail(p->name, code_byte_index + 1, NULL);
+    /* jump position */
     value jump_position;
     jump_position.i = -1;
     push_data(find_type_by_id(TYPE_INTEGER), &jump_position);

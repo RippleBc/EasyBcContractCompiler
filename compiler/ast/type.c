@@ -9,18 +9,24 @@
 
 static int type_index = 0;
 
-/* 字符串转化为10进制数字 */
 int stoi(char *s,int radix)
 {
     char *p = s;
     int val = 0;
+    int c_val = 0;
 
     if (radix == 8)
     {
         p++;
         while(*p)
         {
-            val = val * radix + (*p - '0');
+            c_val = *p -'0';
+            if(c_val > 7)
+            {
+                parse_error("octal transform fail", c_val);
+                return -1;
+            }
+            val = val * radix + c_val;
             p++;
         }
     }
@@ -37,7 +43,13 @@ int stoi(char *s,int radix)
             }
             else
             {
-                val = val * radix + (tolower(*p) - 'a');
+                c_val = tolower(*p) -'a';
+                if(c_val > 5)
+                {
+                    parse_error("hex transform fail", c_val);
+                    return -1;
+                }
+                val = val * radix + c_val + 10;
             }
             p++;
         }
@@ -46,7 +58,13 @@ int stoi(char *s,int radix)
     {
         while(*p)
         {
-            val = val * radix + (*p -'0');
+            c_val = *p -'0';
+            if(c_val > 9)
+            {
+                parse_error("decimal transform fail", c_val);
+                return -1;
+            }
+            val = val * radix + c_val;
             p++;
         }
     }
