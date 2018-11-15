@@ -12,56 +12,17 @@ program helloworld;
 		age = 1..150;
 	var
 		inta, intb, intc: integer;
-		inta1, inta2: real;
-		inta3: char;
-		inta4: text;
-		intd : arr;
-		inte : date;
+		uintegera: uinteger;
+		reala, realb: real;
+		chara: char;
+		uchara: uchar;
+		texta: text;
+		arraya : arr;
+		recorda : date;
 	begin
-		intd[1] := 10;
-		intd[2] := 20;
-		intd[3] := 30;
-		intd[4] := 40;
-		intd[5] := 50;
-		inte.year := 30;
-		inte.month := 5;
-		inta := 20;
-		intb := 30;
-		intc := ((intb + inta) + 3 * (intb + inta)) / 4 + intd[2] * 2 + inte.month + intd[1];
-		writeln(intc);
-		writeln('###################');
+		inta := 1;
+		intb := 2;
 
-		inta1 := 1.23;
-		inta2 := inta1 + 1.56;
-		writeln(inta2);
-		writeln('###################');
-
-		inta3 := 'a';
-		writeln(inta3);
-		writeln('###################');
-
-		inta4 := 'abcdefg';
-		writeln(inta4[3]);
-		writeln('###################');
-
-		inta := 6;
-		intb := 3;
-		intc := 3;
-		case inta of
-			2: 
-			begin
-			writeln(2);
-			end;
-			5: writeln(5);
-			6:
-				case intb of
-					tue: 
-					begin
-					writeln(3);
-					end;
-					4: writeln(4);
-				end;
-		end;
-		writeln('###################');
+		inta := ((inta << 4 + 2 * intb - intb) / 2) >> 1 % 3;
 	end
 .
