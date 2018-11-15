@@ -48,13 +48,13 @@ void vm_assign_function_call_stack_val(Type v_type, Value v, Symbol p)
         return;
       }
 
+      /* val */
+      s_val.c = v->s[i];
+      push_data(find_type_by_id(TYPE_CHAR), &s_val);
       /* address */
       value s_offset;
       s_offset.i = baseOffset + i * ele_size;
       push_data(find_type_by_id(TYPE_INTEGER), &s_offset);
-      /* val */
-      s_val.c = v->s[i];
-      push_data(find_type_by_id(TYPE_CHAR), &s_val);
       /*  */
       int code = get_op_code_by_name(command_name);
       push_command(code);
@@ -81,13 +81,13 @@ void vm_set_return_index(int index)
 {
   char command_name[NAME_LEN];
 
-  /* address*/
-  int code = get_op_code_by_name("TOP_CALL");
-  push_command(code);
   /* val */
   value s_return_index;
   s_return_index.i = index;
   push_data(find_type_by_id(TYPE_INTEGER), &s_return_index);
+  /* address*/
+  int code = get_op_code_by_name("TOP_CALL");
+  push_command(code);
   /*  */
   snprintf(command_name, NAME_LEN, "ASSIGN_CALL%d", IR->intmetric.align);
   code = get_op_code_by_name(command_name);

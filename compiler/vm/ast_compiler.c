@@ -357,14 +357,15 @@ int node_compile(Node node)
       }
       else
       {
+        /* val */
+        node_compile(node->kids[0]);
+
         /* address */
         value s_offset;
         s_offset.i = arg->offset;
         push_data(find_type_by_id(TYPE_INTEGER), &s_offset);
 
-        /* val */
-        node_compile(node->kids[0]);
-
+        /*  */
         vm_assign_function_call_stack_val(node->kids[0]->type, NULL, NULL);
       }
     }
@@ -529,11 +530,11 @@ int node_compile(Node node)
         s_array = node->kids[0]->syms[0];
       }
 
+      /* val */
+      node_compile(node->kids[1]);
+
       /* address */
       node_compile(node->kids[0]);
-
-      /* 表达式AST节点 */
-      node_compile(node->kids[1]);
 
       if((s_mixedType && s_mixedType->tab == Global_symtab) || (p && p->tab == Global_symtab))
       {
@@ -701,9 +702,6 @@ int node_compile(Node node)
       /* address used by binaray operation */
       node_compile(node->kids[0]);
 
-      /* address use by assignment */
-      node_compile(node->kids[0]);
-
       /*  */
       if(p->tab == Global_symtab)
       {
@@ -720,6 +718,9 @@ int node_compile(Node node)
       int code = get_type_related_op_code_by_name(node->type, code_name);
       /*  */
       push_command(code);
+
+      /* address use by assignment */
+      node_compile(node->kids[0]);
 
       /*  */
       if(p->tab == Global_symtab)
