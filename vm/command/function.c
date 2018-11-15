@@ -18,12 +18,9 @@ void POP_CALL(int size)
 {
   function_call_stack_deep += size;
 }
-void ASSIGN_CALL(int index, unsigned char *val, int size)
+void ASSIGN_CALL(int index, unsigned char val)
 {
-	for(int i = 0; i < size; i++)
-	{
-		function_call_stack[i] = *val;
-	}
+	function_call_stack[i] = *val;
 }
 unsigned char *LOAD_CALL(int index)
 {

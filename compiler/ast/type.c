@@ -468,7 +468,9 @@ type *clone_type(type *src)
 int get_type_align_size(type *pt)
 { 
     if (!pt)
+    {
         return 0;
+    }
 
     switch(pt->type_id)
     {

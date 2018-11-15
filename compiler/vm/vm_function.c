@@ -20,8 +20,10 @@ void vm_pop_function_call_stack(Symtab tab)
   int code = get_op_code_by_name("POP_CALL");
   push_command(code);
 }
-void vm_assign_function_call_stack_val(Value v, Symbol p)
+void vm_assign_function_call_stack_val(Type v_type, Value v, Symbol p)
 {
+  char command_name[NAME_LEN];
+
   if(v != NULL && p != NULL)
   {
     /*  */
@@ -33,6 +35,9 @@ void vm_assign_function_call_stack_val(Value v, Symbol p)
     int baseOffset = p->offset;
     /*  */
     int ele_size = get_symbol_align_size(p->type->last);
+
+    /*  */
+    snprintf(command_name, NAME_LEN, "ASSIGN_CALL%d", IR->charmetric.align);
 
     /*  */
     for(int i = 0; i < strlen(v->s); i++)
@@ -51,26 +56,31 @@ void vm_assign_function_call_stack_val(Value v, Symbol p)
       s_val.c = v->s[i];
       push_data(find_type_by_id(TYPE_CHAR), &s_val);
       /*  */
-      int code = get_op_code_by_name("ASSIGN_CALL");
+      int code = get_op_code_by_name(command_name);
       push_command(code);
     }
   }
   else
   {
+    snprintf(command_name, NAME_LEN, "ASSIGN_CALL%d", get_type_align_size(v_type));
     /*  */
-    int code = get_op_code_by_name("ASSIGN_CALL");
+    int code = get_op_code_by_name(command_name);
     push_command(code);
   }
 }
-void vm_load_function_call_stack_val(Symbol p, Symbol q)
+void vm_load_function_call_stack_val(Type t)
 {
+  char command_name[NAME_LEN];
+  snprintf(command_name, NAME_LEN, "LOAD_CALL%d", get_type_align_size(t));
   /*  */
-  int code = get_op_code_by_name("LOAD_CALL");
+  int code = get_op_code_by_name(command_name);
   push_command(code);
 }
 
 void vm_set_return_index(int index)
 {
+  char command_name[NAME_LEN];
+
   /* address*/
   int code = get_op_code_by_name("TOP_CALL");
   push_command(code);
@@ -79,16 +89,20 @@ void vm_set_return_index(int index)
   s_return_index.i = index;
   push_data(find_type_by_id(TYPE_INTEGER), &s_return_index);
   /*  */
-  code = get_op_code_by_name("ASSIGN_CALL");
+  snprintf(command_name, NAME_LEN, "ASSIGN_CALL%d", IR->intmetric.align);
+  code = get_op_code_by_name(command_name);
   push_command(code);
 }
 
 void vm_get_return_index()
 {
+  char command_name[NAME_LEN];
+
   /* address*/
   int code = get_op_code_by_name("TOP_CALL");
   push_command(code);
   /*  */
-  code = get_op_code_by_name("LOAD_CALL");
+  snprintf(command_name, NAME_LEN, "LOAD_CALL%d", IR->intmetric.align);
+  code = get_op_code_by_name(command_name);
   push_command(code);
 }

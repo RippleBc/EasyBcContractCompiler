@@ -353,7 +353,7 @@ int node_compile(Node node)
     {
       if(arg->type->type_id == TYPE_ARRAY)
       {
-        vm_assign_function_call_stack_val(&(node->kids[0]->syms[0]->v), arg);
+        vm_assign_function_call_stack_val(NULL, &(node->kids[0]->syms[0]->v), arg);
       }
       else
       {
@@ -365,7 +365,7 @@ int node_compile(Node node)
         /* val */
         node_compile(node->kids[0]);
 
-        vm_assign_function_call_stack_val(NULL, NULL);
+        vm_assign_function_call_stack_val(node->kids[0]->type, NULL, NULL);
       }
     }
     else
@@ -455,7 +455,7 @@ int node_compile(Node node)
       
       if(sym->type->type_id != TYPE_ARRAY)
       {
-        /* compute sym offset */
+        /* address */
         value sym_offset;
         sym_offset.i = sym->offset;
         push_data(find_type_by_id(TYPE_INTEGER), &sym_offset);
@@ -487,27 +487,27 @@ int node_compile(Node node)
         {
           if(p)
           {
-            /* system type val */
+            /* address */
             value sym_offset;
             sym_offset.i = p->offset;
             push_data(p->type, &sym_offset);
           }
 
-          /* array or record */
-          vm_load_global();
+          /*  */
+          vm_load_global(node->type);
         }
         else
         {
           if(p)
           {
-            /* system type val */
+            /* address */
             value sym_offset;
             sym_offset.i = p->offset;
             push_data(p->type, &sym_offset);
           }
 
-          /* array or record */
-          vm_load_function_call_stack_val();
+          /*  */
+          vm_load_function_call_stack_val(node->type);
         }
       }
     }
@@ -540,11 +540,12 @@ int node_compile(Node node)
         if(s_array)
         {
           /*  */
-          vm_assign_global(&(node->kids[1]->syms[0]->v), s_array);
+          vm_assign_global(NULL, &(node->kids[1]->syms[0]->v), s_array);
         }
         else
         {
-          vm_assign_global(NULL, NULL);
+          /*  */
+          vm_assign_global(node->kids[1]->type, NULL, NULL);
         }
       }
       else
@@ -559,11 +560,12 @@ int node_compile(Node node)
           if(s_array)
           {
             /* 局部变量赋值 */
-            vm_assign_function_call_stack_val(&(node->kids[1]->syms[0]->v), s_array);
+            vm_assign_function_call_stack_val(NULL, &(node->kids[1]->syms[0]->v), s_array);
           }
           else
           {
-            vm_assign_function_call_stack_val(NULL, NULL);
+            /*  */
+            vm_assign_function_call_stack_val(node->kids[1]->type, NULL, NULL);
           }
         }
       }
@@ -705,11 +707,11 @@ int node_compile(Node node)
       /*  */
       if(p->tab == Global_symtab)
       {
-        vm_load_global(NULL, NULL);
+        vm_load_global(node->type, NULL, NULL);
       }
       else
       {
-        vm_load_function_call_stack_val(NULL, NULL);
+        vm_load_function_call_stack_val(node->type, NULL, NULL);
       }
 
       /*  */
@@ -722,11 +724,11 @@ int node_compile(Node node)
       /*  */
       if(p->tab == Global_symtab)
       {
-        vm_assign_global(NULL, NULL);
+        vm_assign_global(node->type, NULL, NULL);
       }
       else
       {
-        vm_assign_function_call_stack_val(NULL, NULL);
+        vm_assign_function_call_stack_val(node->type, NULL, NULL);
       }
     }
     break;

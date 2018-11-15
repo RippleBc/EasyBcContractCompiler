@@ -1,7 +1,9 @@
 #include "../common.h"
 
-void vm_assign_global(Value v, Symbol p)
+void vm_assign_global(Type v_type, Value v, Symbol p)
 {
+  char command_name[NAME_LEN];
+
   if(v != NULL && p != NULL)
   {
     value s_index;
@@ -12,6 +14,9 @@ void vm_assign_global(Value v, Symbol p)
     int baseOffset = p->offset;
     /*  */
     int ele_size = get_symbol_align_size(p->type->last);
+
+    /*  */
+    snprintf(command_name, NAME_LEN, "ASSIGN_GLOBAL%d", IR->charmetric.align);
 
     /*  */
     for(int i = 0; i < strlen(v->s); i++)
@@ -29,20 +34,23 @@ void vm_assign_global(Value v, Symbol p)
       s_val.c = v->s[i];
       push_data(find_type_by_id(TYPE_CHAR), &s_val);
       /*  */
-      int code = get_op_code_by_name("ASSIGN_GLOBAL");
+      int code = get_op_code_by_name(command_name);
       push_command(code);
     }
   }
   else
   {
+    snprintf(command_name, NAME_LEN, "ASSIGN_GLOBAL%d", get_type_align_size(v_type));
     /*  */
-    int code = get_op_code_by_name("ASSIGN_GLOBAL");
+    int code = get_op_code_by_name(command_name);
     push_command(code);
   }
 }
-void vm_load_global()
+void vm_load_global(Type t)
 {
+  char command_name[NAME_LEN];
+  snprintf(command_name, NAME_LEN, "LOAD_GLOBAL%d", get_type_align_size(t));
   /*  */
-  int code = get_op_code_by_name("LOAD_GLOBAL");
+  int code = get_op_code_by_name(command_name);
   push_command(code);
 }
