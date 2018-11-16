@@ -157,7 +157,6 @@ type *find_type_by_id(int);
 type *find_local_type(char *);
 int is_symbol(symbol *p, char *);
 int get_symbol_align_size(symbol *);
-int get_type_size(type *);
 
 int stoi(char *s,int radix);
 void set_subrange_bound(type *pt,int lower,int upper);

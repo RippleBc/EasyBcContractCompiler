@@ -24,5 +24,7 @@ program helloworld;
 		intb := 2;
 
 		inta := ((inta << 4 + 2 * intb - intb) / 2) >> 1 % 3;
+
+		writeln('%d', inta);
 	end
 .

@@ -10,4 +10,4 @@ void add_type_to_table(symtab *ptab, type *pt);
 type *find_type_by_name(char *name);
 type *find_type_by_id(int id);
 type *clone_type(type *src);
-int get_type_size(type *pt);
+int get_type_align_size(type *pt);

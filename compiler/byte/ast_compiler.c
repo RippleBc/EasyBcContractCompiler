@@ -29,6 +29,43 @@ int push_data(Type t, Value v)
   /*  */
   code_byte_index += data_size;
 
+  if(BYTE_DEBUG)
+  {
+    switch(t->type_id)
+    {
+      case TYPE_INTEGER:
+      {
+        printf("size %d, data %x\n", data_size, v->i);
+      }
+      break;
+      case TYPE_UINTEGER:
+      {
+        printf("size %d, data %x\n", data_size, v->ui);
+      }
+      break;
+      case TYPE_REAL:
+      {
+        printf("size %d, data %x\n", data_size, v->f);
+      }
+      break;
+      case TYPE_BOOLEAN:
+      {
+        printf("size %d, data %x\n", data_size, v->b);
+      }
+      break;
+      case TYPE_CHAR:
+      {
+        printf("size %d, data %x\n", data_size, v->c);
+      }
+      break;
+      case TYPE_UCHAR:
+      {
+        printf("size %d, data %x\n", data_size, v->uc);
+      }
+      break;
+    }
+  }
+
   /*  */
   if(code_byte_index >= CODE_MAX_NUM)
   {
@@ -39,6 +76,12 @@ int push_data(Type t, Value v)
 }
 int push_command(int code)
 {
+  if(BYTE_DEBUG)
+  {
+    char *name = get_name_by_op_code(code);
+    printf("op code %x, op name %s\n", code, name);
+  }
+
   /*  */
   if(code_byte_index >= CODE_MAX_NUM)
   {
@@ -448,15 +491,17 @@ int node_compile(Node node)
     break;
     case ARRAY:
     {
-      /* 数组下标 */
-      node_compile(node->kids[0]);
-
       Symbol array = node->syms[0];
-      /* compute element offset base on array */
+
+      /* array min index */
       value startIndex;
       startIndex.i = array->type->first->v.i;
       push_data(find_type_by_id(TYPE_INTEGER), &startIndex);
-      /*  */
+
+      /* 数组下标 */
+      node_compile(node->kids[0]);
+
+      /* compute element offset base on array */
       int code = get_op_code_by_name("ISUB");
       push_command(code);
       /*  */
@@ -609,16 +654,16 @@ int node_compile(Node node)
     case RSH:
     case MOD:
     {
-      /* 计算左表达式AST节点对应的值 */
-      if(node->kids[0] != NULL)
-      {
-        node_compile(node->kids[0]);
-      }
-
       /* 计算右表达式AST节点对应的值 */
       if(node->kids[1] != NULL)
       {
         node_compile(node->kids[1]);
+      }
+
+      /* 计算左表达式AST节点对应的值 */
+      if(node->kids[0] != NULL)
+      {
+        node_compile(node->kids[0]);
       }
 
       /*  */
@@ -643,16 +688,16 @@ int node_compile(Node node)
     case LE:
     case LT:
     {
-      /* 计算左表达式AST节点对应的值 */
-      if(node->kids[0] != NULL)
-      {
-        node_compile(node->kids[0]);
-      }
-
       /* 计算右表达式AST节点对应的值 */
       if(node->kids[1] != NULL)
       {
         node_compile(node->kids[1]);
+      }
+
+      /* 计算左表达式AST节点对应的值 */
+      if(node->kids[0] != NULL)
+      {
+        node_compile(node->kids[0]);
       }
 
       /*  */
@@ -666,16 +711,16 @@ int node_compile(Node node)
     case AND:
     case OR:
     {
-      /* 计算左表达式AST节点对应的值 */
-      if(node->kids[0] != NULL)
-      {
-        node_compile(node->kids[0]);
-      }
-
       /* 计算右表达式AST节点对应的值 */
       if(node->kids[1] != NULL)
       {
         node_compile(node->kids[1]);
+      }
+
+      /* 计算左表达式AST节点对应的值 */
+      if(node->kids[0] != NULL)
+      {
+        node_compile(node->kids[0]);
       }
 
       /*  */
@@ -785,11 +830,14 @@ int node_compile(Node node)
       vm_pop_function_call_stack(ptab);
 
       /*  */
-      int jump_code = get_op_code_by_name("JUMP");
-      push_command(jump_code);
+      ptab = pop_symtab_stack();
 
-      /*  */
-      pop_symtab_stack();
+      /* function call, return origin position */
+      if(ptab != Global_symtab)
+      {
+        int jump_code = get_op_code_by_name("JUMP");
+        push_command(jump_code);
+      }
     }
     break;
     case BLOCKBEG:

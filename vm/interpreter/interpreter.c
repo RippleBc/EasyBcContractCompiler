@@ -27,7 +27,6 @@ void interpret()
     {
       printf("get_detail_by_op_code %s\n", code_detail->name);
     }
-    // cp = pop_byte_code_stack(code_detail->in);
 
   	if(!strcmp(code_detail->name, "PUSH4"))
   	{
@@ -37,17 +36,25 @@ void interpret()
   	{
   		push_vm_stack_from_byte_sequence(8);
   	}
-   //  else if(!strcmp(code_detail->name, 'JUMP'))
-   //  {
-      
-   //  }
-   //  else if(!strcmp(code_detail->name, 'COND'))
-   //  {
-      
-   //  }
     else
     {
+      else if(!strcmp(code_detail->name, "LSH"))
+      {
+        int left = 
+      }
+      else if(!strcmp(code_detail->name, "RSH"))
+      {
+        int left = (int)*cp;
+        int right = (int)*(cp + 4);
+
+      }
+
       byte_sequence_index++;
+
+      if(strcmp(code_detail->name, "READLN") && strcmp(code_detail->name, "WRITELN"))
+      {
+        pop_vm_stack(code_detail->in);
+      }
     }
   }
 }

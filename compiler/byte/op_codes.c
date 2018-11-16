@@ -105,6 +105,20 @@ int get_op_code_by_name(char *name)
 	return -1;
 }
 
+char *get_name_by_op_code(int code)
+{
+	for(int i = 0; i < op_code_index; i++)
+	{
+		if(op_codes[i]->code == code)
+		{
+			return op_codes[i]->name;
+		}
+	}
+
+	printf("get_name_by_op_code name not exist %d\n", code);
+	return NULL;
+}
+
 int get_type_related_op_code_by_name(Type t, char *name)
 {
 	char op_name[MAX_OP_CODES_NUM];

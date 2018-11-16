@@ -52,7 +52,7 @@ symtab *new_symtab(symtab *parent)
     p->defn = DEF_UNKNOWN; /* 符号所属大类 */
     p->type = find_type_by_id(TYPE_VOID); /* 过程或者函数返回值的类型（普通类型），默认为void */
     p->id = routine_id++; /* 过程或者函数的序号 */
-    p->call_stack_size = 1; /* 局部变量的总字节数 */
+    p->call_stack_size = 4; /* first index store return position, 局部变量的总字节数 */
     p->last_symtab = 0; /* todo */
     return p;
 }

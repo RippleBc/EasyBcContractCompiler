@@ -177,7 +177,7 @@ void set_subrange_bound(type *pt, int lower, int upper)
 
     if(lower > upper)
     {
-        parse_error("Lower bound larger than upper bound",pt->name);
+        parse_error("Lower bound larger than upper bound", pt->name);
         return;
     }
 
@@ -511,7 +511,7 @@ int get_type_align_size(type *pt)
     case TYPE_RECORD:
     {
         return pt->size;
-    }  
+    }
     case TYPE_UNKNOWN:
     {
         printf("TYPE_UNKNOWN %s\n", pt->name);
