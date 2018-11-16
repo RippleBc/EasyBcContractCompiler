@@ -18,8 +18,8 @@
 0x0d, 'UCBOR', 8, 4
 0x0e, 'UCXOR', 8, 4
 
-0x0f, 'LSH', 8, 4
-0x20, 'RSH', 8, 4
+0x0f, 'ILSH', 8, 4
+0x20, 'IRSH', 8, 4
 
 0x21, 'IADD', 8, 4
 0x22, 'ISUB', 8, 4
@@ -165,3 +165,6 @@
 
 0x95, 'READLN', -1, 0
 0x96, 'WRITELN', -1, 0
+
+0x97, 'UIRSH', 8, 4
+0x98, 'UIRSH', 8, 4

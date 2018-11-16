@@ -1854,9 +1854,10 @@ term
 |term oRSH factor
 {
 	/* 二元运算AST树（>>） */
-	if($1->result_type->type_id != TYPE_INTEGER || $3->result_type->type_id != TYPE_INTEGER)
+	if(($1->result_type->type_id != TYPE_INTEGER || $3->result_type->type_id != TYPE_INTEGER) && 
+	($1->result_type->type_id != TYPE_UINTEGER || $3->result_type->type_id != TYPE_UINTEGER))
 	{
-		parse_error("type mismatch >>", "");
+		parse_error("type mismatch <<", "");
 		return 0;
 	}
 	$$ = binary_expr_tree(RSH, $1, $3);
@@ -1864,7 +1865,8 @@ term
 |term oLSH factor
 {
 	/* 二元运算AST树（<<） */
-	if($1->result_type->type_id != TYPE_INTEGER || $3->result_type->type_id != TYPE_INTEGER)
+	if(($1->result_type->type_id != TYPE_INTEGER || $3->result_type->type_id != TYPE_INTEGER) && 
+	($1->result_type->type_id != TYPE_UINTEGER || $3->result_type->type_id != TYPE_UINTEGER))
 	{
 		parse_error("type mismatch <<", "");
 		return 0;

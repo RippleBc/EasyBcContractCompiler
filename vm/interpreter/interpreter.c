@@ -38,9 +38,9 @@ void interpret()
   	}
     else
     {
-      else if(!strcmp(code_detail->name, "LSH"))
+      if(!strcmp(code_detail->name, "LSH"))
       {
-        int left = 
+        
       }
       else if(!strcmp(code_detail->name, "RSH"))
       {

@@ -650,8 +650,6 @@ int node_compile(Node node)
   /* 二元数学运算 */
   switch (generic(node->op))
   {
-    case LSH:
-    case RSH:
     case MOD:
     {
       /* 计算右表达式AST节点对应的值 */
@@ -674,6 +672,8 @@ int node_compile(Node node)
       push_command(code);
     }
     break;
+    case LSH:
+    case RSH:
     case BAND:
     case BOR:
     case BXOR:
