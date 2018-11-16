@@ -8,7 +8,8 @@ extern unsigned char byte_sequence[];
 /*  */
 int vm_stack_deep = STACK_DEEP;
 unsigned char vm_stack[STACK_DEEP];
-int push_vm_stack_from_byte_sequence(int size)
+
+void push_vm_stack_from_byte_sequence(int size)
 {
 	/*  */
 	byte_sequence_index += 1;
@@ -22,7 +23,30 @@ int push_vm_stack_from_byte_sequence(int size)
   }
 }
 
-void pop_vm_stack(int size)
+void push_vm_stack_from_compute(Metrics pm, unsigned char *pc)
+{
+  int j = 0;
+
+  if(g_is_big_endian)
+  {
+    for(j = 0; j < pm.size && j < sizeof(int); j++)
+    {
+     vm_stack[pm.size - 1 - j] = *(pc + sizeof(int) - 1 - j);
+    }
+  }
+  else
+  {
+    for(j = 0; j < pm.size && j < sizeof(int); j++)
+    {
+      vm_stack[pm.size - 1 - j] = *(pc + j);
+    }
+  }
+
+  /*  */
+  vm_stack_deep -= pm.align;
+}
+
+static void pop_vm_stack(int size)
 {
   vm_stack_deep += size;
 }

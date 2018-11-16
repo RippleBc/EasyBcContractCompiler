@@ -38,23 +38,142 @@ void interpret()
   	}
     else
     {
-      if(!strcmp(code_detail->name, "LSH"))
+      /*  */
+      if(!strcmp(code_detail->name, "ILSH"))
       {
         
       }
-      else if(!strcmp(code_detail->name, "RSH"))
+      else if(!strcmp(code_detail->name, "IRSH"))
       {
-        int left = (int)*cp;
-        int right = (int)*(cp + 4);
+        
+      }
+      else if(!strcmp(code_detail->name, "UILSH"))
+      {
+        unsigned int result = get_uint_from_vm_stack() <<  get_uint_from_vm_stack();
+        push_vm_stack_from_compute(IR->intmetric, &result);
+      }
+      else if(!strcmp(code_detail->name, "UIRSH"))
+      {
+        unsigned int result = get_uint_from_vm_stack() >>  get_uint_from_vm_stack();
+        push_vm_stack_from_compute(IR->intmetric, &result);
+      }
 
+      /*  */
+      if(!strcmp(code_detail->name, "IADD"))
+      {
+        int result = get_int_from_vm_stack() + get_int_from_vm_stack();
+        push_vm_stack_from_compute(IR->intmetric, &result);
+      }
+      else if(!strcmp(code_detail->name, "ISUB"))
+      {
+        int result = get_int_from_vm_stack() - get_int_from_vm_stack();
+        push_vm_stack_from_compute(IR->intmetric, &result);
+      }
+      if(!strcmp(code_detail->name, "IMUL"))
+      {
+        int result = get_int_from_vm_stack() * get_int_from_vm_stack();
+        push_vm_stack_from_compute(IR->intmetric, &result);
+      }
+      else if(!strcmp(code_detail->name, "IDIV"))
+      {
+        int result = get_int_from_vm_stack() / get_int_from_vm_stack();
+        push_vm_stack_from_compute(IR->intmetric, &result);
+      }
+
+      /*  */
+      if(!strcmp(code_detail->name, "IADD"))
+      {
+        
+      }
+      else if(!strcmp(code_detail->name, "ISUB"))
+      {
+        
+      }
+      if(!strcmp(code_detail->name, "IMUL"))
+      {
+        
+      }
+      else if(!strcmp(code_detail->name, "IDIV"))
+      {
+        
+      }
+
+      /*  */
+      if(!strcmp(code_detail->name, "IADD"))
+      {
+        
+      }
+      else if(!strcmp(code_detail->name, "ISUB"))
+      {
+        
+      }
+      if(!strcmp(code_detail->name, "IMUL"))
+      {
+        
+      }
+      else if(!strcmp(code_detail->name, "IDIV"))
+      {
+        
+      }
+
+      /*  */
+      if(!strcmp(code_detail->name, "IADD"))
+      {
+        
+      }
+      else if(!strcmp(code_detail->name, "ISUB"))
+      {
+        
+      }
+      if(!strcmp(code_detail->name, "IMUL"))
+      {
+        
+      }
+      else if(!strcmp(code_detail->name, "IDIV"))
+      {
+        
+      }
+
+      /*  */
+      if(!strcmp(code_detail->name, "MOD"))
+      {
+        int result = get_int_from_vm_stack() / get_int_from_vm_stack();
+        push_vm_stack_from_compute(IR->intmetric, &result);
+      }
+
+      
+      if(!strcmp(code_detail->name, "GLOBAL_ASSIGN4"))
+      {
+        int address = get_uint_from_vm_stack();
+        push_vm_stack_from_compute(IR->intmetric, 4);
+      }
+      else if(!strcmp(code_detail->name, "GLOBAL_LOAD4"))
+      {
+        int result = get_int_from_vm_stack() / get_int_from_vm_stack();
+        push_vm_stack_from_compute(IR->intmetric, &result);
+      }
+      else if(!strcmp(code_detail->name, "GLOBAL_ASSIGN8"))
+      {
+        int result = get_int_from_vm_stack() / get_int_from_vm_stack();
+        push_vm_stack_from_compute(IR->intmetric, &result);
+      }
+      else if(!strcmp(code_detail->name, "GLOBAL_LOAD8"))
+      {
+        int result = get_int_from_vm_stack() / get_int_from_vm_stack();
+        push_vm_stack_from_compute(IR->intmetric, &result);
+      }
+
+
+      if(!strcmp(code_detail->name, "READLN"))
+      {
+
+      }
+      else if(!strcmp(code_detail->name, "WRITELN"))
+      {
+        
       }
 
       byte_sequence_index++;
-
-      if(strcmp(code_detail->name, "READLN") && strcmp(code_detail->name, "WRITELN"))
-      {
-        pop_vm_stack(code_detail->in);
-      }
     }
   }
 }

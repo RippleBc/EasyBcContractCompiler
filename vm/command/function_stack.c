@@ -5,7 +5,7 @@
 /*  */
 int function_call_stack_deep = STACK_DEEP;
 unsigned char function_call_stack[STACK_DEEP];
-int PUSH_CALL(int size)
+int push_call(int size)
 {
   if(function_call_stack_deep < size)
   {
@@ -15,22 +15,17 @@ int PUSH_CALL(int size)
   return 1;
 }
 
-void POP_CALL(int size)
+void pop_call(int size)
 {
   function_call_stack_deep += size;
 }
 
-void ASSIGN_CALL(int index, unsigned char val)
+void assign_call(int index, unsigned char val)
 {
 	function_call_stack[index] = val;
 }
 
-unsigned char *LOAD_CALL(int index)
-{
-  return &function_call_stack[index];
-}
-
-int TOP_CALL()
+int top_call()
 {
 	return function_call_stack_deep;
 }

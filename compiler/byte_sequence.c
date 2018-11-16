@@ -10,23 +10,43 @@ void assign_with_byte_unit(int type, unsigned char *array, Value v)
     case TYPE_INTEGER:
     case TYPE_BOOLEAN:
     {
-      p = &(v->i);
+      int i_tmp = v->i;
+
+      /* neg int */
+      if(v->i < 0)
+      {
+        /* complement to abs*/
+        i_tmp = ~(v->i - 1);
+      }
+     
+      p = &i_tmp;
 
       if(g_is_big_endian)
       {
         for(j = 0; j < IR->intmetric.size && j < sizeof(int); j++)
         {
-         array[IR->intmetric.size - 1 - j] = *(p + sizeof(int) - 1 - j);
-         // printf("big endian %d %d", IR->intmetric.size -1 - j, array[IR->intmetric.size -1 - j]);
+         array[IR->intmetric.size - 1 - j] = *(p + j);
         }
       }
       else
       {
         for(j = 0; j < IR->intmetric.size && j < sizeof(int); j++)
         {
-          array[IR->intmetric.size - 1 - j] = *(p + j);
-          // printf("little endian %d %d", IR->intmetric.size -1 - j, array[IR->intmetric.size -1 - j]);
+          array[IR->intmetric.size - 1 - j] = *(p + sizeof(int) - 1 - j);
         }
+      }
+
+      /* neg int */
+      if(v->i < 0)
+      {
+        /* true to complement */
+        int *i_tmp = array;
+        *i_tmp = (~(*i_tmp) + 1);
+
+        /*  */
+        unsigned char c_tmp = 0x80;
+
+        array[0] = array[0] | c_tmp;
       }
     }
     break;
@@ -38,16 +58,14 @@ void assign_with_byte_unit(int type, unsigned char *array, Value v)
       {
         for(j = 0; j < IR->intmetric.size && j < sizeof(int); j++)
         {
-         array[IR->intmetric.size - 1 - j] = *(p + sizeof(int) - 1 - j);
-         // printf("big endian %d %d", IR->intmetric.size -1 - j, array[IR->intmetric.size -1 - j]);
+         array[IR->intmetric.size - 1 - j] = *(p + j);
         }
       }
       else
       {
         for(j = 0; j < IR->intmetric.size && j < sizeof(int); j++)
         {
-          array[IR->intmetric.size - 1 - j] = *(p + j);
-          // printf("little endian %d %d", IR->intmetric.size -1 - j, array[IR->intmetric.size -1 - j]);
+          array[IR->intmetric.size - 1 - j] = *(p + sizeof(int) - 1 - j);
         }
       }
     }
@@ -68,14 +86,14 @@ void assign_with_byte_unit(int type, unsigned char *array, Value v)
       {
         for(j = 0; j < IR->intmetric.size && j < sizeof(int); j++)
         {
-          array[IR->intmetric.size - 1 - j] = *(p + sizeof(int) - 1 - j);
+          array[IR->intmetric.size - 1 - j] = *(p + j);
         }
       }
       else
       {
         for(j = 0; j < IR->intmetric.size && j < sizeof(int); j++)
         {
-          array[IR->intmetric.size - 1 - j] = *(p + j);
+          array[IR->intmetric.size - 1 - j] = *(p + sizeof(int) - 1 - j);
         }
       }
     }
@@ -103,14 +121,14 @@ void load_with_byte_unit(int type, unsigned char *array, Value v)
       {
         for(j = 0; j < IR->intmetric.size; j++)
         {
-          *(p + sizeof(int) - 1 - j) = array[IR->intmetric.size - 1 - j];
+          *(p + j) = array[IR->intmetric.size - 1 - j];
         }
       }
       else
       {
         for(j = 0; j < IR->intmetric.size; j++)
         {
-          *(p + j) = array[IR->intmetric.size - 1 - j];
+          *(p + sizeof(int) - 1 - j) = array[IR->intmetric.size - 1 - j];
         }
       }
     }
@@ -123,14 +141,14 @@ void load_with_byte_unit(int type, unsigned char *array, Value v)
       {
         for(j = 0; j < IR->intmetric.size; j++)
         {
-          *(p + sizeof(int) - 1 - j) = array[IR->intmetric.size - 1 - j];
+          *(p + j) = array[IR->intmetric.size - 1 - j];
         }
       }
       else
       {
         for(j = 0; j < IR->intmetric.size; j++)
         {
-          *(p + j) = array[IR->intmetric.size - 1 - j];
+          *(p + sizeof(int) - 1 - j) = array[IR->intmetric.size - 1 - j];
         }
       }
     }
@@ -151,14 +169,14 @@ void load_with_byte_unit(int type, unsigned char *array, Value v)
       {
         for(j = 0; j < IR->intmetric.size; j++)
         {
-          *(p + sizeof(int) - 1 - j) = array[IR->intmetric.size - 1 - j];
+          *(p + j) = array[IR->intmetric.size - 1 - j];
         }
       }
       else
       {
         for(j = 0; j < IR->intmetric.size; j++)
         {
-          *(p + j) = array[IR->intmetric.size - 1 - j];
+          *(p + sizeof(int) - 1 - j) = array[IR->intmetric.size - 1 - j];
         }
       }
     }
