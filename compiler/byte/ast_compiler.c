@@ -5,6 +5,7 @@
 #include  "../parser/rule.h"
 
 List g_cp;
+List g_routine;
 List g_routine_forest;
 
 /*  */
@@ -168,6 +169,22 @@ void ast_compile(List routine_forest, List dag)
   }
 
   /*  */
+  for(g_cp = g_routine_forest->link; g_cp != NULL; g_cp = g_cp->link)
+  {
+    /*  */
+    for(g_routine = (List)(g_cp->x); g_routine != NULL; g_routine = g_routine->link)
+    {
+      /*  */
+      node_compile((Node)(g_routine->x));
+
+      if(g_routine == NULL)
+      {
+        break;
+      }
+    }
+  }
+
+  /*  */
   int i = 0;
   int label_index;
   int jump_index;
@@ -182,7 +199,7 @@ void ast_compile(List routine_forest, List dag)
 
       if(label_index < 0)
       {
-        printf("ast compile error, can not find function %s", label_name);
+        printf("ast compile error, can not find label %s", label_name);
         return;
       }
     }
@@ -194,7 +211,7 @@ void ast_compile(List routine_forest, List dag)
 
       if(label_index < 0)
       {
-        printf("ast compile error, can not find label %s", ptab->name);
+        printf("ast compile error, can not find function %s", ptab->name);
         return;
       }
     }
@@ -565,6 +582,7 @@ int node_compile(Node node)
         {
           parse_error("proc can not have return val", p->name);
           g_cp = NULL;
+          g_routine = NULL;
         }
         else
         {
@@ -752,6 +770,7 @@ int node_compile(Node node)
     {
        /* 符号表压栈 */
       push_symtab_stack(node->symtab);
+      
       /* record function */
       push_function(node->symtab, code_byte_index);
     }

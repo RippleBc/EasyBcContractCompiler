@@ -118,7 +118,6 @@ void init_op_code()
 				{
 					NEW0(op_codes[op_code_index], PERM);
 					op_codes[op_code_index]->code = stoi(tmp, 16);
-					printf("tmp op code %s %d\n", tmp, op_codes[op_code_index]->code);
 				}
 				else
 				{

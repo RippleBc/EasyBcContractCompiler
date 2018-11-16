@@ -225,9 +225,6 @@ extern void ast_compile(List, List);
 program
 :first_act_at_prog program_head sub_program oDOT
 {
-	/* 弹出无效的symtab */
-	pop_symtab_stack();
-
 	if (!err_occur())
 	{
 		NEW0(dag_forest, DAG);
@@ -246,6 +243,8 @@ program
 
 		pop_ast_forest_stack();
 	}
+
+	pop_symtab_stack();
 
 	return 0;
 }
