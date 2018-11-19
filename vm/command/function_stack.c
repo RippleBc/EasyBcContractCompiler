@@ -4,8 +4,10 @@
 static int function_call_stack_deep = FUNCTION_CALL_STACK_DEEP;
 static unsigned char function_call_stack[FUNCTION_CALL_STACK_DEEP];
 
-int push_call(int align)
+int push_call()
 {
+  int align = get_int_from_vm_stack();
+
   if(function_call_stack_deep < align)
   {
     return -1;
@@ -14,8 +16,10 @@ int push_call(int align)
   return 1;
 }
 
-void pop_call(int align)
+void pop_call()
 {
+  int align = get_int_from_vm_stack();
+
   function_call_stack_deep += align;
 }
 

@@ -91,8 +91,8 @@ extern void assign_with_byte_unit(int type, unsigned char *array, Value v);
 extern void load_with_byte_unit(int type, unsigned char *array, Value v);
 
 /* function stack */
-extern int push_call(int align);
-extern void pop_call(int align);
+extern int push_call();
+extern void pop_call();
 extern void assign_call(int align);
 extern void load_call(int align);
 extern int top_call();

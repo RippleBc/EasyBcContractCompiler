@@ -200,6 +200,22 @@ void interpret()
         pop_call();
       }
 
+      if(!strcmp(code_detail->name, "COND"))
+      {
+        int position = get_int_from_vm_stack();
+        boolean cond = get_boolean_from_vm_stack();
+        boolean expression = get_boolean_from_vm_stack();
+        if(cond == expression)
+        {
+          byte_sequence_index = position;
+        }
+      }
+      else if(!strcmp(code_detail->name, "JUMP"))
+      {
+        int position = get_int_from_vm_stack();
+        byte_sequence_index = position;
+      }
+
       if(!strcmp(code_detail->name, "READLN"))
       {
         

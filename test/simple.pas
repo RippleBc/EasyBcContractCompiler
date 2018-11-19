@@ -27,5 +27,15 @@ program helloworld;
 		/* -1 */
 		inta := ((inta << 4 + 2 * intb - intb) / 2) >> 1 % 3 + -2;
 		writeln(inta);
+
+		if(1 > 2) then
+		begin
+			writeln(100);
+		end
+		else
+		begin
+			writeln(200);
+		end;
+
 	end
 .
