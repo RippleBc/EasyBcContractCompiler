@@ -22,8 +22,10 @@ program helloworld;
 	begin
 		inta := 1;
 		intb := 2;
+		intc := -2;
 
-		inta := ((inta << 4 + 2 * intb - intb) / 2) >> 1 % 3;
+		/* -1 */
+		inta := ((inta << 4 + 2 * intb - intb) / 2) >> 1 % 3 + -2;
 
 		writeln('%d', inta);
 	end
