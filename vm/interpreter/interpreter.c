@@ -194,7 +194,8 @@ void interpret()
       }
       else if(!strcmp(code_detail->name, "WRITELN"))
       {
-        
+        int result = get_int_from_vm_stack();
+        printf("%d\n", result);
       }
 
       byte_sequence_index++;
