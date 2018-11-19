@@ -1,5 +1,4 @@
 #include "../common.h"
-#include "./op_codes.h"
 
 #define MAX_CODE_NUM 10 * 1024
 
@@ -25,7 +24,7 @@ void interpret()
     }
     else
     {
-      printf("get_detail_by_op_code %s\n", code_detail->name);
+      // printf("get_detail_by_op_code %s\n", code_detail->name);
     }
 
   	if(!strcmp(code_detail->name, "PUSH4"))
@@ -41,132 +40,157 @@ void interpret()
       /*  */
       if(!strcmp(code_detail->name, "ILSH"))
       {
-        
+        value result;
+        result.i = get_int_from_vm_stack() <<  get_int_from_vm_stack();
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("IRSH %d result %d\n", result.i);
+        }
+
+        push_vm_stack_from_compute(TYPE_INTEGER, &result);
       }
       else if(!strcmp(code_detail->name, "IRSH"))
       {
-        
+        value result;
+        result.i = get_int_from_vm_stack() >>  get_int_from_vm_stack();
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("IRSH %d result %d\n", result.i);
+        }
+
+        push_vm_stack_from_compute(TYPE_INTEGER, &result);
       }
       else if(!strcmp(code_detail->name, "UILSH"))
       {
-        unsigned int result = get_uint_from_vm_stack() <<  get_uint_from_vm_stack();
-        push_vm_stack_from_compute(IR->intmetric, &result);
+        value result;
+        result.ui = get_uint_from_vm_stack() <<  get_uint_from_vm_stack();
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("UILSH %d result %d\n", result.ui);
+        }
+
+        push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
       else if(!strcmp(code_detail->name, "UIRSH"))
       {
-        unsigned int result = get_uint_from_vm_stack() >>  get_uint_from_vm_stack();
-        push_vm_stack_from_compute(IR->intmetric, &result);
+        value result;
+        result.ui = get_uint_from_vm_stack() >>  get_uint_from_vm_stack();
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("UIRSH %d result %d\n", result.ui);
+        }
+
+        push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
 
       /*  */
       if(!strcmp(code_detail->name, "IADD"))
       {
-        int result = get_int_from_vm_stack() + get_int_from_vm_stack();
-        push_vm_stack_from_compute(IR->intmetric, &result);
-      }
-      else if(!strcmp(code_detail->name, "ISUB"))
-      {
-        int result = get_int_from_vm_stack() - get_int_from_vm_stack();
-        push_vm_stack_from_compute(IR->intmetric, &result);
-      }
-      if(!strcmp(code_detail->name, "IMUL"))
-      {
-        int result = get_int_from_vm_stack() * get_int_from_vm_stack();
-        push_vm_stack_from_compute(IR->intmetric, &result);
-      }
-      else if(!strcmp(code_detail->name, "IDIV"))
-      {
-        int result = get_int_from_vm_stack() / get_int_from_vm_stack();
-        push_vm_stack_from_compute(IR->intmetric, &result);
-      }
+        value result;
+        result.i = get_int_from_vm_stack() + get_int_from_vm_stack();
 
-      /*  */
-      if(!strcmp(code_detail->name, "IADD"))
-      {
-        
-      }
-      else if(!strcmp(code_detail->name, "ISUB"))
-      {
-        
-      }
-      if(!strcmp(code_detail->name, "IMUL"))
-      {
-        
-      }
-      else if(!strcmp(code_detail->name, "IDIV"))
-      {
-        
-      }
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("IADD %d result %d\n", result.i);
+        }
 
-      /*  */
-      if(!strcmp(code_detail->name, "IADD"))
-      {
-        
+        push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
       else if(!strcmp(code_detail->name, "ISUB"))
       {
-        
-      }
-      if(!strcmp(code_detail->name, "IMUL"))
-      {
-        
-      }
-      else if(!strcmp(code_detail->name, "IDIV"))
-      {
-        
-      }
+        value result;
+        result.i = get_int_from_vm_stack() - get_int_from_vm_stack();
 
-      /*  */
-      if(!strcmp(code_detail->name, "IADD"))
-      {
-        
-      }
-      else if(!strcmp(code_detail->name, "ISUB"))
-      {
-        
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("ISUB %d result %d\n", result.i);
+        }
+
+        push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
       if(!strcmp(code_detail->name, "IMUL"))
       {
-        
+        value result;
+        result.i = get_int_from_vm_stack() * get_int_from_vm_stack();
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("IMUL %d result %d\n", result.i);
+        }
+
+        push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
       else if(!strcmp(code_detail->name, "IDIV"))
       {
-        
+        value result;
+        result.i = get_int_from_vm_stack() / get_int_from_vm_stack();
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("IDIV %d result %d\n", result.i);
+        }
+
+        push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
 
       /*  */
       if(!strcmp(code_detail->name, "MOD"))
       {
-        int result = get_int_from_vm_stack() / get_int_from_vm_stack();
-        push_vm_stack_from_compute(IR->intmetric, &result);
+        value result;
+        result.i = get_int_from_vm_stack() / get_int_from_vm_stack();
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("MOD %d result %d\n", result.i);
+        }
+
+        push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
 
       
-      if(!strcmp(code_detail->name, "GLOBAL_ASSIGN4"))
+      /* global stack */
+      if(!strcmp(code_detail->name, "ASSIGN_GLOBAL4"))
       {
-        int address = get_uint_from_vm_stack();
-        push_vm_stack_from_compute(IR->intmetric, 4);
+        assign_global(4);
       }
-      else if(!strcmp(code_detail->name, "GLOBAL_LOAD4"))
+      else if(!strcmp(code_detail->name, "LOAD_GLOBAL4"))
       {
-        int result = get_int_from_vm_stack() / get_int_from_vm_stack();
-        push_vm_stack_from_compute(IR->intmetric, &result);
+        load_global(4);
       }
-      else if(!strcmp(code_detail->name, "GLOBAL_ASSIGN8"))
+      else if(!strcmp(code_detail->name, "ASSIGN_GLOBAL8"))
       {
-        int result = get_int_from_vm_stack() / get_int_from_vm_stack();
-        push_vm_stack_from_compute(IR->intmetric, &result);
+        assign_global(8);
       }
-      else if(!strcmp(code_detail->name, "GLOBAL_LOAD8"))
+      else if(!strcmp(code_detail->name, "LOAD_GLOBAL8"))
       {
-        int result = get_int_from_vm_stack() / get_int_from_vm_stack();
-        push_vm_stack_from_compute(IR->intmetric, &result);
+        load_global(8);
       }
 
+      /* function stack */
+      if(!strcmp(code_detail->name, "ASSIGN_CALL4"))
+      {
+        assign_call(4);
+      }
+      else if(!strcmp(code_detail->name, "LOAD_CALL4"))
+      {
+        load_call( 4);
+      }
+      else if(!strcmp(code_detail->name, "ASSIGN_CALL8"))
+      {
+        assign_call(8);
+      }
+      else if(!strcmp(code_detail->name, "LOAD_CALL8"))
+      {
+        load_call(8);
+      }
 
       if(!strcmp(code_detail->name, "READLN"))
       {
-
+        
       }
       else if(!strcmp(code_detail->name, "WRITELN"))
       {

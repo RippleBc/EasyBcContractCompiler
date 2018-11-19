@@ -1,69 +1,90 @@
 #include "../common.h"
-#include "./vm_stack.h"
 
 #define GLOBAL_LENGTH 256
 
 /*  */
-unsigned char global_stack[GLOBAL_LENGTH];
+static unsigned char global_stack[GLOBAL_LENGTH];
 
-void assign_global(int index, int size)
+void assign_global(int size)
 {
+  /*  */
+  int address = get_int_from_vm_stack();
+
 	for(int i = 0; i < size; i++)
 	{
-		global_stack[index++] = vm_stack[vm_stack_deep + i];
+		global_stack[address++] = vm_stack[vm_stack_deep + i];
 	}
   
   pop_vm_stack(size);
 }
 
-int get_int_from_global_stack()
+void load_global(int size)
 {
-  printf("not support get int\n");
+  /*  */
+  int address = get_int_from_vm_stack();
+
+  /*  */
+  push_vm_stack(size);
+
+  /*  */
+  for(int i = 0; i < size; i++)
+  {
+    vm_stack[vm_stack_deep + i] = global_stack[address++];
+  }
+
+  if(VM_STACK_DEBUG)
+  {
+    printf("load_global\n");
+    for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
+    {
+      printf("%x ", vm_stack[i]);
+      if((i + 1) % 4 == 0)
+      {
+        printf("| ");
+      }
+    }
+    printf("\n\n\n");
+  }
+}
+
+int get_int_from_global_stack(int index)
+{
+  value v;
+  load_with_byte_unit(TYPE_INTEGER, &global_stack[index], &v);
+  return v.i;
 }
 
 unsigned int get_uint_from_global_stack(int index)
 {
-  int i = 0;
-  unsigned int val = 0;
-  while(i < IR->intmetric.size)
-  {
-    val = val * (unsigned int)global_stack[index];
-  }
-
-  pop_vm_stack(IR->intmetric.size);
-
-  return val;
+  value v;
+  load_with_byte_unit(TYPE_UINTEGER, &global_stack[index], &v);
+  return v.ui;
 }
 
-int get_real_from_global_stack(int index)
+float get_real_from_global_stack(int index)
 {
-  printf("not support get real\n");
+  value v;
+  load_with_byte_unit(TYPE_REAL, &global_stack[index], &v);
+  return v.f;
 }
 
-unsigned int get_boolean_from_global_stack(int index)
+boolean get_boolean_from_global_stack(int index)
 {
-  int i = 0;
-  unsigned int val = 0;
-  while(i < IR->intmetric.size)
-  {
-    val = val * (unsigned int)global_stack[index];
-  }
-
-  pop_vm_stack(IR->intmetric.size);
-
-  return val;
+  value v;
+  load_with_byte_unit(TYPE_BOOLEAN, &global_stack[index], &v);
+  return v.b;
 }
 
-char get_char_from_vm_stack()
+char get_char_from_global_stack(int index)
 {
-  char c = (char)vm_stack[index];
-
-  return c;
+  value v;
+  load_with_byte_unit(TYPE_CHAR, &global_stack[index], &v);
+  return v.c;
 }
 
-unsigned char get_uchar_from_vm_stack()
+unsigned char get_uchar_from_global_stack(int index)
 {
-  unsigned char c = (unsigned char)vm_stack[index];
-
-  return c;
+  value v;
+  load_with_byte_unit(TYPE_UCHAR, &global_stack[index], &v);
+  return v.uc;
 }

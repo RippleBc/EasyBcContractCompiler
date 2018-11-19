@@ -19,6 +19,12 @@
 #define true 1
 #define false 0
 
+#define TYPE_BYTE_DEBUG (0)
+#define VM_STACK_DEBUG (1)
+
+#define FUNCTION_CALL_STACK_DEEP 256
+#define VM_STACK_DEEP 256
+
 typedef int boolean;
 
 /* memory allocation arenas. */
@@ -43,6 +49,79 @@ typedef struct interface
     }
 Interface;
 
-extern Interface *IR;
+Interface *IR;
 
 int g_is_big_endian;
+
+enum {
+    TYPE_UNKNOWN = 0,
+    TYPE_INTEGER = 1,
+    TYPE_UINTEGER = 2,
+    TYPE_CHAR = 3,
+    TYPE_UCHAR = 4,
+    TYPE_REAL = 5,
+    TYPE_BOOLEAN = 6,
+};
+
+typedef union _value_* Value;
+typedef union _value_ value;
+union _value_
+{
+    int i;
+    unsigned int ui;
+    float f;
+    boolean b;
+    char c;
+    unsigned char uc;
+};
+
+struct _op_code_ {
+    int code;
+    char name[NAME_LEN];
+    int in;
+    int out;
+};
+
+/* byte sequence */
+extern int byte_sequence_size;
+extern unsigned char byte_sequence[];
+extern int byte_sequence_index;
+
+extern void assign_with_byte_unit(int type, unsigned char *array, Value v);
+extern void load_with_byte_unit(int type, unsigned char *array, Value v);
+
+/* function stack */
+extern int push_call(int size);
+extern void pop_call(int size);
+extern void assign_call(int size);
+extern void load_call(int size);
+extern int top_call();
+extern int get_int_from_function_call_stack(int index);
+extern unsigned int get_uint_from_function_call_stack(int index);
+extern float get_real_from_function_call_stack(int index);
+extern boolean get_boolean_from_function_call_stack(int index);
+extern char get_char_from_function_call_stack(int index);
+extern unsigned char get_uchar_from_function_call_stack(int index);
+
+/* global */
+extern void assign_global(int size);
+extern void load_global(int size);
+extern int get_int_from_global_stack(int index);
+extern unsigned int get_uint_from_global_stack(int index);
+extern float get_real_from_global_stack(int index);
+extern boolean get_boolean_from_global_stack(int index);
+extern char get_char_from_global_stack(int index);
+extern unsigned char get_uchar_from_global_stack(int index);
+
+/* vm stack */
+extern int vm_stack_deep;
+extern unsigned char vm_stack[];
+extern void push_vm_stack_from_byte_sequence(int size);
+extern void push_vm_stack_from_compute(int type, Value v);
+extern void pop_vm_stack(int size);
+extern int get_int_from_vm_stack();
+extern unsigned int get_uint_from_vm_stack();
+extern float get_real_from_vm_stack();
+extern boolean get_boolean_from_vm_stack();
+extern char get_char_from_vm_stack();
+extern unsigned char get_uchar_from_vm_stack();

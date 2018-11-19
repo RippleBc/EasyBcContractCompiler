@@ -17,18 +17,6 @@ int push_data(Type t, Value v)
   /*  */
   int data_size = get_type_align_size(t);
 
-  /*  */
-  char command[NAME_LEN];
-  snprintf(command, NAME_LEN, "PUSH%d", data_size);
-  int code = get_op_code_by_name(command);
-  push_command(code);
-
-  /*  */
-  assign_with_byte_unit(t->type_id, &code_byte_sequence[code_byte_index], v);
-  
-  /*  */
-  code_byte_index += data_size;
-
   if(BYTE_DEBUG)
   {
     switch(t->type_id)
@@ -65,6 +53,18 @@ int push_data(Type t, Value v)
       break;
     }
   }
+
+  /*  */
+  char command[NAME_LEN];
+  snprintf(command, NAME_LEN, "PUSH%d", data_size);
+  int code = get_op_code_by_name(command);
+  push_command(code);
+
+  /*  */
+  assign_with_byte_unit(t->type_id, &code_byte_sequence[code_byte_index], v);
+  
+  /*  */
+  code_byte_index += data_size;
 
   /*  */
   if(code_byte_index >= CODE_MAX_NUM)

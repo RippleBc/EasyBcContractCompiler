@@ -1,108 +1,154 @@
 #include "../common.h"
 
-#define STACK_DEEP 256
-
-extern int byte_sequence_index;
-extern unsigned char byte_sequence[];
-
 /*  */
-int vm_stack_deep = STACK_DEEP;
-unsigned char vm_stack[STACK_DEEP];
+int vm_stack_deep = VM_STACK_DEEP;
+unsigned char vm_stack[VM_STACK_DEEP];
 
 void push_vm_stack_from_byte_sequence(int size)
 {
 	/*  */
 	byte_sequence_index += 1;
 
+  /*  */
+  vm_stack_deep -= size;
+  
 	/*  */
   int i = 0;
   while(i < size)
   {
-    vm_stack[--vm_stack_deep] = byte_sequence[byte_sequence_index++];
+    vm_stack[vm_stack_deep + i] = byte_sequence[byte_sequence_index++];
     i++;
   }
+
+  if(VM_STACK_DEBUG)
+  {
+    printf("push_vm_stack_from_byte_sequence\n");
+    for(i = vm_stack_deep; i < VM_STACK_DEEP; i++)
+    {
+      printf("%x ", vm_stack[i]);
+      if((i + 1) % 4 == 0)
+      {
+        printf("| ");
+      }
+    }
+    printf("\n\n\n");
+  }
 }
 
-void push_vm_stack_from_compute(Metrics pm, unsigned char *pc)
+void push_vm_stack_from_compute(int type, Value v)
 {
-  int j = 0;
-
-  if(g_is_big_endian)
+  switch(type)
   {
-    for(j = 0; j < pm.size && j < sizeof(int); j++)
+    case TYPE_INTEGER:
+    case TYPE_UINTEGER:
+    case TYPE_BOOLEAN:
     {
-     vm_stack[pm.size - 1 - j] = *(pc + sizeof(int) - 1 - j);
+      /*  */
+      vm_stack_deep -= IR->intmetric.align;
+    }
+    break;
+    case TYPE_REAL:
+    {
+      /*  */
+      vm_stack_deep -= IR->floatmetric.align;
+    }
+    break;
+    case TYPE_CHAR:
+    case TYPE_UCHAR:
+    {
+      /*  */
+      vm_stack_deep -= IR->charmetric.align;
+    }
+    break;
+    default:
+    {
+      printf("unsupported type %d\n", type);
     }
   }
-  else
-  {
-    for(j = 0; j < pm.size && j < sizeof(int); j++)
-    {
-      vm_stack[pm.size - 1 - j] = *(pc + j);
-    }
-  }
 
-  /*  */
-  vm_stack_deep -= pm.align;
+  assign_with_byte_unit(type, &vm_stack[vm_stack_deep], v);
+
+  if(VM_STACK_DEBUG)
+  {
+    printf("push_vm_stack_from_compute\n");
+    for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
+    {
+      printf("%x ", vm_stack[i]);
+      if((i + 1) % 4 == 0)
+      {
+        printf("| ");
+      }
+    }
+    printf("\n\n\n");
+  }
 }
 
-static void pop_vm_stack(int size)
+void push_vm_stack(int size)
+{
+  vm_stack_deep -= size;
+}
+
+void pop_vm_stack(int size)
 {
   vm_stack_deep += size;
 }
 
 int get_int_from_vm_stack()
 {
-  printf("not support get int\n");
+  value v;
+  load_with_byte_unit(TYPE_INTEGER, &vm_stack[vm_stack_deep], &v);
+
+  pop_vm_stack(IR->intmetric.size);
+
+  return v.i;
 }
 
 unsigned int get_uint_from_vm_stack()
 {
-  int i = 0;
-  unsigned int val = 0;
-  while(i < IR->intmetric.size)
-  {
-    val = val * (unsigned int)vm_stack[vm_stack_deep];
-  }
+  value v;
+  load_with_byte_unit(TYPE_UINTEGER, &vm_stack[vm_stack_deep], &v);
 
   pop_vm_stack(IR->intmetric.size);
 
-  return val;
+  return v.ui;
 }
 
-int get_real_from_vm_stack()
+float get_real_from_vm_stack()
 {
-  printf("not support get real\n");
+  value v;
+  load_with_byte_unit(TYPE_REAL, &vm_stack[vm_stack_deep], &v);
+
+  pop_vm_stack(IR->floatmetric.size);
+
+  return v.f;
 }
 
-unsigned int get_boolean_from_vm_stack()
+boolean get_boolean_from_vm_stack()
 {
-  int i = 0;
-  unsigned int val = 0;
-  while(i < IR->intmetric.size)
-  {
-    val = val * (unsigned int)vm_stack[vm_stack_deep];
-  }
+  value v;
+  load_with_byte_unit(TYPE_BOOLEAN, &vm_stack[vm_stack_deep], &v);
 
   pop_vm_stack(IR->intmetric.size);
 
-  return val;
+  return v.b;
 }
 
 char get_char_from_vm_stack()
 {
-  char c = (char)vm_stack[vm_stack_deep];
+  value v;
+  load_with_byte_unit(TYPE_CHAR, &vm_stack[vm_stack_deep], &v);
 
   pop_vm_stack(IR->charmetric.size);
 
-  return c;
+  return v.c;
 }
 
 unsigned char get_uchar_from_vm_stack()
 {
-  unsigned char c = (unsigned char)vm_stack[vm_stack_deep];
+  value v;
+  load_with_byte_unit(TYPE_UCHAR, &vm_stack[vm_stack_deep], &v);
 
   pop_vm_stack(IR->charmetric.size);
 
-  return c;
+  return v.uc;
 }

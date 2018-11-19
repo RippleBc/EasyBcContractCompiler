@@ -35,7 +35,7 @@ union {
  
 boolean testBigEndin() {
     _host_byte_order_example_.number = 0x01000002;
-    return (_host_byte_order_example_.s == 0x01);
+    return (_host_byte_order_example_.s == 0x02);
 }
 
 static void finalize()
@@ -93,6 +93,8 @@ int main(int argc, char **argv)
         g_is_big_endian = false;
     }
 
+    printf("host byte sequence is %sn", g_is_big_endian ? "big_endian" : "little_endian");
+    
     if (argc == 1)
     {
         printf("\nUsage :%s [-d stad] filename[.pas]\n\n", argv[0]);
