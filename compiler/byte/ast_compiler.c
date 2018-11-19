@@ -822,19 +822,21 @@ int node_compile(Node node)
     break;
     case TAIL: /* 表示过程以及函数定义的结束 */
     {
-      /*  */
-      vm_get_return_index();
-     
-      /*  */
       Symtab ptab = top_symtab_stack();
-      vm_pop_function_call_stack(ptab);
-
-      /*  */
-      ptab = pop_symtab_stack();
 
       /* function call, return origin position */
       if(ptab != Global_symtab)
       {
+        /* get return position */
+        vm_get_return_index();
+       
+        /* pop function stack */
+        vm_pop_function_call_stack(ptab);
+
+        /*  */
+        pop_symtab_stack();
+
+        /* jump to return position */
         int jump_code = get_op_code_by_name("JUMP");
         push_command(jump_code);
       }

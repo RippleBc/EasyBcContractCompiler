@@ -177,7 +177,7 @@ void interpret()
       }
       else if(!strcmp(code_detail->name, "LOAD_CALL4"))
       {
-        load_call( 4);
+        load_call(4);
       }
       else if(!strcmp(code_detail->name, "ASSIGN_CALL8"))
       {
@@ -187,6 +187,18 @@ void interpret()
       {
         load_call(8);
       }
+      else if(!strcmp(code_detail->name, "TOP_CALL"))
+      {
+        top_call();
+      }
+      else if(!strcmp(code_detail->name, "PUSH_CALL"))
+      {
+        push_call();
+      }
+      else if(!strcmp(code_detail->name, "POP_CALL"))
+      {
+        pop_call();
+      }
 
       if(!strcmp(code_detail->name, "READLN"))
       {
@@ -195,7 +207,7 @@ void interpret()
       else if(!strcmp(code_detail->name, "WRITELN"))
       {
         int result = get_int_from_vm_stack();
-        printf("%d\n", result);
+        printf("result is %d\n", result);
       }
 
       byte_sequence_index++;

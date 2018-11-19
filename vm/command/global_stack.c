@@ -5,29 +5,29 @@
 /*  */
 static unsigned char global_stack[GLOBAL_LENGTH];
 
-void assign_global(int size)
+void assign_global(int align)
 {
   /*  */
   int address = get_int_from_vm_stack();
 
-	for(int i = 0; i < size; i++)
+	for(int i = 0; i < align; i++)
 	{
 		global_stack[address++] = vm_stack[vm_stack_deep + i];
 	}
   
-  pop_vm_stack(size);
+  pop_vm_stack(align);
 }
 
-void load_global(int size)
+void load_global(int align)
 {
   /*  */
   int address = get_int_from_vm_stack();
 
   /*  */
-  push_vm_stack(size);
+  push_vm_stack(align);
 
   /*  */
-  for(int i = 0; i < size; i++)
+  for(int i = 0; i < align; i++)
   {
     vm_stack[vm_stack_deep + i] = global_stack[address++];
   }

@@ -4,17 +4,17 @@
 int vm_stack_deep = VM_STACK_DEEP;
 unsigned char vm_stack[VM_STACK_DEEP];
 
-void push_vm_stack_from_byte_sequence(int size)
+void push_vm_stack_from_byte_sequence(int align)
 {
 	/*  */
 	byte_sequence_index += 1;
 
   /*  */
-  vm_stack_deep -= size;
+  vm_stack_deep -= align;
   
 	/*  */
   int i = 0;
-  while(i < size)
+  while(i < align)
   {
     vm_stack[vm_stack_deep + i] = byte_sequence[byte_sequence_index++];
     i++;
@@ -83,14 +83,14 @@ void push_vm_stack_from_compute(int type, Value v)
   }
 }
 
-void push_vm_stack(int size)
+void push_vm_stack(int align)
 {
-  vm_stack_deep -= size;
+  vm_stack_deep -= align;
 }
 
-void pop_vm_stack(int size)
+void pop_vm_stack(int align)
 {
-  vm_stack_deep += size;
+  vm_stack_deep += align;
 }
 
 int get_int_from_vm_stack()
@@ -98,7 +98,7 @@ int get_int_from_vm_stack()
   value v;
   load_with_byte_unit(TYPE_INTEGER, &vm_stack[vm_stack_deep], &v);
 
-  pop_vm_stack(IR->intmetric.size);
+  pop_vm_stack(IR->intmetric.align);
 
   return v.i;
 }
@@ -108,7 +108,7 @@ unsigned int get_uint_from_vm_stack()
   value v;
   load_with_byte_unit(TYPE_UINTEGER, &vm_stack[vm_stack_deep], &v);
 
-  pop_vm_stack(IR->intmetric.size);
+  pop_vm_stack(IR->intmetric.align);
 
   return v.ui;
 }
@@ -118,7 +118,7 @@ float get_real_from_vm_stack()
   value v;
   load_with_byte_unit(TYPE_REAL, &vm_stack[vm_stack_deep], &v);
 
-  pop_vm_stack(IR->floatmetric.size);
+  pop_vm_stack(IR->floatmetric.align);
 
   return v.f;
 }
@@ -128,7 +128,7 @@ boolean get_boolean_from_vm_stack()
   value v;
   load_with_byte_unit(TYPE_BOOLEAN, &vm_stack[vm_stack_deep], &v);
 
-  pop_vm_stack(IR->intmetric.size);
+  pop_vm_stack(IR->intmetric.align);
 
   return v.b;
 }
@@ -138,7 +138,7 @@ char get_char_from_vm_stack()
   value v;
   load_with_byte_unit(TYPE_CHAR, &vm_stack[vm_stack_deep], &v);
 
-  pop_vm_stack(IR->charmetric.size);
+  pop_vm_stack(IR->charmetric.align);
 
   return v.c;
 }
@@ -148,7 +148,7 @@ unsigned char get_uchar_from_vm_stack()
   value v;
   load_with_byte_unit(TYPE_UCHAR, &vm_stack[vm_stack_deep], &v);
 
-  pop_vm_stack(IR->charmetric.size);
+  pop_vm_stack(IR->charmetric.align);
 
   return v.uc;
 }

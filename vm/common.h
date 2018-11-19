@@ -91,10 +91,10 @@ extern void assign_with_byte_unit(int type, unsigned char *array, Value v);
 extern void load_with_byte_unit(int type, unsigned char *array, Value v);
 
 /* function stack */
-extern int push_call(int size);
-extern void pop_call(int size);
-extern void assign_call(int size);
-extern void load_call(int size);
+extern int push_call(int align);
+extern void pop_call(int align);
+extern void assign_call(int align);
+extern void load_call(int align);
 extern int top_call();
 extern int get_int_from_function_call_stack(int index);
 extern unsigned int get_uint_from_function_call_stack(int index);
@@ -104,8 +104,8 @@ extern char get_char_from_function_call_stack(int index);
 extern unsigned char get_uchar_from_function_call_stack(int index);
 
 /* global */
-extern void assign_global(int size);
-extern void load_global(int size);
+extern void assign_global(int align);
+extern void load_global(int align);
 extern int get_int_from_global_stack(int index);
 extern unsigned int get_uint_from_global_stack(int index);
 extern float get_real_from_global_stack(int index);
@@ -116,9 +116,9 @@ extern unsigned char get_uchar_from_global_stack(int index);
 /* vm stack */
 extern int vm_stack_deep;
 extern unsigned char vm_stack[];
-extern void push_vm_stack_from_byte_sequence(int size);
+extern void push_vm_stack_from_byte_sequence(int align);
 extern void push_vm_stack_from_compute(int type, Value v);
-extern void pop_vm_stack(int size);
+extern void pop_vm_stack(int align);
 extern int get_int_from_vm_stack();
 extern unsigned int get_uint_from_vm_stack();
 extern float get_real_from_vm_stack();
