@@ -4057,7 +4057,7 @@ yyreduce:
 	rtn = top_call_stack();
 
 	/* 从符号表的参数链表中获取下一个参数 */
-	if (arg)
+	if(arg)
 	{
 		arg = arg->next;
 	}
@@ -4081,22 +4081,18 @@ yyreduce:
 		arg = rtn->args;
 	else
 	{
-		/*  */
-		if(rtn->level >= 0)
-		{
-			parse_error("parse argument list error.", "");
-			return 0;
-		}
+		parse_error("parse argument list error.", "");
+		return 0;
 	}
 
 	/* 初始化参数AST树 */
 	args = arg_tree(args, rtn, arg, (yyvsp[0].p_tree));
 }
-#line 4096 "parser/rule.c" /* yacc.c:1646  */
+#line 4092 "parser/rule.c" /* yacc.c:1646  */
     break;
 
 
-#line 4100 "parser/rule.c" /* yacc.c:1646  */
+#line 4096 "parser/rule.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -4324,7 +4320,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 2143 "parser/spl.y" /* yacc.c:1906  */
+#line 2139 "parser/spl.y" /* yacc.c:1906  */
 
 
 #define MAX_TERM  64

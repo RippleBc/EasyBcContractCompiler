@@ -144,7 +144,15 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
     /* 函数参数树已经初始化 */
     if (argtree->kids[1] == NULL)
     {
-        argtree->kids[1] = new_tree(RIGHT, expr->result_type, expr, NULL);
+        if(arg != NULL)
+        {
+            argtree->kids[1] = new_tree(RIGHT, arg->type, expr, NULL);
+        }
+        else
+        {
+            argtree->kids[1] = new_tree(RIGHT, expr->result_type, expr, NULL);
+        }
+        
         right = argtree->kids[1];
     }
     else
@@ -153,10 +161,19 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
 
         /* 移动到参数AST树最右端 */
         while(right->kids[1] != NULL)
+        {
             right = right->kids[1];
+        }
 
         /* 初始化一个最右AST树 */
-        right->kids[1] = new_tree(RIGHT, expr->result_type, expr, NULL);
+        if(arg != NULL)
+        {
+            right->kids[1] = new_tree(RIGHT, arg->type, expr, NULL);
+        }
+        else
+        {
+            right->kids[1] = new_tree(RIGHT, expr->result_type, expr, NULL);
+        }
 
         right = right->kids[1];
     }

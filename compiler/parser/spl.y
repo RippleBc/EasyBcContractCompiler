@@ -2107,7 +2107,7 @@ args_list
 	rtn = top_call_stack();
 
 	/* 从符号表的参数链表中获取下一个参数 */
-	if (arg)
+	if(arg)
 	{
 		arg = arg->next;
 	}
@@ -2127,12 +2127,8 @@ args_list
 		arg = rtn->args;
 	else
 	{
-		/*  */
-		if(rtn->level >= 0)
-		{
-			parse_error("parse argument list error.", "");
-			return 0;
-		}
+		parse_error("parse argument list error.", "");
+		return 0;
 	}
 
 	/* 初始化参数AST树 */
