@@ -153,7 +153,8 @@ void assign_with_byte_unit(int type, unsigned char *array, Value v)
       }
       default:
       {
-        printf("assign_with_byte_unit type unsupport\n");
+        printf("*************assign_with_byte_unit type unsupport*************\n");
+        exit(1);
       }
     }
   }

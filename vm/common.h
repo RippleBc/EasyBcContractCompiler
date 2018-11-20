@@ -20,8 +20,8 @@
 #define false 0
 
 #define TYPE_BYTE_DEBUG (0)
-#define VM_STACK_DEBUG (1)
-#define GLOBAL_AREA_DEBUG (1)
+#define VM_STACK_DEBUG (0)
+#define GLOBAL_AREA_DEBUG (0)
 
 #define VM_STACK_DEEP 256
 
@@ -91,7 +91,7 @@ extern void assign_with_byte_unit(int type, unsigned char *array, Value v);
 extern void load_with_byte_unit(int type, unsigned char *array, Value v);
 
 /* function stack */
-extern int push_call();
+extern void push_call();
 extern void pop_call();
 extern void assign_call(int align);
 extern void load_call(int align);

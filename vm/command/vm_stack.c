@@ -9,9 +9,15 @@ void push_vm_stack_from_byte_sequence(int align)
 	/*  */
 	byte_sequence_index += 1;
 
+  if(vm_stack_deep - align < 0)
+  {
+    printf("*************vm stack is full*************\n");
+    exit(1);
+  }
+
   /*  */
   vm_stack_deep -= align;
-  
+
 	/*  */
   int i = 0;
   while(i < align)
@@ -43,12 +49,22 @@ void push_vm_stack_from_compute(int type, Value v)
     case TYPE_UINTEGER:
     case TYPE_BOOLEAN:
     {
+      if(vm_stack_deep - IR->intmetric.align < 0)
+      {
+        printf("*************vm stack is full*************\n");
+        exit(1);
+      }
       /*  */
       vm_stack_deep -= IR->intmetric.align;
     }
     break;
     case TYPE_REAL:
     {
+      if(vm_stack_deep - IR->floatmetric.align < 0)
+      {
+        printf("*************vm stack is full*************\n");
+        exit(1);
+      }
       /*  */
       vm_stack_deep -= IR->floatmetric.align;
     }
@@ -56,13 +72,19 @@ void push_vm_stack_from_compute(int type, Value v)
     case TYPE_CHAR:
     case TYPE_UCHAR:
     {
+      if(vm_stack_deep - IR->charmetric.align < 0)
+      {
+        printf("*************vm stack is full*************\n");
+        exit(1);
+      }
       /*  */
       vm_stack_deep -= IR->charmetric.align;
     }
     break;
     default:
     {
-      printf("unsupported type %d\n", type);
+      printf("*************unsupported type %d\n*************", type);
+      exit(1);
     }
   }
 
@@ -85,11 +107,21 @@ void push_vm_stack_from_compute(int type, Value v)
 
 void push_vm_stack(int align)
 {
+  if(vm_stack_deep - align < 0)
+  {
+    printf("*************vm stack is full*************\n");
+    exit(1);
+  }
   vm_stack_deep -= align;
 }
 
 void pop_vm_stack(int align)
 {
+  if(vm_stack_deep + align > VM_STACK_DEEP)
+  {
+    printf("*************vm stack is empty*************\n");
+    exit(1);
+  }
   vm_stack_deep += align;
 }
 

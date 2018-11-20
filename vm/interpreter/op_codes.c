@@ -19,8 +19,8 @@ int stoi(char *s,int radix)
             c_val = *p -'0';
             if(c_val > 7)
             {
-                printf("octal transform fail %d", c_val);
-                return -1;
+                printf("*************octal transform fail %d*************\n", c_val);
+                exit(1);
             }
             val = val * radix + c_val;
             p++;
@@ -42,8 +42,8 @@ int stoi(char *s,int radix)
                 c_val = tolower(*p) -'a';
                 if(c_val > 5)
                 {
-                    printf("hex transform fail %d", c_val);
-                    return -1;
+                    printf("*************hex transform fail %d*************\n", c_val);
+                    exit(1);
                 }
                 val = val * radix + c_val + 10;
             }
@@ -57,8 +57,8 @@ int stoi(char *s,int radix)
             c_val = *p -'0';
             if(c_val > 9)
             {
-                printf("decimal transform fail %d", c_val);
-                return -1;
+                printf("*************decimal transform fail %d*************\n", c_val);
+                exit(1);
             }
             val = val * radix + c_val;
             p++;
@@ -81,7 +81,7 @@ void init_op_code()
 	if(pFile == NULL)
 	{
 		printf("file opcodes.txt not exit\n");
-		return;
+		exit(1);
 	}
 
 	char c;

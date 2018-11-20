@@ -1,6 +1,6 @@
 #include "../common.h"
 
-#define GLOBAL_AREA_MAX_SIZE 256
+#define GLOBAL_AREA_MAX_SIZE 1024 * 10
 
 /*  */
 static unsigned char global_area[GLOBAL_AREA_MAX_SIZE];
@@ -11,9 +11,10 @@ void assign_global(int align)
   int address = get_int_from_vm_stack();
 
   /*  */
-  if(address + align > GLOBAL_AREA_MAX_SIZE)
+  if(address + align -1 >= GLOBAL_AREA_MAX_SIZE)
   {
-    printf("global area is full\n");
+    printf("*************global area is full*************\n");
+    exit(1);
   }
 
 	for(int i = 0; i < align; i++)

@@ -17,14 +17,13 @@ void interpret()
 
   while(byte_sequence_index < byte_sequence_size)
   {
+    // printf("get_detail_by_op_code index %x code %x\n", byte_sequence_index, byte_sequence[byte_sequence_index]);
+
   	code_detail = get_detail_by_op_code(byte_sequence[byte_sequence_index]);
     if(code_detail == NULL)
     {
-      return;
-    }
-    else
-    {
-      // printf("get_detail_by_op_code %s\n", code_detail->name);
+      printf("*************get_detail_by_op_code error*************\n");
+      exit(1);
     }
 
   	if(!strcmp(code_detail->name, "PUSH4"))
