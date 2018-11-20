@@ -35,6 +35,28 @@ void interpret()
   	{
   		push_vm_stack_from_byte_sequence(8);
   	}
+    else if(!strcmp(code_detail->name, "COND"))
+    {
+      int position = get_int_from_vm_stack();
+      boolean cond = get_boolean_from_vm_stack();
+      boolean expression = get_boolean_from_vm_stack();
+      
+      if(cond == expression)
+      {
+        /* jump */
+        byte_sequence_index = position;
+      }
+      else
+      {
+        /* execute the next op code */
+        byte_sequence_index++;
+      }
+    }
+    else if(!strcmp(code_detail->name, "JUMP"))
+    {
+      int position = get_int_from_vm_stack();
+      byte_sequence_index = position;
+    }
     else
     {
       /*  */
@@ -87,7 +109,7 @@ void interpret()
         push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
 
-      /*  */
+      /* basic arithmatical */
       if(!strcmp(code_detail->name, "IADD"))
       {
         value result;
@@ -136,9 +158,7 @@ void interpret()
 
         push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
-
-      /*  */
-      if(!strcmp(code_detail->name, "MOD"))
+      else if(!strcmp(code_detail->name, "MOD"))
       {
         value result;
         result.i = get_int_from_vm_stack() / get_int_from_vm_stack();
@@ -150,8 +170,106 @@ void interpret()
 
         push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
+      else if(!strcmp(code_detail->name, "IINCR"))
+      {
+        value result;
+        result.i = get_int_from_vm_stack() + 1;
 
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("IINCR %d result %d\n", result.i);
+        }
+
+        push_vm_stack_from_compute(TYPE_INTEGER, &result);
+      }
+      else if(!strcmp(code_detail->name, "IDECR"))
+      {
+        value result;
+        result.i = get_int_from_vm_stack() - 1;
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("IDECR %d result %d\n", result.i);
+        }
+
+        push_vm_stack_from_compute(TYPE_INTEGER, &result);
+      }
       
+      /* judge */
+      if(!strcmp(code_detail->name, "IEQ"))
+      {
+        value result;
+        result.b = get_int_from_vm_stack() == get_int_from_vm_stack();
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("IEQ %d result %d\n", result.b);
+        }
+
+        push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
+      }
+      else if(!strcmp(code_detail->name, "INE"))
+      {
+        value result;
+        result.b = get_int_from_vm_stack() != get_int_from_vm_stack();
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("INE %d result %d\n", result.b);
+        }
+
+        push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
+      }
+      else if(!strcmp(code_detail->name, "IGE"))
+      {
+        value result;
+        result.b = get_int_from_vm_stack() >= get_int_from_vm_stack();
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("IGE %d result %d\n", result.b);
+        }
+
+        push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
+      }
+      else if(!strcmp(code_detail->name, "IGT"))
+      {
+        value result;
+        result.b = get_int_from_vm_stack() > get_int_from_vm_stack();
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("IGT %d result %d\n", result.b);
+        }
+
+        push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
+      }
+      else if(!strcmp(code_detail->name, "ILE"))
+      {
+        value result;
+        result.b = get_int_from_vm_stack() <= get_int_from_vm_stack();
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("ILE %d result %d\n", result.b);
+        }
+
+        push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
+      }
+      else if(!strcmp(code_detail->name, "ILT"))
+      {
+        value result;
+        result.b = get_int_from_vm_stack() < get_int_from_vm_stack();
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("ILT %d result %d\n", result.b);
+        }
+
+        push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
+      }
+      
+
       /* global stack */
       if(!strcmp(code_detail->name, "ASSIGN_GLOBAL4"))
       {
@@ -198,22 +316,6 @@ void interpret()
       else if(!strcmp(code_detail->name, "POP_CALL"))
       {
         pop_call();
-      }
-
-      if(!strcmp(code_detail->name, "COND"))
-      {
-        int position = get_int_from_vm_stack();
-        boolean cond = get_boolean_from_vm_stack();
-        boolean expression = get_boolean_from_vm_stack();
-        if(cond == expression)
-        {
-          byte_sequence_index = position;
-        }
-      }
-      else if(!strcmp(code_detail->name, "JUMP"))
-      {
-        int position = get_int_from_vm_stack();
-        byte_sequence_index = position;
       }
 
       if(!strcmp(code_detail->name, "READLN"))

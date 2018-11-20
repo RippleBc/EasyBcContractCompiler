@@ -1,5 +1,7 @@
 #include "../common.h"
 
+#define FUNCTION_CALL_STACK_DEEP 256
+
 /*  */
 static int function_call_stack_deep = FUNCTION_CALL_STACK_DEEP;
 static unsigned char function_call_stack[FUNCTION_CALL_STACK_DEEP];
@@ -90,46 +92,4 @@ int top_call()
     }
     printf("\n\n\n");
   }
-}
-
-int get_int_from_function_call_stack(int index)
-{
-  value v;
-  load_with_byte_unit(TYPE_INTEGER, &function_call_stack[function_call_stack_deep + index], &v);
-  return v.i;
-}
-
-unsigned int get_uint_from_function_call_stack(int index)
-{
-  value v;
-  load_with_byte_unit(TYPE_UINTEGER, &function_call_stack[function_call_stack_deep + index], &v);
-  return v.ui;
-}
-
-float get_real_from_function_call_stack(int index)
-{
-  value v;
-  load_with_byte_unit(TYPE_REAL, &function_call_stack[function_call_stack_deep + index], &v);
-  return v.f;
-}
-
-boolean get_boolean_from_function_call_stack(int index)
-{
-  value v;
-  load_with_byte_unit(TYPE_BOOLEAN, &function_call_stack[function_call_stack_deep + index], &v);
-  return v.b;
-}
-
-char get_char_from_function_call_stack(int index)
-{
-  value v;
-  load_with_byte_unit(TYPE_CHAR, &function_call_stack[function_call_stack_deep + index], &v);
-  return v.c;
-}
-
-unsigned char get_uchar_from_function_call_stack(int index)
-{
-  value v;
-  load_with_byte_unit(TYPE_UCHAR, &function_call_stack[function_call_stack_deep + index], &v);
-  return v.uc;
 }

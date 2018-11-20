@@ -20,9 +20,9 @@
 #define false 0
 
 #define TYPE_BYTE_DEBUG (0)
-#define VM_STACK_DEBUG (1)
+#define VM_STACK_DEBUG (0)
+#define GLOBAL_STACK_DEBUG (0)
 
-#define FUNCTION_CALL_STACK_DEEP 256
 #define VM_STACK_DEEP 256
 
 typedef int boolean;
@@ -96,22 +96,6 @@ extern void pop_call();
 extern void assign_call(int align);
 extern void load_call(int align);
 extern int top_call();
-extern int get_int_from_function_call_stack(int index);
-extern unsigned int get_uint_from_function_call_stack(int index);
-extern float get_real_from_function_call_stack(int index);
-extern boolean get_boolean_from_function_call_stack(int index);
-extern char get_char_from_function_call_stack(int index);
-extern unsigned char get_uchar_from_function_call_stack(int index);
-
-/* global */
-extern void assign_global(int align);
-extern void load_global(int align);
-extern int get_int_from_global_stack(int index);
-extern unsigned int get_uint_from_global_stack(int index);
-extern float get_real_from_global_stack(int index);
-extern boolean get_boolean_from_global_stack(int index);
-extern char get_char_from_global_stack(int index);
-extern unsigned char get_uchar_from_global_stack(int index);
 
 /* vm stack */
 extern int vm_stack_deep;
