@@ -20,7 +20,7 @@ program helloworld;
 		arraya : arr;
 		recorda : date;
 	begin
-		writeln('year %d month %d zzzz', 2018, 11);
+		writeln('year %d month %d like %s zzzz', 2018, 11, 'apple');
 
 		// inta := 1;
 		// intb := 2;
