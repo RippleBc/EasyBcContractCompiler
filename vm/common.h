@@ -20,8 +20,8 @@
 #define false 0
 
 #define TYPE_BYTE_DEBUG (0)
-#define VM_STACK_DEBUG (0)
-#define GLOBAL_STACK_DEBUG (0)
+#define VM_STACK_DEBUG (1)
+#define GLOBAL_AREA_DEBUG (1)
 
 #define VM_STACK_DEEP 256
 
