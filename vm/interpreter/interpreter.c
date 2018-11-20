@@ -1,6 +1,8 @@
 #include "../common.h"
 
 #define MAX_CODE_NUM 10 * 1024
+#define MAX_FORMAT_STR_SIZE 128
+#define MAX_STR_SIZE 128
 
 int byte_sequence_size = 0;
 unsigned char byte_sequence[MAX_CODE_NUM];
@@ -321,8 +323,98 @@ void interpret()
       }
       else if(!strcmp(code_detail->name, "WRITELN"))
       {
-        int result = get_int_from_vm_stack();
-        printf("result is %d\n", result);
+        char format_str[MAX_FORMAT_STR_SIZE];
+
+        /*  */
+        int format_str_size = get_int_from_vm_stack();
+        if(format_str_size > MAX_FORMAT_STR_SIZE)
+        {
+          printf("*************format string is too long , max size is %d*************\n", MAX_FORMAT_STR_SIZE);
+          exit(1);
+        }
+
+        /*  */
+        int format_str_index = 0;
+        while(format_str_index < format_str_size)
+        {
+          format_str[format_str_index++] = get_char_from_vm_stack();
+        }
+        format_str[format_str_index] = '\0';
+        
+        /*  */
+        int i;
+        for(i = 0; i < format_str_index - 1; i++)
+        {
+          if(format_str[i] == '%')
+          {
+            if(i == 0 || format_str[i-1] != '\\')
+            {
+              switch(format_str[i + 1])
+              {
+                case 'd':
+                {
+                  printf("%d", get_int_from_vm_stack());
+                }
+                break;
+                case 'c':
+                {
+                  printf("%c", get_char_from_vm_stack());
+                }
+                break;
+                case 'f':
+                {
+                  printf("%f", get_real_from_vm_stack());
+                }
+                break;
+                case 'u':
+                {
+                  printf("%u", get_uint_from_vm_stack());
+                }
+                break;
+                case 'y':
+                {
+                  printf("%u", get_uchar_from_vm_stack());
+                }
+                break;
+                case 's':
+                {
+                  char str[MAX_STR_SIZE];
+
+                  /* str size */
+                  int str_size = get_int_from_vm_stack();
+                  if(str_size > MAX_STR_SIZE)
+                  {
+                    printf("*************string is too long , max size is %d*************\n", MAX_STR_SIZE);
+                    exit(1);
+                  }
+
+                  /* str data */
+                  int str_index = 0;
+                  while(str_index < str_size)
+                  {
+                    str[str_index++] = get_char_from_vm_stack();
+                  }
+                  str[str_index] = '\0';
+
+                  printf("%s", str);
+                }
+                break;
+                default:
+                {
+                  printf("*************unsupported format type*************\n", format_str[i + 1]);
+                }
+              }
+
+              i++;
+
+              continue;
+            }
+          }
+
+          printf("%c", format_str[i]);
+        }
+
+        printf("%c", format_str[i]);
       }
 
       byte_sequence_index++;

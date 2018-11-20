@@ -416,9 +416,15 @@ int node_compile(Node node)
   case RIGHT:
   case ARG:
   {
+    /* 计算其余参数的值 */
+    if(node->kids[1] != NULL)
+    {
+      node_compile(node->kids[1]);
+    }
+
+    /*  */
     Symbol arg = node->syms[0];
 
-    
     if(arg)
     {
       if(arg->type->type_id == TYPE_ARRAY)
@@ -441,15 +447,27 @@ int node_compile(Node node)
     }
     else
     {
-      /* syscall, no symtab, no arg sym */
+      /* val(syscall, no symtab, no arg sym) */
       node_compile(node->kids[0]);
-    }
-    
 
-    /* 计算其余参数的值 */
-    if(node->kids[1] != NULL)
-    {
-      node_compile(node->kids[1]);
+      /* writeln format string*/
+      if(generic(node->kids[0]->op) == CNST && node->kids[0]->syms[0]->type->type_id == TYPE_STRING)
+      {
+        value v;
+        char *p_c = node->kids[0]->syms[0]->v.s;
+        int string_len = strlen(p_c);
+
+        /* data */
+        for(int i = string_len - 1; i >= 0 ; i--)
+        {
+          v.c = p_c[i];
+          push_data(find_type_by_id(TYPE_CHAR), &v);
+        }
+
+        /* data size */
+        v.i = string_len;
+        push_data(find_type_by_id(TYPE_INTEGER), &v);
+      }
     }
   }
   break;
