@@ -44,8 +44,8 @@ void vm_assign_function_call_stack_val(Type v_type, Value v, Symbol p)
     {
       if(i > p->type->num_ele - 1)
       {
-        parse_error("assign_local array out of index", p->name);
-        return;
+        printf("assign_local array out of index", p->name);
+        exit(1);
       }
 
       /* val */

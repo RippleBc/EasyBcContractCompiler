@@ -23,8 +23,8 @@ void vm_assign_global(Type v_type, Value v, Symbol p)
     {
       if(i > p->type->num_ele - 1)
       {
-        parse_error("assign_global array out of index", p->name);
-        return;
+        printf("assign_global array out of index", p->name);
+        exit(1);
       }
 
       /* val */

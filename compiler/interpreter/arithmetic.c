@@ -19,10 +19,9 @@ switch(con->kids[0]->type->type_id) { \
                 break; \
         default: \
         { \
-            parse_error("binary_xx error", get_op_name(optype)); \
+            printf("binary_xx error %s", get_op_name(optype)); \
             exit(1); \
         } \
-        break; \
 } \
 break;
 
@@ -48,10 +47,9 @@ switch(con->kids[0]->type->type_id) { \
                 break; \
         default: \
         { \
-            parse_error("real_binary_xx error", get_op_name(optype)); \
+            printf("real_binary_xx error %s", get_op_name(optype)); \
             exit(1); \
         } \
-        break; \
 } \
 break;
 
@@ -74,10 +72,9 @@ switch(con->kids[0]->type->type_id) { \
                 break; \
         default: \
         { \
-            parse_error("single_xx error", get_op_name(optype)); \
+            printf("single_xx error %s", get_op_name(optype)); \
             exit(1); \
         } \
-        break; \
 } \
 break;
 
@@ -103,10 +100,9 @@ switch(con->kids[0]->type->type_id) { \
                 break; \
         default: \
         { \
-            parse_error("real_single_xx error", get_op_name(optype)); \
+            printf("real_single_xx error %s", get_op_name(optype)); \
             exit(1); \
         } \
-        break; \
 } \
 break;
 
@@ -139,7 +135,7 @@ void arithmetical_operate(Node con)
     real_single_xx(NEG, -);
     default:
     {
-        parse_error("arithmetical_operate error", "");
+        printf("arithmetical_operate error %s", "");
         exit(1);
     }
     break;

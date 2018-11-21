@@ -73,7 +73,8 @@ void push_data(Type t, Value v)
   /*  */
   code_byte_index += data_size;
 }
-int push_command(int code)
+
+void push_command(int code)
 {
   if(BYTE_DEBUG)
   {
@@ -85,13 +86,11 @@ int push_command(int code)
   if(code_byte_index >= CODE_MAX_NUM)
   {
     printf("code_byte_sequence overflow\n");
-    return 0;
+    exit(1);
   }
 
   /*  */
   code_byte_sequence[code_byte_index++] = code;
-
-  return 1;
 }
 
 /*  */
@@ -106,7 +105,11 @@ static LabelDetail label_detail_sequence[CODE_MAX_NUM];
 static void push_label(char *name, int code_index)
 {
   NEW0(label_detail_sequence[label_detail_index], PERM);
-
+  if(!label_detail_sequence[label_detail_index])
+  {
+    printf("insufficient memory\n");
+    exit(1);
+  }
   /*  */
   label_detail_sequence[label_detail_index]->code_index = code_index;
   strncpy(label_detail_sequence[label_detail_index]->name, name, NAME_LEN);
@@ -125,7 +128,9 @@ static int get_label_index(char *name)
 
     i++;
   }
-  return -1;
+  
+  printf("label is not exist %s\n", name);
+  exit(1);
 }
 
 /*  */
@@ -140,7 +145,11 @@ static FunctionDetail function_detail_sequence[CODE_MAX_NUM];
 static void push_function(Symtab ptab, int code_index)
 {
   NEW0(function_detail_sequence[function_detail_index], PERM);
-
+  if(!function_detail_sequence[function_detail_index])
+  {
+    printf("insufficient memory\n");
+    exit(1);
+  }
   /*  */
   function_detail_sequence[function_detail_index]->code_index = code_index;
   function_detail_sequence[function_detail_index]->ptab = ptab;
@@ -159,7 +168,9 @@ static int get_function_index(Symtab ptab)
 
     i++;
   }
-  return -1;
+  
+  printf("function is not exist %s\n", ptab->name);
+  exit(1);
 }
 
 /*  */
@@ -175,6 +186,11 @@ static JumpDetail jump_detail_sequence[CODE_MAX_NUM];
 static void push_jump_detail(char *name, int index, Symtab ptab)
 {
   NEW0(jump_detail_sequence[jump_detail_index], PERM);
+  if(!jump_detail_sequence[jump_detail_index])
+  {
+    printf("insufficient memory\n");
+    exit(1);
+  }
 
   if(name)
   {
@@ -228,7 +244,7 @@ void ast_compile(List routine_forest, List dag)
 
   /*  */
   int i = 0;
-  int label_index;
+  int label_or_function_index;
   int jump_index;
   while(i < jump_detail_index)
   {
@@ -237,32 +253,20 @@ void ast_compile(List routine_forest, List dag)
       /*  */
       char *label_name = jump_detail_sequence[i]->name;
       /*  */
-      label_index = get_label_index(label_name);
-
-      if(label_index < 0)
-      {
-        printf("ast compile error, can not find label %s", label_name);
-        return;
-      }
+      label_or_function_index = get_label_index(label_name);
     }
     else
     {
       Symtab ptab = jump_detail_sequence[i]->ptab;
       /*  */
-      label_index = get_function_index(ptab);
-
-      if(label_index < 0)
-      {
-        printf("ast compile error, can not find function %s", ptab->name);
-        return;
-      }
+      label_or_function_index = get_function_index(ptab);
     }
 
     jump_index = jump_detail_sequence[i]->code_index;
 
     /*  */
     value v_jump_code;
-    v_jump_code.i = label_index;
+    v_jump_code.i = label_or_function_index;
     assign_with_byte_unit(TYPE_INTEGER, &code_byte_sequence[jump_index], &v_jump_code);
 
     i++;
@@ -329,17 +333,20 @@ int node_compile(Node node)
     break;
     case TYPE_CHAR:
     {
-      parse_error("COND expression can not be char", "");
+      printf("COND expression can not be char");
+      exit(1);
     }
     break;
     case TYPE_REAL:
     {
-      parse_error("COND expression can not be real", "");
+      printf("COND expression can not be real");
+      exit(1);
     }
     break;
     case TYPE_STRING:
     {
-      parse_error("COND expression can not be string", "");
+      printf("COND expression can not be string");
+      exit(1);
     }
     break;
     }
@@ -640,24 +647,15 @@ int node_compile(Node node)
       }
       else
       {
-        if(p->defn == DEF_PROC)
+        if(s_array)
         {
-          parse_error("proc can not have return val", p->name);
-          g_cp = NULL;
-          g_routine = NULL;
+          /* 局部变量赋值 */
+          vm_assign_function_call_stack_val(NULL, &(node->kids[1]->syms[0]->v), s_array);
         }
         else
         {
-          if(s_array)
-          {
-            /* 局部变量赋值 */
-            vm_assign_function_call_stack_val(NULL, &(node->kids[1]->syms[0]->v), s_array);
-          }
-          else
-          {
-            /*  */
-            vm_assign_function_call_stack_val(node->kids[1]->type, NULL, NULL);
-          }
+          /*  */
+          vm_assign_function_call_stack_val(node->kids[1]->type, NULL, NULL);
         }
       }
     }

@@ -407,39 +407,27 @@ type *find_system_type_by_id(int id)
 
 int get_type_align_size(type *pt)
 { 
-    if (!pt)
-    {
-        return 0;
-    }
-
     switch(pt->type_id)
     {
-    case TYPE_INTEGER:
-    case TYPE_UINTEGER:
-        return  IR->intmetric.align;
-    case TYPE_CHAR:
-    case TYPE_UCHAR:
-    case TYPE_BOOLEAN:
-        return  IR->charmetric.align;
-    case TYPE_REAL:
-        return  IR->floatmetric.align;
-    case TYPE_STRING:
-        /*  */
-        return  IR->intmetric.align;
-    case TYPE_ARRAY:
-    {
-        return pt->num_ele * get_symbol_align_size(pt->last);
-    } 
-    case TYPE_RECORD:
-    {
-        return pt->size;
+        case TYPE_INTEGER:
+        case TYPE_UINTEGER:
+            return  IR->intmetric.align;
+        case TYPE_CHAR:
+        case TYPE_UCHAR:
+        case TYPE_BOOLEAN:
+            return  IR->charmetric.align;
+        case TYPE_REAL:
+            return  IR->floatmetric.align;
+        case TYPE_STRING:
+            return  IR->intmetric.align;
+        case TYPE_ARRAY:
+            return pt->num_ele * get_symbol_align_size(pt->last);
+        case TYPE_RECORD:
+            return pt->size;
+        case TYPE_UNKNOWN:
+        default:
+        {
+            internal_error("unknown type.");
+        }
     }
-    case TYPE_UNKNOWN:
-    {
-        printf("TYPE_UNKNOWN %s\n", pt->name);
-        internal_error("Unknown type.");
-    }
-    break;
-    }
-    return 0;
 }

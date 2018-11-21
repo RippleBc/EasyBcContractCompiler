@@ -842,8 +842,6 @@ yNAME parameters
 	strncpy(ptab->name, $3, NAME_LEN);
 	ptab->defn = DEF_PROC;
 
-	p = new_symbol($3, DEF_PROC, TYPE_VOID);
-	add_symbol_to_table(ptab, p);
 	reverse_parameters(ptab);
 
 	Tree header;
@@ -2107,30 +2105,37 @@ int term_stk_tos = MAX_TERM - 1;
 void push_term_stack(symbol * p)
 {
 	if(term_stk_tos == 0)
+	{
 		internal_error("teminal stak overtlow");
+	}
 	else
-   		term_stk[term_stk_tos--] = p;
+	{
+		term_stk[term_stk_tos--] = p;
+	}		
  }
 
-symbol * pop_term_stack()
+symbol *pop_term_stack()
 {
-	if (term_stk_tos == MAX_TERM - 1)
+	if(term_stk_tos == MAX_TERM - 1)
 	{
-  		internal_error("terminal stack underflow");
-  		return NULL;
+		internal_error("terminal stack underflow");
 	}
-    else
-		return term_stk[++term_stk_tos];
+  else
+  {
+  	return term_stk[++term_stk_tos];
+  }
+		
 }
 
-symbol* top_term_stack()
+symbol *top_term_stack()
 {
 	if(term_stk_tos == MAX_TERM - 1){
 		internal_error("terminal stack underflow");
-		return NULL;
 	}
 	else
+	{
 		return term_stk[term_stk_tos + 1];
+	}
 }
 
 /* 初始化语法解析器 */
@@ -2150,30 +2155,36 @@ int ast_stk_tos = MAX_TERM - 1;
 void push_ast_stack(Tree t)
 {
 	if(ast_stk_tos == 0)
+	{
 		internal_error("ast tree stak overtlow");
+	}
 	else
-   		ast_stk[ast_stk_tos--] = t;
+	{
+		ast_stk[ast_stk_tos--] = t;
+	}		
 }
 
 Tree pop_ast_stack()
 {
-	if (ast_stk_tos == MAX_TERM - 1)
+	if(ast_stk_tos == MAX_TERM - 1)
 	{
-  		internal_error("ast tree stack underflow");
-  		return NULL;
+		internal_error("ast tree stack underflow");
 	}
-    else
+  else
+  {
 		return ast_stk[++ast_stk_tos];
+  }
 }
 
 Tree top_ast_stack()
 {
 	if(ast_stk_tos == MAX_TERM - 1){
 		internal_error("ast stack underflow");
-		return NULL;
 	}
 	else
+	{
 		return ast_stk[ast_stk_tos + 1];
+	}
 }
 
 int lbl_stk[MAX_TERM];
@@ -2182,30 +2193,36 @@ int lbl_stk_tos = MAX_TERM - 1;
 void push_lbl_stack(int id)
 {
 	if(lbl_stk_tos == 0)
+	{
 		internal_error("ast tree stak overtlow");
+	}
 	else
-   		lbl_stk[lbl_stk_tos--] = id;
+	{
+		lbl_stk[lbl_stk_tos--] = id;
+	}
 }
 
 int pop_lbl_stack()
 {
-	if (lbl_stk_tos == MAX_TERM - 1)
+	if(lbl_stk_tos == MAX_TERM - 1)
 	{
   		internal_error("ast tree stack underflow");
-  		return 0;
 	}
-    else
+  else
+  {
 		return lbl_stk[++lbl_stk_tos];
+  }
 }
 
 int top_lbl_stack()
 {
 	if(lbl_stk_tos == MAX_TERM - 1){
 		internal_error("ast stack underflow");
-		return 0;
 	}
 	else
+	{
 		return lbl_stk[lbl_stk_tos + 1];
+	}
 }
 
 int case_stk[MAX_TERM];
@@ -2214,30 +2231,36 @@ int case_stk_tos = MAX_TERM - 1;
 void push_case_stack(int id)
 {
 	if(case_stk_tos == 0)
+	{
 		internal_error("ast tree stak overtlow");
+	}
 	else
-   		case_stk[case_stk_tos--] = id;
+	{
+   	case_stk[case_stk_tos--] = id;
+	}
 }
 
 int pop_case_stack()
 {
-	if (case_stk_tos == MAX_TERM - 1)
+	if(case_stk_tos == MAX_TERM - 1)
 	{
-  		internal_error("ast tree stack underflow");
-  		return 0;
+  	internal_error("ast tree stack underflow");
 	}
-    else
+  else
+  {
 		return case_stk[++case_stk_tos];
+  }
 }
 
 int top_case_stack()
 {
 	if(case_stk_tos == MAX_TERM - 1){
 		internal_error("ast stack underflow");
-		return 0;
 	}
 	else
+	{
 		return case_stk[case_stk_tos + 1];
+	}
 }
 
 List case_ast_stk[MAX_TERM];
@@ -2246,30 +2269,36 @@ int case_ast_stk_tos = MAX_TERM - 1;
 void push_case_ast_stack(List newlist)
 {
 	if(case_ast_stk_tos == 0)
+	{
 		internal_error("ast tree stak overtlow");
+	}
 	else
-   		case_ast_stk[case_ast_stk_tos--] = newlist;
+	{
+		case_ast_stk[case_ast_stk_tos--] = newlist;
+	}
 }
 
 List pop_case_ast_stack()
 {
-	if (case_ast_stk_tos == MAX_TERM - 1)
+	if(case_ast_stk_tos == MAX_TERM - 1)
 	{
-  		internal_error("ast tree stack underflow");
-  		return NULL;
+		internal_error("ast tree stack underflow");
 	}
-    else
+	else
+	{
 		return case_ast_stk[++case_ast_stk_tos];
+	}
 }
 
 List top_case_ast_stack()
 {
 	if(case_ast_stk_tos == MAX_TERM - 1){
 		internal_error("ast stack underflow");
-		return NULL;
 	}
 	else
+	{
 		return case_ast_stk[case_ast_stk_tos + 1];
+	}
 }
 
 Symbol install_temporary_symbol(char *name, int deftype, int typeid)
@@ -2291,25 +2320,29 @@ static int call_tos = MAX_CALL_LEVEL - 1;
 
 symtab *top_call_stack( )
 {
-    return call_stk[call_tos + 1];
+	return call_stk[call_tos + 1];
 }
 
 symtab *pop_call_stack()
 {
-    call_tos++;
-    if (call_tos == MAX_CALL_LEVEL)
-        internal_error("call stack underflow.");
+  call_tos++;
+  if(call_tos == MAX_CALL_LEVEL)
+  {
+		internal_error("call stack underflow");
+  }
 
-    return call_stk[call_tos];
+  return call_stk[call_tos];
 }
 
 void push_call_stack(symtab *p)
 {
-    call_stk[call_tos] = p;
+  call_stk[call_tos] = p;
 
-    call_tos--;
-    if (call_tos == -1)
-        internal_error("call stack overflow.");
+  call_tos--;
+  if(call_tos == -1)
+  {
+    internal_error("call stack overflow");
+  }
 }
 
 
@@ -2319,25 +2352,29 @@ static int ast_forest_tos = MAX_CALL_LEVEL - 1;
 
 List top_ast_forest_stack( )
 {
-    return ast_forest_stk[ast_forest_tos + 1];
+	return ast_forest_stk[ast_forest_tos + 1];
 }
 
 List pop_ast_forest_stack()
 {
-    ast_forest_tos++;
+  ast_forest_tos++;
 
-    if (ast_forest_tos == MAX_CALL_LEVEL)
-        internal_error("ast forest stack underflow.");
+  if (ast_forest_tos == MAX_CALL_LEVEL)
+  {
+		internal_error("ast forest stack underflow");
+  }
 
-    return ast_forest_stk[ast_forest_tos];
+  return ast_forest_stk[ast_forest_tos];
 }
 
 void push_ast_forest_stack(List l)
 {
-    ast_forest_stk[ast_forest_tos] = l;
+  ast_forest_stk[ast_forest_tos] = l;
 
-    ast_forest_tos--;
+  ast_forest_tos--;
 
-    if (ast_forest_tos == -1)
-        internal_error("ast forest stack overflow.");
+  if(ast_forest_tos == -1)
+  {
+  	internal_error("ast forest stack overflow");
+  }
 }

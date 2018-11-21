@@ -22,7 +22,10 @@ switch(n->kids[0]->syms[0]->type->type_id) { \
                 con->v.uc = (n->kids[0]->syms[0]->v.uc) realop (n->kids[1]->syms[0]->v.uc); \
                 break; \
         default: \
-                break; \
+        { \
+            printf("binary_xx error %s", get_op_name(optype)); \
+            exit(1); \
+        } \
 } \
 break;
 
@@ -47,7 +50,10 @@ switch(n->kids[0]->syms[0]->type->type_id) { \
                 con->v.f = (n->kids[0]->syms[0]->v.f) realop (n->kids[1]->syms[0]->v.f); \
                 break; \
         default: \
-                break; \
+        { \
+            printf("real_binary_xx error %s", get_op_name(optype)); \
+            exit(1); \
+        } \
 } \
 break;
 
@@ -69,7 +75,10 @@ switch(n->kids[0]->syms[0]->type->type_id) { \
                 con->v.uc = realop (n->kids[0]->syms[0]->v.uc);\
                 break; \
         default: \
-                break; \
+        { \
+            printf("single_xx error %s", get_op_name(optype)); \
+            exit(1); \
+        } \
 } \
 break;
 
@@ -94,7 +103,10 @@ switch(n->kids[0]->syms[0]->type->type_id) { \
                 con->v.uc = realop (n->kids[0]->syms[0]->v.uc);\
                 break; \
         default: \
-                break; \
+        { \
+            printf("real_single_xx error %s", get_op_name(optype)); \
+            exit(1); \
+        } \
 } \
 break;
 

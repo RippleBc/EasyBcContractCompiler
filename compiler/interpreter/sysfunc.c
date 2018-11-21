@@ -49,46 +49,47 @@ void read(Node node)
 
   switch(p->type->type_id)
   {
-  case TYPE_INTEGER:
-  {
-    np->val.i = atoi(str);
-    ASSIGN_VAL;
-  }
-  break;
-  case TYPE_UINTEGER:
-  {
-    np->val.ui = (unsigned int)atoi(str);
-    ASSIGN_VAL;
-  }
-  break;
-  case TYPE_CHAR:
-  {
-    np->val.c = str[0];
-    ASSIGN_VAL;
-  }
-  break;
-  case TYPE_UCHAR:
-  {
-    np->val.uc = str[0];
-    ASSIGN_VAL;
-  }
-  break;
-  case TYPE_BOOLEAN:
-  {
-    np->val.b = atoi(str);
-    ASSIGN_VAL;
-  }
-  break;
-  case TYPE_REAL:
-  {
-    np->val.f = atof(str);
-    ASSIGN_VAL;
-  }
-  break;
-  default:
-  {
-    parse_error("wrong type", "");
-  }
+    case TYPE_INTEGER:
+    {
+      np->val.i = atoi(str);
+      ASSIGN_VAL;
+    }
+    break;
+    case TYPE_UINTEGER:
+    {
+      np->val.ui = (unsigned int)atoi(str);
+      ASSIGN_VAL;
+    }
+    break;
+    case TYPE_CHAR:
+    {
+      np->val.c = str[0];
+      ASSIGN_VAL;
+    }
+    break;
+    case TYPE_UCHAR:
+    {
+      np->val.uc = str[0];
+      ASSIGN_VAL;
+    }
+    break;
+    case TYPE_BOOLEAN:
+    {
+      np->val.b = atoi(str);
+      ASSIGN_VAL;
+    }
+    break;
+    case TYPE_REAL:
+    {
+      np->val.f = atof(str);
+      ASSIGN_VAL;
+    }
+    break;
+    default:
+    {
+      printf("read wrong type");
+      exit(1);
+    }
   }
 }
 
@@ -119,48 +120,48 @@ void write(Node node)
       type_id = exp->type->type_id;
     }
 
-
     switch(type_id)
     {
-    case TYPE_INTEGER:
-    {
-      printf("%d\n", np->val.i);
-    }
-    break;
-    case TYPE_UINTEGER:
-    {
-      printf("%u\n", np->val.ui);
-    }
-    break;
-    case TYPE_CHAR:
-    {
-      printf("%c\n", np->val.c);
-    }
-    break;
-    case TYPE_UCHAR:
-    {
-      printf("%u\n", np->val.uc);
-    }
-    break;
-    case TYPE_BOOLEAN:
-    {
-      printf("%d\n", np->val.i);
-    }
-    break;
-    case TYPE_REAL:
-    {
-      printf("%f\n", np->val.f);
-    }
-    break;
-    case TYPE_STRING:
-    {
-      printf("%s\n", np->val.s);
-    }
-    break;
-    default:
-    {
-      parse_error("wrong type", "");
-    }
+      case TYPE_INTEGER:
+      {
+        printf("%d\n", np->val.i);
+      }
+      break;
+      case TYPE_UINTEGER:
+      {
+        printf("%u\n", np->val.ui);
+      }
+      break;
+      case TYPE_CHAR:
+      {
+        printf("%c\n", np->val.c);
+      }
+      break;
+      case TYPE_UCHAR:
+      {
+        printf("%u\n", np->val.uc);
+      }
+      break;
+      case TYPE_BOOLEAN:
+      {
+        printf("%d\n", np->val.i);
+      }
+      break;
+      case TYPE_REAL:
+      {
+        printf("%f\n", np->val.f);
+      }
+      break;
+      case TYPE_STRING:
+      {
+        printf("%s\n", np->val.s);
+      }
+      break;
+      default:
+      {
+        printf("write wrong type");
+        exit(1);
+      }
     }
   }
 }

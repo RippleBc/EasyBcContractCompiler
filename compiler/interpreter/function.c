@@ -4,17 +4,22 @@
 
 int return_position_deep = STACK_DEEP;
 List return_position_stack[STACK_DEEP];
-int push_return_position_stack(List l)
+void push_return_position_stack(List l)
 {
   if(return_position_deep < 1)
   {
-    return 0;
+    printf("return position stack is full\n");
+    exit(1);
   }
   return_position_stack[--return_position_deep] = l;
-  return 1;
 }
 List pop_return_position_stack()
 {
+  if(return_position_deep > STACK_DEEP)
+  {
+    printf("return position stack is empty\n");
+    exit(1);
+  }
   return return_position_stack[return_position_deep++];
 }
 List top_return_position_stack()
@@ -25,17 +30,23 @@ List top_return_position_stack()
 /*  */
 int function_call_stack_deep = STACK_DEEP;
 unsigned char function_call_stack[STACK_DEEP];
-int push_function_call_stack(Symtab tab)
+void push_function_call_stack(Symtab tab)
 {
   if(function_call_stack_deep < tab->call_stack_size)
   {
-    return 0;
+    printf("function call stack is full\n");
+    exit(1);
   }
   function_call_stack_deep -= tab->call_stack_size;
-  return 1;
 }
 void pop_function_call_stack(Symtab tab)
 {
+  if(function_call_stack_deep + tab->call_stack_size > STACK_DEEP)
+  {
+    printf("function call stack is empty\n");
+    exit(1);
+  }
+
   function_call_stack_deep += tab->call_stack_size;
 }
 void assign_function_call_stack_val(Node n, Symbol p, Symbol q)
@@ -54,8 +65,9 @@ void assign_function_call_stack_val(Node n, Symbol p, Symbol q)
     {
       if(i > p->type->num_ele - 1)
       {
-        parse_error("assign_local array out of index", p->name);
-        return;
+        printf("assign_local array out of index", p->name);
+        exit(1);
+
       }
 
       tmp.c = n->val.s[i];

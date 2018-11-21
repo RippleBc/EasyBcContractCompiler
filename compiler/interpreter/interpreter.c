@@ -61,11 +61,6 @@ void interpret(List routine_forest, List dag)
   for(g_cp = dag->link; g_cp != NULL; g_cp = g_cp->link)
   {
     node_process((Node)(g_cp->x));
-
-    if(g_cp == NULL)
-    {
-      break;
-    }
   }
 }
 
@@ -89,7 +84,7 @@ List find_routine_forest(Symtab ptab)
   if(cpTmp2 == NULL)
   {
     parse_error("routine not exist", ptab->name);
-    return NULL;
+    exit(1);
   }
 }
 
@@ -113,7 +108,7 @@ void jump_to_label(List l, Symbol label)
   if(i < 0)
   {
     parse_error("label is not exist", label->name);
-    g_cp = NULL;
+    exit(1);
   }
 }
 
@@ -160,7 +155,8 @@ void node_process(Node node)
     case TYPE_CHAR:
     case TYPE_UCHAR:
     {
-      parse_error("COND expression can not be char", "");
+      printf("COND expression can not be char");
+      exit(1);
     }
     break;
     case TYPE_BOOLEAN:
@@ -174,12 +170,15 @@ void node_process(Node node)
     break;
     case TYPE_REAL:
     {
-      parse_error("COND expression can not be real", "");
+      printf("COND expression can not be real");
+      exit(1);
+
     }
     break;
     case TYPE_STRING:
     {
-      parse_error("COND expression can not be string", "");
+      printf("COND expression can not be string");
+      exit(1);
     }
     break;
     }
@@ -324,7 +323,7 @@ void node_process(Node node)
       if(index < startIndex || index > startIndex + node->syms[0]->type->num_ele - 1)
       {
         parse_error("array index out of bound", "");
-        return;
+        exit(1);
       }
 
       p = node->syms[0]->type->last;
@@ -441,7 +440,7 @@ void node_process(Node node)
         if(p->defn == DEF_PROC)
         {
           parse_error("proc can not have return val", p->name);
-          g_cp = NULL;
+          exit(1);
         }
         else
         {
@@ -489,6 +488,7 @@ void node_process(Node node)
         default:
         {
           printf("CVF convert type error\n");
+          exit(1);
         }
       }
     }
@@ -527,6 +527,7 @@ void node_process(Node node)
         default:
         {
           printf("CVI convert type error\n");
+          exit(1);
         }
       }
     }
@@ -569,6 +570,7 @@ void node_process(Node node)
         default:
         {
           printf("CVB convert type error\n");
+          exit(1);
         }
       }
     }
@@ -607,6 +609,7 @@ void node_process(Node node)
         default:
         {
           printf("CVUI convert type error\n");
+          exit(1);
         }
       }
     }
@@ -645,6 +648,7 @@ void node_process(Node node)
         default:
         {
           printf("CVC convert type error\n");
+          exit(1);
         }
       }
     }
@@ -679,6 +683,7 @@ void node_process(Node node)
         default:
         {
           printf("CVUC convert type error\n");
+          exit(1);
         }
       }
     }
@@ -812,11 +817,14 @@ void node_process(Node node)
       /*  */
       Symtab ptab = pop_symtab_stack();
 
-      /*  */
-      g_cp = pop_return_position_stack();
+      if(ptab->level > 0)
+      {
+        /*  */
+        g_cp = pop_return_position_stack();
 
-      /*  */
-      pop_function_call_stack(ptab);
+        /*  */
+        pop_function_call_stack(ptab);
+      }
     }
     break;
     case BLOCKBEG:

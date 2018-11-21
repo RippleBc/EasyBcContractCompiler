@@ -25,7 +25,7 @@ void init_op_code()
 	if(pFile == NULL)
 	{
 		printf("file opcodes.txt not exit\n");
-		return;
+		exit(1);
 	}
 
 	char c;
@@ -102,7 +102,7 @@ int get_op_code_by_name(char *name)
 	}
 
 	printf("get_op_code_by_name code not exist %s\n", name);
-	return -1;
+	exit(1);
 }
 
 char *get_name_by_op_code(int code)
@@ -116,7 +116,7 @@ char *get_name_by_op_code(int code)
 	}
 
 	printf("get_name_by_op_code name not exist %d\n", code);
-	return NULL;
+	exit(1);
 }
 
 int get_type_related_op_code_by_name(Type t, char *name)
@@ -150,6 +150,6 @@ int get_type_related_op_code_by_name(Type t, char *name)
 	else
 	{
 		printf("get_type_related_op_code_by_name byte error %s %s\n", name, t->name);
-		return -1;
+		exit(1);
 	}
 }
