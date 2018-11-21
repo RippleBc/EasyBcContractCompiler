@@ -68,7 +68,7 @@ symbol *new_symbol(char *name, int defn, int type_id)
         internal_error("insuffceent memory");
     }
 
-    if(!strcmp(name,"$$$"))
+    if(!strcmp(name, "$$$"))
         /* name == "$$$"，使用系统默认的命名规则*/
         sprintf(p->name, "z%d", ++imp_index);
     else

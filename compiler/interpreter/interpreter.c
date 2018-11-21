@@ -473,7 +473,7 @@ void node_process(Node node)
         break;
         case TYPE_REAL:
         {
-          
+          node->val.f = node->kids[0]->val.f;
         }
         case TYPE_CHAR:
         {
@@ -501,7 +501,7 @@ void node_process(Node node)
       {
         case TYPE_INTEGER:
         {
-          
+          node->val.i = node->kids[0]->val.i;
         }
         break;
         case TYPE_REAL:
@@ -564,7 +564,7 @@ void node_process(Node node)
         }
         case TYPE_BOOLEAN:
         {
-
+          node->val.b = node->kids[0]->val.b;
         }
         break;
         default:
@@ -588,7 +588,7 @@ void node_process(Node node)
         break;
         case TYPE_UINTEGER:
         {
-          
+          node->val.ui = node->kids[0]->val.ui;
         }
         break;
         case TYPE_CHAR:
@@ -632,7 +632,7 @@ void node_process(Node node)
         break;
         case TYPE_CHAR:
         {
-          
+          node->val.c = node->kids[0]->val.c;
         }
         break;
         case TYPE_UCHAR:
@@ -677,7 +677,7 @@ void node_process(Node node)
         break;
         case TYPE_UCHAR:
         {
-
+          node->val.uc = node->kids[0]->val.uc;
         }
         break;
         default:
