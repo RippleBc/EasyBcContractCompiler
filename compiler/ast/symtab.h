@@ -3,6 +3,7 @@
 
 #define SYMTAB_QUEUE_SIZE 128 /* 符号表队列长度 */
 #define MAX_SYS_ROUTINE (24) /* 系统程序的最多个数 */
+
 #define make_global_symtab() new_symtab(NULL)
 
 /* 保存常量的值 */
@@ -102,7 +103,7 @@ struct _symbol_head_
     /* 类型链接 */
     type *type_link;
     /* 函数或者过程的数量 */
-    int last_symtab;
+    int routine_index;
     /* 函数或者过程 */
     struct _symbol_head_ *routine_queue[SYMTAB_QUEUE_SIZE];
     /* 链接上一层符号表，即父辈函数过程的定义 */
@@ -142,7 +143,7 @@ void set_subrange_bound(type *, int , int );
 type *new_system_type(int);
 type *new_subrange_type(char *, int);
 type *new_enum_type(char *);
-type *new_record_type(char *,symbol *);
+type *new_record_type(char *, symbol *);
 type *clone_type(type *);
 type *find_type_by_name(char *);
 type *find_type_by_id(int);
@@ -151,9 +152,9 @@ int is_symbol(symbol *p, char *);
 int get_symbol_align_size(symbol *);
 
 int stoi(char *s,int radix);
-void set_subrange_bound(type *pt,int lower,int upper);
+void set_subrange_bound(type *pt, int lower, int upper);
 void add_enum_elements(type *pt, symbol *symlist);
-type *new_array_type(char *name,type *pindex, type *pelement);
+type *new_array_type(char *name, type *pindex, type *pelement);
 
 void make_system_symtab();
 symbol *reverse_parameters(symtab *);

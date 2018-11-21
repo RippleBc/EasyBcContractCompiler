@@ -44,6 +44,8 @@ void internal_error(char *info)
         print_result(pasname);
         exit(0);
     }
+
+    exit(1);
 }
 
 static void print_pos(FILE *fp)
