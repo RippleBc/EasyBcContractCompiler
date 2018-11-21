@@ -395,21 +395,21 @@ const_value
 		/* 符号值（最大整型） */
 		p->v.i = (1 << (IR->intmetric.size * 8)) - 1;
 		/* 符号类型 */
-		p->type = find_type_by_id(TYPE_INTEGER);
+		p->type = find_system_type_by_id(TYPE_INTEGER);
 		break;
 
 	case cFALSE:
 		p->v.b = 0;
-		p->type = find_type_by_id(TYPE_BOOLEAN);
+		p->type = find_system_type_by_id(TYPE_BOOLEAN);
 		break;
 		  
 	case cTRUE:
 		p->v.b = 1;
-		p->type = find_type_by_id(TYPE_BOOLEAN);
+		p->type = find_system_type_by_id(TYPE_BOOLEAN);
 		break; 
 
 	default:
-		p->type = find_type_by_id(TYPE_VOID);
+		p->type = find_system_type_by_id(TYPE_VOID);
 		break;
 	}
 
@@ -439,12 +439,7 @@ type_definition
 	}
 	else
 	{
-		/* 已有的自定义类型符号创建自定义类型 */
-		$$ = clone_type($3);
-		/* 命名 */
-		strncpy($$->name, $1, NAME_LEN);
-		/* 添加到符号表 */
-		add_type_to_table(top_symtab_stack(), $$);
+		parse_error("duplicated type declaration", "");
 	}
 }
 ;
@@ -852,7 +847,7 @@ yNAME parameters
 	reverse_parameters(ptab);
 
 	Tree header;
-	header = new_tree(HEADER, find_type_by_id(TYPE_VOID), NULL, NULL);
+	header = new_tree(HEADER, find_system_type_by_id(TYPE_VOID), NULL, NULL);
 	list_append(top_ast_forest_stack(), header);
 }
 ;
@@ -1981,32 +1976,32 @@ oLP args_list oRP
 	{
 		case cvBOOLEAN:
 		{
-			t = find_type_by_id(TYPE_BOOLEAN);
+			t = find_system_type_by_id(TYPE_BOOLEAN);
 		}
 		break;
 		case cvINT:
 		{
-			t = find_type_by_id(TYPE_INTEGER);
+			t = find_system_type_by_id(TYPE_INTEGER);
 		}
 		break;
 		case cvREAL:
 		{
-			t = find_type_by_id(TYPE_REAL);
+			t = find_system_type_by_id(TYPE_REAL);
 		}
 		break;
 		case cvUINT:
 		{
-			t = find_type_by_id(TYPE_UINTEGER);
+			t = find_system_type_by_id(TYPE_UINTEGER);
 		}
 		break;
 		case cvUCHAR:
 		{
-			t = find_type_by_id(TYPE_UCHAR);
+			t = find_system_type_by_id(TYPE_UCHAR);
 		}
 		break;
 		case cvCHAR:
 		{
-			t = find_type_by_id(TYPE_CHAR); 
+			t = find_system_type_by_id(TYPE_CHAR); 
 		}
 		break;
 	}

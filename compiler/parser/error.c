@@ -37,6 +37,9 @@ void internal_error(char *info)
 
     sprintf(ebuf[error_count++], "Internal Error %s\n", info);
     fprintf(errfp, "Internal Error (%d): %s\n", line_no, info);
+    
+    sprintf(stderr, "Internal Error %s\n", info);
+    fprintf(stderr, "Internal Error (%d): %s\n", line_no, info);
 
     if (error_count >= MAX_ERR)
     {
@@ -44,7 +47,7 @@ void internal_error(char *info)
         print_result(pasname);
         exit(0);
     }
-
+    
     exit(1);
 }
 

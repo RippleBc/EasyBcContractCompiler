@@ -29,10 +29,10 @@ void vm_assign_global(Type v_type, Value v, Symbol p)
 
       /* val */
       s_val.c = v->s[i];
-      push_data(find_type_by_id(TYPE_CHAR), &s_val);
+      push_data(find_system_type_by_id(TYPE_CHAR), &s_val);
       /* address */
       s_index.i = baseOffset + i * ele_size;
-      push_data(find_type_by_id(TYPE_INTEGER), &s_index);
+      push_data(find_system_type_by_id(TYPE_INTEGER), &s_index);
       /*  */
       int code = get_op_code_by_name(command_name);
       push_command(code);

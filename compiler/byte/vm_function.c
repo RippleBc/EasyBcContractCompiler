@@ -5,7 +5,7 @@ void vm_push_function_call_stack(Symtab tab)
 {
   value s_add;
   s_add.i = tab->call_stack_size;
-  push_data(find_type_by_id(TYPE_INTEGER), &s_add);
+  push_data(find_system_type_by_id(TYPE_INTEGER), &s_add);
   /*  */
   int code = get_op_code_by_name("PUSH_CALL");
   push_command(code);
@@ -15,7 +15,7 @@ void vm_pop_function_call_stack(Symtab tab)
 {
   value s_sub;
   s_sub.i = tab->call_stack_size;
-  push_data(find_type_by_id(TYPE_INTEGER), &s_sub);
+  push_data(find_system_type_by_id(TYPE_INTEGER), &s_sub);
   /*  */
   int code = get_op_code_by_name("POP_CALL");
   push_command(code);
@@ -50,11 +50,11 @@ void vm_assign_function_call_stack_val(Type v_type, Value v, Symbol p)
 
       /* val */
       s_val.c = v->s[i];
-      push_data(find_type_by_id(TYPE_CHAR), &s_val);
+      push_data(find_system_type_by_id(TYPE_CHAR), &s_val);
       /* address */
       value s_offset;
       s_offset.i = baseOffset + i * ele_size;
-      push_data(find_type_by_id(TYPE_INTEGER), &s_offset);
+      push_data(find_system_type_by_id(TYPE_INTEGER), &s_offset);
       /*  */
       int code = get_op_code_by_name(command_name);
       push_command(code);
@@ -84,7 +84,7 @@ void vm_set_return_index(int index)
   /* val */
   value s_return_index;
   s_return_index.i = index;
-  push_data(find_type_by_id(TYPE_INTEGER), &s_return_index);
+  push_data(find_system_type_by_id(TYPE_INTEGER), &s_return_index);
   /* address*/
   int code = get_op_code_by_name("TOP_CALL");
   push_command(code);

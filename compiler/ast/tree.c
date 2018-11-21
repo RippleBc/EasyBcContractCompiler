@@ -11,8 +11,12 @@ Tree new_tree(int op, Type type, Tree left, Tree right)
     Tree p;
 
     NEW0(p, where);
-    p->op = op;
-    /* AST节点的类型 */
+    if(!p)
+    {
+        internal_error("insufficient memory");
+    }
+
+    p->op = op; /* AST节点的类型 */
     p->result_type = type;
     p->kids[0] = left;
     p->kids[1] = right;
@@ -34,24 +38,28 @@ Tree conversion_tree(Tree source, Type target)
     Tree t;
     switch (target->type_id)
     {
-    case TYPE_INTEGER:
-        t = new_tree(CVI, target, source, NULL);
-        break;
-    case TYPE_REAL:
-        t = new_tree(CVF, target, source, NULL);
-        break;
-    case TYPE_BOOLEAN:
-        t = new_tree(CVB, target, source, NULL);
-        break;
-    case TYPE_UINTEGER:
-        t = new_tree(CVUI, target, source, NULL);
-        break;
-    case TYPE_UCHAR:
-        t = new_tree(CVUC, target, source, NULL);
-        break;
-    case TYPE_CHAR:
-        t = new_tree(CVC, target, source, NULL);
-        break;
+        case TYPE_INTEGER:
+            t = new_tree(CVI, target, source, NULL);
+            break;
+        case TYPE_REAL:
+            t = new_tree(CVF, target, source, NULL);
+            break;
+        case TYPE_BOOLEAN:
+            t = new_tree(CVB, target, source, NULL);
+            break;
+        case TYPE_UINTEGER:
+            t = new_tree(CVUI, target, source, NULL);
+            break;
+        case TYPE_UCHAR:
+            t = new_tree(CVUC, target, source, NULL);
+            break;
+        case TYPE_CHAR:
+            t = new_tree(CVC, target, source, NULL);
+            break;
+        default:
+        {
+            parse_error("unsupported conversion", target->name);
+        }
     }
 
     return t;
@@ -119,14 +127,23 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
     Tree t, right;
 
     /* 检查arg类型是否与expr类型相同 */
-    if (arg != NULL && arg->type->type_id != expr->result_type->type_id && 
-        (arg->type->type_id != TYPE_ARRAY || arg->type->last->type->type_id != TYPE_CHAR || expr->result_type->type_id != TYPE_STRING))
+    if(arg != NULL && arg->type->type_id != expr->result_type->type_id)
     {
-        /* do conversions, left for excises. */
-        parse_error("type miss match.", "");
+        if(arg->type->type_id == TYPE_ARRAY)
+        {
+            if(arg->type->last->type->type_id != TYPE_CHAR || expr->result_type->type_id != TYPE_STRING)
+            {
+                parse_error("type miss match.", "");
+            }
+        }
+        else
+        {
+            expr = conversion_tree(expr, arg->type);
+        }
+        
     }
 
-    if (argtree == NULL)
+    if(argtree == NULL)
     {
         /* 函数参数树没有进行初始化 */
         if (arg != NULL) 
@@ -142,7 +159,7 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
     }
 
     /* 函数参数树已经初始化 */
-    if (argtree->kids[1] == NULL)
+    if(argtree->kids[1] == NULL)
     {
         if(arg != NULL)
         {
@@ -238,11 +255,19 @@ Tree sys_tree(int sys_id, Tree argstree)
     Symtab ptab;
 
     ptab = find_sys_routine(sys_id);
-    if (ptab)
+    if(ptab)
+    {
         t = new_tree(SYS, ptab->type, argstree, NULL);
+    }
     else
+    {
+        /*  */
+        char c_err[MAX_ERR_STR_LEN];
+        snprintf(c_err, MAX_ERR_STR_LEN, "sys routine is not exist %d", sys_id);
+        parse_error(c_err, "");
         /* 对应的系统函数或过程没有进行初始化，初始化一个空的AST树 */
-        t = new_tree(SYS, find_type_by_id(TYPE_VOID), argstree, NULL);
+        t = new_tree(SYS, find_system_type_by_id(TYPE_VOID), argstree, NULL);
+    }
 
     /* 初始化系统函数或过程的id */
     t->u.sys.sys_id = sys_id;
@@ -263,13 +288,29 @@ Tree compare_expr_tree(int op, Tree left, Tree right)
 {
     Tree t;
     /* AST树类型为布尔型 */
-    t = new_tree(op, find_type_by_id(TYPE_BOOLEAN), left, right);
+    t = new_tree(op, find_system_type_by_id(TYPE_BOOLEAN), left, right);
     return t;
 }
 
 Tree assign_tree(Tree id, Tree expr)
 {
     Tree t;
+
+    if(id->result_type->type_id != expr->result_type->type_id)
+    {
+        if(id->result_type->type_id == TYPE_ARRAY)
+        {
+            if(id->result_type->last->type->type_id != TYPE_CHAR || expr->result_type->type_id != TYPE_STRING)
+            {
+                parse_error("type miss match.", "");
+            }
+        }
+        else
+        {
+            expr = conversion_tree(expr, id->result_type);
+        }
+        
+    }
 
     /* id表示一棵地址树，expr表示赋值内容 */
     t = new_tree(ASGN, id->result_type, id, expr);

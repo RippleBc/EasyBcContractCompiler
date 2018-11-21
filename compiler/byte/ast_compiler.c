@@ -12,11 +12,18 @@ List g_routine_forest;
 #define CODE_MAX_NUM 1024 * 48
 int code_byte_index = 0;
 unsigned char code_byte_sequence[CODE_MAX_NUM];
-int push_data(Type t, Value v)
+void push_data(Type t, Value v)
 {
   /*  */
   int data_size = get_type_align_size(t);
 
+  /*  */
+  if(code_byte_index + data_size >= CODE_MAX_NUM)
+  {
+    printf("code_byte_sequence is full, max size is %d\n", CODE_MAX_NUM);
+    exit(1);
+  }
+  
   if(BYTE_DEBUG)
   {
     switch(t->type_id)
@@ -62,17 +69,9 @@ int push_data(Type t, Value v)
 
   /*  */
   assign_with_byte_unit(t->type_id, &code_byte_sequence[code_byte_index], v);
-  
-  /*  */
-  code_byte_index += data_size;
 
   /*  */
-  if(code_byte_index >= CODE_MAX_NUM)
-  {
-    printf("code_byte_sequence overflow\n");
-    return 0;
-  }
-  return 1;
+  code_byte_index += data_size;
 }
 int push_command(int code)
 {
@@ -294,7 +293,7 @@ int node_compile(Node node)
     /* jump position */
     value jump_position;
     jump_position.i = -1;
-    push_data(find_type_by_id(TYPE_INTEGER), &jump_position);
+    push_data(find_system_type_by_id(TYPE_INTEGER), &jump_position);
     /*  */
     int jump_code = get_op_code_by_name("JUMP");
     push_command(jump_code);
@@ -325,7 +324,7 @@ int node_compile(Node node)
       }
 
       /*  */
-      push_data(find_type_by_id(TYPE_BOOLEAN), &cond);
+      push_data(find_system_type_by_id(TYPE_BOOLEAN), &cond);
     }
     break;
     case TYPE_CHAR:
@@ -351,7 +350,7 @@ int node_compile(Node node)
     /* jump position */
     value jump_position;
     jump_position.i = -1;
-    push_data(find_type_by_id(TYPE_INTEGER), &jump_position);
+    push_data(find_system_type_by_id(TYPE_INTEGER), &jump_position);
     /*  */
     int jump_code = get_op_code_by_name("COND");
     push_command(jump_code);
@@ -407,7 +406,7 @@ int node_compile(Node node)
     /*  */
     value function_index;
     function_index.i = -1;
-    push_data(find_type_by_id(TYPE_INTEGER), &function_index);
+    push_data(find_system_type_by_id(TYPE_INTEGER), &function_index);
     /*  */
     int jump_code = get_op_code_by_name("JUMP");
     push_command(jump_code);
@@ -439,7 +438,7 @@ int node_compile(Node node)
         /* address */
         value s_offset;
         s_offset.i = arg->offset;
-        push_data(find_type_by_id(TYPE_INTEGER), &s_offset);
+        push_data(find_system_type_by_id(TYPE_INTEGER), &s_offset);
 
         /*  */
         vm_assign_function_call_stack_val(node->kids[0]->type, NULL, NULL);
@@ -461,12 +460,12 @@ int node_compile(Node node)
         for(int i = string_len - 1; i >= 0 ; i--)
         {
           v.c = p_c[i];
-          push_data(find_type_by_id(TYPE_CHAR), &v);
+          push_data(find_system_type_by_id(TYPE_CHAR), &v);
         }
 
         /* data size */
         v.i = string_len;
-        push_data(find_type_by_id(TYPE_INTEGER), &v);
+        push_data(find_system_type_by_id(TYPE_INTEGER), &v);
       }
     }
   }
@@ -495,12 +494,12 @@ int node_compile(Node node)
       /* compute field offset base on record */
       value filed_offset;
       filed_offset.i = field->offset;
-      push_data(find_type_by_id(TYPE_INTEGER), &filed_offset);
+      push_data(find_system_type_by_id(TYPE_INTEGER), &filed_offset);
 
       /* compute record offset base on stack*/
       value record_offset;
       record_offset.i = record->offset;
-      push_data(find_type_by_id(TYPE_INTEGER), &record_offset);
+      push_data(find_system_type_by_id(TYPE_INTEGER), &record_offset);
 
       /* compute field offset base on stack */
       int code = get_op_code_by_name("IADD");
@@ -514,7 +513,7 @@ int node_compile(Node node)
       /* array min index */
       value startIndex;
       startIndex.i = array->type->first->v.i;
-      push_data(find_type_by_id(TYPE_INTEGER), &startIndex);
+      push_data(find_system_type_by_id(TYPE_INTEGER), &startIndex);
 
       /* 数组下标 */
       node_compile(node->kids[0]);
@@ -525,7 +524,7 @@ int node_compile(Node node)
       /*  */
       value ele_size;
       ele_size.i = get_symbol_align_size(array->type->last);
-      push_data(find_type_by_id(TYPE_INTEGER), &ele_size);
+      push_data(find_system_type_by_id(TYPE_INTEGER), &ele_size);
       /*  */
       code = get_op_code_by_name("IMUL");
       push_command(code);
@@ -533,7 +532,7 @@ int node_compile(Node node)
       /* compute array offset base on stack */
       value base_offset;
       base_offset.i = array->offset;
-      push_data(find_type_by_id(TYPE_INTEGER), &base_offset);
+      push_data(find_system_type_by_id(TYPE_INTEGER), &base_offset);
 
       /* compute element offset base on stack*/
       code = get_op_code_by_name("IADD");
@@ -549,7 +548,7 @@ int node_compile(Node node)
         /* address */
         value sym_offset;
         sym_offset.i = sym->offset;
-        push_data(find_type_by_id(TYPE_INTEGER), &sym_offset);
+        push_data(find_system_type_by_id(TYPE_INTEGER), &sym_offset);
       }
     }
     break;

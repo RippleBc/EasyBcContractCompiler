@@ -47,7 +47,7 @@ symtab *new_symtab(symtab *parent)
         p->level = 0; /* 初始化层级 */
     }
     p->defn = DEF_UNKNOWN; /* 符号所属大类 */
-    p->type = find_type_by_id(TYPE_VOID); /* 过程或者函数返回值的类型（普通类型），默认为void */
+    p->type = find_system_type_by_id(TYPE_VOID); /* 过程或者函数返回值的类型（普通类型），默认为void */
     p->id = routine_id++; /* 过程或者函数的序号 */
     p->call_stack_size = 4; /* first index store return position, 局部变量的总字节数 */
     p->routine_index = 0;
@@ -75,7 +75,7 @@ symbol *new_symbol(char *name, int defn, int type_id)
         strncpy(p->name, name, NAME_LEN);
 
     p->defn = defn; /* 定义符号所属大类 */
-    p->type = find_type_by_id(type_id); /* 定义符号类型 */
+    p->type = find_system_type_by_id(type_id); /* 定义符号类型 */
     p->offset = 0; /* 在堆栈中的偏移量 */
     p->next = NULL; /* 用于局部变量链表以及参数链表 */
     p->lchild = p->rchild = NULL; /* 用于二叉树符号表（变量或者参数） */
@@ -353,7 +353,7 @@ symtab* new_sys_symbol(KEYENTRY entry)
 
     if(!ptab)
     {
-        internal_error("Insufticent  memoy.");
+        internal_error("insufticent memory.");
     }
 
     /* 初始化符号名称 */
