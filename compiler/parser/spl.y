@@ -225,7 +225,7 @@ extern void ast_compile(List, List);
 program
 :first_act_at_prog program_head sub_program oDOT
 {
-	if (!err_occur())
+	if(!err_occur())
 	{
 		NEW0(dag_forest, DAG);
 
@@ -276,6 +276,11 @@ program_head
 
 	/*  */
 	NEW0(ast_forest, TREE);
+	if(!ast_forest)
+	{
+		internal_error("insufficient memory");
+	}
+
 	push_ast_forest_stack(ast_forest);
 }
 |error oSEMI
@@ -377,8 +382,7 @@ const_value
 }
 |cSTRING
 {
-	p = new_symbol("$$$", DEF_CONST,
-		TYPE_STRING);
+	p = new_symbol("$$$", DEF_CONST, TYPE_STRING);
 
 	p->v.s = strdup($1);
 
@@ -391,26 +395,30 @@ const_value
 
 	switch($1)
 	{
-	case cMAXINT:
-		/* 符号值（最大整型） */
-		p->v.i = (1 << (IR->intmetric.size * 8)) - 1;
-		/* 符号类型 */
-		p->type = find_system_type_by_id(TYPE_INTEGER);
+		case cMAXINT:
+		{
+			/* 符号值（最大整型） */
+			p->v.i = (1 << (IR->intmetric.size * 8)) - 1;
+			/* 符号类型 */
+			p->type = find_system_type_by_id(TYPE_INTEGER);
+		}
 		break;
-
-	case cFALSE:
-		p->v.b = 0;
-		p->type = find_system_type_by_id(TYPE_BOOLEAN);
-		break;
-		  
-	case cTRUE:
-		p->v.b = 1;
-		p->type = find_system_type_by_id(TYPE_BOOLEAN);
+		case cFALSE:
+		{
+			p->v.b = 0;
+			p->type = find_system_type_by_id(TYPE_BOOLEAN);
+		}
+		break;  
+		case cTRUE:
+		{
+			p->v.b = 1;
+			p->type = find_system_type_by_id(TYPE_BOOLEAN);
+		}
 		break; 
-
-	default:
-		p->type = find_system_type_by_id(TYPE_VOID);
-		break;
+		default:
+		{
+			p->type = find_system_type_by_id(TYPE_VOID);
+		}
 	}
 
 	$$ = p;
@@ -515,7 +523,10 @@ simple_type_decl
 	pt = find_type_by_name($1);
 
 	if(!pt)
-		parse_error("Undeclared type name", $1);
+	{
+		parse_error("undeclared type name", $1);
+		exit(1);
+	}
 
 	$$ = pt;
 }
@@ -526,8 +537,8 @@ simple_type_decl
 
 	if (!pt)
 	{
-		parse_error("Undeclared type name", $1);
-		return 0;
+		parse_error("undeclared type name", $1);
+		exit(1);
 	}
 
 	$$ = pt;
@@ -549,7 +560,7 @@ simple_type_decl
 	if($1->type->type_id != $3->type->type_id)
 	{
 		parse_error("type mismatch", "");
-		return 0;
+		exit(1);
 	}
 	
 	/* 子范围类型 */
@@ -560,19 +571,28 @@ simple_type_decl
 
 	/* 子范围类型的上下界 */
 	if($1->type->type_id == TYPE_INTEGER)
+	{
 		set_subrange_bound($$, (int)$1->v.i, (int)$3->v.i);
+	}
 	else if ($1->type->type_id == TYPE_BOOLEAN)
+	{
 		set_subrange_bound($$, (int)$1->v.b, (int)$3->v.b);
+	}
 	else if ($1->type->type_id == TYPE_CHAR)
+	{
 		set_subrange_bound($$, (int)$1->v.c, (int)$3->v.c);
+	}
 	else
-		parse_error("invalid element type of subrange","");
+	{
+		parse_error("invalid element type of subrange", "");
+		exit(1);
+	}
 }
 |oMINUS const_value oDOTDOT const_value
 {
 	if($2->type->type_id != $4->type->type_id){
 		parse_error("type mismatch","");
-		return 0;
+		exit(1);
 	}
 
 	$$ = new_subrange_type("$$$", $2->type->type_id);
@@ -589,16 +609,17 @@ simple_type_decl
 		$2->v.b ^= 1;
 		set_subrange_bound($$, (int)$2->v.b,(int)$4->v.b);
 	}
-	else if ($2->type->type_id == TYPE_CHAR)
-		parse_error("invalid operator", "");
 	else
-   		parse_error("invalid element type of subrange", "");
+	{
+   	parse_error("invalid element type of subrange", "");
+   	exit(1);
+	}
 }
 |oMINUS const_value oDOTDOT oMINUS const_value
 {
 	if($2->type->type_id != $5->type->type_id) {
 		parse_error("type mismatch", "");
-		return  0;
+		exit(1);
 	}
 	
 	$$ = new_subrange_type("$$$", $2->type->type_id);
@@ -617,10 +638,11 @@ simple_type_decl
 
 		set_subrange_bound($$, (int)$2->v.b, (int)$5->v.b);
 	}
-	else if ($2->type->type_id == TYPE_CHAR)
-		parse_error("invalid operator", "");
 	else
+	{
 		parse_error("invalid element type of subrange", "");
+		exit(1);
+	}
 }
 |yNAME oDOTDOT yNAME
 {
@@ -628,21 +650,23 @@ simple_type_decl
 	/* 符号（枚举） */
 	p = find_symbol(top_symtab_stack(), $1);
 	if(!p){
-		parse_error("Undeclared identifier", $1);
+		parse_error("undeclared identifier", $1);
 		install_temporary_symbol($1, DEF_ENUM_ELEMENT, TYPE_INTEGER);
 	}
 	if(p->defn != DEF_ENUM_ELEMENT){
 		parse_error("not an element identifier", $1);
+		exit(1);
 	}
 	
 	/* 符号（枚举） */
 	q = find_symbol(top_symtab_stack(), $3);
 	if(!q){
-		parse_error("Undeclared identifier", $3);
+		parse_error("undeclared identifier", $3);
 		install_temporary_symbol($3, DEF_ENUM_ELEMENT, TYPE_INTEGER);
 	}
 	if(q->defn != DEF_ENUM_ELEMENT){
-		parse_error("Not an element identifier", $3);
+		parse_error("not an element identifier", $3);
+		exit(1);
 	}
 	
 	/* 子范围类型 */
@@ -710,6 +734,10 @@ function_decl
 	if (!err_occur())
 	{
 		NEW0(dag_forest, DAG);
+		if(!dag_forest)
+		{
+			internal_error("insufficient memory");
+		}
 
 		/* 终点AST节点 */
 		t = new_tree(TAIL, NULL, NULL, NULL);
@@ -738,12 +766,17 @@ function_head
 {
 	/* AST森林 */
 	NEW0(ast_forest, TREE);
+	if(!ast_forest)
+	{
+		internal_error("insufficient memory");
+	}
+
 	push_ast_forest_stack(ast_forest);
 
 	if(top_symtab_stack() != Global_symtab)
 	{
 		parse_error("can not def function in function", "");
-		return 0;
+		exit(1);
 	}
 
 	/* 创建符号表 */
@@ -803,6 +836,10 @@ procedure_decl
 	if (!err_occur())
 	{
 		NEW0(dag_forest, DAG);
+		if(!dag_forest)
+		{
+			internal_error("insufficient memory");
+		}
 
 		t = new_tree(TAIL, NULL, NULL, NULL);
 		t->u.generic.symtab = top_symtab_stack();
@@ -822,12 +859,17 @@ procedure_head
 :kPROCEDURE
 {
 	NEW0(ast_forest, TREE);
+	if(!ast_forest)
+	{
+		internal_error("insufficient memory");
+	}
+
 	push_ast_forest_stack(ast_forest);
 
 	if(top_symtab_stack() != Global_symtab)
 	{
 		parse_error("can not def function in function", "");
-		return 0;
+		exit(1);
 	}
 
 	ptab = new_symtab(Global_symtab);
@@ -960,23 +1002,10 @@ assign_stmt
 {
 	/* 对应的符号 */
 	p = find_symbol(top_symtab_stack(), $1);
-	if (p == NULL)
+	if(p == NULL)
 	{
 		parse_error("undeclared identifier.", $1);
 		install_temporary_symbol($1, DEF_VAR, $3->result_type->type_id);
-	}
-
-	/* 检查赋值是否合法 */
-	if(p->type->type_id == TYPE_RECORD)
-	{
-		parse_error("lvalue expected", "");
-	}
-	if(p->type->type_id == TYPE_ARRAY)
-	{
-		if($3->result_type->type_id != TYPE_STRING)
-		{
-			parse_error("lvalue expected", "");
-		}
 	}
 
 	/* 类型检查 */
@@ -984,9 +1013,8 @@ assign_stmt
 	(p->type->type_id != TYPE_ARRAY || p->type->last->type->type_id != TYPE_CHAR || $3->result_type->type_id != TYPE_STRING))
 	{
 		parse_error("type mismatch", "");
-		return 0;  
+		exit(1);
 	}
-
 
 	/* 地址AST树 */
 	t = address_tree(p);
@@ -1002,14 +1030,14 @@ assign_stmt
 	if(p == NULL)
 	{
 		parse_error("undefined identifier", $1);
-		return 0;
+		exit(1);
 	}
 	
 	/* 检查赋值是否合法 */
 	if(p->type->type_id != TYPE_ARRAY)
 	{
-		parse_error("var type mismatch", $1);
-		return 0;
+		parse_error("type mismatch", $1);
+		exit(1);
 	}
 	
 	push_term_stack(p);
@@ -1038,18 +1066,24 @@ oASSIGN expression
 {
 	/* 对应的符号 */
 	p = find_symbol(top_symtab_stack(), $1);
-	if(!p || p->type->type_id != TYPE_RECORD){
-		parse_error("Undeclared record vaiable", $1);
-		return 0;
+	if(p == NULL)
+	{
+		parse_error("undefined identifier", $1);
+		exit(1);
+	}
+
+	if(p->type->type_id != TYPE_RECORD){
+		parse_error("type mismatch", $1);
+		exit(1);
 	}
 
 	/* 对应的属性 */
 	q = find_field(p, $3);
-	if(!q || q->defn != DEF_FIELD){
-		parse_error("Undeclared field", $3);
-		return 0;
-	}
 
+	if(q == NULL){
+		parse_error("undeclared field", $3);
+		exit(1);
+	}
 
 	/* 属性AST节点 */
 	t = record_field_tree(p, q);
@@ -1076,11 +1110,10 @@ routine_stmt
 	{
 		push_call_stack(ptab);
 	}
-  		
 	else
 	{
-		parse_error("Undeclared funtion", $1);
-		return  0;
+		parse_error("undeclared function", $1);
+		exit(1);
 	}
 }
 oLP args_list oRP
@@ -1143,10 +1176,10 @@ oLP args_list oRP
 {
 	if($3 == NULL){
 		parse_error("too few parameters in call to", "read");
-		return 0;
+		exit(1);
 	}
 	
-	if (generic($3->op) == LOAD)
+	if(generic($3->op) == LOAD)
 	{
 		if($3->kids[0]) /* 数组或者记录 */
 		{
@@ -1160,7 +1193,7 @@ oLP args_list oRP
 	else
 	{
 		parse_error("pread need a variable argument", "");
-		return 0;
+		exit(1);
 	}
 
 	/* 系统函数或者系统过程调用AST节点 */
@@ -1199,10 +1232,6 @@ if_stmt
 }
 expression kTHEN
 {
-	if($3->result_type->type_id != TYPE_BOOLEAN)
-	{
-		parse_error("cond expression result must be boolean", "");
-	}
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "if_false_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	/* 标签符号（ELSE子句的入口） */
@@ -1275,10 +1304,6 @@ repeat_stmt
 }
 stmt kUNTIL expression
 {
-	if($5->result_type->type_id != TYPE_BOOLEAN)
-	{
-		parse_error("cond expression result must be boolean", "");
-	}
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "repeat_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	/* 标签符号（REPEAT结构的入口） */
@@ -1305,12 +1330,7 @@ while_stmt
 	list_append(top_ast_forest_stack(), t);
 }
 expression kDO
-{
-	if($3->result_type->type_id != TYPE_BOOLEAN)
-	{
-		parse_error("cond expression result must be boolean", "");
-	}
-	
+{	
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "while_exit_%d", top_lbl_stack());
 	mini_buf[sizeof(mini_buf) - 1] = 0;
 	/* 标签符号（WHILE结构的出口） */
@@ -1350,10 +1370,15 @@ for_stmt
 {
 	/* 变量对应的符号 */
 	p = find_symbol(top_symtab_stack(), $2);
-	if(!p || p->defn != DEF_VAR)
+	if(!p)
 	{
-		parse_error("lvalue expected","");
-		return 0;
+		parse_error("undeclared identifier", $2);
+		install_temporary_symbol($2, DEF_VAR, $4->result_type->type_id);
+	}
+	if(p->defn != DEF_VAR)
+	{
+		parse_error("lvalue expected", "");
+		exit(1);
 	}
 
 	/* 检查变量取值格式 */
@@ -1361,7 +1386,7 @@ for_stmt
 		||p->type->type_id == TYPE_RECORD)
 	{
 		parse_error("lvalue expected","");
-		return 0;
+		exit(1);
 	}
 	
 	/* 地址AST节点 */
@@ -1393,23 +1418,11 @@ direction expression kDO
 
 	if ($6 == kTO)
 	{
-		if(t->result_type->type_id != $7->result_type->type_id)
-		{
-			parse_error("type mismatch", "");
-			return 0;
-		}
-
 		/* 比较AST节点 */
 		t = compare_expr_tree(LE, t, $7);
 	}
 	else
 	{
-		if(t->result_type->type_id != $7->result_type->type_id)
-		{
-			parse_error("type mismatch", "");
-			return 0;
-		}
-
 		t = compare_expr_tree(GE, t, $7);
 	}
 
@@ -1508,7 +1521,7 @@ expression kOF case_expr_list
 		if($3->result_type->type_id != cases[i + 1]->result_type->type_id)
 		{
 			parse_error("type mismatch", "");
-			return 0;
+			exit(1);
 		}
 		t = compare_expr_tree(EQ, $3, cases[i + 1]);
 		/* 条件跳转AST节点（条件为真时跳转到指定的CASE子句） */
@@ -1573,14 +1586,13 @@ oSEMI
 	/* 变量对应的符号 */
 	p = find_symbol(top_symtab_stack(),$1);
 	if(!p){
-			parse_error("Undeclared identifier",$1);
+			parse_error("undeclared identifier",$1);
 			install_temporary_symbol($1, DEF_CONST, TYPE_INTEGER);
-			/* return 0; */
 	}
 	/* 检查变量类型（CASE子句中的判断条件只能是枚举或者常量类型） */
 	if(p->defn != DEF_ENUM_ELEMENT && p->defn != DEF_CONST){
-			parse_error("Element name expected","");
-			return 0;
+			parse_error("element name expected","");
+			exit(1);
 	}
 	case_label_count = top_case_stack();
 	snprintf(mini_buf, sizeof(mini_buf) - 1, "case_%d_%d", top_lbl_stack(), case_label_count++);
@@ -1611,68 +1623,26 @@ oSEMI
 expression
 :expression oGE expr
 {
-	/* 比较运算AST树（>=），由于优先级问题，放在expr表达式中（expression表达式中的运算优先级比expr中的要低），仅支持左结合 */
-	if($1->result_type->type_id != $3->result_type->type_id)
-	{
-		parse_error("type mismatch >=", "");
-		return 0;
-	}
-
 	$$ = compare_expr_tree(GE, $1, $3);
 }
 |expression oGT expr
 {
-	/* 比较运算AST树（>） */
-	if($1->result_type->type_id != $3->result_type->type_id)
-	{
-		parse_error("type mismatch >", "");
-		return 0;
-	}
-
 	$$ = compare_expr_tree(GT, $1, $3);
 }
 |expression oLE expr
 {
-	/* 比较运算AST树（<=） */
-	if($1->result_type->type_id != $3->result_type->type_id)
-	{
-		parse_error("type mismatch <=", "");
-		return 0;
-	}
-
 	$$ = compare_expr_tree(LE, $1, $3);
 }
 |expression oLT expr
 {
-	/* 比较运算AST树（<） */
-	if($1->result_type->type_id != $3->result_type->type_id)
-	{
-		parse_error("type mismatch <", "");
-		return 0;
-	}
-
 	$$ = compare_expr_tree(LT, $1, $3);
 }
 |expression oEQUAL expr
 {
-	/* 比较运算AST树（=） */
-	if($1->result_type->type_id != $3->result_type->type_id)
-	{
-		parse_error("type mismatch =", "");
-		return 0;
-	}
-
 	$$ = compare_expr_tree(EQ, $1, $3);
 }
 |expression oUNEQU expr
 {
-	/* 比较运算AST树（!=，不相等） */
-	if($1->result_type->type_id != $3->result_type->type_id)
-	{
-		parse_error("type mismatch !=", "");
-		return 0;
-	}
-
 	$$ = compare_expr_tree(NE, $1, $3);
 }
 |expr
@@ -1684,42 +1654,18 @@ expression
 expr
 :expr oPLUS term
 {
-	/* 二元运算AST树（+），由于优先级问题，放在expr表达式中（expr表达式中的运算优先级比term中的要低），仅支持左结合 */
-	if($1->result_type->type_id != $3->result_type->type_id)
-	{
-		parse_error("type mismatch +", "");
-		return 0;
-	}
-
 	$$ = binary_expr_tree(ADD, $1, $3);
 }
 |expr oMINUS term
 {
-	/* 二元运算AST树（-） */
-	if($1->result_type->type_id != $3->result_type->type_id)
-	{
-		parse_error("type mismatch -", "");
-		return 0;
-	}
-
 	$$ = binary_expr_tree(SUB, $1, $3);
 }
 |expr kOR term
 {
-	if($1->result_type->type_id != TYPE_BOOLEAN || $3->result_type->type_id != TYPE_BOOLEAN)
-	{
-		parse_error("type mismatch ||", "");
-		return 0;
-	}
 	$$ = binary_expr_tree(OR, $1, $3);
 }
 |expr oOR term
 {
-	if($1->result_type->type_id != TYPE_BOOLEAN || $3->result_type->type_id != TYPE_BOOLEAN)
-	{
-		parse_error("type mismatch ||", "");
-		return 0;
-	}
 	$$ = binary_expr_tree(OR, $1, $3);
 }
 |term
@@ -1731,130 +1677,51 @@ expr
 term
 :term oMUL factor
 {
-	/* 二元运算AST树（*），由于优先级问题，放在expr表达式中（运算符优先级最高），仅支持左结合。 */
-	if($1->result_type->type_id != $3->result_type->type_id)
-	{
-		parse_error("type mismatch *", "");
-		return 0;
-	}
-
 	$$ = binary_expr_tree(MUL, $1, $3);
 }
 |term oDIV factor
 {
-	/* 二元运算AST树（\） */
-	if($1->result_type->type_id != $3->result_type->type_id)
-	{
-		parse_error("type mismatch \\", "");
-		return 0;
-	}
-
 	$$ = binary_expr_tree(DIV, $1, $3);
 }
 |term kDIV factor
 {
-	/* 二元运算AST树（div） */
-	if($1->result_type->type_id != $3->result_type->type_id)
-	{
-		parse_error("type mismatch div", "");
-		return 0;
-	}
-
 	$$ = binary_expr_tree(DIV, $1, $3);
 }
 |term kMOD factor
 {
-	/* 二元运算AST树（mod） */
-	if($1->result_type->type_id != $3->result_type->type_id)
-	{
-		parse_error("type mismatch mod", "");
-		return 0;
-	}
-
 	$$ = binary_expr_tree(MOD, $1, $3);
 }
 |term oMOD factor
 {
-	/* 二元运算AST树（mod） */
-	if($1->result_type->type_id != TYPE_INTEGER || $3->result_type->type_id != TYPE_INTEGER)
-	{
-		parse_error("type mismatch %", "");
-		return 0;
-	}
-
 	$$ = binary_expr_tree(MOD, $1, $3);
 }
 |term kAND factor
 {
-	if($1->result_type->type_id != TYPE_BOOLEAN || $3->result_type->type_id != TYPE_BOOLEAN)
-	{
-		parse_error("type mismatch &&", "");
-		return 0;
-	}
 	$$ = binary_expr_tree(AND, $1, $3);
 }
 |term oAND factor
 {
-	if($1->result_type->type_id != TYPE_BOOLEAN || $3->result_type->type_id != TYPE_BOOLEAN)
-	{
-		parse_error("type mismatch &&", "");
-		return 0;
-	}
 	$$ = binary_expr_tree(AND, $1, $3);
 }
 
 |term oBAND factor
 {
-	/* 二元运算AST树（&） */
-	if($1->result_type->type_id != $3->result_type->type_id)
-	{
-		parse_error("type mismatch &", "");
-		return 0;
-	}
-
 	$$ = binary_expr_tree(BAND, $1, $3);
 }
 |term oBOR factor
 {
-	/* 二元运算AST树（|） */
-	if($1->result_type->type_id != $3->result_type->type_id)
-	{
-		parse_error("type mismatch |", "");
-		return 0;
-	}
-
 	$$ = binary_expr_tree(BOR, $1, $3);
 }
 |term oBXOR factor
 {
-	/* 二元运算AST树（^） */
-	if($1->result_type->type_id != $3->result_type->type_id)
-	{
-		parse_error("type mismatch ^", "");
-		return 0;
-	}
 	$$ = binary_expr_tree(BXOR, $1, $3);
 }
 |term oRSH factor
 {
-	/* 二元运算AST树（>>） */
-	if(($1->result_type->type_id != TYPE_INTEGER || $3->result_type->type_id != TYPE_INTEGER) && 
-	($1->result_type->type_id != TYPE_UINTEGER || $3->result_type->type_id != TYPE_UINTEGER))
-	{
-		parse_error("type mismatch <<", "");
-		return 0;
-	}
 	$$ = binary_expr_tree(RSH, $1, $3);
 }
 |term oLSH factor
 {
-	/* 二元运算AST树（<<） */
-	if(($1->result_type->type_id != TYPE_INTEGER || $3->result_type->type_id != TYPE_INTEGER) && 
-	($1->result_type->type_id != TYPE_UINTEGER || $3->result_type->type_id != TYPE_UINTEGER))
-	{
-		parse_error("type mismatch <<", "");
-		return 0;
-	}
 	$$ = binary_expr_tree(LSH, $1, $3);
 }
 
@@ -1875,12 +1742,12 @@ factor
 		if(p->type->type_id == TYPE_ARRAY || p->type->type_id == TYPE_RECORD)
 		{
 			parse_error("rvalue expected", "");
-			return 0;
+			exit(1);
 		}
 	}
 	else
 	{
-		parse_error("Undeclard identificr", $1);
+		parse_error("undeclard identificr", $1);
 		p = install_temporary_symbol($1, DEF_VAR, TYPE_INTEGER);
 	}
 
@@ -1894,8 +1761,8 @@ factor
   		push_call_stack(ptab);
 	else
 	{
-		parse_error("Undeclared funtion or procedure", $1);
-		return  0;
+		parse_error("undeclared funtion or procedure", $1);
+		exit(1);
 	}
 }
 oLP args_list oRP
@@ -1937,13 +1804,6 @@ oLP args_list oRP
 }
 |kNOT factor
 {
-	/* 一元操作符（not） */
-	if($2->result_type->type_id != TYPE_BOOLEAN)
-	{
-		parse_error("type mismatch not", "");
-		return 0;
-	}
-
 	$$ = not_tree($2);
 }
 |oNOT factor
@@ -1953,13 +1813,6 @@ oLP args_list oRP
 }
 |oMINUS factor
 {
-	/* 一元操作符（-） */
-	if($2->result_type->type_id == TYPE_UINTEGER || $2->result_type->type_id == TYPE_BOOLEAN || $2->result_type->type_id == TYPE_CHAR || $2->result_type->type_id == TYPE_UCHAR)
-	{
-		parse_error("type mismatch -", "");
-		return 0;
-	}
-
 	$$ = neg_tree($2);
 }
 |oBCOM factor
@@ -2010,10 +1863,16 @@ oLP args_list oRP
 	/* 寻找对应的符号 */
 	p = find_symbol(top_symtab_stack(), $1);
 	
+	if(!p)
+	{
+		parse_error("undeclared identifier", $1);
+		exit(1);
+	}
+
 	/* 检查符号类型是否是数组 */
-	if(!p || p->type->type_id != TYPE_ARRAY){
-		parse_error("Undeclared array name",$1);
-		return  0;
+	if(p->type->type_id != TYPE_ARRAY){
+		parse_error("type mismatch", $1);
+		exit(1);
 	}
 
 	/* 数组符号入栈（保存上下文） */
@@ -2033,19 +1892,31 @@ expression oRB
 	/* 寻找对应的符号 */
 	p = find_symbol(top_symtab_stack(), $1);
 
+	if(!p)
+	{
+		parse_error("undeclared identifier", $1);
+		exit(1);
+	}
+
 	/* 检查符号类型是否是记录 */
-	if(!p || p->type->type_id != TYPE_RECORD) {
-		parse_error("Undeclared record variable",$1);
-		return  0;
+	if(p->type->type_id != TYPE_RECORD) {
+		parse_error("type mismatch", $1);
+		exit(1);
 	}
 
 	/* 寻找记录类型变量对应的symbol */
 	q = find_field(p, $3);
 
+	if(!q)
+	{
+		parse_error("undeclared record field", $3);
+		exit(1);
+	}
+
 	/* 检查符号类型 */
-	if(!q || q->defn != DEF_FIELD){
-		parse_error("Undeclared field ",$3);
-		return 0;
+	if(q->defn != DEF_FIELD){
+		parse_error("type mismatch", $3);
+		exit(1);
 	}
 
 	/* field的AST树 */
@@ -2087,8 +1958,7 @@ args_list
 		arg = rtn->args;
 	else
 	{
-		parse_error("parse argument list error.", "");
-		return 0;
+		arg = NULL;
 	}
 
 	/* 初始化参数AST树 */
