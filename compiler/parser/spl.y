@@ -1934,24 +1934,6 @@ oLP args_list oRP
 }
 |const_value
 {
-	/* 常量（term中const_value由于只在表达式中使用一次，不需要对name字段进行命名），比如表达式 1+2+3 中的 1 */
-	switch($1->type->type_id){
-		case TYPE_REAL:
-		case TYPE_STRING:
-			/* 通过全局符号表记录常量 */
-			add_symbol_to_table(Global_symtab, $1);
-			break;
-		case TYPE_BOOLEAN:
-
-			break;
-		case TYPE_INTEGER:
-			break;
-		case TYPE_CHAR:
-			break;
-		default:
-			break;
-	}
-
 	/* 常量AST树 */
 	$$ = const_tree($1);
 }
