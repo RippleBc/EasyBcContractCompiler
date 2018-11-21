@@ -410,7 +410,16 @@ void interpret()
               continue;
             }
           }
+          else if(format_str[i] == '\\')
+          {
+            if(format_str[i + 1] == 'n')
+            {
+              printf("\n");
 
+              i++;
+              continue;
+            }
+          }
           printf("%c", format_str[i]);
         }
 

@@ -1,6 +1,6 @@
 #include "../common.h"
 
-#define GLOBAL_AREA_SIZE 256
+#define GLOBAL_AREA_SIZE 10 * 1024
 
 /*  */
 value global_area[GLOBAL_AREA_SIZE];
