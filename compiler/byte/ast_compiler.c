@@ -684,6 +684,11 @@ int node_compile(Node node)
 
       /*  */
       char *code_name = get_op_name(generic(node->op));
+      if(code_name == NULL)
+      {
+        printf("op name not exist, op code %d\n", node->op);
+        exit(1);
+      }
       /*  */
       int code = get_op_code_by_name(code_name);
       /*  */
@@ -720,6 +725,11 @@ int node_compile(Node node)
 
       /*  */
       char *code_name = get_op_name(generic(node->op));
+      if(code_name == NULL)
+      {
+        printf("op name not exist, op code %d\n", node->op);
+        exit(1);
+      }
       /*  */
       int code = get_type_related_op_code_by_name(node->kids[0]->type, code_name);
       /*  */
@@ -743,6 +753,11 @@ int node_compile(Node node)
 
       /*  */
       char *code_name = get_op_name(generic(node->op));
+      if(code_name == NULL)
+      {
+        printf("op name not exist, op code %d\n", node->op);
+        exit(1);
+      }
       /*  */
       int code = get_op_code_by_name(code_name);
       /*  */
@@ -760,6 +775,11 @@ int node_compile(Node node)
 
       /*  */
       char *code_name = get_op_name(generic(node->op));
+      if(code_name == NULL)
+      {
+        printf("op name not exist, op code %d\n", node->op);
+        exit(1);
+      }
       /*  */
       int code = get_op_code_by_name(code_name);
       /*  */
@@ -779,6 +799,11 @@ int node_compile(Node node)
 
       /*  */
       char *code_name = get_op_name(generic(node->op));
+      if(code_name == NULL)
+      {
+        printf("op name not exist, op code %d\n", node->op);
+        exit(1);
+      }
       /*  */
       int code = get_type_related_op_code_by_name(node->kids[0]->type, code_name);
       /*  */
@@ -805,6 +830,11 @@ int node_compile(Node node)
 
       /*  */
       char *code_name = get_op_name(generic(node->op));
+      if(code_name == NULL)
+      {
+        printf("op name not exist, op code %d\n", node->op);
+        exit(1);
+      }
       /*  */
       int code = get_type_related_op_code_by_name(node->type, code_name);
       /*  */

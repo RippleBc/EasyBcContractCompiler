@@ -16,7 +16,7 @@ enum {
     ARG = 2 << 4,
     ASGN = 3 << 4,
     INDIR = 4 << 4,
-    SYS = 5 << 4,			/* for sys routine. */
+    SYS = 5 << 4, /* for sys routine. */
     CVC = 6 << 4,
     CVF = 7 << 4,
     CVI = 8 << 4,
@@ -56,10 +56,10 @@ enum {
     DECR = 42 << 4,
     ARRAY = 43 << 4,
     /* operations only appear in trees. */
-    HEADER = 44 << 4,		/* function header tree. */
-    TAIL = 45 << 4,			/* function end tree. */
-    BLOCKBEG = 46 << 4, 	/* block begin. */
-    BLOCKEND = 47 << 4,		/* block end. */
+    HEADER = 44 << 4, /* function header tree. */
+    TAIL = 45 << 4, /* function end tree. */
+    BLOCKBEG = 46 << 4, /* block begin. */
+    BLOCKEND = 47 << 4, /* block end. */
     /* last */
     LASTOP
 };

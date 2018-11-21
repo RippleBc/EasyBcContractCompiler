@@ -73,7 +73,7 @@ char *get_op_name(int op)
           right = middle - 1;
       }
   }
-	return "Unknown op";
+	return NULL;
 }
 
 int get_op(char *name)

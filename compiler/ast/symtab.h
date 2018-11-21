@@ -1,7 +1,9 @@
 #ifndef _SYMTAB_H_
 #define _SYMTAB_H_
 
-#define  SYMTAB_QUEUE_SIZE 128 /* 符号表队列长度 */
+#define SYMTAB_QUEUE_SIZE 128 /* 符号表队列长度 */
+#define MAX_SYS_ROUTINE (24) /* 系统程序的最多个数 */
+#define make_global_symtab() new_symtab(NULL)
 
 /* 保存常量的值 */
 union _value_ {
@@ -109,12 +111,6 @@ struct _symbol_head_
 
 typedef struct _symbol_head_ symtab;
 typedef struct _symbol_head_ *Symtab;
-
-#define make_global_symtab() new_symtab(NULL)
-
-#define MAX_SYS_ROUTINE (24) /* 系统程序的最多个数 */
-
-int Routing_id; /*  */
 
 /* 全局符号表 */
 symtab *Global_symtab;
