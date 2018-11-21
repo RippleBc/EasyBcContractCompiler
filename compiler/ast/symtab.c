@@ -75,7 +75,6 @@ symbol *new_symbol(char *name, int defn, int type_id)
     else
         strncpy(p->name, name, NAME_LEN);
 
-    p->rname[0]= '\0'; /* 添加结束标记 */
     p->defn = defn; /* 定义符号所属大类 */
     p->type = find_type_by_id(type_id); /* 定义符号类型 */
     p->offset = 0; /* 在堆栈中的偏移量 */
@@ -99,7 +98,6 @@ symbol *clone_symbol(symbol *origin)
         internal_error("insuffident memory.");
 
     strncpy(p->name, origin->name, NAME_LEN);
-    strncpy(p->rname, origin->rname, LABEL_LEN);
     p->defn = origin->defn;
     p->type = origin->type;
     p->offset = origin->offset;
@@ -246,13 +244,6 @@ void add_local_to_table(symtab *tab, symbol *sym)
     if(!tab || !sym)
         return;
 
-    if(sym->defn == DEF_CONST)
-        /* 计算rname，rname的形式为 c+name+'_'+const_index（cN_000、cN_001）。
-         %03d表示右边对齐，左边不足3位的用0进行填充。 */
-        sprintf(sym->rname, "c%c_%03d", sym->name[0], new_index(const));
-    else
-        sprintf(sym->rname, "v%c_%03d", sym->name[0], new_index(var));
-
      /*  */
     var_size = get_symbol_align_size(sym);
     /* symtab为函数，记录局部变量在symtab中偏移量 */
@@ -276,9 +267,6 @@ void add_args_to_table(symtab *tab, symbol *sym)
     
     if(!tab || !sym)
         return;
-
-    /* 计算rname，形式为aN_000、aN_001 */
-    sprintf(sym->rname, "a%c_%03d", sym->name[0], new_index(arg));
 
     /* 计算symtab中参数所占用的空间 */
     var_size = get_symbol_align_size(sym);
@@ -318,7 +306,6 @@ void make_system_symtab()
 
     /* 系统符号表命名 */
     sprintf(ptab->name,"system_table");
-    sprintf(ptab->rname, "null");
 
     /* 基础类型 */
     ptab->type_link = new_system_type(TYPE_INTEGER);
@@ -385,9 +372,6 @@ symtab* new_sys_symbol(KEYENTRY entry)
 
     /* 初始化符号名称 */
     strcpy(ptab->name, entry.name);
-
-    /* 初始化符号对应的汇编代码 */
-    sprintf(ptab->rname, "_f_%s", entry.name);
 
     /* 初始化系统符号表 */
     ptab->id = - entry.attr; /* 注意，系统符号的ID为attr的负值 */

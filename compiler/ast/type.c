@@ -185,20 +185,6 @@ void set_subrange_bound(type *pt, int lower, int upper)
     pt->first->v.i = lower;
     pt->last->v.i = upper;
 
-    /* 初始化表示上下界符号的汇编名称 */
-    if (pt->first->type->type_id == TYPE_CHAR)
-    {
-        /* 接受char类型 */
-        sprintf(pt->first->rname, "%c", lower);
-        sprintf(pt->last->rname,"%c", upper);
-    }
-    else
-    {
-        /* 接受integer类型 */
-        sprintf(pt->first->rname, "0%xh", lower);
-        sprintf(pt->last->rname,"0%xh", upper);
-    }
-
     /* 初始化subrange的元素个数 */
     pt->num_ele = upper - lower + 1;
 }
@@ -245,13 +231,11 @@ void add_enum_elements(type *pt, symbol *symlist)
         p->defn = DEF_ENUM_ELEMENT; /* 符号大类 */
         p->type = find_type_by_id(TYPE_INTEGER); /* 符号类型 */
         p->v.i = ++n; /* 符号值 */
-        sprintf(p->rname, "0%xh", p->v.i); /* 符号汇编名称 */
     }
 
     p->defn = DEF_ENUM_ELEMENT;
     p->type = find_type_by_id(TYPE_INTEGER);
     p->v.i = ++n;
-    sprintf(p->rname, "0%xh", p->v.i);
 
     pt->last = p; /* 符号链表末尾 */
     pt->num_ele = n; /* 符号链表中符号数量 */
@@ -292,8 +276,6 @@ type *new_array_type(char *name, type *pindex, type *pelement)
     pt->first = pindex->first;
     /* 类型中的成员的类型 */
     pt->last = new_symbol("$$$", DEF_ARRAY_ELEMENT, pelement->type_id);
-    /* 类型中的成员的类型的名称 */
-    sprintf(pt->last->rname, "ary_ele");
 
     if (!pt->last)
     {

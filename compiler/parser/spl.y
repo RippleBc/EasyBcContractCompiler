@@ -266,8 +266,6 @@ program_head
 {
 	/* 初始化全局符号表的名称 */
 	strcpy(Global_symtab->name, $2);
-	/* 初始化全局符号表的汇编名称 */
-	snprintf(Global_symtab->rname, sizeof(Global_symtab->rname), "main");
 	/* 初始化大类 */
 	Global_symtab->defn = DEF_PROG;
 	/*  */
@@ -394,7 +392,6 @@ const_value
 	switch($1)
 	{
 	case cMAXINT:
-		strcpy(p->rname, "maxint");
 		/* 符号值（最大整型） */
 		p->v.i = (1 << (IR->intmetric.size * 8)) - 1;
 		/* 符号类型 */
@@ -402,13 +399,11 @@ const_value
 		break;
 
 	case cFALSE:
-		strcpy(p->rname, "0");
 		p->v.b = 0;
 		p->type = find_type_by_id(TYPE_BOOLEAN);
 		break;
 		  
 	case cTRUE:
-		strcpy(p->rname, "1");
 		p->v.b = 1;
 		p->type = find_type_by_id(TYPE_BOOLEAN);
 		break; 
@@ -773,9 +768,6 @@ yNAME parameters oCOLON simple_type_decl
 	/* 符号表命名 */
 	strncpy(ptab->name, $3, NAME_LEN);
 
-	/* 符号表的汇编名称命名 */
-	sprintf(ptab->rname, "rtn%03d", ptab->id);
-
 	/* 符号表大类 */
 	ptab->defn = DEF_FUNCT;
 	
@@ -853,7 +845,6 @@ yNAME parameters
 {
 	ptab = top_symtab_stack();
 	strncpy(ptab->name, $3, NAME_LEN);
-	sprintf(ptab->rname, "rtn%03d", ptab->id);
 	ptab->defn = DEF_PROC;
 
 	p = new_symbol($3, DEF_PROC, TYPE_VOID);
@@ -1951,17 +1942,11 @@ oLP args_list oRP
 			add_symbol_to_table(Global_symtab, $1);
 			break;
 		case TYPE_BOOLEAN:
-			/* 通过汇编名称记录常量 */
-			sprintf($1->rname, "%d", (int)($1->v.b));
+
 			break;
 		case TYPE_INTEGER:
-			if($1->v.i > 0)
-				sprintf($1->rname,"0%xh", $1->v.i);
-			else
-				sprintf($1->rname, "-0%xh", -($1->v.i));
 			break;
 		case TYPE_CHAR:
-			sprintf($1->rname, "'%c'", $1->v.c);
 			break;
 		default:
 			break;

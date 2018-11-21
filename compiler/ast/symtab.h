@@ -35,8 +35,6 @@ struct _symbol_
 {
     /* 标识符名称 */
     char name[NAME_LEN]; 
-    /* 标识符在汇编代码中的名称 */
-    char rname[LABEL_LEN];
     /* 标识符的属性 */
     int defn;
     /* 标识符类型 */
@@ -83,8 +81,6 @@ struct _symbol_head_
 {
     /* 符号表的名称 */
     char name[NAME_LEN];
-    /* 过程或函数在汇编中的名称 */
-    char rname[LABEL_LEN];
     /* 过程或函数的序号 */
     int id;
     /* 嵌套深度 */
