@@ -166,5 +166,13 @@
 0x95, 'READLN', -1, 0
 0x96, 'WRITELN', -1, 0
 
-0x97, 'UIRSH', 8, 4
+0x97, 'UILSH', 8, 4
 0x98, 'UIRSH', 8, 4
+0x9a, 'RLSH', 8, 4
+0x9b, 'RRSH', 8, 4
+0x9c, 'BLSH', 8, 4
+0x9d, 'BRSH', 8, 4
+0x9e, 'CLSH', 8, 4
+0x9f, 'CRSH', 8, 4
+0xa0, 'UCLSH', 8, 4
+0xa1, 'UCRSH', 8, 4

@@ -325,13 +325,21 @@ Tree binary_expr_tree(int op, Tree left, Tree right)
     }
 
     /*  */
-    if(op == LSH || op == RSH || op == MOD)
+    if(op == LSH || op == RSH)
     {
         if(right->result_type->type_id != TYPE_INTEGER)
         {
             right = conversion_tree(right, find_system_type_by_id(TYPE_INTEGER));
         }
-        
+
+        if(op == MOD)
+        {
+            /*  */
+            if(left->result_type->type_id != TYPE_INTEGER)
+            {
+                left = conversion_tree(left, find_system_type_by_id(TYPE_INTEGER));
+            }
+        }
     }
     else
     {
@@ -351,18 +359,18 @@ Tree compare_expr_tree(int op, Tree left, Tree right)
 {
     Tree t;
 
-    // /*  */
-    // if(left->result_type->type_id == TYPE_STRING || right->result_type->type_id == TYPE_STRING)
-    // {
-    //     parse_error("compare_expr_tree err, string type is invalid", "");
-    //     exit(1);
-    // }
+    /*  */
+    if(left->result_type->type_id == TYPE_STRING || right->result_type->type_id == TYPE_STRING)
+    {
+        parse_error("compare_expr_tree err, string type is invalid", "");
+        exit(1);
+    }
 
-    // /*  */
-    // if(left->result_type->type_id != right->result_type->type_id)
-    // {
-    //     right = conversion_tree(right, left->result_type);
-    // }
+    /*  */
+    if(left->result_type->type_id != right->result_type->type_id)
+    {
+        right = conversion_tree(right, left->result_type);
+    }
 
     /* AST树类型为布尔型 */
     t = new_tree(op, find_system_type_by_id(TYPE_BOOLEAN), left, right);
@@ -373,21 +381,21 @@ Tree assign_tree(Tree id, Tree expr)
 {
     Tree t;
 
-    // if(id->result_type->type_id != expr->result_type->type_id)
-    // {
-    //     if(id->result_type->type_id == TYPE_ARRAY)
-    //     {
-    //         if(id->result_type->last->type->type_id != TYPE_CHAR || expr->result_type->type_id != TYPE_STRING)
-    //         {
-    //             parse_error("type miss match", "");
-    //             exit(1);
-    //         }
-    //     }
-    //     else
-    //     {
-    //         expr = conversion_tree(expr, id->result_type);
-    //     }
-    // }
+    if(id->result_type->type_id != expr->result_type->type_id)
+    {
+        if(id->result_type->type_id == TYPE_ARRAY)
+        {
+            if(id->result_type->last->type->type_id != TYPE_CHAR || expr->result_type->type_id != TYPE_STRING)
+            {
+                parse_error("type miss match", "");
+                exit(1);
+            }
+        }
+        else
+        {
+            expr = conversion_tree(expr, id->result_type);
+        }
+    }
 
     /* id表示一棵地址树，expr表示赋值内容 */
     t = new_tree(ASGN, id->result_type, id, expr);
