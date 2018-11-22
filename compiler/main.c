@@ -208,10 +208,16 @@ int main(int argc, char **argv)
     yyparse();
 
     /*  */
-    interpret(&routine_forest, dag_forest->link);
-
+    if(AST_TO_RESULT)
+    {
+        interpret(&routine_forest, dag_forest->link);
+    }
+    
     /*  */
-    ast_compile(&routine_forest, dag_forest->link);
+    if(AST_TO_BYTE_SEQUENCE)
+    {
+        ast_compile(&routine_forest, dag_forest->link);
+    }
 
     fclose(ifp);
 

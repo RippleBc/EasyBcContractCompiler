@@ -77,6 +77,31 @@ void vm_load_function_call_stack_val(Type t)
   push_command(code);
 }
 
+void vm_set_return_val(Symtab ptab)
+{
+  /*  */
+  Symbol return_sym = ptab->return_sym;
+
+  /* base address*/
+  int code = get_op_code_by_name("TOP_CALL");
+  push_command(code);
+
+  /* return val offset */
+  value v_offset;
+  v_offset.i = return_sym->offset;
+  push_data(return_sym->type, &v_offset);
+
+  /* return val address */
+  code = get_op_code_by_name("IADD");
+  push_command(code);
+
+  /*  */
+  char command_name[NAME_LEN];
+  snprintf(command_name, NAME_LEN, "LOAD_CALL%d", get_type_align_size(return_sym->type));
+  code = get_op_code_by_name(command_name);
+  push_command(code);
+}
+
 void vm_set_return_index(int index)
 {
   char command_name[NAME_LEN];

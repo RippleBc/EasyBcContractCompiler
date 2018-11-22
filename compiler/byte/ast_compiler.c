@@ -27,43 +27,6 @@ void push_data(Type t, Value v)
     printf("code_byte_sequence is full, max size is %d\n", CODE_MAX_NUM);
     exit(1);
   }
-  
-  if(BYTE_DEBUG)
-  {
-    switch(t->type_id)
-    {
-      case TYPE_INTEGER:
-      {
-        printf("size %d, data %x\n", data_size, v->i);
-      }
-      break;
-      case TYPE_UINTEGER:
-      {
-        printf("size %d, data %x\n", data_size, v->ui);
-      }
-      break;
-      case TYPE_REAL:
-      {
-        printf("size %d, data %x\n", data_size, v->f);
-      }
-      break;
-      case TYPE_BOOLEAN:
-      {
-        printf("size %d, data %x\n", data_size, v->b);
-      }
-      break;
-      case TYPE_CHAR:
-      {
-        printf("size %d, data %x\n", data_size, v->c);
-      }
-      break;
-      case TYPE_UCHAR:
-      {
-        printf("size %d, data %x\n", data_size, v->uc);
-      }
-      break;
-    }
-  }
 
   /*  */
   char command[NAME_LEN];
@@ -74,6 +37,48 @@ void push_data(Type t, Value v)
   /*  */
   assign_with_byte_unit(t->type_id, &code_byte_sequence[code_byte_index], v);
 
+  if(BYTE_DEBUG)
+  {
+    switch(t->type_id)
+    {
+      case TYPE_INTEGER:
+      {
+        printf("byte index %d, size %d, data %x\n", code_byte_index, data_size, v->i);
+      }
+      break;
+      case TYPE_UINTEGER:
+      {
+        printf("byte index %d, size %d, data %x\n", code_byte_index, data_size, v->ui);
+      }
+      break;
+      case TYPE_REAL:
+      {
+        printf("byte index %d, size %d, data %x\n", code_byte_index, data_size, v->f);
+      }
+      break;
+      case TYPE_BOOLEAN:
+      {
+        printf("byte index %d, size %d, data %x\n", code_byte_index, data_size, v->b);
+      }
+      break;
+      case TYPE_CHAR:
+      {
+        printf("byte index %d, size %d, data %x\n", code_byte_index, data_size, v->c);
+      }
+      break;
+      case TYPE_UCHAR:
+      {
+        printf("byte index %d, size %d, data %x\n", code_byte_index, data_size, v->uc);
+      }
+      break;
+      default:
+      {
+        printf("push_data err, unsupported type %\n", t->name);
+        exit(1);
+      }
+    }
+  }
+
   /*  */
   code_byte_index += data_size;
 }
@@ -83,7 +88,7 @@ void push_command(int code)
   if(BYTE_DEBUG)
   {
     char *name = get_name_by_op_code(code);
-    printf("op code %x, op name %s\n", code, name);
+    printf("byte index %d, op code %x, op name %s\n", code_byte_index, code, name);
   }
 
   /*  */
@@ -196,10 +201,11 @@ static void push_jump_detail(char *name, int index, Symtab ptab)
     exit(1);
   }
 
+  jump_detail_sequence[jump_detail_index]->code_index = index;
+
   if(name)
   {
     strncpy(jump_detail_sequence[jump_detail_index]->name, name, NAME_LEN);
-    jump_detail_sequence[jump_detail_index]->code_index = index;
   }
   else
   {
@@ -223,11 +229,6 @@ void ast_compile(List routine_forest, List dag)
   for(g_cp = dag->link; g_cp != NULL; g_cp = g_cp->link)
   {
     node_compile((Node)(g_cp->x));
-
-    if(g_cp == NULL)
-    {
-      break;
-    }
   }
 
   /*  */
@@ -238,11 +239,6 @@ void ast_compile(List routine_forest, List dag)
     {
       /*  */
       node_compile((Node)(g_routine->x));
-
-      if(g_routine == NULL)
-      {
-        break;
-      }
     }
   }
 
@@ -272,6 +268,12 @@ void ast_compile(List routine_forest, List dag)
     value v_jump_code;
     v_jump_code.i = label_or_function_index;
     assign_with_byte_unit(TYPE_INTEGER, &code_byte_sequence[jump_index], &v_jump_code);
+
+
+    if(BYTE_DEBUG)
+    {
+      printf("position function call index, byte index %d, function or label index %d\n", jump_index, label_or_function_index);
+    }
 
     i++;
   }
@@ -414,7 +416,7 @@ int node_compile(Node node)
     }
 
     /*  */
-    push_jump_detail(NULL, -1, node->symtab);
+    push_jump_detail(NULL, code_byte_index + 1, node->symtab);
 
     /*  */
     value function_index;
@@ -903,6 +905,9 @@ int node_compile(Node node)
       /* function call, return origin position */
       if(ptab != Global_symtab)
       {
+        /* return val */
+        vm_set_return_val(ptab);
+
         /* get return position */
         vm_get_return_index();
        
@@ -915,6 +920,11 @@ int node_compile(Node node)
         /* jump to return position */
         int jump_code = get_op_code_by_name("JUMP");
         push_command(jump_code);
+      }
+      else
+      {
+        int exit_code = get_op_code_by_name("EXIT");
+        push_command(exit_code);
       }
     }
     break;

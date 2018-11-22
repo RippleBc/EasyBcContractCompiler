@@ -176,3 +176,5 @@
 0x9f, 'CRSH', 8, 4
 0xa0, 'UCLSH', 8, 4
 0xa1, 'UCRSH', 8, 4
+
+0xa2, 'EXIT', 0, 0

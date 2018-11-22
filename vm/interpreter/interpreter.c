@@ -368,6 +368,12 @@ void interpret()
         pop_call();
       }
 
+      if(!strcmp(code_detail->name, "EXIT"))
+      {
+        printf("routine end\n");
+        break;
+      }
+
       if(!strcmp(code_detail->name, "READLN"))
       {
         char format_str[MAX_FORMAT_STR_SIZE];
