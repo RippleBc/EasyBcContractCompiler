@@ -8,8 +8,12 @@ List g_cp;
 List g_routine;
 List g_routine_forest;
 
-/*  */
+static int sys_id;
+
+#define GLOBAL_AREA_MARK 1
+#define FUNCTION_CALL_STACK_MARK 2
 #define CODE_MAX_NUM 1024 * 48
+
 int code_byte_index = 0;
 unsigned char code_byte_sequence[CODE_MAX_NUM];
 void push_data(Type t, Value v)
@@ -370,6 +374,8 @@ int node_compile(Node node)
   {
   case SYS:
   {
+    sys_id = node->u.sys_id;
+
     /*  */
     node_compile(node->kids[0]);
 
@@ -453,9 +459,6 @@ int node_compile(Node node)
     }
     else
     {
-      /* val(syscall, no symtab, no arg sym) */
-      node_compile(node->kids[0]);
-
       /* writeln format string*/
       if(generic(node->kids[0]->op) == CNST && node->kids[0]->syms[0]->type->type_id == TYPE_STRING)
       {
@@ -473,6 +476,34 @@ int node_compile(Node node)
         /* data size */
         v.i = string_len;
         push_data(find_system_type_by_id(TYPE_INTEGER), &v);
+      }
+      else
+      {
+
+        /* val or address(syscall, no symtab, no arg sym) */
+        node_compile(node->kids[0]);
+
+        /*  */
+        if(sys_id == pREADLN)
+        {
+          /* size */
+          value v_size;
+          v_size.i = get_type_align_size(node->kids[0]->type);
+          push_data(find_system_type_by_id(TYPE_INTEGER), &v_size);
+
+          /* global or function call */
+          value v_p_mark;
+          Symbol p = node->kids[0]->syms[0];
+          if(p->tab == Global_symtab)
+          {
+            v_p_mark.i = GLOBAL_AREA_MARK;
+          }
+          else
+          {
+            v_p_mark.i = FUNCTION_CALL_STACK_MARK;
+          }
+          push_data(find_system_type_by_id(TYPE_INTEGER), &v_p_mark);
+        }
       }
     }
   }
@@ -587,7 +618,7 @@ int node_compile(Node node)
             /* address */
             value sym_offset;
             sym_offset.i = p->offset;
-            push_data(p->type, &sym_offset);
+            push_data(find_system_type_by_id(TYPE_INTEGER), &sym_offset);
           }
 
           /*  */
@@ -600,7 +631,7 @@ int node_compile(Node node)
             /* address */
             value sym_offset;
             sym_offset.i = p->offset;
-            push_data(p->type, &sym_offset);
+            push_data(find_system_type_by_id(TYPE_INTEGER), &sym_offset);
           }
 
           /*  */

@@ -19,39 +19,35 @@ program helloworld;
 		inte : date;
 		booleana : boolean;
 	begin
-		intd[1] := 10;
-		intd[2] := 20;
-		intd[3] := 30;
-		intd[4] := 40;
-		intd[5] := 50;
-		inte.year := 30;
-		inte.month := 5;
-		inta := 20;
-		intb := 30;
-		intc := ((intb + inta) + 3 * (intb + inta)) / 4 + intd[2] * 2 + inte.month + intd[1];
-		writeln('%d\n', intc);
+		// intd[1] := 10;
+		// intd[2] := 20;
+		// intd[3] := 30;
+		// intd[4] := 40;
+		// intd[5] := 50;
+		// inte.year := 30;
+		// inte.month := 5;
+		// inta := 20;
+		// intb := 30;
+		// intc := ((intb + inta) + 3 * (intb + inta)) / 4 + intd[2] * 2 + inte.month + intd[1];
+		// writeln('%d\n', intc);
 		
-		reala1 := 1.23;
-		reala2 := reala1 + 1.56;
-		writeln('%f\n', reala2);
+		// reala1 := 1.23;
+		// reala2 := reala1 + 1.56;
+		// writeln('%f\n', reala2);
 
-		chara := 'a';
-		writeln('%c\n', chara);
+		// chara := 'a';
+		// writeln('%c\n', chara);
 
-		writeln('%s\n', 'abcdefg');
-		writeln('%s\n', 'abcdefgafadfafadfafasfadf');
-		writeln('%s\n', 'abcdefg');
+		// writeln('abcdefg\n');
+		// writeln('abcdefgafadfafadfafasfadf\n');
+		// writeln('abcdefg\n');
 
-		writeln('%f\n', 1.234);
+		// writeln('%f\n', 1.234);
 
-		stringa := 'abcdefgafadfafadfafasfadf';
-		writeln('%c\n', stringa[5]);
+		// stringa := 'abcdefgafadfafadfafasfadf';
+		// writeln('%c\n', stringa[5]);
 
-		booleana := true;
-		readln('%d', intd[1]);
-		readln('%c', chara);
-		readln('%d', booleana);
-		readln('%f', reala2);
+		readln('%d %c %d %f', intd[1], chara, booleana, reala2);
 		writeln('%d %c %d %f\n', intd[1], chara, booleana, reala2);
 	end
 .

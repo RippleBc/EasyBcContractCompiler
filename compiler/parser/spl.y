@@ -1182,23 +1182,21 @@ oLP args_list oRP
 {	
 	check_format_str(args);
 	
-	printf("************ 0\n");
 	/*  */
 	Tree t_args = args->kids[1];
 	Tree expression;
 	while(t_args)
 	{
-	printf("************ 1\n");
 		expression = t_args->kids[0];
 
 		if(generic(expression->op) == LOAD)
 		{
 			if(expression->kids[0]) /* 数组或者记录 */
-			{printf("************ 2\n");
+			{
 				t_args->kids[0] = expression->kids[0];
 			}
 			else
-			{printf("************ 3\n");
+			{
 				t_args->kids[0] = address_tree(expression->u.generic.sym);
 			}
 		}

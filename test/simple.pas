@@ -20,6 +20,10 @@ program helloworld;
 		arraya : arr;
 		recorda : date;
 	begin
+
+		/*  */
+		writeln('hello world\n');
+
 		writeln('year %d month %d like %s zzzz\n', 2018, 11, 'apple');
 
 		inta := 1;

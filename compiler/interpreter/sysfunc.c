@@ -2,28 +2,28 @@
 
 #define ASSIGN_VAL if(top_symtab_stack()->level == 0) \
       { \
-        assign_global(np, p, q); \
+        assign_global(var, p, q); \
       } \
       else \
       { \
-        assign_function_call_stack_val(np, p, q); \
+        assign_function_call_stack_val(var, p, q); \
       } \
 
 void read(Node node)
 {
-  Node args = node->kids[0]->kids[1];
-
+  Node arg = node->kids[0]->kids[1];
+  Node var;
 	/*  */
   int i;
   char c;
   char str[NAME_LEN];
 
   /*  */
-  Symbol p, q = NULL;
+  Symbol p, q;
 
-  while(args)
+  while(arg)
   {
-    Node np = args->kids[0];
+    var = arg->kids[0];
 
     /*  */
     i = 0;
@@ -43,52 +43,53 @@ void read(Node node)
     }
 
     /*  */
-    if(generic(np->op) == ARRAY || generic(np->op) == FIELD)
+    q = NULL;
+    if(generic(var->op) == ARRAY || generic(var->op) == FIELD)
     {
-      /* syms[0]表示数组或者记录，syms[1]表示数组成员或者属性，np->kids[0]表示ARRAY或者FIELD节点 */
-      p = np->syms[1];
-      q = np->syms[0];
+      /* syms[0]表示数组或者记录，syms[1]表示数组成员或者属性，var->kids[0]表示ARRAY或者FIELD节点 */
+      p = var->syms[1];
+      q = var->syms[0];
     }
     else
     {
-      p = np->syms[0];
-    }
+      p = var->syms[0];
+    } 
 
     switch(p->type->type_id)
     {
       case TYPE_INTEGER:
       {
-        np->val.i = atoi(str);
+        var->val.i = atoi(str);
         ASSIGN_VAL;
       }
       break;
       case TYPE_UINTEGER:
       {
-        np->val.ui = (unsigned int)atoi(str);
+        var->val.ui = (unsigned int)atoi(str);
         ASSIGN_VAL;
       }
       break;
       case TYPE_CHAR:
       {
-        np->val.c = str[0];
+        var->val.c = (char)str[0];
         ASSIGN_VAL;
       }
       break;
       case TYPE_UCHAR:
       {
-        np->val.uc = str[0];
+        var->val.uc = str[0];
         ASSIGN_VAL;
       }
       break;
       case TYPE_BOOLEAN:
       {
-        np->val.b = atoi(str);
+        var->val.b = atoi(str);
         ASSIGN_VAL;
       }
       break;
       case TYPE_REAL:
       {
-        np->val.f = atof(str);
+        var->val.f = atof(str);
         ASSIGN_VAL;
       }
       break;
@@ -99,17 +100,17 @@ void read(Node node)
       }
     }
 
-    args = args->kids[1];
+    arg = arg->kids[1];
   }
 }
 
 void write(Node node)
 {
-  Node args = node->kids[0];
+  Node arg = node->kids[0];
 
   /*  */
-  char *format_str = args->kids[0]->syms[0]->v.s;
-  args = args->kids[1];
+  char *format_str = arg->kids[0]->syms[0]->v.s;
+  arg = arg->kids[1];
 
   /* check format */
   int i;
@@ -124,80 +125,80 @@ void write(Node node)
         {
           case 'd':
           {
-            printf("%d", args->val.i);
+            printf("%d", arg->val.i);
 
             /*  */
-            if(!args)
+            if(!arg)
             {
               parse_error("format type mismatch", "");
               exit(1);
             }
-            args = args->kids[1];
+            arg = arg->kids[1];
           }
           break;
           case 'c':
           {
-            printf("%c", args->val.c);
+            printf("%c", arg->val.c);
 
             /*  */
-            if(!args)
+            if(!arg)
             {
               parse_error("format type mismatch", "");
               exit(1);
             }
-            args = args->kids[1];
+            arg = arg->kids[1];
           }
           break;
           case 'f':
           {
-            printf("%f", args->val.f);
+            printf("%f", arg->val.f);
 
             /*  */
-            if(!args)
+            if(!arg)
             {
               parse_error("format type mismatch", "");
               exit(1);
             }
-            args = args->kids[1];
+            arg = arg->kids[1];
           }
           break;
           case 'u':
           {
-            printf("%u", args->val.i);
+            printf("%u", arg->val.i);
 
             /*  */
-            if(!args)
+            if(!arg)
             {
               parse_error("format type mismatch", "");
               exit(1);
             }
-            args = args->kids[1];
+            arg = arg->kids[1];
           }
           break;
           case 'y':
           {
-            printf("%u", args->val.uc);
+            printf("%u", arg->val.uc);
 
             /*  */
-            if(!args)
+            if(!arg)
             {
               parse_error("format type mismatch", "");
               exit(1);
             }
-            args = args->kids[1];
+            arg = arg->kids[1];
           }
           break;
           case 's':
           {
-            printf("%s", args->val.s);
+            printf("%s", arg->val.s);
 
             /*  */
-            if(!args)
+            if(!arg)
             {
               parse_error("format type mismatch", "");
               exit(1);
             }
-            args = args->kids[1];
+            arg = arg->kids[1];
           }
           break;
           default:
