@@ -448,7 +448,7 @@ void interpret()
                 {
                   /* data */
                   value result;
-                  result.i = atof(str);
+                  result.f = atof(str);
                   push_vm_stack_from_compute(TYPE_REAL, &result);
                 }
                 break;
