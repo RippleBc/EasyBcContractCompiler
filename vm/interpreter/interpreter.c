@@ -410,7 +410,8 @@ void interpret()
               continue;
             }
           }
-          else if(format_str[i] == '\\')
+          else if((i == 0 && format_str[i] == '\\') || 
+              (i > 0 && format_str[i - 1] != '\\' && format_str[i] == '\\'))
           {
             if(format_str[i + 1] == 'n')
             {
@@ -420,7 +421,10 @@ void interpret()
               continue;
             }
           }
-          printf("%c", format_str[i]);
+          else
+          {
+            printf("%c", format_str[i]);
+          }
         }
 
         printf("%c", format_str[i]);

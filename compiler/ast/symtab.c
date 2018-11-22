@@ -329,7 +329,7 @@ void make_system_symtab()
     int n = 1;
     for(i = 0 ; i < Keytable_size; i++)
     {
-        if(Keytable[i].key == SYS_FUNCT || Keytable[i].key == SYS_PROC )
+        if(Keytable[i].key == SYS_FUNCT || Keytable[i].key == SYS_PROC || Keytable[i].key == SYS_READ)
         {
             System_symtab[n] = new_sys_symbol(Keytable[i]);
             n++;

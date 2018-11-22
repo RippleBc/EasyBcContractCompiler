@@ -1167,37 +1167,52 @@ oLP args_list oRP
 {
 	$$ = sys_tree($1->attr, args);
 
+	/*  */
+	if($1->attr == pWRITELN)
+	{
+		check_format_str(args);
+	}
+
 	/* 放入AST森林 */
 	list_append(top_ast_forest_stack(), $$);
 
 	pop_call_stack();
 }
-|SYS_READ oLP factor oRP
-{
-	if($3 == NULL){
-		parse_error("too few parameters in call to", "read");
-		exit(1);
-	}
+|SYS_READ oLP args_list oRP
+{	
+	check_format_str(args);
 	
-	if(generic($3->op) == LOAD)
+	printf("************ 0\n");
+	/*  */
+	Tree t_args = args->kids[1];
+	Tree expression;
+	while(t_args)
 	{
-		if($3->kids[0]) /* 数组或者记录 */
+	printf("************ 1\n");
+		expression = t_args->kids[0];
+
+		if(generic(expression->op) == LOAD)
 		{
-			t = $3->kids[0];
+			if(expression->kids[0]) /* 数组或者记录 */
+			{printf("************ 2\n");
+				t_args->kids[0] = expression->kids[0];
+			}
+			else
+			{printf("************ 3\n");
+				t_args->kids[0] = address_tree(expression->u.generic.sym);
+			}
 		}
 		else
 		{
-			t = address_tree($3->u.generic.sym);
+			parse_error("pread need a variable argument", "");
+			exit(1);
 		}
-	}
-	else
-	{
-		parse_error("pread need a variable argument", "");
-		exit(1);
+
+		t_args = t_args->kids[1];
 	}
 
 	/* 系统函数或者系统过程调用AST节点 */
-	$$ = sys_tree($1->attr, t);
+	$$ = sys_tree($1->attr, args);
 
 	/* 放入AST森林 */
 	list_append(top_ast_forest_stack(), $$);
