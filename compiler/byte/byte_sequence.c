@@ -1,4 +1,4 @@
-#include "./common.h"
+#include "../common.h"
 
 void assign_with_byte_unit(int type, unsigned char *array, Value v)
 {
