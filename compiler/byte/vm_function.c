@@ -82,23 +82,15 @@ void vm_set_return_val(Symtab ptab)
   /*  */
   Symbol return_sym = ptab->return_sym;
 
-  /* base address*/
-  int code = get_op_code_by_name("TOP_CALL");
-  push_command(code);
-
-  /* return val offset */
-  value v_offset;
-  v_offset.i = return_sym->offset;
-  push_data(return_sym->type, &v_offset);
-
   /* return val address */
-  code = get_op_code_by_name("IADD");
-  push_command(code);
+  value v_address;
+  v_address.i = return_sym->offset;
+  push_data(return_sym->type, &v_address);
 
   /*  */
   char command_name[NAME_LEN];
   snprintf(command_name, NAME_LEN, "LOAD_CALL%d", get_type_align_size(return_sym->type));
-  code = get_op_code_by_name(command_name);
+  int code = get_op_code_by_name(command_name);
   push_command(code);
 }
 
@@ -107,15 +99,16 @@ void vm_set_return_index(int index)
   char command_name[NAME_LEN];
 
   /* val */
-  value s_return_index;
-  s_return_index.i = index;
-  push_data(find_system_type_by_id(TYPE_INTEGER), &s_return_index);
+  value s_return_position;
+  s_return_position.i = index;
+  push_data(find_system_type_by_id(TYPE_INTEGER), &s_return_position);
   /* address*/
-  int code = get_op_code_by_name("TOP_CALL");
-  push_command(code);
+  value s_return_address;
+  s_return_address.i = 0;
+  push_data(find_system_type_by_id(TYPE_INTEGER), &s_return_address);
   /*  */
   snprintf(command_name, NAME_LEN, "ASSIGN_CALL%d", IR->intmetric.align);
-  code = get_op_code_by_name(command_name);
+  int code = get_op_code_by_name(command_name);
   push_command(code);
 }
 
@@ -124,10 +117,11 @@ void vm_get_return_index()
   char command_name[NAME_LEN];
 
   /* address*/
-  int code = get_op_code_by_name("TOP_CALL");
-  push_command(code);
+  value s_return_address;
+  s_return_address.i = 0;
+  push_data(find_system_type_by_id(TYPE_INTEGER), &s_return_address);
   /*  */
   snprintf(command_name, NAME_LEN, "LOAD_CALL%d", IR->intmetric.align);
-  code = get_op_code_by_name(command_name);
+  int code = get_op_code_by_name(command_name);
   push_command(code);
 }

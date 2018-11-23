@@ -413,7 +413,7 @@ int node_compile(Node node)
     }
 
     /* set return index */
-    int return_index = code_byte_index + 1 + IR->intmetric.align + 1 + 1 + 1 + IR->intmetric.align + 1;
+    int return_index = code_byte_index + (2 * (1 + IR->intmetric.align) + 1) + ((IR->intmetric.align + 1) + 1);
     vm_set_return_index(return_index);
 
     /*  */

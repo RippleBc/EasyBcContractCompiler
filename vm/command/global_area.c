@@ -41,6 +41,20 @@ void assign_global(int align)
 
 void load_global(int align)
 {
+  if(VM_STACK_DEBUG)
+  {
+    printf("load_global before, vm stack byte sequence\n");
+    for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
+    {
+      printf("%x ", vm_stack[i]);
+      if((i + 1) % 4 == 0)
+      {
+        printf("| ");
+      }
+    }
+    printf("\n\n\n");
+  }
+
   /*  */
   int address = get_int_from_vm_stack();
 
@@ -70,7 +84,7 @@ void load_global(int align)
 
   if(VM_STACK_DEBUG)
   {
-    printf("load_global\n");
+    printf("load_global after, vm stack byte sequence\n");
     for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
     {
       printf("%x ", vm_stack[i]);

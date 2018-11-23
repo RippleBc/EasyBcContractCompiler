@@ -71,6 +71,16 @@ void interpret()
         printf("JUMP to %x\n", byte_sequence_index);
       }
 
+      for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
+      {
+        printf("%x ", vm_stack[i]);
+        if((i + 1) % 4 == 0)
+        {
+          printf("| ");
+        }
+      }
+      printf("\n\n\n");
+
       continue;
     }
     else
@@ -225,7 +235,7 @@ void interpret()
       else if(!strcmp(code_detail->name, "MOD"))
       {
         value result;
-        result.i = get_int_from_vm_stack() / get_int_from_vm_stack();
+        result.i = get_int_from_vm_stack() % get_int_from_vm_stack();
 
         if(TYPE_BYTE_DEBUG)
         {

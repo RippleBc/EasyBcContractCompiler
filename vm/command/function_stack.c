@@ -33,6 +33,20 @@ void pop_call()
 
 void assign_call(int align)
 {
+  if(VM_FUNCTION_DEBUG)
+  {
+    printf("assign_call before\n");
+    for(int i = function_call_stack_deep; i < FUNCTION_CALL_STACK_DEEP; i++)
+    {
+      printf("%x ", function_call_stack[i]);
+      if((i + 1) % 4 == 0)
+      {
+        printf("| ");
+      }
+    }
+    printf("\n\n\n");
+  }
+
   /*  */
   int address = get_int_from_vm_stack();
 
@@ -41,11 +55,39 @@ void assign_call(int align)
 		function_call_stack[function_call_stack_deep + address++] = vm_stack[vm_stack_deep + i];
 	}
   
+  if(VM_FUNCTION_DEBUG)
+  {
+    printf("assign_call after\n");
+    for(int i = function_call_stack_deep; i < FUNCTION_CALL_STACK_DEEP; i++)
+    {
+      printf("%x ", function_call_stack[i]);
+      if((i + 1) % 4 == 0)
+      {
+        printf("| ");
+      }
+    }
+    printf("\n\n\n");
+  }
+
   pop_vm_stack(align);
 }
 
 void load_call(int align)
 {
+  if(VM_STACK_DEBUG)
+  {
+    printf("load_call before, vm stack byte sequence\n");
+    for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
+    {
+      printf("%x ", vm_stack[i]);
+      if((i + 1) % 4 == 0)
+      {
+        printf("| ");
+      }
+    }
+    printf("\n\n\n");
+  }
+
   /*  */
   int address = get_int_from_vm_stack();
 
@@ -60,7 +102,7 @@ void load_call(int align)
 
   if(VM_STACK_DEBUG)
   {
-    printf("load_call\n");
+    printf("load_call after, vm stack byte sequence\n");
     for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
     {
       printf("%x ", vm_stack[i]);
@@ -75,6 +117,20 @@ void load_call(int align)
 
 int top_call()
 {
+  if(VM_STACK_DEBUG)
+  {
+    printf("top_call before, vm stack byte sequence\n");
+    for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
+    {
+      printf("%x ", vm_stack[i]);
+      if((i + 1) % 4 == 0)
+      {
+        printf("| ");
+      }
+    }
+    printf("\n\n\n");
+  }
+
   /*  */
   value address;
   address.i = function_call_stack_deep;
@@ -87,7 +143,7 @@ int top_call()
 
   if(VM_STACK_DEBUG)
   {
-    printf("top_call\n");
+    printf("top_call after, vm stack byte sequence\n");
     for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
     {
       printf("%x ", vm_stack[i]);
