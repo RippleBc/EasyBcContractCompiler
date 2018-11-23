@@ -145,7 +145,7 @@ program helloworld;
 			5: writeln('line 140 fail');
 			6:
 				case intb of
-					tue: writeln('case control stmt ok');
+					tue: writeln('case control stmt ok\n');
 					4: writeln('line 147 fail');
 				end;
 		end;

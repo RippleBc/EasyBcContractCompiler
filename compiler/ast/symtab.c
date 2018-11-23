@@ -167,7 +167,6 @@ void add_symbol_to_table(symtab *tab, symbol *sym)
     switch(sym->defn)
     {
         case DEF_FUNCT:
-        case DEF_PROC:
         case DEF_VAR:
         case DEF_CONST:
             /* 函数标识、过程标识、普通变量标识、常量标识 */
@@ -178,6 +177,12 @@ void add_symbol_to_table(symtab *tab, symbol *sym)
             /* 变参（一个变量）、值参（一个常量） */
             add_args_to_table(tab, sym);
             break;
+        case DEF_PROC:
+        {
+            /*  */
+            internal_error("add_symbol_to_table err, symbol can not be DEF_PROC");
+        }
+        break;
         default:
         {
             char c_err[MAX_ERR_STR_LEN];
@@ -362,7 +367,14 @@ symtab* new_sys_symbol(KEYENTRY entry)
     /* 初始化系统符号表 */
     ptab->id = -entry.attr; /* 注意，系统符号的ID为attr的负值 */
     ptab->level = -1;
-    ptab->defn = DEF_FUNCT; /* 系统函数的大类统一为DEF_FUNCT */
+    if(entry.key == SYS_FUNCT)
+    {
+        ptab->defn = DEF_FUNCT;
+    }
+    else
+    {
+        ptab->defn = DEF_PROC;
+    }
     ptab->type = NULL;
     ptab->call_stack_size = 0;
     ptab->args = NULL;

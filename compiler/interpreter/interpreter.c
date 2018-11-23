@@ -437,15 +437,7 @@ void node_process(Node node)
       }
       else
       {
-        if(p->defn == DEF_PROC)
-        {
-          parse_error("proc can not have return val", p->name);
-          exit(1);
-        }
-        else
-        {
-          assign_function_call_stack_val(node->kids[1], p, q);
-        }
+        assign_function_call_stack_val(node->kids[1], p, q);
       }
     }
     break;

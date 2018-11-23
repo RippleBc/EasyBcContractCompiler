@@ -868,7 +868,7 @@ procedure_head
 
 	if(top_symtab_stack() != Global_symtab)
 	{
-		parse_error("can not def function in function", "");
+		parse_error("can not def procedure in procedure", "");
 		exit(1);
 	}
 
@@ -888,6 +888,8 @@ yNAME parameters
 
 	Tree header;
 	header = new_tree(HEADER, find_system_type_by_id(TYPE_VOID), NULL, NULL);
+	header->u.generic.symtab = ptab;
+
 	list_append(top_ast_forest_stack(), header);
 }
 ;
@@ -1771,7 +1773,14 @@ factor
 {
 	/* 寻找自定义函数或者过程 */
 	if((ptab = find_routine(top_symtab_stack(), $1)))
-  		push_call_stack(ptab);
+	{
+		if(ptab->defn == DEF_PROC)
+		{
+			parse_error("procedure can not be a factor, it has no result val", ptab->name);
+			exit(1);
+		}
+		push_call_stack(ptab);
+	}	
 	else
 	{
 		parse_error("undeclared funtion or procedure", $1);

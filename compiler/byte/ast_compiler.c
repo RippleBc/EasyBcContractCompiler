@@ -909,7 +909,6 @@ int node_compile(Node node)
     {
        /* 符号表压栈 */
       push_symtab_stack(node->symtab);
-      
       /* record function */
       push_function(node->symtab, code_byte_index);
     }
@@ -922,7 +921,10 @@ int node_compile(Node node)
       if(ptab != Global_symtab)
       {
         /* return val */
-        vm_set_return_val(ptab);
+        if(ptab->defn == DEF_FUNCT)
+        {
+          vm_set_return_val(ptab);
+        }
 
         /* get return position */
         vm_get_return_index();
