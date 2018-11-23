@@ -406,14 +406,15 @@ int node_compile(Node node)
     /*  */
     vm_push_function_call_stack(node->symtab);
 
-    /* 记录返回地址 */
-    vm_set_return_index(code_byte_index);
-
     /* 实参 */
     if (node->kids[0] != NULL)
     {
       node_compile(node->kids[0]);
     }
+
+    /* set return index */
+    int return_index = code_byte_index + 1 + IR->intmetric.align + 1 + 1 + 1 + IR->intmetric.align + 1;
+    vm_set_return_index(return_index);
 
     /*  */
     push_jump_detail(NULL, code_byte_index + 1, node->symtab);

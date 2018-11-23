@@ -47,17 +47,31 @@ void interpret()
       {
         /* jump */
         byte_sequence_index = position;
+
+        if(JUMP_DEBUG)
+        {
+          printf("COND JUMP to %x\n", byte_sequence_index);
+        }
       }
       else
       {
         /* execute the next op code */
         byte_sequence_index++;
       }
+
+      continue;
     }
     else if(!strcmp(code_detail->name, "JUMP"))
     {
       int position = get_int_from_vm_stack();
       byte_sequence_index = position;
+
+      if(JUMP_DEBUG)
+      {
+        printf("JUMP to %x\n", byte_sequence_index);
+      }
+
+      continue;
     }
     else
     {
@@ -266,6 +280,30 @@ void interpret()
         if(TYPE_BYTE_DEBUG)
         {
           printf("INE %d result %d\n", result.b);
+        }
+
+        push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
+      }
+      if(!strcmp(code_detail->name, "CEQ"))
+      {
+        value result;
+        result.c = get_char_from_vm_stack() == get_char_from_vm_stack();
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("CEQ %d result %d\n", result.c);
+        }
+
+        push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
+      }
+      else if(!strcmp(code_detail->name, "CNE"))
+      {
+        value result;
+        result.c = get_char_from_vm_stack() != get_char_from_vm_stack();
+
+        if(TYPE_BYTE_DEBUG)
+        {
+          printf("CNE %d result %d\n", result.c);
         }
 
         push_vm_stack_from_compute(TYPE_BOOLEAN, &result);

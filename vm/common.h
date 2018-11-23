@@ -22,6 +22,7 @@
 #define TYPE_BYTE_DEBUG (0)
 #define VM_STACK_DEBUG (0)
 #define GLOBAL_AREA_DEBUG (0)
+#define JUMP_DEBUG (1)
 
 #define VM_STACK_DEEP 256
 
