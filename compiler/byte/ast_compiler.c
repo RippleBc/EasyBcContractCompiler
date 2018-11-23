@@ -403,14 +403,43 @@ int node_compile(Node node)
   break;
   case CALL:
   {
-    /*  */
-    vm_push_function_call_stack(node->symtab);
-
     /* 实参 */
     if (node->kids[0] != NULL)
     {
       node_compile(node->kids[0]);
     }
+
+    /* context change */
+    vm_push_function_call_stack(node->symtab);
+
+    /* arg init */
+    Node args_node = node->kids[0];
+    Symbol arg;
+    while(args_node)
+    {
+      /* get arg symbol */
+      arg = args_node->syms[0];
+     
+      /* assign arg */
+      if(arg->type->type_id == TYPE_ARRAY)
+      {
+        vm_assign_function_call_stack_val(NULL, &(args_node->kids[0]->syms[0]->v), arg);
+      }
+      else
+      {
+        /* address */
+        value s_offset;
+        s_offset.i = arg->offset;
+        push_data(find_system_type_by_id(TYPE_INTEGER), &s_offset);
+
+        /*  */
+        vm_assign_function_call_stack_val(arg->type, NULL, NULL);
+      }
+
+      /*  */
+      args_node = args_node->kids[1];
+    }
+    
 
     /* set return index */
     int return_index = code_byte_index + (2 * (1 + IR->intmetric.align) + 1) + ((IR->intmetric.align + 1) + 1);
@@ -442,23 +471,11 @@ int node_compile(Node node)
 
     if(arg)
     {
-      if(arg->type->type_id == TYPE_ARRAY)
-      {
-        vm_assign_function_call_stack_val(NULL, &(node->kids[0]->syms[0]->v), arg);
-      }
-      else
+      if(arg->type->type_id != TYPE_ARRAY)
       {
         /* val */
         node_compile(node->kids[0]);
-
-        /* address */
-        value s_offset;
-        s_offset.i = arg->offset;
-        push_data(find_system_type_by_id(TYPE_INTEGER), &s_offset);
-
-        /*  */
-        vm_assign_function_call_stack_val(node->kids[0]->type, NULL, NULL);
-      }
+      } 
     }
     else
     {
@@ -482,7 +499,6 @@ int node_compile(Node node)
       }
       else
       {
-
         /* val or address(syscall, no symtab, no arg sym) */
         node_compile(node->kids[0]);
 
@@ -522,7 +538,6 @@ int node_compile(Node node)
 
       if(p->type->type_id != TYPE_STRING)
       {
-        /*  */
         push_data(p->type, &(p->v));
       }
     }
