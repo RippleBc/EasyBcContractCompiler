@@ -11,9 +11,6 @@
 #define KEYWORD		-1 /* 表示关键字 */
 #define _PC_VER_    "0.1.5" /* 编译器版本 */
 
-#define AST_TO_RESULT (1)
-#define AST_TO_BYTE_SEQUENCE (1)
-
 #define FILE_NAME_LEN   (64)
 #define MAX_ERR_STR_LEN (128)
 #define MAX_LINE_LENGTH		(20480) /* 词法分析错误追踪时，可以追踪的行的最长字符个数 */
