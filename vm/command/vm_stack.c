@@ -9,14 +9,8 @@ void push_vm_stack_from_byte_sequence(int align)
 	/*  */
 	byte_sequence_index += 1;
 
-  if(vm_stack_deep - align < 0)
-  {
-    printf("*************vm stack is full*************\n");
-    exit(1);
-  }
-
   /*  */
-  vm_stack_deep -= align;
+  push_vm_stack(align);
 
 	/*  */
   int i = 0;
@@ -28,7 +22,7 @@ void push_vm_stack_from_byte_sequence(int align)
 
   if(VM_STACK_DEBUG)
   {
-    printf("push_vm_stack_from_byte_sequence\n");
+    printf("push_vm_stack_from_byte_sequence, vm stack byte sequence\n");
     for(i = vm_stack_deep; i < VM_STACK_DEEP; i++)
     {
       printf("%x ", vm_stack[i]);
@@ -49,36 +43,21 @@ void push_vm_stack_from_compute(int type, Value v)
     case TYPE_UINTEGER:
     case TYPE_BOOLEAN:
     {
-      if(vm_stack_deep - IR->intmetric.align < 0)
-      {
-        printf("*************vm stack is full*************\n");
-        exit(1);
-      }
       /*  */
-      vm_stack_deep -= IR->intmetric.align;
+      push_vm_stack(IR->intmetric.align);
     }
     break;
     case TYPE_REAL:
     {
-      if(vm_stack_deep - IR->floatmetric.align < 0)
-      {
-        printf("*************vm stack is full*************\n");
-        exit(1);
-      }
       /*  */
-      vm_stack_deep -= IR->floatmetric.align;
+      push_vm_stack(IR->floatmetric.align);
     }
     break;
     case TYPE_CHAR:
     case TYPE_UCHAR:
     {
-      if(vm_stack_deep - IR->charmetric.align < 0)
-      {
-        printf("*************vm stack is full*************\n");
-        exit(1);
-      }
       /*  */
-      vm_stack_deep -= IR->charmetric.align;
+      push_vm_stack(IR->charmetric.align);
     }
     break;
     default:
@@ -92,7 +71,7 @@ void push_vm_stack_from_compute(int type, Value v)
 
   if(VM_STACK_DEBUG)
   {
-    printf("push_vm_stack_from_compute\n");
+    printf("push_vm_stack_from_compute, vm stack byte sequence\n");
     for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
     {
       printf("%x ", vm_stack[i]);
@@ -132,6 +111,20 @@ int get_int_from_vm_stack()
 
   pop_vm_stack(IR->intmetric.align);
 
+  if(VM_STACK_DEBUG)
+  {
+    printf("get_int_from_vm_stack, vm stack sequence\n");
+    for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
+    {
+      printf("%x ", vm_stack[i]);
+      if((i + 1) % 4 == 0)
+      {
+        printf("| ");
+      }
+    }
+    printf("\n\n\n");
+  }
+
   return v.i;
 }
 
@@ -141,6 +134,20 @@ unsigned int get_uint_from_vm_stack()
   load_with_byte_unit(TYPE_UINTEGER, &vm_stack[vm_stack_deep], &v);
 
   pop_vm_stack(IR->intmetric.align);
+
+  if(VM_STACK_DEBUG)
+  {
+    printf("get_uint_from_vm_stack, vm stack sequence\n");
+    for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
+    {
+      printf("%x ", vm_stack[i]);
+      if((i + 1) % 4 == 0)
+      {
+        printf("| ");
+      }
+    }
+    printf("\n\n\n");
+  }
 
   return v.ui;
 }
@@ -152,6 +159,20 @@ float get_real_from_vm_stack()
 
   pop_vm_stack(IR->floatmetric.align);
 
+  if(VM_STACK_DEBUG)
+  {
+    printf("get_real_from_vm_stack, vm stack sequence\n");
+    for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
+    {
+      printf("%x ", vm_stack[i]);
+      if((i + 1) % 4 == 0)
+      {
+        printf("| ");
+      }
+    }
+    printf("\n\n\n");
+  }
+
   return v.f;
 }
 
@@ -161,6 +182,20 @@ boolean get_boolean_from_vm_stack()
   load_with_byte_unit(TYPE_BOOLEAN, &vm_stack[vm_stack_deep], &v);
 
   pop_vm_stack(IR->intmetric.align);
+
+  if(VM_STACK_DEBUG)
+  {
+    printf("get_boolean_from_vm_stack, vm stack sequence\n");
+    for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
+    {
+      printf("%x ", vm_stack[i]);
+      if((i + 1) % 4 == 0)
+      {
+        printf("| ");
+      }
+    }
+    printf("\n\n\n");
+  }
 
   return v.b;
 }
@@ -172,6 +207,20 @@ char get_char_from_vm_stack()
 
   pop_vm_stack(IR->charmetric.align);
 
+  if(VM_STACK_DEBUG)
+  {
+    printf("get_char_from_vm_stack, vm stack sequence\n");
+    for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
+    {
+      printf("%x ", vm_stack[i]);
+      if((i + 1) % 4 == 0)
+      {
+        printf("| ");
+      }
+    }
+    printf("\n\n\n");
+  }
+
   return v.c;
 }
 
@@ -181,6 +230,20 @@ unsigned char get_uchar_from_vm_stack()
   load_with_byte_unit(TYPE_UCHAR, &vm_stack[vm_stack_deep], &v);
 
   pop_vm_stack(IR->charmetric.align);
+
+  if(VM_STACK_DEBUG)
+  {
+    printf("get_uchar_from_vm_stack, vm stack sequence\n");
+    for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
+    {
+      printf("%x ", vm_stack[i]);
+      if((i + 1) % 4 == 0)
+      {
+        printf("| ");
+      }
+    }
+    printf("\n\n\n");
+  }
 
   return v.uc;
 }

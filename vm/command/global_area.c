@@ -22,9 +22,11 @@ void assign_global(int align)
 		global_area[address++] = vm_stack[vm_stack_deep + i];
 	}
 
+  pop_vm_stack(align);
+
   if(GLOBAL_AREA_DEBUG)
   {
-    printf("assign_global offset %d \n", address - align);
+    printf("assign_global, address %d, byte sequence ", address - align);
     for(int i = address - align; i < address; i++)
     {
       printf("%x ", global_area[i]);
@@ -35,15 +37,10 @@ void assign_global(int align)
     }
     printf("\n\n\n");
   }
-
-  pop_vm_stack(align);
-}
-
-void load_global(int align)
-{
+  
   if(VM_STACK_DEBUG)
   {
-    printf("load_global before, vm stack byte sequence\n");
+    printf("assign_global, vm stack byte sequence\n");
     for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
     {
       printf("%x ", vm_stack[i]);
@@ -54,7 +51,10 @@ void load_global(int align)
     }
     printf("\n\n\n");
   }
+}
 
+void load_global(int align)
+{
   /*  */
   int address = get_int_from_vm_stack();
 
@@ -84,7 +84,7 @@ void load_global(int align)
 
   if(VM_STACK_DEBUG)
   {
-    printf("load_global after, vm stack byte sequence\n");
+    printf("load_global, vm stack byte sequence\n");
     for(int i = vm_stack_deep; i < VM_STACK_DEEP; i++)
     {
       printf("%x ", vm_stack[i]);

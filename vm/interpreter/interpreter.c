@@ -81,22 +81,12 @@ void interpret()
         value result;
         result.i = get_int_from_vm_stack() <<  get_int_from_vm_stack();
 
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("IRSH %d result %d\n", result.i);
-        }
-
         push_vm_stack_from_compute(TYPE_INTEGER, &result);
       }
       else if(!strcmp(code_detail->name, "IRSH"))
       {
         value result;
         result.i = get_int_from_vm_stack() >>  get_int_from_vm_stack();
-
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("IRSH %d result %d\n", result.i);
-        }
 
         push_vm_stack_from_compute(TYPE_INTEGER, &result);
       }
@@ -105,22 +95,12 @@ void interpret()
         value result;
         result.ui = get_uint_from_vm_stack() <<  get_uint_from_vm_stack();
 
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("UILSH %d result %d\n", result.ui);
-        }
-
         push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
       else if(!strcmp(code_detail->name, "UIRSH"))
       {
         value result;
         result.ui = get_uint_from_vm_stack() >>  get_uint_from_vm_stack();
-
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("UIRSH %d result %d\n", result.ui);
-        }
 
         push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
@@ -131,22 +111,12 @@ void interpret()
         value result;
         result.i = get_int_from_vm_stack() + get_int_from_vm_stack();
 
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("IADD %d result %d\n", result.i);
-        }
-
         push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
       else if(!strcmp(code_detail->name, "ISUB"))
       {
         value result;
         result.i = get_int_from_vm_stack() - get_int_from_vm_stack();
-
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("ISUB %d result %d\n", result.i);
-        }
 
         push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
@@ -155,22 +125,12 @@ void interpret()
         value result;
         result.i = get_int_from_vm_stack() * get_int_from_vm_stack();
 
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("IMUL %d result %d\n", result.i);
-        }
-
         push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
       else if(!strcmp(code_detail->name, "IDIV"))
       {
         value result;
         result.i = get_int_from_vm_stack() / get_int_from_vm_stack();
-
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("IDIV %d result %d\n", result.i);
-        }
 
         push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
@@ -179,22 +139,12 @@ void interpret()
         value result;
         result.f = get_real_from_vm_stack() + get_real_from_vm_stack();
 
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("IADD %d result %d\n", result.f);
-        }
-
         push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
       else if(!strcmp(code_detail->name, "RSUB"))
       {
         value result;
         result.f = get_real_from_vm_stack() - get_real_from_vm_stack();
-
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("ISUB %d result %d\n", result.f);
-        }
 
         push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
@@ -203,22 +153,12 @@ void interpret()
         value result;
         result.f = get_real_from_vm_stack() * get_real_from_vm_stack();
 
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("IMUL %d result %d\n", result.f);
-        }
-
         push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
       else if(!strcmp(code_detail->name, "RDIV"))
       {
         value result;
         result.f = get_real_from_vm_stack() / get_real_from_vm_stack();
-
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("IDIV %d result %d\n", result.f);
-        }
 
         push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
@@ -227,11 +167,6 @@ void interpret()
         value result;
         result.i = get_int_from_vm_stack() % get_int_from_vm_stack();
 
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("MOD %d result %d\n", result.i);
-        }
-
         push_vm_stack_from_compute(TYPE_UINTEGER, &result);
       }
       else if(!strcmp(code_detail->name, "IINCR"))
@@ -239,22 +174,12 @@ void interpret()
         value result;
         result.i = get_int_from_vm_stack() + 1;
 
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("IINCR %d result %d\n", result.i);
-        }
-
         push_vm_stack_from_compute(TYPE_INTEGER, &result);
       }
       else if(!strcmp(code_detail->name, "IDECR"))
       {
         value result;
         result.i = get_int_from_vm_stack() - 1;
-
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("IDECR %d result %d\n", result.i);
-        }
 
         push_vm_stack_from_compute(TYPE_INTEGER, &result);
       }
@@ -265,22 +190,12 @@ void interpret()
         value result;
         result.b = get_int_from_vm_stack() == get_int_from_vm_stack();
 
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("IEQ %d result %d\n", result.b);
-        }
-
         push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
       }
       else if(!strcmp(code_detail->name, "INE"))
       {
         value result;
         result.b = get_int_from_vm_stack() != get_int_from_vm_stack();
-
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("INE %d result %d\n", result.b);
-        }
 
         push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
       }
@@ -289,22 +204,12 @@ void interpret()
         value result;
         result.c = get_char_from_vm_stack() == get_char_from_vm_stack();
 
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("CEQ %d result %d\n", result.c);
-        }
-
         push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
       }
       else if(!strcmp(code_detail->name, "CNE"))
       {
         value result;
         result.c = get_char_from_vm_stack() != get_char_from_vm_stack();
-
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("CNE %d result %d\n", result.c);
-        }
 
         push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
       }
@@ -313,22 +218,12 @@ void interpret()
         value result;
         result.b = get_int_from_vm_stack() >= get_int_from_vm_stack();
 
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("IGE %d result %d\n", result.b);
-        }
-
         push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
       }
       else if(!strcmp(code_detail->name, "IGT"))
       {
         value result;
         result.b = get_int_from_vm_stack() > get_int_from_vm_stack();
-
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("IGT %d result %d\n", result.b);
-        }
 
         push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
       }
@@ -337,22 +232,12 @@ void interpret()
         value result;
         result.b = get_int_from_vm_stack() <= get_int_from_vm_stack();
 
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("ILE %d result %d\n", result.b);
-        }
-
         push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
       }
       else if(!strcmp(code_detail->name, "ILT"))
       {
         value result;
         result.b = get_int_from_vm_stack() < get_int_from_vm_stack();
-
-        if(TYPE_BYTE_DEBUG)
-        {
-          printf("ILT %d result %d\n", result.b);
-        }
 
         push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
       }
