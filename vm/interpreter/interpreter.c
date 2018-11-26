@@ -58,7 +58,7 @@ void interpret()
       else
       {
         /* execute the next op code */
-        byte_sequence_index += IR->intmetric.align;
+        byte_sequence_index += COMMAND_OP_SIZE;
       }
 
       continue;

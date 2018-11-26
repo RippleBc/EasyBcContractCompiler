@@ -7,7 +7,7 @@ unsigned char vm_stack[VM_STACK_DEEP];
 void push_vm_stack_from_byte_sequence(int align)
 {
 	/*  */
-	byte_sequence_index += IR->intmetric.align;
+	byte_sequence_index += COMMAND_OP_SIZE;
 
   /*  */
   push_vm_stack(align);

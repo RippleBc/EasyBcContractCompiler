@@ -26,6 +26,7 @@
 #define JUMP_DEBUG (0)
 
 #define VM_STACK_DEEP 256
+#define COMMAND_OP_SIZE IR->intmetric.align
 
 typedef int boolean;
 
