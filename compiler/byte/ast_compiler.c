@@ -14,6 +14,8 @@ static int sys_id;
 #define FUNCTION_CALL_STACK_MARK 2
 #define CODE_MAX_NUM 1024 * 48
 
+#define COMMAND_OP_SIZE IR->intmetric.align
+
 int code_byte_index = 0;
 unsigned char code_byte_sequence[CODE_MAX_NUM];
 void push_data(Type t, Value v)
@@ -304,7 +306,7 @@ int node_compile(Node node)
     Symbol p = node->syms[0];
 
     /* record the jump position */
-    push_jump_detail(p->name, code_byte_index + 1, NULL);
+    push_jump_detail(p->name, code_byte_index + COMMAND_OP_SIZE, NULL);
     /* jump position */
     value jump_position;
     jump_position.i = -1;
@@ -332,7 +334,7 @@ int node_compile(Node node)
 
     /* record the jump position */
     Symbol p = node->u.cond.label;
-    push_jump_detail(p->name, code_byte_index + 1, NULL);
+    push_jump_detail(p->name, code_byte_index + COMMAND_OP_SIZE, NULL);
     /* jump position */
     value jump_position;
     jump_position.i = -1;
@@ -415,11 +417,11 @@ int node_compile(Node node)
     
 
     /* set return index */
-    int return_index = code_byte_index + (2 * (1 + IR->intmetric.align) + 1) + ((IR->intmetric.align + 1) + 1);
+    int return_index = code_byte_index + (2 * (COMMAND_OP_SIZE + IR->intmetric.align) + COMMAND_OP_SIZE) + ((COMMAND_OP_SIZE + IR->intmetric.align) + COMMAND_OP_SIZE);
     vm_set_return_index(return_index);
 
     /*  */
-    push_jump_detail(NULL, code_byte_index + 1, node->symtab);
+    push_jump_detail(NULL, code_byte_index + COMMAND_OP_SIZE, node->symtab);
 
     /*  */
     value function_index;

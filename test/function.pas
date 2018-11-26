@@ -3,8 +3,10 @@ program helloworld;
 		text = array[1..50] of char;
 		int_array = array[1..10] of integer;
 	var inta, intb: integer;
+			chara: char;
 			texta: text;
 			arraya: int_array;
+
 
 	function mixedArgFunc(x:integer;y:text;z:char):integer;
 		var inta: integer;
@@ -155,10 +157,11 @@ program helloworld;
 		texta := 'abafqweradf';
 		if(texta[5] != 'q') then
 		begin
-			writeln('q line 92 fail');
+			writeln('q line 92 fail\n');
 		end;
 		mixedArgFunc(10, 'abcdefg', 'd');
 		mixedTypeFunc();
+		/* 11 */
 		inta := testFunc(10, 1);
 		writeln('%d\n', inta);
 		insideFunc(10, 1);

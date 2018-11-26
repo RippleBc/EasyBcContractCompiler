@@ -228,7 +228,7 @@ void mathmatical_command(struct _op_code_ *code_detail)
   {
     value result;
     result.uc = (unsigned char)get_real_from_vm_stack();
-
+    
     push_vm_stack_from_compute(TYPE_UCHAR, &result);
   }
   else if(!strcmp(code_detail->name, "RCVC"))

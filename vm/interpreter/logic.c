@@ -16,17 +16,17 @@ void logic_command(struct _op_code_ *code_detail)
 
     push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
   }
-  if(!strcmp(code_detail->name, "CEQ"))
+  if(!strcmp(code_detail->name, "UCEQ"))
   {
     value result;
-    result.c = get_char_from_vm_stack() == get_char_from_vm_stack();
+    result.b = get_uchar_from_vm_stack() == get_uchar_from_vm_stack();
 
     push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
   }
-  else if(!strcmp(code_detail->name, "CNE"))
+  else if(!strcmp(code_detail->name, "UCNE"))
   {
     value result;
-    result.c = get_char_from_vm_stack() != get_char_from_vm_stack();
+    result.b = get_uchar_from_vm_stack() != get_uchar_from_vm_stack();
 
     push_vm_stack_from_compute(TYPE_BOOLEAN, &result);
   }
