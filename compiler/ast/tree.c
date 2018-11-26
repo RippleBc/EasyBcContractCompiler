@@ -311,17 +311,6 @@ Tree binary_expr_tree(int op, Tree left, Tree right)
     }
 
     /*  */
-    if(left->result_type->type_id == TYPE_CHAR)
-    {
-        left = conversion_tree(left, find_system_type_by_id(TYPE_UCHAR));
-    }
-
-    if(right->result_type->type_id == TYPE_CHAR)
-    {
-        right = conversion_tree(right, find_system_type_by_id(TYPE_UCHAR));
-    }
-
-    /*  */
     if(op == LSH || op == RSH || op == MOD)
     {
         if(right->result_type->type_id != TYPE_INTEGER)
@@ -361,17 +350,6 @@ Tree compare_expr_tree(int op, Tree left, Tree right)
     {
         parse_error("compare_expr_tree err, string type is invalid", "");
         exit(1);
-    }
-
-    /*  */
-    if(left->result_type->type_id == TYPE_CHAR)
-    {
-        left = conversion_tree(left, find_system_type_by_id(TYPE_UCHAR));
-    }
-
-    if(right->result_type->type_id == TYPE_CHAR)
-    {
-        right = conversion_tree(right, find_system_type_by_id(TYPE_UCHAR));
     }
 
     /*  */
