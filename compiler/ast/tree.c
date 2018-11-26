@@ -58,7 +58,7 @@ Tree conversion_tree(Tree source, Type target)
             break;
         default:
         {
-            parse_error("unsupported conversion", target->name);
+            parse_error("conversion_tree, invalid conversion", target->name);
             exit(1);
         }
     }
@@ -109,6 +109,11 @@ Tree not_tree(Tree source)
 
     switch(source->result_type->type_id)
     {
+        case TYPE_BOOLEAN:
+        {
+
+        }
+        break;
         case TYPE_INTEGER:
         case TYPE_UINTEGER:
         case TYPE_CHAR:
@@ -118,33 +123,14 @@ Tree not_tree(Tree source)
             source = conversion_tree(source, find_system_type_by_id(TYPE_BOOLEAN));
         }
         break;
-        case TYPE_STRING:
-        {
-            Symbol p_s = new_symbol("$$$", DEF_CONST, TYPE_INTEGER);
-            if(strlen(source->u.generic.sym->v.s) > 0)
-            {
-                p_s->v.i = 1;
-            }
-            else
-            {
-                p_s->v.i = 0;
-            }
-            source = const_tree(p_s);
-        }
-        break;
-        case TYPE_BOOLEAN:
-        {
-
-        }
-        break;
         default:
         {
-            parse_error("not tree unsupported type", "");
+            parse_error("not_tree, invalid source", "");
             exit(1);
         }
     }
 
-    t = new_tree(NOT, source->result_type, source, NULL);
+    t = new_tree(NOT, find_system_type_by_id(TYPE_BOOLEAN), source, NULL);
     return t;
 }
 
@@ -171,7 +157,7 @@ Tree arg_tree(Tree argtree, Symtab function, Symbol arg, Tree expr)
         {
             if(arg->type->last->type->type_id != TYPE_CHAR || expr->result_type->type_id != TYPE_STRING)
             {
-                parse_error("type miss match.", "");
+                parse_error("arg_tree, type miss match.", "");
                 exit(1);
             }
         }
@@ -325,7 +311,18 @@ Tree binary_expr_tree(int op, Tree left, Tree right)
     }
 
     /*  */
-    if(op == LSH || op == RSH)
+    if(left->result_type->type_id == TYPE_CHAR)
+    {
+        left = conversion_tree(left, find_system_type_by_id(TYPE_UCHAR));
+    }
+
+    if(right->result_type->type_id == TYPE_CHAR)
+    {
+        right = conversion_tree(right, find_system_type_by_id(TYPE_UCHAR));
+    }
+
+    /*  */
+    if(op == LSH || op == RSH || op == MOD)
     {
         if(right->result_type->type_id != TYPE_INTEGER)
         {
@@ -367,6 +364,17 @@ Tree compare_expr_tree(int op, Tree left, Tree right)
     }
 
     /*  */
+    if(left->result_type->type_id == TYPE_CHAR)
+    {
+        left = conversion_tree(left, find_system_type_by_id(TYPE_UCHAR));
+    }
+
+    if(right->result_type->type_id == TYPE_CHAR)
+    {
+        right = conversion_tree(right, find_system_type_by_id(TYPE_UCHAR));
+    }
+
+    /*  */
     if(left->result_type->type_id != right->result_type->type_id)
     {
         right = conversion_tree(right, left->result_type);
@@ -387,7 +395,7 @@ Tree assign_tree(Tree id, Tree expr)
         {
             if(id->result_type->last->type->type_id != TYPE_CHAR || expr->result_type->type_id != TYPE_STRING)
             {
-                parse_error("type miss match", "");
+                parse_error("assign_tree, type miss match", "");
                 exit(1);
             }
         }
@@ -431,6 +439,30 @@ Tree jump_tree(Symbol label)
 Tree cond_jump_tree(Tree cond, int trueorfalse, Symbol label)
 {
     Tree t;
+
+    /*  */
+    switch(cond->result_type->type_id)
+    {
+        case TYPE_BOOLEAN:
+        {
+
+        }
+        break;
+        case TYPE_INTEGER:
+        case TYPE_UINTEGER:
+        case TYPE_REAL:
+        case TYPE_CHAR:
+        case TYPE_UCHAR:
+        {
+          cond = conversion_tree(cond, find_system_type_by_id(TYPE_BOOLEAN));
+        }
+        break;
+        default:
+        {
+          parse_error("cond_jump_tree, cond is valid", "");
+          exit(1);
+        }
+    }
 
     t = new_tree(COND, label->type, cond, NULL);
     t->u.cond_jump.label = label;

@@ -92,14 +92,19 @@ void push_command(int code)
   }
 
   /*  */
-  if(code_byte_index >= CODE_MAX_NUM)
+  if(code_byte_index + IR->intmetric.align >= CODE_MAX_NUM)
   {
-    printf("code_byte_sequence overflow\n");
+    printf("code_byte_sequence is full, max size is %d\n", CODE_MAX_NUM);
     exit(1);
   }
 
   /*  */
-  code_byte_sequence[code_byte_index++] = code;
+  value v_code;
+  v_code.i = code;
+  assign_with_byte_unit(TYPE_INTEGER, &code_byte_sequence[code_byte_index], &v_code);
+
+  /*  */
+  code_byte_index += IR->intmetric.align;
 }
 
 /*  */
@@ -313,49 +318,17 @@ int node_compile(Node node)
   {
     /* test val */
     node_compile(node->kids[0]);
-
     /*  */
-    switch(node->kids[0]->type->type_id)
+    value v_cond;
+    if(node->u.cond.true_or_false == true)
     {
-    case TYPE_INTEGER:
-    case TYPE_BOOLEAN:
+      v_cond.b = true;
+    }
+    else
     {
-      /*  */
-      value cond;
-      if(node->u.cond.true_or_false == true)
-      {
-        /*  */
-        cond.b = true;
-      }
-      else
-      {
-        /*  */
-        cond.b = false;
-      }
-
-      /*  */
-      push_data(find_system_type_by_id(TYPE_BOOLEAN), &cond);
+      v_cond.b = false;
     }
-    break;
-    case TYPE_CHAR:
-    {
-      printf("COND expression can not be char");
-      exit(1);
-    }
-    break;
-    case TYPE_REAL:
-    {
-      printf("COND expression can not be real");
-      exit(1);
-    }
-    break;
-    case TYPE_STRING:
-    {
-      printf("COND expression can not be string");
-      exit(1);
-    }
-    break;
-    }
+    push_data(find_system_type_by_id(TYPE_BOOLEAN), &v_cond);
 
     /* record the jump position */
     Symbol p = node->u.cond.label;
@@ -833,13 +806,13 @@ int node_compile(Node node)
     }
     break;
     case BCOM:
+    case NEG:
     case CVC:
     case CVUC:
     case CVF:
     case CVI:
     case CVB:
     case CVUI:
-    case NEG:
     {
       node_compile(node->kids[0]);
 

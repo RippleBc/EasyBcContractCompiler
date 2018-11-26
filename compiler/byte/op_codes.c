@@ -124,27 +124,22 @@ int get_type_related_op_code_by_name(Type t, char *name)
 	char op_name[MAX_OP_CODES_NUM];
 	if(t->type_id == TYPE_INTEGER || t->type_id == TYPE_BOOLEAN)
 	{
-		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", 'I', name);
+		snprintf(op_name, MAX_OP_CODES_NUM, "I%s", name);
 		return get_op_code_by_name(op_name);
 	}
 	else if(t->type_id == TYPE_REAL)
 	{
-		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", 'R', name);
+		snprintf(op_name, MAX_OP_CODES_NUM, "R%s", name);
 		return get_op_code_by_name(op_name);
 	}
 	else if(t->type_id == TYPE_UINTEGER)
 	{
-		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", 'UI', name);
+		snprintf(op_name, MAX_OP_CODES_NUM, "UI%s", name);
 		return get_op_code_by_name(op_name);
 	}
-	else if(t->type_id == TYPE_CHAR)
+	else if(t->type_id == TYPE_CHAR || t->type_id == TYPE_UCHAR)
 	{
-		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", 'C', name);
-		return get_op_code_by_name(op_name);
-	}
-	else if(t->type_id == TYPE_UCHAR)
-	{
-		snprintf(op_name, MAX_OP_CODES_NUM, "%c%s", 'UC', name);
+		snprintf(op_name, MAX_OP_CODES_NUM, "UC%s", name);
 		return get_op_code_by_name(op_name);
 	}
 	else

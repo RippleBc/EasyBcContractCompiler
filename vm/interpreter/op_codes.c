@@ -157,6 +157,6 @@ struct _op_code_ *get_detail_by_op_code(int op_code)
 		}
 	}
 
-	printf("get_op_code_by_name code not exist %x\n", op_code);
+	printf("get_op_code_by_name code not exist, index %d, op code %x\n", byte_sequence_index, op_code);
 	exit(1);
 }
